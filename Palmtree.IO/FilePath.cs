@@ -104,6 +104,48 @@ namespace Palmtree.IO
             }
         }
 
+        public IRandomOutputByteStream<UInt64> CreateNew()
+        {
+            _file.Refresh();
+            try
+            {
+                return new FileStream( _file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None).AsOutputByteStream().AsRandomAccess<UInt64>();
+            }
+            finally
+            {
+                _file.Refresh();
+            }
+        }
+
+        public TextWriter CreateNewText()
+        {
+            _file.Refresh();
+            try
+            {
+                return new StreamWriter(new FileStream(_file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None));
+            }
+            finally
+            {
+                _file.Refresh();
+            }
+        }
+
+        public TextWriter CreateNewText(Encoding encoding)
+        {
+            if (encoding is null)
+                throw new ArgumentNullException(nameof(encoding));
+
+            _file.Refresh();
+            try
+            {
+                return new StreamWriter(new FileStream(_file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None), encoding);
+            }
+            finally
+            {
+                _file.Refresh();
+            }
+        }
+
         public TextWriter CreateText()
         {
             _file.Refresh();
