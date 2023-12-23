@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Palmtree.Collections;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
@@ -11,7 +12,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private abstract class BinaryTreeItem
         {
             public static BinaryTreeItem BuildTree(
-                BigArray<(UInt64 totalOffset, UInt64 volumeDiskSize)> volumeDisks,
+                BigList<(UInt64 totalOffset, UInt64 volumeDiskSize)> volumeDisks,
                 UInt32 startDiskNumber,
                 UInt32 endDiskNumber)
             {
@@ -69,7 +70,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private const UInt32 _ARRAY_SIZE_STEP = 1024;
 
-        private readonly BigArray<(UInt64 totalOffset, UInt64 volumeDiskSize)> _volumeDisks;
+        private readonly BigList<(UInt64 totalOffset, UInt64 volumeDiskSize)> _volumeDisks;
         private readonly BinaryTreeItem _rootNode;
 
         /// <summary>
@@ -80,35 +81,26 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </param>
         public VolumeDiskCollection(IEnumerable<UInt64> volumeDiskSizes)
         {
-            _volumeDisks = new BigArray<(UInt64 totalOffset, UInt64 volumeDiskSize)>(0);
+            _volumeDisks = new BigList<(UInt64 totalOffset, UInt64 volumeDiskSize)>();
             try
             {
                 var totalOffset = 0UL;
                 var lastVolumeDiskSize = 0UL;
-                var index = 0U;
                 foreach (var volumeDiskSize in volumeDiskSizes)
                 {
-                    if (index >= _volumeDisks.Length)
-                        _volumeDisks.Resize((_volumeDisks.Length + _ARRAY_SIZE_STEP).Minimum(UInt32.MaxValue));
-                    if (index >= _volumeDisks.Length)
-                        throw new OutOfMemoryException();
-                    _volumeDisks[index] = (totalOffset, volumeDiskSize);
+                    _volumeDisks.Add((totalOffset, volumeDiskSize));
                     lastVolumeDiskSize = volumeDiskSize;
                     checked
                     {
-                        ++index;
                         totalOffset += volumeDiskSize;
                     }
                 }
 
-                if (index <= 0)
+                if (_volumeDisks.Count <= 0)
                     throw new ArgumentException($"{nameof(volumeDiskSizes)} is an empty sequence.");
 
-                if (_volumeDisks.Length > index)
-                    _volumeDisks.Resize(index);
-
                 TotalVolumeDiskSize = totalOffset;
-                LastVolumeDiskNumber = index - 1;
+                LastVolumeDiskNumber = _volumeDisks.Count - 1;
                 LastVolumeDiskSize = lastVolumeDiskSize;
             }
             catch (Exception ex)
@@ -193,7 +185,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </returns>
         public Boolean TryGetVolumeDiskSize(UInt32 diskNumber, out UInt64 volumeDiskSize)
         {
-            if (diskNumber >= _volumeDisks.Length)
+            if (diskNumber >= _volumeDisks.Count)
             {
                 volumeDiskSize = 0;
                 return false;
@@ -220,7 +212,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </returns>
         public Boolean TryGetOffsetFromStart(UInt32 diskNumber, UInt64 offsetOnTheDisk, out UInt64 offsetFromStart)
         {
-            if (diskNumber >= _volumeDisks.Length)
+            if (diskNumber >= _volumeDisks.Count)
             {
                 offsetFromStart = 0;
                 return false;
