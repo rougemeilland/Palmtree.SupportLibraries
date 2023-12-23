@@ -6,18 +6,23 @@ if (-not (Test-Path $localNugetPackageDirectory -PathType Container)) {
     Exit 2
 }
 
-foreach ($projectDirectory in Get-ChildItem $baseDirectory -Directory | Where-Object {$_.Name -match "^Palmtree\."}) {
-    $nugetPackageFiles = Get-ChildItem (Join-Path (Join-Path $projectDirectory.FullName "bin") "Release") -File | Where-Object {$_.Name -match "\.nupkg$"}
-    foreach ($nugetPackageFile in $nugetPackageFiles) {
-        $command = "nuget"
-        $args = "add `"" + $nugetPackageFile.FullName + "`" -Source `"" + $localNugetPackageDirectory + "`""
+try {
+    foreach ($projectDirectory in Get-ChildItem $baseDirectory -Directory | Where-Object {$_.Name -match "^Palmtree\."}) {
+        $nugetPackageFiles = Get-ChildItem (Join-Path (Join-Path $projectDirectory.FullName "bin") "Release") -File | Where-Object {$_.Name -match "\.nupkg$"}
+        foreach ($nugetPackageFile in $nugetPackageFiles) {
+            $command = "nuget"
+            $args = "add `"" + $nugetPackageFile.FullName + "`" -Source `"" + $localNugetPackageDirectory + "`""
 
-        $process = Start-Process -FilePath $command -ArgumentList $args -Wait -NoNewWindow -PassThru
-        $handle = $process.Handle # おまじない https://stackoverflow.com/questions/10262231/obtaining-exitcode-using-start-process-and-waitforexit-instead-of-wait
-        $process.WaitForExit()
-        if ($process.ExitCode -ne 0) {
-            Write-Host ("nuget の実行に失敗しました。: 終了コード: " + $process.ExitCode)
-            Exit 1
+            $process = Start-Process -FilePath $command -ArgumentList $args -NoNewWindow -PassThru
+            $handle = $process.Handle # おまじない https://stackoverflow.com/questions/10262231/obtaining-exitcode-using-start-process-and-waitforexit-instead-of-wait
+            $process.WaitForExit()
+            if ($process.ExitCode -ne 0) {
+                Write-Host ("nuget の実行に失敗しました。: 終了コード: " + $process.ExitCode)
+                Exit 1
+            }
+            Copy-Item $nugetPackageFile $localNugetPackageDirectory
         }
     }
+}
+finally{
 }
