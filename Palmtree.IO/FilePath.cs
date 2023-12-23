@@ -17,19 +17,21 @@ namespace Palmtree.IO
         private FilePath(FileInfo file)
             : base(file)
         {
+            if (file.Directory is null)
+                throw new ArgumentException($"File path name format is invalid.: \"{file.FullName}\"");
+
             _file = file;
+
         }
 
-        public DirectoryPath? Directory
+        public DirectoryPath Directory
         {
             get
             {
                 _file.Refresh();
                 var directory = _file.Directory;
-                return
-                    directory is null
-                    ? null
-                    : DirectoryPath.CreateInstance(directory);
+                Validation.Assert(directory is not null, $"The file's directory must exist.: \"{_file.FullName}\"");
+                return DirectoryPath.CreateInstance(directory);
             }
         }
 
