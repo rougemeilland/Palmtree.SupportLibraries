@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="docs">
+      <UniqueIdentifier>{965d708f-f359-43d2-9c96-49fa7b19a37d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="package">
+      <UniqueIdentifier>{5c256588-9373-4f68-aa5b-8c54fbc2bbc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{17e628e2-5d1e-49ad-bf1e-8a4ce2949daa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Filter>docs</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Palmtree.IO.Console.InterOp.Unix.nuspec">
+      <Filter>package</Filter>
+    </Text>
+    <Text Include="MakePackage.ps1">
+      <Filter>package</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WindowSize.c">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net7.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
+    <Product>Palmtree Support Library ($(AssemblyName))</Product>
+    <Title>$(AssemblyName)</Title>
+    <Copyright>© 2023 Palmtree Software</Copyright>
+    <PackageProjectUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Palmtree Software</Authors>
+    <Description>This is a package of numerical calculation libraries. Operations on unsigned big integers and additional computational algorithms (e.g., greatest common divisor calculation, reduction, etc.) for existing integer types (e.g., int, long, etc.) are supported.</Description>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</RepositoryUrl>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;SYSLIB1045;SYSLIB1054;IDE0290</NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM32'">
+    <NoWarn>1701;1702;SYSLIB1045;SYSLIB1054;IDE0290</NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;SYSLIB1045;SYSLIB1054;IDE0290</NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM32'">
+    <NoWarn>1701;1702;SYSLIB1045;SYSLIB1054;IDE0290</NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="docs\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Palmtree.Core\Palmtree.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="docs\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net7.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
+    <Product>Palmtree Support Library ($(AssemblyName))</Product>
+    <Title>$(AssemblyName)</Title>
+    <Copyright>© 2023 Palmtree Software</Copyright>
+    <PackageProjectUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Palmtree Software</Authors>
+    <RepositoryUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>This is a basic package of stream-based compression functionality.</Description>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>1701;1702;SYSLIB1045;SYSLIB1054;CA1510;CA1513;IDE0290</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>1701;1702;SYSLIB1045;SYSLIB1054;CA1510;CA1513;IDE0290</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="docs\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Palmtree.Core\Palmtree.Core.csproj" />
+    <ProjectReference Include="..\Palmtree.IO.Compression.Stream.InterOp\Palmtree.IO.Compression.Stream.InterOp.csproj" />
+    <ProjectReference Include="..\Palmtree.IO\Palmtree.IO.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="docs\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
