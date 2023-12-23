@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Palmtree.Collections;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -15,7 +15,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private readonly FilePath _baseZipArchiveFile;
         private readonly DirectoryPath _baseDirectory;
         private readonly UInt64 _maximumVolumeSize;
-        private readonly IList<(FilePath volumeDiskFile, UInt64 volumeDiskSize)> _volumeDisks;// TODO: BigList に変更
+        private readonly BigList<(FilePath volumeDiskFile, UInt64 volumeDiskSize)> _volumeDisks;
         private Boolean _isDisposed;
         private IRandomOutputByteStream<UInt64> _currentBaseStream;
         private Boolean _isLocked;
@@ -37,7 +37,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _baseZipArchiveFile = zipArchiveFile;
             _baseDirectory = baseDirectory;
             _maximumVolumeSize = maximumVolumeSize;
-            _volumeDisks = new List<(FilePath volumeDiskFile, UInt64 volumeDiskSize)>();
+            _volumeDisks = new BigList<(FilePath volumeDiskFile, UInt64 volumeDiskSize)>();
             _isDisposed = false;
             _currentBaseStream = firstVolumeStream.WithCache();
             _isLocked = false;
@@ -90,7 +90,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        protected override ZipStreamPosition PositionCore => new(checked((UInt32)_volumeDisks.Count), _currentBaseStream.Position, this);
+        protected override ZipStreamPosition PositionCore => new(_volumeDisks.Count, _currentBaseStream.Position, this);
 
         protected override UInt64 MaximumDiskSizeCore => _maximumVolumeSize;
 
@@ -137,7 +137,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
             }
 
-            for (var index = 0; index < _volumeDisks.Count; ++index)
+            for (var index = 0U; index < _volumeDisks.Count; ++index)
             {
                 var volumeDiskFile = _volumeDisks[index].volumeDiskFile;
                 try
@@ -212,7 +212,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 checked
                 {
                     --diskNumber1;
-                    offsetOnTheDisk1 += _volumeDisks[checked((Int32)diskNumber1)].volumeDiskSize;
+                    offsetOnTheDisk1 += _volumeDisks[diskNumber1].volumeDiskSize;
                 }
             }
 
@@ -221,7 +221,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 checked
                 {
                     --diskNumber2;
-                    offsetOnTheDisk2 += _volumeDisks[checked((Int32)diskNumber2)].volumeDiskSize;
+                    offsetOnTheDisk2 += _volumeDisks[diskNumber2].volumeDiskSize;
                 }
             }
 
@@ -232,7 +232,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (diskNumber < _volumeDisks.Count)
             {
-                var volumeSize = _volumeDisks[checked((Int32)diskNumber)].volumeDiskSize;
+                var volumeSize = _volumeDisks[diskNumber].volumeDiskSize;
                 if (offsetOnTheDisk > volumeSize)
                     throw new InternalLogicalErrorException();
 
@@ -283,12 +283,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var currentVolumeSize = _currentBaseStream.Length;
             _currentBaseStream.Flush();
             _currentBaseStream.Dispose();
-            var newVolumeFile = GetVolumeFilePath(checked((UInt32)_volumeDisks.Count));
+            var newVolumeFile = GetVolumeFilePath(_volumeDisks.Count);
             _baseZipArchiveFile.MoveTo(newVolumeFile);
             _volumeDisks.Add((newVolumeFile, currentVolumeSize));
             try
             {
-                var nextVolumeFile = GetVolumeFilePath(checked((UInt32)_volumeDisks.Count));
+                var nextVolumeFile = GetVolumeFilePath(_volumeDisks.Count);
                 if (nextVolumeFile.Exists)
                     nextVolumeFile.Delete();
             }
@@ -322,7 +322,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             return
                 diskNumber < _volumeDisks.Count
-                ? _volumeDisks[checked((Int32)diskNumber)].volumeDiskSize
+                ? _volumeDisks[diskNumber].volumeDiskSize
                 : _currentBaseStream.Length;
         }
     }
