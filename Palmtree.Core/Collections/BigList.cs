@@ -7,11 +7,13 @@ namespace Palmtree.Collections
     public class BigList<ELEMENT_T>
         : IReadOnlyIndexer<UInt32, ELEMENT_T>, IEnumerable<ELEMENT_T>
     {
+        private const UInt32 _MINIMUM_CAPACITY = 16;
+
         private readonly BigArray<ELEMENT_T> _array;
 
         public BigList()
         {
-            _array = new BigArray<ELEMENT_T>();
+            _array = new BigArray<ELEMENT_T>(_MINIMUM_CAPACITY);
             Count = 0;
         }
 
@@ -55,8 +57,9 @@ namespace Palmtree.Collections
 
         private void Shrink()
         {
-            if (_array.Length > Count)
-                _array.Resize(Count);
+            var newCapacity = Count.Maximum(_MINIMUM_CAPACITY);
+            if (_array.Length > newCapacity)
+                _array.Resize(newCapacity);
         }
     }
 }
