@@ -120,21 +120,28 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         /// <inheritdoc/>
         public ReadOnlyMemory<Byte> ToByteArray()
         {
-            var bufferLength =
-                _extraFields.Values
-                .Aggregate(
-                    (UInt16)0,
-                    (value, extraField) =>
-                        checked((UInt16)(value + sizeof(UInt16) + sizeof(UInt16) + extraField.ExtraFieldBody.Span.Length)));
-            var builder = new ByteArrayBuilder(bufferLength);
-            foreach (var extraFieldItem in _extraFields.Values)
+            try
             {
-                builder.AppendUInt16LE(extraFieldItem.ExtraFieldId);
-                builder.AppendUInt16LE((UInt16)extraFieldItem.ExtraFieldBody.Length);
-                builder.AppendBytes(extraFieldItem.ExtraFieldBody.Span);
-            }
+                var bufferLength =
+                    _extraFields.Values
+                    .Sum(extraField => checked((UInt16)(sizeof(UInt16) + sizeof(UInt16) + (UInt16)extraField.ExtraFieldBody.Span.Length)));
+                if (bufferLength > UInt16.MaxValue)
+                    throw new OverflowException();
 
-            return builder.ToByteArray();
+                var builder = new ByteArrayBuilder(bufferLength);
+                foreach (var extraFieldItem in _extraFields.Values)
+                {
+                    builder.AppendUInt16LE(extraFieldItem.ExtraFieldId);
+                    builder.AppendUInt16LE(checked((UInt16)extraFieldItem.ExtraFieldBody.Length));
+                    builder.AppendBytes(extraFieldItem.ExtraFieldBody.Span);
+                }
+
+                return builder.ToByteArray();
+            }
+            catch (OverflowException ex)
+            {
+                throw new InvalidOperationException($"Total length of extra fields is too long.", ex);
+            }
         }
 
         /// <inheritdoc/>

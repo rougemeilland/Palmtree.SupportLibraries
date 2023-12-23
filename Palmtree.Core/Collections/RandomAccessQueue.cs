@@ -97,7 +97,13 @@ namespace Palmtree.Collections
         public RandomAccessQueue<ELEMENT_T> Clone() => new(_queue.Values);
         public Boolean Equals(RandomAccessQueue<ELEMENT_T>? other) => other is not null && _queue.Count == other._queue.Count && _queue.Values.SequenceEqual(other._queue.Values);
         public override Boolean Equals(Object? obj) => obj is not null && GetType() == obj.GetType() && Equals((RandomAccessQueue<ELEMENT_T>)obj);
-        public override Int32 GetHashCode() => _queue.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
+        public override Int32 GetHashCode()
+        {
+            var hashCode = new HashCode();
+            foreach (var eleemnt in _queue)
+                hashCode.Add(eleemnt);
+            return hashCode.ToHashCode();
+        }
 
         private void Normalize()
         {

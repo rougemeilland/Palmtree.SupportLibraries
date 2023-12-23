@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Palmtree.Linq
@@ -68,6 +69,74 @@ namespace Palmtree.Linq
             for (var index = 0; index < source.Length; ++index)
                 yield return source.Span[index];
         }
+
+        #endregion
+
+        #region Max
+
+        public static Byte Max(this IEnumerable<Byte> source) => source.InternalMax();
+        public static Byte Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte> selector) => source.InternalMax(selector);
+        public static Byte? Max(this IEnumerable<Byte?> source) => source.InternalMax();
+        public static Byte? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte?> selector) => source.InternalMax(selector);
+
+        public static SByte Max(this IEnumerable<SByte> source) => source.InternalMax();
+        public static SByte Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte> selector) => source.InternalMax(selector);
+        public static SByte? Max(this IEnumerable<SByte?> source) => source.InternalMax();
+        public static SByte? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte?> selector) => source.InternalMax(selector);
+
+        public static Int16 Max(this IEnumerable<Int16> source) => source.InternalMax();
+        public static Int16 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16> selector) => source.InternalMax(selector);
+        public static Int16? Max(this IEnumerable<Int16?> source) => source.InternalMax();
+        public static Int16? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16?> selector) => source.InternalMax(selector);
+
+        public static UInt16 Max(this IEnumerable<UInt16> source) => source.InternalMax();
+        public static UInt16 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16> selector) => source.InternalMax(selector);
+        public static UInt16? Max(this IEnumerable<UInt16?> source) => source.InternalMax();
+        public static UInt16? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16?> selector) => source.InternalMax(selector);
+
+        public static UInt32 Max(this IEnumerable<UInt32> source) => source.InternalMax();
+        public static UInt32 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32> selector) => source.InternalMax(selector);
+        public static UInt32? Max(this IEnumerable<UInt32?> source) => source.InternalMax();
+        public static UInt32? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32?> selector) => source.InternalMax(selector);
+
+        public static UInt64 Max(this IEnumerable<UInt64> source) => source.InternalMax();
+        public static UInt64 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64> selector) => source.InternalMax(selector);
+        public static UInt64? Max(this IEnumerable<UInt64?> source) => source.InternalMax();
+        public static UInt64? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64?> selector) => source.InternalMax(selector);
+
+        #endregion
+
+        #region Min
+
+        public static Byte Min(this IEnumerable<Byte> source) => source.InternalMin();
+        public static Byte Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte> selector) => source.InternalMin(selector);
+        public static Byte? Min(this IEnumerable<Byte?> source) => source.InternalMin();
+        public static Byte? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte?> selector) => source.InternalMin(selector);
+
+        public static SByte Min(this IEnumerable<SByte> source) => source.InternalMin();
+        public static SByte Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte> selector) => source.InternalMin(selector);
+        public static SByte? Min(this IEnumerable<SByte?> source) => source.InternalMin();
+        public static SByte? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte?> selector) => source.InternalMin(selector);
+
+        public static Int16 Min(this IEnumerable<Int16> source) => source.InternalMin();
+        public static Int16 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16> selector) => source.InternalMin(selector);
+        public static Int16? Min(this IEnumerable<Int16?> source) => source.InternalMin();
+        public static Int16? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16?> selector) => source.InternalMin(selector);
+
+        public static UInt16 Min(this IEnumerable<UInt16> source) => source.InternalMin();
+        public static UInt16 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16> selector) => source.InternalMin(selector);
+        public static UInt16? Min(this IEnumerable<UInt16?> source) => source.InternalMin();
+        public static UInt16? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16?> selector) => source.InternalMin(selector);
+
+        public static UInt32 Min(this IEnumerable<UInt32> source) => source.InternalMin();
+        public static UInt32 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32> selector) => source.InternalMin(selector);
+        public static UInt32? Min(this IEnumerable<UInt32?> source) => source.InternalMin();
+        public static UInt32? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32?> selector) => source.InternalMin(selector);
+
+        public static UInt64 Min(this IEnumerable<UInt64> source) => source.InternalMin();
+        public static UInt64 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64> selector) => source.InternalMin(selector);
+        public static UInt64? Min(this IEnumerable<UInt64?> source) => source.InternalMin();
+        public static UInt64? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64?> selector) => source.InternalMin(selector);
 
         #endregion
 
@@ -1986,6 +2055,39 @@ namespace Palmtree.Linq
 
         #endregion
 
+        #region Sum
+
+        public static Byte Sum(this IEnumerable<Byte> source) => source.InternalSum();
+        public static Byte Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte> selector) => source.InternalSum(selector);
+        public static Byte? Sum(this IEnumerable<Byte?> source) => source.InternalSum();
+        public static Byte? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte?> selector) => source.InternalSum(selector);
+
+        public static SByte Sum(this IEnumerable<SByte> source) => source.InternalSum();
+        public static SByte Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte> selector) => source.InternalSum(selector);
+        public static SByte? Sum(this IEnumerable<SByte?> source) => source.InternalSum();
+        public static SByte? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte?> selector) => source.InternalSum(selector);
+
+        public static Int16 Sum(this IEnumerable<Int16> source) => source.InternalSum();
+        public static Int16 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16> selector) => source.InternalSum(selector);
+        public static Int16? Sum(this IEnumerable<Int16?> source) => source.InternalSum();
+        public static Int16? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16?> selector) => source.InternalSum(selector);
+
+        public static UInt16 Sum(this IEnumerable<UInt16> source) => source.InternalSum();
+        public static UInt16 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16> selector) => source.InternalSum(selector);
+        public static UInt16? Sum(this IEnumerable<UInt16?> source) => source.InternalSum();
+        public static UInt16? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16?> selector) => source.InternalSum(selector);
+
+        public static UInt32 Sum(this IEnumerable<UInt32> source) => source.InternalSum();
+        public static UInt32 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32> selector) => source.InternalSum(selector);
+        public static UInt32? Sum(this IEnumerable<UInt32?> source) => source.InternalSum();
+        public static UInt32? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32?> selector) => source.InternalSum(selector);
+
+        public static UInt64 Sum(this IEnumerable<UInt64> source) => source.InternalSum();
+        public static UInt64 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64> selector) => source.InternalSum(selector);
+        public static UInt64? Sum(this IEnumerable<UInt64?> source) => source.InternalSum();
+        public static UInt64? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64?> selector) => source.InternalSum(selector);
+        #endregion
+
         #region WhereNotNull
 
         public static IEnumerable<ELEMENT_T> WhereNotNull<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
@@ -2119,6 +2221,182 @@ namespace Palmtree.Linq
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ELEMENT_T InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
+            where ELEMENT_T : struct, IComparable<ELEMENT_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            var max = (ELEMENT_T?)null;
+            foreach (var value in source)
+            {
+                max =
+                    max is null
+                    ? value
+                    : max.Value.Maximum(value);
+            }
+
+            return max ?? throw new InvalidOperationException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static VALUE_T InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
+            where VALUE_T : struct, IComparable<VALUE_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (selector is null)
+                throw new ArgumentNullException(nameof(selector));
+
+            var max = (VALUE_T?)null;
+            foreach (var element in source)
+            {
+                var value = selector(element);
+                max =
+                    max is null
+                    ? value
+                    : max.Value.Maximum(value);
+            }
+
+            return max ?? throw new InvalidOperationException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ELEMENT_T? InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
+            where ELEMENT_T : struct, IComparable<ELEMENT_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            var max = (ELEMENT_T?)null;
+            foreach (var value in source)
+            {
+                if (value is not null)
+                {
+                    max =
+                        max is null
+                        ? value
+                        : max.Value.Maximum(value.Value);
+                }
+            }
+
+            return max;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static VALUE_T? InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
+            where VALUE_T : struct, IComparable<VALUE_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (selector is null)
+                throw new ArgumentNullException(nameof(selector));
+
+            var max = (VALUE_T?)null;
+            foreach (var element in source)
+            {
+                var value = selector(element);
+                if (value is not null)
+                {
+                    max =
+                        max is null
+                        ? value
+                        : max.Value.Maximum(value.Value);
+                }
+            }
+
+            return max;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ELEMENT_T InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
+            where ELEMENT_T : struct, IComparable<ELEMENT_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            var min = (ELEMENT_T?)null;
+            foreach (var value in source)
+            {
+                min =
+                    min is null
+                    ? value
+                    : min.Value.Minimum(value);
+            }
+
+            return min ?? throw new InvalidOperationException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static VALUE_T InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
+            where VALUE_T : struct, IComparable<VALUE_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (selector is null)
+                throw new ArgumentNullException(nameof(selector));
+
+            var min = (VALUE_T?)null;
+            foreach (var element in source)
+            {
+                var value = selector(element);
+                min =
+                    min is null
+                    ? value
+                    : min.Value.Minimum(value);
+            }
+
+            return min ?? throw new InvalidOperationException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ELEMENT_T? InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
+            where ELEMENT_T : struct, IComparable<ELEMENT_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            var min = (ELEMENT_T?)null;
+            foreach (var value in source)
+            {
+                if (value is not null)
+                {
+                    min =
+                        min is null
+                        ? value
+                        : min.Value.Minimum(value.Value);
+                }
+            }
+
+            return min;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static VALUE_T? InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
+            where VALUE_T : struct, IComparable<VALUE_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (selector is null)
+                throw new ArgumentNullException(nameof(selector));
+
+            var min = (VALUE_T?)null;
+            foreach (var element in source)
+            {
+                var value = selector(element);
+                if (value is not null)
+                {
+                    min =
+                        min is null
+                        ? value
+                        : min.Value.Minimum(value.Value);
+                }
+            }
+
+            return min;
+        }
+
         private static IEnumerable<ELEMENT_T> QuickDistinct<ELEMENT_T>(IEnumerable<ELEMENT_T> source, IDictionary<ELEMENT_T, Object?> outputElements)
             => source
                 .Where(element =>
@@ -2128,6 +2406,94 @@ namespace Palmtree.Linq
                     outputElements[element] = null;
                     return true;
                 });
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
+            where ELEMENT_T : struct, INumberBase<ELEMENT_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            var sum = ELEMENT_T.Zero;
+            foreach (var value in source)
+            {
+                checked
+                {
+                    sum += value;
+                }
+            }
+
+            return sum;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
+            where VALUE_T : struct, INumberBase<VALUE_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (selector is null)
+                throw new ArgumentNullException(nameof(selector));
+
+            var sum = VALUE_T.Zero;
+            foreach (var element in source)
+            {
+                var value = selector(element);
+                checked
+                {
+                    sum += value;
+                }
+            }
+
+            return sum;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
+            where ELEMENT_T : struct, INumberBase<ELEMENT_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            var sum = ELEMENT_T.Zero;
+            foreach (var value in source)
+            {
+                if (value is not null)
+                {
+                    checked
+                    {
+                        sum += value.Value;
+                    }
+                }
+            }
+
+            return sum;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
+            where VALUE_T : struct, INumberBase<VALUE_T>
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+            if (selector is null)
+                throw new ArgumentNullException(nameof(selector));
+
+            var sum = VALUE_T.Zero;
+            foreach (var element in source)
+            {
+                var value = selector(element);
+                if (value is not null)
+                {
+                    checked
+                    {
+                        sum += value.Value;
+                    }
+                }
+            }
+
+            return sum;
+        }
 
         #endregion
     }
