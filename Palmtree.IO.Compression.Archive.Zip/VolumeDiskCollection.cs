@@ -16,9 +16,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 UInt32 startDiskNumber,
                 UInt32 endDiskNumber)
             {
-                if (startDiskNumber > endDiskNumber)
-                    throw new InternalLogicalErrorException();
-
+                Validation.Assert(startDiskNumber <= endDiskNumber, "startDiskNumber <= endDiskNumber");
                 if (startDiskNumber == endDiskNumber)
                 {
                     return
@@ -67,8 +65,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
             public BinaryTreeItem Lesser { get; }
             public BinaryTreeItem EqualToOrGreaterThan { get; }
         }
-
-        private const UInt32 _ARRAY_SIZE_STEP = 1024;
 
         private readonly BigList<(UInt64 totalOffset, UInt64 volumeDiskSize)> _volumeDisks;
         private readonly BinaryTreeItem _rootNode;
@@ -162,10 +158,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var node = _rootNode;
             while (node is BinaryTreeBranch branch)
                 node = offsetFromStart >= branch.Threshold ? branch.EqualToOrGreaterThan : branch.Lesser;
-
-            if (node is not BinaryTreeTerminal terminal)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(node is BinaryTreeTerminal, "node is BinaryTreeTerminal");
+            var terminal = (BinaryTreeTerminal)node;
             diskNumber = terminal.DiskNumber;
             offsetOnTheDisk = checked(offsetFromStart - terminal.TotalOffset);
             return true;

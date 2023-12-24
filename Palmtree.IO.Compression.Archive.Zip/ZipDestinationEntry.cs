@@ -816,22 +816,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 {
                     if (temporaryFile is not null && temporaryFile.Exists)
                     {
-                        if (CompressionMethodId == ZipEntryCompressionMethodId.Stored != (packedTemporaryFile is null))
-                            throw new InternalLogicalErrorException();
-
-                        var size = (UInt64)temporaryFile.Length;
-                        var packedSize = (UInt64)temporaryFile.Length;
+                        Validation.Assert(CompressionMethodId == ZipEntryCompressionMethodId.Stored == (packedTemporaryFile is null), "CompressionMethodId == ZipEntryCompressionMethodId.Stored != (packedTemporaryFile is null)");
+                        var size = temporaryFile.Length;
+                        var packedSize = temporaryFile.Length;
                         var crc = actualCrc;
-
-                        if (size != actualSize)
-                            throw new InternalLogicalErrorException();
-
+                        Validation.Assert(size == actualSize, "size == actualSize");
                         if (packedTemporaryFile is not null)
                         {
-                            if (!packedTemporaryFile.Exists)
-                                throw new InternalLogicalErrorException();
-
-                            packedSize = (UInt64)packedTemporaryFile.Length;
+                            Validation.Assert(packedTemporaryFile.Exists, "packedTemporaryFile.Exists");
+                            packedSize = packedTemporaryFile.Length;
 
                             if (size <= 0 || packedSize >= size)
                             {
@@ -1004,14 +997,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var success = false;
                 try
                 {
-                    if (localHeaderPosition is null)
-                        throw new InternalLogicalErrorException();
-
+                    Validation.Assert(localHeaderPosition is not null, "localHeaderPosition is not null");
                     var actualPackedSize = packedSizeHolder.Value;
-
-                    var dataDescriptor =
-                        ZipEntryDataDescriptor.Build(actualCrc, actualSize, actualPackedSize);
-
+                    var dataDescriptor = ZipEntryDataDescriptor.Build(actualCrc, actualSize, actualPackedSize);
                     var centralDirectoryHeader =
                         ZipEntryCentralDirectoryHeader.Build(
                             _zipWriterParameter,

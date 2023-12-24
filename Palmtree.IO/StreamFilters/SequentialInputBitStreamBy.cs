@@ -139,9 +139,7 @@ namespace Palmtree.IO.StreamFilters
         {
             const Int32 maximumCount = BitQueue.RecommendedMaxCount - 8;
             var actualBitCount = bitCount.Minimum(maximumCount);
-            if (actualBitCount < 0)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(actualBitCount >= 0, "actualBitCount >= 0");
             return actualBitCount;
         }
 

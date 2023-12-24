@@ -27,7 +27,7 @@ namespace Palmtree
         /// </exception>
         [Conditional("DEBUG")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Assert([DoesNotReturnIf(false)] bool condition, string conditionText)
+        public static void Assert([DoesNotReturnIf(false)] Boolean condition, String conditionText)
         {
             if (!condition)
             {
@@ -46,7 +46,7 @@ namespace Palmtree
         /// 通常はあってはならない状況 (内部エラーなど) が発生してプログラムの続行ができない場合に使用します。
         /// </remarks>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static Exception GetFailErrorException(string message)
+        public static Exception GetFailErrorException(String message)
         {
             Debug.Fail(message);
             return new AssertionException(message);
@@ -65,7 +65,7 @@ namespace Palmtree
         /// 通常はあってはならない状況 (内部エラーなど) が発生してプログラムの続行ができない場合に使用します。
         /// </remarks>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static Exception GetFailErrorException(string message, Exception? innerException)
+        public static Exception GetFailErrorException(String message, Exception? innerException)
         {
             Debug.Fail(message);
             return new AssertionException(message, innerException);

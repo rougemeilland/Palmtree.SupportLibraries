@@ -42,7 +42,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         static ZipEntryCompressionMethod()
         {
-            _pluginFileNamePattern = new Regex(@"^ZipUtility\.IO\.Compression\.[a-zA-Z0-9_]+\.dll$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            _pluginFileNamePattern = new Regex(@"^(lib)?Palmtree\.IO\.Compression\.Stream\.Plugin\.[a-zA-Z0-9_]+\.(dll|so)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             _compresssionMethods = EnumeratePlugin();
 
             _stored =
@@ -286,17 +286,19 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         }
                     })
                     .WhereNotNull()
-                    .Select(assembly => new { assembly, externalAssembly = true })
                     .Concat(new[]
                     {
-                        new { assembly = thisAssembly, externalAssembly = false },
-                        new { assembly = interfaceType.Assembly, externalAssembly = true },
+                        thisAssembly,
+                        interfaceType.Assembly,
+                        typeof(Stream.Stored.StoredDecoderPlugin).Assembly,
+                        typeof(Stream.Stored.StoredEncoderPlugin).Assembly,
                     })
+                    .DistinctAssembly(thisAssembly)
                     .SelectMany(item =>
                         item.assembly.GetTypes()
                         .Where(type =>
                             type.IsClass &&
-                            (type.IsPublic || !item.externalAssembly) &&
+                            (type.IsPublic || !item.isExternalAssembly) &&
                             !type.IsAbstract &&
                             type.GetInterface(interfaceTypeName) is not null)
                         .Select(type =>
@@ -368,9 +370,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 case ICompressionHierarchicalDecoder hierarchicalDecoder:
                 {
-                    if (_decoderOption is null)
-                        throw new InternalLogicalErrorException();
-
+                    Validation.Assert(_decoderOption is not null, "_decoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     return
@@ -386,9 +386,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 case ICompressionDecoder decoder:
                 {
-                    if (_decoderOption is null)
-                        throw new InternalLogicalErrorException();
-
+                    Validation.Assert(_decoderOption is not null, "_decoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     var queue = new InProcessPipe();
                     var decoderOption = _decoderOption;
@@ -430,9 +428,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 case ICompressionHierarchicalEncoder hierarchicalEncoder:
                 {
-                    if (_encoderOption is null)
-                        throw new InternalLogicalErrorException();
-
+                    Validation.Assert(_encoderOption is not null, "_encoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     return
@@ -446,9 +442,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 case ICompressionEncoder encoder:
                 {
-                    if (_encoderOption is null)
-                        throw new InternalLogicalErrorException();
-
+                    Validation.Assert(_encoderOption is not null, "_encoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     var queue = new InProcessPipe();

@@ -87,10 +87,8 @@ namespace Palmtree.Text
             {
                 if (Plane > 0)
                     return false;
-                else if (Row > 0)
-                    throw new InternalLogicalErrorException();
-                else
-                    return true;
+                Validation.Assert(Row <= 0, "Row <= 0");
+                return true;
             }
         }
 

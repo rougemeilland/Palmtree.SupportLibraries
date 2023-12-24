@@ -91,7 +91,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     return builder.ToByteArray();
                 }
                 default:
-                    throw new InternalLogicalErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
+                    throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
             }
         }
 
@@ -160,7 +160,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     }
 
                     default:
-                        throw new ArgumentException($"Unexpected {nameof(ZipEntryHeaderType)} value", nameof(headerType));
+                        throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
                 }
 
                 if (!reader.IsEmpty)

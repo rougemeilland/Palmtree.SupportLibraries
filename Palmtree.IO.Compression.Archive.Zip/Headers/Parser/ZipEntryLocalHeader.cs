@@ -57,9 +57,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                   requiredZip64,
                   stringency)
         {
-            if (generalPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor) && dataDescriptor is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(!generalPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor) || dataDescriptor is not null, "!generalPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor) || dataDescriptor is not null");
             DataDescriptor = dataDescriptor;
             DataPosition = dataPosition;
         }

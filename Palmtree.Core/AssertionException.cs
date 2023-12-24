@@ -8,13 +8,13 @@ namespace Palmtree
     public sealed class AssertionException
         : Exception
     {
-        internal AssertionException(string message)
+        internal AssertionException(String message)
             : base(message)
         {
             System.Diagnostics.Debug.Fail(message);
         }
 
-        internal AssertionException(string message, Exception inner)
+        internal AssertionException(String message, Exception inner)
             : base(message, inner)
         {
             System.Diagnostics.Debug.Fail(message);

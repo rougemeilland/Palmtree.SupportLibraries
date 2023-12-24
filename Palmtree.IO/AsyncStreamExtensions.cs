@@ -2321,8 +2321,7 @@ namespace Palmtree.IO
         public static async Task WriteByteAsync(this ISequentialOutputByteStream stream, Byte value, CancellationToken cancellationToken = default)
         {
             var length = await stream.WriteAsync(new[] { value }, cancellationToken).ConfigureAwait(false);
-            if (length <= 0)
-                throw new InternalLogicalErrorException();
+            Validation.Assert(length > 0, "length > 0");
         }
 
         #endregion
@@ -3800,9 +3799,7 @@ namespace Palmtree.IO
         {
             const Int32 bufferSize = 81920;
 
-            if (bufferSize % sizeof(UInt64) != 0)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0, "bufferSize % sizeof(UInt64) == 0");
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
             var buffer1 = new Byte[bufferSize];

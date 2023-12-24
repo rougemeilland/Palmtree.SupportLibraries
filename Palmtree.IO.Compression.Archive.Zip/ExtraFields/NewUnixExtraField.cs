@@ -75,7 +75,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     return ReadOnlyMemory<Byte>.Empty;
                 }
                 default:
-                    throw new InternalLogicalErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
+                    throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
             }
         }
 
@@ -112,7 +112,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                         break;
                     }
                     default:
-                        throw new InternalLogicalErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
+                        throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
                 }
 
                 if (!reader.IsEmpty)
@@ -183,9 +183,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         private static UInt32 FromBytesToUInt32LE(ReadOnlyMemory<Byte> buffer)
         {
-            if (buffer.Length > sizeof(UInt32) || buffer.IsEmpty)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(buffer.Length <= sizeof(UInt32) && !buffer.IsEmpty, "buffer.Length <= sizeof(UInt32) && !buffer.IsEmpty");
             var data = buffer.Span;
             var value = 0U;
             for (var index = data.Length - 1; index >= 0; --index)

@@ -57,7 +57,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                 zipInputStream.GetPosition(
                     zip64EOCDL.NumberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory,
                     zip64EOCDL.OffsetOfTheZip64EndOfCentralDirectoryRecord)
-                ?? throw new InternalLogicalErrorException();
+                ?? throw new BadZipFileFormatException($"ZIP64 EOCDL points to an invalid ZIP64 EOCDR location.: diskNUmber=0x{zip64EOCDL.NumberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory:x8}, offsetOnTheDisk=0x{zip64EOCDL.OffsetOfTheZip64EndOfCentralDirectoryRecord:x16}");
 
             try
             {

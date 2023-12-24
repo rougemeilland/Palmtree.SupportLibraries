@@ -2958,8 +2958,7 @@ namespace Palmtree.IO
             Span<Byte> buffer = stackalloc Byte[1];
             buffer[0] = value;
             var length = stream.Write(buffer);
-            if (length <= 0)
-                throw new InternalLogicalErrorException();
+            Validation.Assert(length > 0, "length > 0");
         }
 
         #endregion
@@ -4127,8 +4126,7 @@ namespace Palmtree.IO
                     pos -= BUFFER_SIZE;
                     baseStream.Seek(pos);
                     var length = baseStream.ReadBytes(buffer);
-                    if (length != buffer.Length)
-                        throw new InternalLogicalErrorException();
+                    Validation.Assert(length == buffer.Length, "length == buffer.Length");
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -4140,8 +4138,7 @@ namespace Palmtree.IO
                 {
                     var remain = checked((Int32)(pos - offset));
                     var length = baseStream.ReadBytes(buffer.AsMemory(0, remain));
-                    if (length != remain)
-                        throw new InternalLogicalErrorException();
+                    Validation.Assert(length == remain, "length == remain");
                     for (var index = remain - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -4161,9 +4158,7 @@ namespace Palmtree.IO
         {
             const Int32 bufferSize = 81920;
 
-            if (bufferSize % sizeof(UInt64) != 0)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0, "bufferSize % sizeof(UInt64) == 0");
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
             var buffer1 = new Byte[bufferSize];

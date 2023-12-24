@@ -122,9 +122,7 @@ namespace Palmtree.Collections
                     var firstKey = _queue.Keys.First();
                     foreach (var item in _queue)
                     {
-                        if (item.Key < firstKey)
-                            throw new InternalLogicalErrorException();
-
+                        Validation.Assert(item.Key >= firstKey, "item.Key >= firstKey");
                         _ = _queue.Remove(item.Key);
                         _queue[item.Key - firstKey] = item.Value;
                     }

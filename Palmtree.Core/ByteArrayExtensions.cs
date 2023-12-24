@@ -1754,7 +1754,7 @@ namespace Palmtree
                     yield return '=';
                     break;
                 default:
-                    throw new InternalLogicalErrorException();
+                    throw Validation.GetFailErrorException("index < 0 || index > 2");
             }
         }
 
@@ -1798,8 +1798,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Char ToBase64Character(Int32 n, Char char62, Char char63)
         {
-            if (n < 0)
-                throw new InternalLogicalErrorException();
+            Validation.Assert(n >= 0, "n >= 0");
             if (n < 26)
                 return (Char)('A' + n);
             if (n < 52)
@@ -1808,9 +1807,8 @@ namespace Palmtree
                 return (Char)('0' + n - 52);
             if (n == 62)
                 return char62;
-            if (n == 63)
-                return char63;
-            throw new InternalLogicalErrorException();
+            Validation.Assert(n == 63, "n == 63");
+            return char63;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

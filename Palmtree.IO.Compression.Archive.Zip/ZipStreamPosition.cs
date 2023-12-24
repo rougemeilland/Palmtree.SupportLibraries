@@ -48,9 +48,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public ZipStreamPosition Add(UInt64 x)
         {
-            if (Host is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Host is not null, "Host is not null");
             return Host.Add(this, x);
         }
 
@@ -60,17 +58,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public UInt64 Subtract(ZipStreamPosition x)
         {
-            if (Host is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Host is not null, "Host is not null");
             return Host.Subtract(this, x);
         }
 
         public ZipStreamPosition Subtract(UInt64 x)
         {
-            if (Host is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Host is not null, "Host is not null");
             return Host.Subtract(this, x);
         }
 
@@ -78,17 +72,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Int32 CompareTo(ZipStreamPosition other)
         {
-            if (Host is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Host is not null, "Host is not null");
             return Host.Compare(this, other);
         }
 
         public Boolean Equals(ZipStreamPosition other)
         {
-            if (Host is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Host is not null, "Host is not null");
             return Host.Equal(this, other);
         }
 
@@ -99,9 +89,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public override Int32 GetHashCode()
         {
-            if (Host is null)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Host is not null, "Host is not null");
             return Host.GetHashCode(this);
         }
 

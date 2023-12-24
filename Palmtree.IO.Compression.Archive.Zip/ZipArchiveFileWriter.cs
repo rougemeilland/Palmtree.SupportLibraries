@@ -343,17 +343,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         void IZipFileWriterOutputStreamAccesser.BeginToWriteContent()
         {
-            if (_writerState != WriterState.EntryCreated)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(_writerState == WriterState.EntryCreated, "_writerState == WriterState.EntryCreated");
             _writerState = WriterState.WritingContent;
         }
 
         void IZipFileWriterOutputStreamAccesser.EndToWritingContent()
         {
-            if (_writerState != WriterState.WritingContent)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(_writerState == WriterState.WritingContent, "_writerState == WriterState.WritingContent");
             _writerState = WriterState.Initial;
         }
 
@@ -487,7 +483,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 catch (Exception ex)
                 {
                     _writerState = WriterState.Error;
-                    throw new InternalLogicalErrorException("Failed to write to central directories.", ex);
+                    throw Validation.GetFailErrorException("Failed to write to central directories.", ex);
                 }
 
                 var endOfCentralDirectories = _zipOutputStream.Position;

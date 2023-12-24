@@ -116,9 +116,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 
         private static IEnumerable<Int32> EnumerateIndexOfSignature(ReadOnlyMemory<Byte> buffer)
         {
-            if (buffer.Length < MinimumHeaderSize)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(buffer.Length >= MinimumHeaderSize, "buffer.Length >= MinimumHeaderSize");
             var signatureByte0 = unchecked((Byte)(_eocdSignature >> 8 * 0));
             var signatureByte1 = unchecked((Byte)(_eocdSignature >> 8 * 1));
             var signatureByte2 = unchecked((Byte)(_eocdSignature >> 8 * 2));

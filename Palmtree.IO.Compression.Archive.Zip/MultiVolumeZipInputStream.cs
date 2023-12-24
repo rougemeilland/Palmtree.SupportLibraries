@@ -25,9 +25,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private MultiVolumeZipInputStream(VolumeDiskCollection volumeDisks, Func<UInt32, FilePath> volumeDiskFileGetter, ValidationStringency stringency)
         {
-            if (volumeDisks.LastVolumeDiskNumber <= 0)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(volumeDisks.LastVolumeDiskNumber > 0, "volumeDisks.LastVolumeDiskNumber > 0");
             _volumeDisks = volumeDisks;
             _volumeDiskFileGetter = volumeDiskFileGetter;
             _stringency = stringency;
@@ -64,11 +62,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             // (例: PKZIP によって作成された ZIP アーカイブなど。)
             // その場合は、Seek は正常に実行し、次の GetCurrentStream() の呼び出し時に次のボリュームに遷移しなければなりません。(最後のディスクの終端を指している場合を除く)
 
-            if (offsetOnTheDisk > GetVolumeDiskSize(diskNumber))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(offsetOnTheDisk <= GetVolumeDiskSize(diskNumber), "offsetOnTheDisk > GetVolumeDiskSize(diskNumber)");
             ThrowExceptionIfLocked();
-
             _currentVolumeDiskNumber = diskNumber;
             GetCurrentVolumeDiskStream().Seek(offsetOnTheDisk);
         }
@@ -107,17 +102,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override void LockVolumeDiskCore()
         {
-            if (_isLocked)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(!_isLocked, "!_isLocked");
             _isLocked = true;
         }
 
         protected override void UnlockVolumeDiskCore()
         {
-            if (!_isLocked)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(_isLocked, "_isLocked");
             _isLocked = false;
         }
 
@@ -214,9 +205,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var success = false;
             try
             {
-                if (!_volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize))
-                    throw new InternalLogicalErrorException();
-
+                var condition = _volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize);
+                Validation.Assert(condition, "_volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize)");
                 var volumeDiskFile = _volumeDiskFileGetter(volumeDiskNumber);
                 try
                 {
@@ -249,9 +239,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
-            if (!_volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize))
-                throw new InternalLogicalErrorException();
-
+            var condition = _volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
+            Validation.Assert(condition, "_volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize)");
             return volumeDiskSize;
         }
 

@@ -63,9 +63,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             UInt32 numberOfCentralDirectoryHeadersOnDiskWithLastCentralDirectoryHeader,
             ReadOnlyMemory<Byte> commentBytes)
         {
-            if (commentBytes.Length > UInt16.MaxValue)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(commentBytes.Length <= UInt16.MaxValue, "commentBytes.Length <= UInt16.MaxValue");
             return
                 new ZipFileEOCDR(
                     startOfCentralDirectoryHeaders,

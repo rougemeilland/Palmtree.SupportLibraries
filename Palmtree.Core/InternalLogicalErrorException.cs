@@ -2,6 +2,7 @@
 
 namespace Palmtree
 {
+    [Obsolete("使用されなくなりました。代わりに Validation.Assert() または Validation.GetFailErrorException() を使用してください。")]
     public class InternalLogicalErrorException
         : Exception
     {

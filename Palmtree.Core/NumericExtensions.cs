@@ -1670,9 +1670,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
-            if (sizeof(UInt16) != 2)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1687,9 +1685,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
-            if (sizeof(UInt32) != 4)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1706,9 +1702,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
-            if (sizeof(UInt64) != 8)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1730,8 +1724,7 @@ namespace Palmtree
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Single value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
-            if (!BitConverter.TryWriteBytes(bufferSpan, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
             if (!BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1740,8 +1733,7 @@ namespace Palmtree
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Double value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
-            if (!BitConverter.TryWriteBytes(bufferSpan, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
             if (!BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1749,9 +1741,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
-            if (sizeof(Decimal) != 16)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);
@@ -1768,9 +1758,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, UInt16 value)
         {
-            if (sizeof(UInt16) != 2)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1785,9 +1773,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, UInt32 value)
         {
-            if (sizeof(UInt32) != 4)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1804,9 +1790,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, UInt64 value)
         {
-            if (sizeof(UInt64) != 8)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1827,8 +1811,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, Single value)
         {
-            if (!BitConverter.TryWriteBytes(buffer, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
             if (!BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Single)].ReverseArray();
         }
@@ -1836,8 +1819,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, Double value)
         {
-            if (!BitConverter.TryWriteBytes(buffer, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
             if (!BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Double)].ReverseArray();
         }
@@ -1845,9 +1827,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, Decimal value)
         {
-            if (sizeof(Decimal) != 16)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);
@@ -1868,9 +1848,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
-            if (sizeof(UInt16) != 2)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1885,9 +1863,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
-            if (sizeof(UInt32) != 4)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1904,9 +1880,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
-            if (sizeof(UInt64) != 8)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1928,8 +1902,7 @@ namespace Palmtree
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Single value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
-            if (!BitConverter.TryWriteBytes(bufferSpan, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
             if (BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1938,8 +1911,7 @@ namespace Palmtree
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Double value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
-            if (!BitConverter.TryWriteBytes(bufferSpan, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
             if (BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1947,9 +1919,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
-            if (sizeof(Decimal) != 16)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);
@@ -1987,9 +1957,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, UInt16 value)
         {
-            if (sizeof(UInt16) != 2)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -2004,9 +1972,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, UInt32 value)
         {
-            if (sizeof(UInt32) != 4)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -2023,9 +1989,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, UInt64 value)
         {
-            if (sizeof(UInt64) != 8)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -2046,8 +2010,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, Single value)
         {
-            if (!BitConverter.TryWriteBytes(buffer, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
             if (BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Single)].ReverseArray();
         }
@@ -2055,8 +2018,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, Double value)
         {
-            if (!BitConverter.TryWriteBytes(buffer, value))
-                throw new InternalLogicalErrorException();
+            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
             if (BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Double)].ReverseArray();
         }
@@ -2064,9 +2026,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, Decimal value)
         {
-            if (sizeof(Decimal) != 16)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);

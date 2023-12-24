@@ -45,8 +45,7 @@ namespace Palmtree.Collections
             {
                 _isNotEmptyOrCompletedEvent.Wait(cancellationToken);
                 var length = _queue.Read(buffer);
-                if (length == 0 && !(buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty))
-                    throw new InternalLogicalErrorException();
+                Validation.Assert(length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty, "length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty");
 
                 // 読み込めた長さが 0 になるのは、 buffer.Length が 0 の場合か、あるいは、 キューが空でかつ Complete 済である場合
                 return length;
@@ -68,8 +67,7 @@ namespace Palmtree.Collections
             {
                 await _isNotEmptyOrCompletedAsyncEvent.WaitAsync(cancellationToken).ConfigureAwait(false);
                 var length = _queue.Read(buffer.Span);
-                if (length == 0 && !(buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty))
-                    throw new InternalLogicalErrorException();
+                Validation.Assert(length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty, "length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty");
 
                 // 読み込めた長さが 0 になるのは、 buffer.Length が 0 の場合か、あるいは、 キューが空でかつ Complete 済である場合
                 return length;
@@ -93,8 +91,7 @@ namespace Palmtree.Collections
                 if (_queue.IsCompleted)
                     throw new InvalidOperationException();
                 var length = _queue.Write(buffer);
-                if (length == 0 && !(buffer.Length <= 0))
-                    throw new InternalLogicalErrorException();
+                Validation.Assert(length > 0 || buffer.Length <= 0, "length != 0 || buffer.Length <= 0");
 
                 // 書き込めた長さが 0 になるのは、 buffer.Length が 0 の場合
                 return length;
@@ -118,8 +115,7 @@ namespace Palmtree.Collections
                 if (_queue.IsCompleted)
                     throw new InvalidOperationException();
                 var length = _queue.Write(buffer.Span);
-                if (length == 0 && !(buffer.Length <= 0))
-                    throw new InternalLogicalErrorException();
+                Validation.Assert(length > 0 || buffer.Length <= 0, "length > 0 || buffer.Length <= 0");
 
                 // 書き込めた長さが 0 になるのは、 buffer.Length が 0 の場合
                 return length;

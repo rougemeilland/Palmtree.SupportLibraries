@@ -30,7 +30,7 @@ namespace Palmtree.IO
             {
                 _file.Refresh();
                 var directory = _file.Directory;
-                Validation.Assert(directory is not null, $"The file's directory must exist.: \"{_file.FullName}\"");
+                Validation.Assert(directory is not null, $" _file.Directory is not null (_file == \"{_file.FullName}\")");
                 return DirectoryPath.CreateInstance(directory);
             }
         }
@@ -111,7 +111,7 @@ namespace Palmtree.IO
             _file.Refresh();
             try
             {
-                return new FileStream( _file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None).AsOutputByteStream().AsRandomAccess<UInt64>();
+                return new FileStream(_file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None).AsOutputByteStream().AsRandomAccess<UInt64>();
             }
             finally
             {

@@ -65,9 +65,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (!Equals(position.Host))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
             try
             {
                 return AddCore(position.DiskNumber, position.OffsetOnTheDisk, offset);
@@ -82,9 +80,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (!Equals(position.Host))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
             try
             {
                 return SubtractCore(position.DiskNumber, position.OffsetOnTheDisk, offset);
@@ -99,11 +95,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (!Equals(position1.Host))
-                throw new InternalLogicalErrorException();
-            if (!Equals(position2.Host))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
+            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
             try
             {
                 return SubtractCore(position1.DiskNumber, position1.OffsetOnTheDisk, position2.DiskNumber, position2.OffsetOnTheDisk);
@@ -118,11 +111,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (!Equals(position1.Host))
-                throw new InternalLogicalErrorException();
-            if (!Equals(position2.Host))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
+            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
             var (diskNumber1, offsetOnTheDisk1) = NormalizeCore(position1.DiskNumber, position1.OffsetOnTheDisk);
             var (diskNumber2, offsetOnTheDisk2) = NormalizeCore(position2.DiskNumber, position2.OffsetOnTheDisk);
             var c = diskNumber1.CompareTo(diskNumber2);
@@ -135,11 +125,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (!Equals(position1.Host))
-                throw new InternalLogicalErrorException();
-            if (!Equals(position2.Host))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
+            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
             var (diskNumber1, offsetOnTheDisk1) = NormalizeCore(position1.DiskNumber, position1.OffsetOnTheDisk);
             var (diskNumber2, offsetOnTheDisk2) = NormalizeCore(position2.DiskNumber, position2.OffsetOnTheDisk);
 
@@ -152,9 +139,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (!Equals(position.Host))
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
             var (diskNumber, offsetOnTheDisk) = NormalizeCore(position.DiskNumber, position.OffsetOnTheDisk);
             return HashCode.Combine(diskNumber, offsetOnTheDisk);
         }
@@ -223,8 +208,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private Int32 GetSizeToWrite(IRandomOutputByteStream<UInt64> stream, ReadOnlySpan<Byte> buffer)
         {
             var sizeToWrite = checked((Int32)(MaximumDiskSizeCore - stream.Length).Minimum((UInt64)buffer.Length));
-            if (sizeToWrite <= 0)
-                throw new InternalLogicalErrorException();
+            Validation.Assert(sizeToWrite > 0, "sizeToWrite > 0");
             return sizeToWrite;
         }
     }

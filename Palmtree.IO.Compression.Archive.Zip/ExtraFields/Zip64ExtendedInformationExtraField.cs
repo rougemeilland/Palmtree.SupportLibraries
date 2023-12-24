@@ -39,8 +39,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt32 rawSize, UInt32 rawPackedSize) InternalSetValues(UInt64 size, UInt64 packedSize)
         {
-            if (_headerType != ZipEntryHeaderType.LocalHeader)
-                throw new InternalLogicalErrorException();
+            Validation.Assert(_headerType == ZipEntryHeaderType.LocalHeader, "_headerType == ZipEntryHeaderType.LocalHeader");
 
             // 4.5.3 -Zip64 Extended Information Extra Field (0x0001) in APPNOTE:
             //   This entry in the Local header MUST include BOTH original and compressed file size fields.
@@ -65,9 +64,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt32 rawSize, UInt32 rawPackedSize, UInt32 rawRelatiiveHeaderOffset, UInt16 rawDiskStartNumber) InternalSetValues(UInt64 size, UInt64 packedSize, UInt64 relatiiveHeaderOffset, UInt32 diskStartNumber)
         {
-            if (_headerType != ZipEntryHeaderType.CentralDirectoryHeader)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(_headerType == ZipEntryHeaderType.CentralDirectoryHeader, "_headerType == ZipEntryHeaderType.CentralDirectoryHeader");
             var builder = new ByteArrayBuilder(sizeof(UInt64) + sizeof(UInt64) + sizeof(UInt64) + sizeof(UInt32));
             var rawSize = SetUInt64Value(size, value => builder.AppendUInt64LE(size));
             var rawPackedSize = SetUInt64Value(packedSize, value => builder.AppendUInt64LE(packedSize));
@@ -79,9 +76,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt64 size, UInt64 packedSize) InternalGetValues(UInt32 rawSize, UInt32 rawPackedSize)
         {
-            if (_headerType != ZipEntryHeaderType.LocalHeader)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(_headerType == ZipEntryHeaderType.LocalHeader, "_headerType == ZipEntryHeaderType.LocalHeader");
             try
             {
                 var reader = new ByteArrayReader(_buffer);
@@ -99,9 +94,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt64 size, UInt64 packedSize, UInt64 relatiiveHeaderOffset, UInt32 diskStartNumber) InternalGetValues(UInt32 rawSize, UInt32 rawPackedSize, UInt32 rawRelatiiveHeaderOffset, UInt16 rawDiskStartNumber)
         {
-            if (_headerType != ZipEntryHeaderType.CentralDirectoryHeader)
-                throw new InternalLogicalErrorException();
-
+            Validation.Assert(_headerType == ZipEntryHeaderType.CentralDirectoryHeader, "_headerType == ZipEntryHeaderType.CentralDirectoryHeader");
             try
             {
                 var reader = new ByteArrayReader(_buffer);

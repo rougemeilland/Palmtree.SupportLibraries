@@ -360,9 +360,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
             else
             {
-                if (lastDiskHeader.EOCDR.IsRequiresZip64)
-                    throw new InternalLogicalErrorException();
-
+                Validation.Assert(!lastDiskHeader.EOCDR.IsRequiresZip64, "!lastDiskHeader.EOCDR.IsRequiresZip64");
                 var centralDirectoryPosition =
                     zipInputStream.GetPosition(
                         lastDiskHeader.EOCDR.DiskWhereCentralDirectoryStarts,
@@ -443,26 +441,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private void CheckUnknownPayloads()
-        {
-            if (_stringency > ValidationStringency.Normal)
-            {
-                // ローカルヘッダ間に未知のペイロードがないことの確認
-                foreach (var fragment in _unknownPayloads.EnumerateFragments())
-                {
-                    // 自己解凍型 ZIP アーカイブや一部のマルチボリューム実装ではファイルの先頭からは ZIP フォーマットに無関係のデータが存在するため、
-                    // ファイルの先頭から始まるペイロードはエラーとしない。
-                    if (fragment.StartPosition != _zipInputStream.StartOfThisStream)
-                        throw new BadImageFormatException($"Unknown payload exists between local headers.: position=\"{fragment.StartPosition}\", size=0x{fragment.Size:x16}");
-                }
-            }
-        }
-
         private IEnumerable<ZipEntryCentralDirectoryHeader> EnumerateCentralDirectoryHeaders()
         {
             const UInt64 _MAXIMUM_CENTRAL_DIRECTORY_HEADER_CHUNK_SIZE = 64 * 1024UL;
             var centralDirectoryPosition = _startOfCentralDirectoryHeaders;
-            var numberOfCentralDirectoryOnLastDisk = 0UL;
+            var numberOfCentralDirectoriesOnLastDisk = 0UL;
             var count = 0UL;
             while (count < _totalNumberOfCentralDirectoryHeaders)
             {
@@ -496,7 +479,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         {
                             checked
                             {
-                                ++numberOfCentralDirectoryOnLastDisk;
+                                ++numberOfCentralDirectoriesOnLastDisk;
                             }
                         }
                     }
@@ -510,24 +493,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     yield return centralDirectoryHeader;
             }
 
-            if (_stringency > ValidationStringency.Normal)
-            {
-                // 最後のディスクにあるセントラルディレクトリヘッダの数が一致していることの確認
-                if (numberOfCentralDirectoryOnLastDisk != _numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR)
-                    throw new BadZipFileFormatException($"The number of central directory headers on the same volume as EOCDR is different. : expected number=0x{_numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR:x16}, actual number=0x{_numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR - numberOfCentralDirectoryOnLastDisk:x16}");
-
-                // 最後のセントラルディレクトリヘッダと EOCDR (or ZIP64 EOCDR) が隣接していることの確認
-                var unknownPayloadSize = EOCDRPosition - centralDirectoryPosition;
-                if (unknownPayloadSize > 0)
-                    throw new BadImageFormatException($"An unknown payload exists between the last central directory header and the EOCDR (or ZIP64 EOCDR).: position=\"{centralDirectoryPosition}\", size=0x{unknownPayloadSize:x16}");
-            }
+            ValidateCentralDirectory(centralDirectoryPosition, numberOfCentralDirectoriesOnLastDisk);
         }
 
         private async IAsyncEnumerable<ZipEntryCentralDirectoryHeader> EnumerateCentralDirectoryHeadersAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             const UInt64 _MAXIMUM_CENTRAL_DIRECTORY_HEADER_CHUNK_SIZE = 64 * 1024UL;
             var centralDirectoryPosition = _startOfCentralDirectoryHeaders;
-            var numberOfCentralDirectoryOnLastDisk = 0UL;
+            var numberOfCentralDirectoriesOnLastDisk = 0UL;
             var count = 0UL;
             while (count < _totalNumberOfCentralDirectoryHeaders)
             {
@@ -561,7 +534,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         {
                             checked
                             {
-                                ++numberOfCentralDirectoryOnLastDisk;
+                                ++numberOfCentralDirectoriesOnLastDisk;
                             }
                         }
                     }
@@ -575,17 +548,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     yield return centralDirectoryHeader;
             }
 
-            if (_stringency > ValidationStringency.Normal)
-            {
-                // 最後のディスクにあるセントラルディレクトリヘッダの数が一致していることの確認
-                if (numberOfCentralDirectoryOnLastDisk != _numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR)
-                    throw new BadZipFileFormatException($"The number of central directory headers on the same volume as EOCDR is different. : expected number=0x{_numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR:x16}, actual number=0x{_numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR - numberOfCentralDirectoryOnLastDisk:x16}");
-
-                // 最後のセントラルディレクトリヘッダと EOCDR (or ZIP64 EOCDR) が隣接していることの確認
-                var unknownPayloadSize = EOCDRPosition - centralDirectoryPosition;
-                if (unknownPayloadSize > 0)
-                    throw new BadImageFormatException($"An unknown payload exists between the last central directory header and the EOCDR (or ZIP64 EOCDR).: position=\"{centralDirectoryPosition}\", size=0x{unknownPayloadSize:x16}");
-            }
+            ValidateCentralDirectory(centralDirectoryPosition, numberOfCentralDirectoriesOnLastDisk);
         }
 
         private static void ValidateEOCDR(ZipFileEOCDR eocdr, ZipFileZip64EOCDR zip64EOCDR, ValidationStringency stringency)
@@ -670,6 +633,36 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        private void CheckUnknownPayloads()
+        {
+            if (_stringency > ValidationStringency.Normal)
+            {
+                // ローカルヘッダ間に未知のペイロードがないことの確認
+                foreach (var fragment in _unknownPayloads.EnumerateFragments())
+                {
+                    // 自己解凍型 ZIP アーカイブや一部のマルチボリューム実装ではファイルの先頭からは ZIP フォーマットに無関係のデータが存在するため、
+                    // ファイルの先頭から始まるペイロードはエラーとしない。
+                    if (fragment.StartPosition != _zipInputStream.StartOfThisStream)
+                        throw new BadImageFormatException($"Unknown payload exists between local headers.: position=\"{fragment.StartPosition}\", size=0x{fragment.Size:x16}");
+                }
+            }
+        }
+
+        private void ValidateCentralDirectory(ZipStreamPosition endOfCentralDirectory, UInt64 numberOfCentralDirectoriesOnLastDisk)
+        {
+            if (_stringency > ValidationStringency.Normal)
+            {
+                // 最後のディスクにあるセントラルディレクトリヘッダの数が一致していることの確認
+                if (numberOfCentralDirectoriesOnLastDisk != _numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR)
+                    throw new BadZipFileFormatException($"The number of central directory headers on the same volume as EOCDR is different. : expected number=0x{_numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR:x16}, actual number=0x{numberOfCentralDirectoriesOnLastDisk:x16}");
+
+                // 最後のセントラルディレクトリヘッダと EOCDR (or ZIP64 EOCDR) が隣接していることの確認
+                var unknownPayloadSize = EOCDRPosition - endOfCentralDirectory;
+                if (unknownPayloadSize > 0)
+                    throw new BadImageFormatException($"An unknown payload exists between the last central directory header and the EOCDR (or ZIP64 EOCDR).: position=\"{endOfCentralDirectory}\", size=0x{unknownPayloadSize:x16}");
+            }
+        }
+
         private void MarkAsKnownPayload(ZipStreamPosition position, UInt64 size) => MarkAsKnownPayload(_unknownPayloads, position, size);
 
         private static void MarkAsKnownPayload(FragmentSet<ZipStreamPosition, UInt64> unknownPayloads, ZipStreamPosition position, UInt64 size)
@@ -682,7 +675,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 catch (Exception ex)
                 {
-                    throw new InternalLogicalErrorException("Unknown payload location update failed.", ex);
+                    throw Validation.GetFailErrorException("Unknown payload location update failed.", ex);
                 }
             }
         }
