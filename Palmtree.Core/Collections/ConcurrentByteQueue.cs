@@ -33,6 +33,7 @@ namespace Palmtree.Collections
             _isNotFullOrCompletedAsyncEvent = new AsyncManualResetEvent();
             _isEmptyOrCompletedEvent = new ManualResetEventSlim();
             _isEmptyOrCompletedAsyncEvent = new AsyncManualResetEvent();
+            UpdateEvent();
         }
 
         public Int32 Read(Span<Byte> buffer, CancellationToken cancellationToken = default)

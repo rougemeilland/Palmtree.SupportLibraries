@@ -17,4 +17,9 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Palmtree.Core\Palmtree.Core.csproj" />
+    <ProjectReference Include="..\Palmtree.IO\Palmtree.IO.csproj" />
+  </ItemGroup>
+
 </Project>
