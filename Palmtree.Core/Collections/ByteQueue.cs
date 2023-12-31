@@ -5,7 +5,13 @@ namespace Palmtree.Collections
 {
     public class ByteQueue
     {
-        private const Int32 _DEFAULT_BUFFER_SIZE = 80 * 1024;
+#if DEBUG
+        private const Int32 _MINIMUM_BUFFER_SIZE = 4;
+#else
+        private const Int32 _MINIMUM_BUFFER_SIZE = 1024;
+#endif
+        private const Int32 _DEFAULT_BUFFER_SIZE = 64 * 1024;
+        private const Int32 _MAXIMUM_BUFFER_SIZE = 1024 * 1024;
 
         private readonly Byte[] _internalBuffer;
         private Int32 _startOfDataInInternalBuffer;
@@ -15,7 +21,7 @@ namespace Palmtree.Collections
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-            _internalBuffer = new Byte[bufferSize];
+            _internalBuffer = new Byte[bufferSize.Maximum(_MINIMUM_BUFFER_SIZE).Minimum(_MAXIMUM_BUFFER_SIZE)];
             _startOfDataInInternalBuffer = 0;
             AvailableDataCount = 0;
             IsCompleted = false;
@@ -38,9 +44,7 @@ namespace Palmtree.Collections
                     .Minimum(_internalBuffer.Length - _startOfDataInInternalBuffer);
                 if (actualCount <= 0)
                 {
-                    if (buffer.Length > 0 && !IsCompleted)
-                        throw new InvalidOperationException("Tried to read even though the buffer is empty.");
-
+                    Validation.Assert(buffer.Length <= 0 || IsCompleted, "buffer.Length <= 0 || IsCompleted");
                     return 0;
                 }
 
@@ -52,7 +56,7 @@ namespace Palmtree.Collections
 #if DEBUG
                 if (!_startOfDataInInternalBuffer.InRange(0, _internalBuffer.Length))
                     throw new Exception();
-                if (!AvailableDataCount.InRange(0, _internalBuffer.Length))
+                if (!AvailableDataCount.IsBetween(0, _internalBuffer.Length - actualCount))
                     throw new Exception();
 #endif
                 return actualCount;
@@ -66,25 +70,18 @@ namespace Palmtree.Collections
                 if (IsCompleted)
                     throw new InvalidOperationException("Can not write any more.");
 
-                var actualCount =
-                    buffer.Length
-                    .Minimum(
-                        AvailableDataCount >= _internalBuffer.Length - _startOfDataInInternalBuffer
-                        ? _internalBuffer.Length - AvailableDataCount
-                        : _internalBuffer.Length - AvailableDataCount - _startOfDataInInternalBuffer);
-                var offsetInInputBuffer =
-                    AvailableDataCount >= _internalBuffer.Length - _startOfDataInInternalBuffer
-                    ? _startOfDataInInternalBuffer - (_internalBuffer.Length - AvailableDataCount)
-                    : _startOfDataInInternalBuffer + AvailableDataCount;
+                var endOfAvailableData = _startOfDataInInternalBuffer + AvailableDataCount;
+                var (offsetOnInternalBuffer, actualCount) =
+                    endOfAvailableData >= _internalBuffer.Length
+                    ? (endOfAvailableData - _internalBuffer.Length, buffer.Length.Minimum(_internalBuffer.Length - AvailableDataCount))
+                    : (endOfAvailableData, buffer.Length.Minimum(_internalBuffer.Length - endOfAvailableData));
 
-                buffer[..actualCount].CopyTo(_internalBuffer.AsSpan(offsetInInputBuffer, actualCount));
+                buffer[..actualCount].CopyTo(_internalBuffer.AsSpan(offsetOnInternalBuffer, actualCount));
                 AvailableDataCount += actualCount;
-                if (AvailableDataCount == _internalBuffer.Length)
-                    AvailableDataCount = 0;
 #if DEBUG
                 if (!_startOfDataInInternalBuffer.InRange(0, _internalBuffer.Length))
                     throw new Exception();
-                if (!AvailableDataCount.InRange(0, _internalBuffer.Length))
+                if (!AvailableDataCount.IsBetween(0, _internalBuffer.Length))
                     throw new Exception();
 #endif
                 return actualCount;
