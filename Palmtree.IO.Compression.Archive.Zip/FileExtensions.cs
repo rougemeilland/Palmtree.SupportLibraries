@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -398,15 +399,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 using (var zipFile = file.OpenAsZipFile(zipEntryNameEncodingProvider, stringency))
                 {
-                    // 進捗率の配分は、GetEntries() が 10% で、データの比較が 90% とする。
-
-                    var entries = zipFile.EnumerateEntries(
-                        SafetyProgress.CreateIncreasingProgress<Double, Double>(
-                            progress,
-                            value => value * 0.1,
-                            0,
-                            1));
-                    totalProcessedRate += 0.1;
+                    var entries = zipFile.EnumerateEntries();
                     ReportDoubleProgress(progress, () => totalProcessedRate);
                     foreach (var entry in entries)
                     {
@@ -415,17 +408,19 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             entry.ValidateData(
                                 SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), Double>(
                                     progress,
-                                    value => totalProcessedRate + (Double)value.packedCount / zipArchiveSize * 0.9));
+                                    value => totalProcessedRate + (Double)value.packedCount / zipArchiveSize));
                             ++entryCount;
                             processedUnpackedSize += entry.Size;
                             processedPackedSize += entry.PackedSize;
-                            totalProcessedRate += (Double)entry.PackedSize / zipArchiveSize * 0.9;
+                            totalProcessedRate += (Double)entry.PackedSize / zipArchiveSize;
                         }
                         finally
                         {
                             ReportDoubleProgress(progress, () => totalProcessedRate);
                         }
                     }
+
+                    CheckIfExistUnknownPayloads(zipFile, stringency);
                 }
 
                 ReportDoubleProgress(progress, () => 1.0);
@@ -475,16 +470,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 using (var zipFile = file.OpenAsZipFile(zipEntryNameEncodingProvider, stringency))
                 {
-                    // 進捗率の配分は、GetEntries() が 10% で、データの比較が 90% とする。
-
-                    var entries = zipFile.EnumerateEntriesAsync(
-                        SafetyProgress.CreateIncreasingProgress<Double, Double>(
-                            progress,
-                            value => value * 0.1,
-                            0,
-                            1),
-                        cancellationToken);
-                    totalProcessedRate += 0.1;
+                    var entries = zipFile.EnumerateEntriesAsync(null, cancellationToken);
                     ReportDoubleProgress(progress, () => totalProcessedRate);
                     var enumerator = entries.GetAsyncEnumerator(cancellationToken);
                     await using (enumerator.ConfigureAwait(false))
@@ -497,12 +483,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
                                 await entry.ValidateDataAsync(
                                     SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), Double>(
                                         progress,
-                                        value => totalProcessedRate + (Double)value.packedCount / zipArchiveSize * 0.9),
+                                        value => totalProcessedRate + (Double)value.packedCount / zipArchiveSize),
                                     cancellationToken).ConfigureAwait(false);
                                 ++entryCount;
                                 processedUnpackedSize += entry.Size;
                                 processedPackedSize += entry.PackedSize;
-                                totalProcessedRate += (Double)entry.PackedSize / zipArchiveSize * 0.9;
+                                totalProcessedRate += (Double)entry.PackedSize / zipArchiveSize;
                             }
                             finally
                             {
@@ -510,6 +496,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             }
                         }
                     }
+
+                    CheckIfExistUnknownPayloads(zipFile, stringency);
                 }
 
                 ReportDoubleProgress(progress, () => 1.0);
@@ -534,6 +522,27 @@ namespace Palmtree.IO.Compression.Archive.Zip
             catch (Exception ex)
             {
                 return new ZipArchiveValidationResult(ZipArchiveValidationResultId.InternalError, ex.Message, ex);
+            }
+        }
+
+        private static void CheckIfExistUnknownPayloads(ZipArchiveFileReader zipFile, ValidationStringency stringency)
+        {
+            if (stringency.HasFlag(ValidationStringency.DisallowUnknownPayloadExists))
+            {
+                var unknownPayloads = zipFile.UnnownPayloads;
+                var unknownPayloadsList = new List<String>();
+                for (var index = 0; index < unknownPayloads.Length; ++index)
+                {
+                    var element = unknownPayloads.Span[index];
+
+                    // 自己解凍書庫や一部のマルチボリューム ZIP アーカイブの実装では、先頭から始まりかつZIPでは使用されないペイロードが存在する。
+                    // そのため、先頭から始まる未知のペイロードはエラーとはしない。
+                    if (!element.StartsWith("0x00000000:0x0000000000000000-", StringComparison.Ordinal))
+                        unknownPayloadsList.Add(element);
+                }
+
+                if (unknownPayloadsList.Count > 0)
+                    throw new BadZipFileFormatException($"Unknown payload exists.: [ {String.Join(", ", unknownPayloadsList.Select(element => $"\"{element}\""))} ]");
             }
         }
 

@@ -28,7 +28,7 @@ namespace Test.ZipUtility.Validation
                 {
                     try
                     {
-                        var result = file.ValidateAsZipFile(ValidationStringency.Strict, SafetyProgress.CreateIncreasingProgress<double>(value => Console.Write($"  {(completed + value * file.Length) * 100.0 / totalSize:F2}%\r")));
+                        var result = file.ValidateAsZipFile(ValidationStringency.Strict | ValidationStringency.AllowNullPayloadAfterEOCDR, SafetyProgress.CreateIncreasingProgress<double>(value => Console.Write($"  {(completed + value * file.Length) * 100.0 / totalSize:F2}%\r")));
                         if (result.ResultId != ZipArchiveValidationResultId.Ok)
                             Console.ForegroundColor = ConsoleColor.Red;
                         checked
