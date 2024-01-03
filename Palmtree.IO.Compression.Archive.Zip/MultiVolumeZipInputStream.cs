@@ -81,7 +81,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </remarks>
         protected override Boolean ValidatePositionCore(UInt32 diskNumber, UInt64 offsetOnTheDisk)
             => _volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize)
-                && (_stringency > ValidationStringency.Normal
+                && (_stringency.HasFlag(ValidationStringency.DisallowPointerToEndOfDisk)
                     ? offsetOnTheDisk < volumeDiskSize
                     : offsetOnTheDisk <= volumeDiskSize);
 

@@ -23,7 +23,8 @@ namespace Test.ZipUtility.Validation
             {
                 if (string.Equals(file.Extension, ".zip", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(file.Extension, ".001", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(file.Extension, ".exe", StringComparison.OrdinalIgnoreCase))
+                    || string.Equals(file.Extension, ".exe", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(file.Extension, ".epub", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {

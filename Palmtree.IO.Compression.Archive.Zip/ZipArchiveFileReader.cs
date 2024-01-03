@@ -328,7 +328,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 MarkAsKnownPayload(unknownPayloads, lastDiskHeader.Zip64EOCDL.HeaderPosition, lastDiskHeader.Zip64EOCDL.HeaderSize);
                 var zip64EOCDR = ZipFileZip64EOCDR.Parse(paramter, zipInputStream, lastDiskHeader.Zip64EOCDL);
                 MarkAsKnownPayload(unknownPayloads, zip64EOCDR.HeaderPosition, zip64EOCDR.HeaderSize);
-                if (stringency > ValidationStringency.Normal)
+                if (stringency.HasFlag(ValidationStringency.DisallowUnknownPayloadExists))
                 {
                     // ZIP64 EOCDR の末尾に ZIP64 EOCDL の先頭が隣接していることの確認
 
@@ -553,89 +553,86 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private static void ValidateEOCDR(ZipFileEOCDR eocdr, ZipFileZip64EOCDR zip64EOCDR, ValidationStringency stringency)
         {
-            if (stringency > ValidationStringency.Normal)
+            // ZIP64 EOCDR と EOCDR の整合性を確認する。
+
+            if (zip64EOCDR.NumberOfThisDisk == eocdr.HeaderPosition.DiskNumber)
             {
-                // ZIP64 EOCDR と EOCDR の整合性を確認する。
+                // ZIP64 EOCDR が EOCDR と同じボリュームディスクにある場合
 
-                if (zip64EOCDR.NumberOfThisDisk == eocdr.HeaderPosition.DiskNumber)
+                if (eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != UInt16.MaxValue)
                 {
-                    // ZIP64 EOCDR が EOCDR と同じボリュームディスクにある場合
+                    // EOCDR の フィールド NumberOfCentralDirectoryHeadersOnThisDisk が UInt16.MaxValue ではない場合
+                    // => ZIP64 EOCDR の NumberOfCentralDirectoryHeadersOnThisDisk も同じ値であるはず。
 
-                    if (eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != UInt16.MaxValue)
-                    {
-                        // EOCDR の フィールド NumberOfCentralDirectoryHeadersOnThisDisk が UInt16.MaxValue ではない場合
-                        // => ZIP64 EOCDR の NumberOfCentralDirectoryHeadersOnThisDisk も同じ値であるはず。
-
-                        if (eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)
-                            throw new BadZipFileFormatException($"Since ZIP64 EOCDR and EOCDR are on the same volume disk, and the value of field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} in EOCDR is not 0x{UInt16.MaxValue:x4}, the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} in ZIP64 EOCDR should be equal to the value of field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} in EOCDR. However, the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} of ZIP64 EOCDR is actually different from the value of field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} of EOCDR.: {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk:x16}, {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)}=0x{eocdr.NumberOfCentralDirectoryHeadersOnThisDisk:x4}");
-                    }
-                    else
-                    {
-                        // EOCDR の フィールド NumberOfCentralDirectoryHeadersOnThisDisk が UInt16.MaxValue である場合
-                        // => ZIP64 EOCDR の TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk は UInt16.MaxValue 以上であるはず。
-
-                        if (zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk < UInt16.MaxValue)
-                            throw new BadZipFileFormatException($"Since ZIP64 EOCDR and EOCDR are on the same volume disk, and EOCDR's field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} has a value of 0x{UInt16.MaxValue:x4}, ZIP64 EOCDR's field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} should have a value greater than or equal to 0x{UInt16.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} in ZIP64 EOCDR is less than 0x{UInt16.MaxValue:x16}.: {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk:x16}");
-                    }
+                    if (eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)
+                        throw new BadZipFileFormatException($"Since ZIP64 EOCDR and EOCDR are on the same volume disk, and the value of field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} in EOCDR is not 0x{UInt16.MaxValue:x4}, the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} in ZIP64 EOCDR should be equal to the value of field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} in EOCDR. However, the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} of ZIP64 EOCDR is actually different from the value of field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} of EOCDR.: {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk:x16}, {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)}=0x{eocdr.NumberOfCentralDirectoryHeadersOnThisDisk:x4}");
                 }
                 else
                 {
-                    // ZIP64 EOCDR が EOCDR と異なるボリュームディスクにある場合
-                    // => 少なくとも、最後のボリュームディスク (つまり EOCDR があるボリュームディスク) にはセントラルディレクトリヘッダは存在しないはず。
+                    // EOCDR の フィールド NumberOfCentralDirectoryHeadersOnThisDisk が UInt16.MaxValue である場合
+                    // => ZIP64 EOCDR の TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk は UInt16.MaxValue 以上であるはず。
 
-                    if (eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != 0)
-                        throw new BadZipFileFormatException($"Since ZIP64 ECDR and ECDR are on different volume disks, the volume disk where ECDR is located (that is, the last volume disk) should not have a central directory header. However, the value of the ECDR field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} is actually not 0. : {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)}={eocdr.NumberOfCentralDirectoryHeadersOnThisDisk}");
+                    if (zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk < UInt16.MaxValue)
+                        throw new BadZipFileFormatException($"Since ZIP64 EOCDR and EOCDR are on the same volume disk, and EOCDR's field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} has a value of 0x{UInt16.MaxValue:x4}, ZIP64 EOCDR's field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} should have a value greater than or equal to 0x{UInt16.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)} in ZIP64 EOCDR is less than 0x{UInt16.MaxValue:x16}.: {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk:x16}");
                 }
+            }
+            else
+            {
+                // ZIP64 EOCDR が EOCDR と異なるボリュームディスクにある場合
+                // => 少なくとも、最後のボリュームディスク (つまり EOCDR があるボリュームディスク) にはセントラルディレクトリヘッダは存在しないはず。
 
-                if (eocdr.DiskWhereCentralDirectoryStarts == UInt16.MaxValue)
-                {
-                    if (zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory < UInt16.MaxValue)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR is 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt16.MaxValue:x8}. But actually the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} of ZIP64 EOCDR is less than 0x{UInt16.MaxValue:x8}. : {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)}=0x{zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory:x8}");
-                }
-                else
-                {
-                    if (eocdr.DiskWhereCentralDirectoryStarts != zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR is not 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR.: {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)}=0x{zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory:x8}, {nameof(eocdr.DiskWhereCentralDirectoryStarts)}=0x{eocdr.DiskWhereCentralDirectoryStarts:x4}");
-                }
+                if (eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != 0)
+                    throw new BadZipFileFormatException($"Since ZIP64 ECDR and ECDR are on different volume disks, the volume disk where ECDR is located (that is, the last volume disk) should not have a central directory header. However, the value of the ECDR field {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)} is actually not 0. : {nameof(eocdr.NumberOfCentralDirectoryHeadersOnThisDisk)}={eocdr.NumberOfCentralDirectoryHeadersOnThisDisk}");
+            }
 
-                if (eocdr.OffsetOfStartOfCentralDirectory == UInt32.MaxValue)
-                {
-                    if (zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber < UInt32.MaxValue)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR is 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt32.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} of ZIP64 EOCDR is less than 0x{UInt32.MaxValue:x16}. : {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)}=0x{zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber:x16}");
-                }
-                else
-                {
-                    if (eocdr.OffsetOfStartOfCentralDirectory != zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR is not 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR.: {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)}=0x{zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber:x16}, {nameof(eocdr.OffsetOfStartOfCentralDirectory)}=0x{eocdr.OffsetOfStartOfCentralDirectory:x8}");
-                }
+            if (eocdr.DiskWhereCentralDirectoryStarts == UInt16.MaxValue)
+            {
+                if (zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory < UInt16.MaxValue)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR is 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt16.MaxValue:x8}. But actually the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} of ZIP64 EOCDR is less than 0x{UInt16.MaxValue:x8}. : {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)}=0x{zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory:x8}");
+            }
+            else
+            {
+                if (eocdr.DiskWhereCentralDirectoryStarts != zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR is not 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.DiskWhereCentralDirectoryStarts)} in EOCDR.: {nameof(zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory)}=0x{zip64EOCDR.NumberOfTheDiskWithTheStartOfTheCentralDirectory:x8}, {nameof(eocdr.DiskWhereCentralDirectoryStarts)}=0x{eocdr.DiskWhereCentralDirectoryStarts:x4}");
+            }
 
-                if (eocdr.TotalNumberOfCentralDirectoryHeaders == UInt16.MaxValue)
-                {
-                    if (zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory < UInt16.MaxValue)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR is 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt16.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} of ZIP64 EOCDR is less than 0x{UInt16.MaxValue:x16}. : {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory:x16}");
-                }
-                else
-                {
-                    if (eocdr.TotalNumberOfCentralDirectoryHeaders != zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR is not 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR.: {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory:x16}, {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)}=0x{eocdr.TotalNumberOfCentralDirectoryHeaders:x4}");
-                }
+            if (eocdr.OffsetOfStartOfCentralDirectory == UInt32.MaxValue)
+            {
+                if (zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber < UInt32.MaxValue)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR is 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt32.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} of ZIP64 EOCDR is less than 0x{UInt32.MaxValue:x16}. : {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)}=0x{zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber:x16}");
+            }
+            else
+            {
+                if (eocdr.OffsetOfStartOfCentralDirectory != zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR is not 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.OffsetOfStartOfCentralDirectory)} in EOCDR.: {nameof(zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber)}=0x{zip64EOCDR.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber:x16}, {nameof(eocdr.OffsetOfStartOfCentralDirectory)}=0x{eocdr.OffsetOfStartOfCentralDirectory:x8}");
+            }
 
-                if (eocdr.SizeOfCentralDirectory == UInt32.MaxValue)
-                {
-                    if (zip64EOCDR.SizeOfTheCentralDirectory < UInt32.MaxValue)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR is 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt32.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} of ZIP64 EOCDR is less than 0x{UInt32.MaxValue:x16}. : {nameof(zip64EOCDR.SizeOfTheCentralDirectory)}=0x{zip64EOCDR.SizeOfTheCentralDirectory:x16}");
-                }
-                else
-                {
-                    if (eocdr.SizeOfCentralDirectory != zip64EOCDR.SizeOfTheCentralDirectory)
-                        throw new BadZipFileFormatException($"The value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR is not 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR.: {nameof(zip64EOCDR.SizeOfTheCentralDirectory)}=0x{zip64EOCDR.SizeOfTheCentralDirectory:x16}, {nameof(eocdr.SizeOfCentralDirectory)}=0x{eocdr.SizeOfCentralDirectory:x8}");
-                }
+            if (eocdr.TotalNumberOfCentralDirectoryHeaders == UInt16.MaxValue)
+            {
+                if (zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory < UInt16.MaxValue)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR is 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt16.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} of ZIP64 EOCDR is less than 0x{UInt16.MaxValue:x16}. : {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory:x16}");
+            }
+            else
+            {
+                if (eocdr.TotalNumberOfCentralDirectoryHeaders != zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR is not 0x{UInt16.MaxValue:x4}, so the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)} in EOCDR.: {nameof(zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory)}=0x{zip64EOCDR.TotalNumberOfEntriesInTheCentralDirectory:x16}, {nameof(eocdr.TotalNumberOfCentralDirectoryHeaders)}=0x{eocdr.TotalNumberOfCentralDirectoryHeaders:x4}");
+            }
+
+            if (eocdr.SizeOfCentralDirectory == UInt32.MaxValue)
+            {
+                if (zip64EOCDR.SizeOfTheCentralDirectory < UInt32.MaxValue)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR is 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} in ZIP64 EOCDR must be greater than or equal to 0x{UInt32.MaxValue:x16}. But actually the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} of ZIP64 EOCDR is less than 0x{UInt32.MaxValue:x16}. : {nameof(zip64EOCDR.SizeOfTheCentralDirectory)}=0x{zip64EOCDR.SizeOfTheCentralDirectory:x16}");
+            }
+            else
+            {
+                if (eocdr.SizeOfCentralDirectory != zip64EOCDR.SizeOfTheCentralDirectory)
+                    throw new BadZipFileFormatException($"The value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR is not 0x{UInt32.MaxValue:x8}, so the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} in ZIP64 EOCDR must be equal to the value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR. But actually, the value of field {nameof(zip64EOCDR.SizeOfTheCentralDirectory)} in ZIP64 EOCDR is different from the value of field {nameof(eocdr.SizeOfCentralDirectory)} in EOCDR.: {nameof(zip64EOCDR.SizeOfTheCentralDirectory)}=0x{zip64EOCDR.SizeOfTheCentralDirectory:x16}, {nameof(eocdr.SizeOfCentralDirectory)}=0x{eocdr.SizeOfCentralDirectory:x8}");
             }
         }
 
         private void CheckUnknownPayloads()
         {
-            if (_stringency > ValidationStringency.Normal)
+            if (_stringency.HasFlag(ValidationStringency.DisallowUnknownPayloadExists))
             {
                 // ローカルヘッダ間に未知のペイロードがないことの確認
                 foreach (var fragment in _unknownPayloads.EnumerateFragments())
@@ -650,12 +647,16 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private void ValidateCentralDirectory(ZipStreamPosition endOfCentralDirectory, UInt64 numberOfCentralDirectoriesOnLastDisk)
         {
-            if (_stringency > ValidationStringency.Normal)
+            if (_stringency.HasFlag(ValidationStringency.StrictlyCheckNumberOfCentralDirectoryHeadersOnLastDisk))
             {
                 // 最後のディスクにあるセントラルディレクトリヘッダの数が一致していることの確認
                 if (numberOfCentralDirectoriesOnLastDisk != _numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR)
                     throw new BadZipFileFormatException($"The number of central directory headers on the same volume as EOCDR is different. : expected number=0x{_numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR:x16}, actual number=0x{numberOfCentralDirectoriesOnLastDisk:x16}");
 
+            }
+
+            if (_stringency.HasFlag(ValidationStringency.DisallowUnknownPayloadExists))
+            {
                 // 最後のセントラルディレクトリヘッダと EOCDR (or ZIP64 EOCDR) が隣接していることの確認
                 var unknownPayloadSize = EOCDRPosition - endOfCentralDirectory;
                 if (unknownPayloadSize > 0)

@@ -49,7 +49,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         /// <inheritdoc/>
         public override void SetData(ZipEntryHeaderType headerType, ReadOnlyMemory<Byte> data, IExtraFieldDecodingParameter parameter)
         {
-            if (parameter.Stringency > ValidationStringency.Normal)
+            if (parameter.Stringency.HasFlag(ValidationStringency.DisallowNotWellKnownExtraField))
                 throw GetBadFormatException(headerType, data);
 
             _codePage = null;

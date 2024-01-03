@@ -122,7 +122,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     case ZipEntryHeaderType.LocalHeader:
                     case ZipEntryHeaderType.CentralDirectoryHeader:
                     {
-                        if (parameter.Stringency <= ValidationStringency.Normal || headerType == ZipEntryHeaderType.CentralDirectoryHeader)
+                        if (!parameter.Stringency.HasFlag(ValidationStringency.StrictlyCheckExtraFieldValues)
+                            || headerType == ZipEntryHeaderType.CentralDirectoryHeader)
                         {
                             _ = reader.ReadUInt32LE(); //Reserved
                             while (!reader.IsEmpty)

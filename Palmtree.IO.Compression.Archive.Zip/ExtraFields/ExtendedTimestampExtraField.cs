@@ -129,7 +129,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                         if (flag.HasFlag(Flag.LastWriteTime))
                             LastWriteTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
 
-                        if (parameter.Stringency <= ValidationStringency.Normal)
+                        if (!parameter.Stringency.HasFlag(ValidationStringency.StrictlyCheckExtraFieldValues))
                         {
                             // 本来の仕様では、セントラルディレクトリヘッダの場合に付加されるのは LastWriteTime のみであるが、
                             // それに反して LastAccessTime および CreationTime も付加してしまう実装も存在する模様。

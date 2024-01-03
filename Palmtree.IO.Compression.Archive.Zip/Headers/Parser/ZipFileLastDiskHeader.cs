@@ -63,7 +63,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                     zipInputStream.LastDiskStartPosition + possibleFirstHeaderOffsetOnLastDisk,
                     new DiskHeaderEnumeratorParameter(zipInputStream, stringency))
                 .OrderBy(item => item.mayBeMultiVolume) // シングルボリュームと仮定されていて実はマルチボリュームである疑いがあるものは後回し
-                .ThenByDescending(item => item.header.EOCDR.HeaderPosition) // オフセットが大きい (つまりディスクの末尾に近い) ものを優先
+                .ThenByDescending(item => item.header.EOCDR.HeaderPosition) // オフセットが大きい (つまりディスクの終端に近い) ものを優先
                 .Take(1) // 候補を最大 1 つまで絞り込む
                 .ToArray();
 
@@ -85,6 +85,38 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
         {
             foreach (var eocdr in ZipFileEOCDR.EnumerateEOCDR(buffer, possibleFirstHeaderPosition))
             {
+                var endOfEOCDR = checked(eocdr.HeaderPosition.OffsetOnTheDisk + ZipFileEOCDR.MinimumHeaderSize + (UInt32)eocdr.CommentBytes.Length);
+                if (endOfEOCDR != parameter.LastDiskSize)
+                {
+                    // コメントを含めた EOCDR の終端が最後のディスクの終端と一致しない場合
+
+                    if (endOfEOCDR > parameter.LastDiskSize)
+                    {
+                        // コメントを含めた EOCDR の終端が最後のディスクの終端の後にある場合
+
+                        // これは正しい EOCDR ではない。
+                        continue;
+                    }
+
+                    if (!parameter.ValidationStringency.HasFlag(ValidationStringency.AllowNullPayloadAfterEOCDR))
+                    {
+                        // EOCDR の後に null bytes を許容しない場合
+
+                        // これは正しい EOCDR ではない。
+                        continue;
+                    }
+
+                    // EOCDR の後に null bytes を許容する場合
+
+                    // EOCDR の終端から最後のディスクの終端までのデータがすべて 0 であるかどうかを調べる
+
+                    if (CheckIfExistsNonNullByte(buffer, checked((Int32)(endOfEOCDR - possibleFirstHeaderPosition.OffsetOnTheDisk)), checked((Int32)(parameter.LastDiskSize - endOfEOCDR))))
+                    {
+                        // これは正しい EOCDR ではない。
+                        continue;
+                    }
+                }
+
                 var zip64EOCDL = (ZipFileZip64EOCDL?)null;
                 if (eocdr.HeaderPosition.OffsetOnTheDisk >= ZipFileZip64EOCDL.FixedHeaderSize)
                 {
@@ -145,7 +177,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                             continue;
                         }
 
-                        if ((parameter.ValidationStringency >= ValidationStringency.Normal || eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != 1)
+                        if ((!parameter.ValidationStringency.HasFlag(ValidationStringency.StrictlyCheckNumberOfCentralDirectoryHeadersOnLastDisk) || eocdr.NumberOfCentralDirectoryHeadersOnThisDisk != 1)
                             && eocdr.NumberOfCentralDirectoryHeadersOnThisDisk > eocdr.TotalNumberOfCentralDirectoryHeaders)
                         {
                             // 最後のディスクに存在するセントラルディレクトリの個数が 1 でなく、かつ、合計のセントラルディレクトリの数より大きいならば、これは正しい EOCDR ではない。
@@ -166,14 +198,6 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                         if (!parameter.ValidatePosition(eocdr.DiskWhereCentralDirectoryStarts, eocdr.OffsetOfStartOfCentralDirectory))
                         {
                             // セントラルディレクトリの位置が ZIP アーカイブ上の正しい位置を指していない場合
-
-                            // これは正しい EOCDR ではない。
-                            continue;
-                        }
-
-                        if (checked(eocdr.HeaderPosition.OffsetOnTheDisk + ZipFileEOCDR.MinimumHeaderSize + (UInt32)eocdr.CommentBytes.Length) != parameter.LastDiskSize)
-                        {
-                            // コメントを含めた EOCDR の末尾が最後のディスクの末尾と一致しない場合
 
                             // これは正しい EOCDR ではない。
                             continue;
@@ -245,6 +269,18 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                     yield return (new ZipFileLastDiskHeader(eocdr, zip64EOCDL), mayBeMultiVolume, checked(zip64EOCDL.TotalNumberOfDisks - 1));
                 }
             }
+        }
+
+        private static Boolean CheckIfExistsNonNullByte(ReadOnlyMemory<Byte> buffer, Int32 pos, Int32 size)
+        {
+            var endOfRegion = checked(pos + size);
+            for (var index = pos; index < endOfRegion; ++index)
+            {
+                if (buffer.Span[index] != 0x00)
+                    return true;
+            }
+
+            return false;
         }
     }
 }
