@@ -254,16 +254,20 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                     if (!mayBeMultiVolume)
                     {
                         if (zip64EOCDL.NumberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory >= zip64EOCDL.TotalNumberOfDisks)
+                        {
                             // 最初のセントラルディレクトリがあるディスクの番号が合計ディスク数以上である場合
 
                             // これは正しい ZIP64 EOCDL ではない。
                             continue;
+                        }
 
                         if (!parameter.ValidatePosition(zip64EOCDL.NumberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory, zip64EOCDL.OffsetOfTheZip64EndOfCentralDirectoryRecord))
+                        {
                             // ZIP64 EOCDR の位置が正しいディスク上の場所ではない場合
 
                             // これは正しい ZIP64 EOCDL ではない。
                             continue;
+                        }
                     }
 
                     yield return (new ZipFileLastDiskHeader(eocdr, zip64EOCDL), mayBeMultiVolume, checked(zip64EOCDL.TotalNumberOfDisks - 1));

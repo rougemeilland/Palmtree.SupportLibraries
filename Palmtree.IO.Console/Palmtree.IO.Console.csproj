@@ -9,7 +9,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Title>$(AssemblyName)</Title>
@@ -49,6 +49,10 @@
       <PackagePath>\</PackagePath>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Palmtree.IO.Console.InterOp.Unix" Version="1.0.0-alpha" />
   </ItemGroup>
 
   <ItemGroup>

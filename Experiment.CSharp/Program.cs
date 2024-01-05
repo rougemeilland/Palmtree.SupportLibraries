@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Palmtree;
@@ -10,12 +11,11 @@ namespace Experiment.CSharp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine($"{typeof(Program).Name}: directory={typeof(Program).Assembly.GetBaseDirectory()}");
-            Console.WriteLine($"{typeof(Crc24).Name}: directory={typeof(Program).Assembly.GetBaseDirectory()}");
-            Console.WriteLine($"{typeof(Console).Name}: directory={typeof(Program).Assembly.GetBaseDirectory()}");
-            Console.WriteLine($"{typeof(Program).Name}: name={typeof(Program).Assembly.GetAssemblyFileNameWithoutExtension()}");
-            Console.WriteLine($"{typeof(ISequentialInputByteStream).Name}: name={typeof(Program).Assembly.GetAssemblyFileNameWithoutExtension()}");
-            Console.WriteLine($"{typeof(Console).Name}: name={typeof(Program).Assembly.GetAssemblyFileNameWithoutExtension()}");
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies.Where(assembly => !assembly.ManifestModule.Name.StartsWith("System.", StringComparison.Ordinal)))
+            {
+                Console.WriteLine(assembly.FullName?.CSharpEncode());
+            }
             Console.Beep();
             _ = Console.ReadLine();
         }

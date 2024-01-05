@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
 {
-    public class DeflateEncoderPlugin
+    internal class DeflateEncoderPlugin
         : DeflateCoderPlugin, ICompressionHierarchicalEncoder
     {
         private class Encoder

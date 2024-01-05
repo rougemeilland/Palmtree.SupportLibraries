@@ -4,11 +4,19 @@ using Palmtree;
 using Palmtree.Collections;
 using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
+using Palmtree.IO.Compression.Stream.Plugin.Deflate;
+using Palmtree.IO.Compression.Stream.Stored;
 
 namespace Test.ZipUtility.MultiVolume
 {
     internal class Program
     {
+        static Program()
+        {
+            StoredCoderPlugin.EnablePlugin();
+            DeflateCoderPlugin.EnablePlugin();
+        }
+
         static void Main(string[] args)
         {
             var baseDirectory = new DirectoryPath(args[0]);

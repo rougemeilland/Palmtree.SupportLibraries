@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Stream;
-using Palmtree.Linq;
 using Palmtree.Threading;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -19,7 +15,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
             Encoder,
         }
 
-        private static readonly Regex _pluginFileNamePattern;
         private static readonly IDictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder> _compresssionMethods;
         private static readonly ZipEntryCompressionMethod? _stored;
         private static readonly ZipEntryCompressionMethod? _deflateWithNormal;
@@ -42,7 +37,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         static ZipEntryCompressionMethod()
         {
-            _pluginFileNamePattern = new Regex(@"^(lib)?Palmtree\.IO\.Compression\.Stream\.Plugin\.[a-zA-Z0-9_]+\.(dll|so)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            Stream.Stored.StoredCoderPlugin.EnablePlugin();
+
             _compresssionMethods = EnumeratePlugin();
 
             _stored =
@@ -187,65 +183,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 instance ?? throw new CompressionMethodNotSupportedException(compressionMethodId);
         }
 
-#if false
-        internal UInt32 CalculateCrc32(
-            IZipInputStream zipInputStream,
-            ZipStreamPosition offset,
-            UInt64 size,
-            UInt64 packedSize,
-            IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress)
-        {
-            if (_decoderPlugin is ICompressionHierarchicalDecoder hierarchicalDecoder)
-            {
-                if (_decoderOption is null)
-                    throw new InternalLogicalErrorException();
-
-                var progressCounter = new ProgressCounterUint64Uint64(progress);
-                progressCounter.Report();
-                var (actualCrc, actualSize) =
-                    hierarchicalDecoder
-                    .GetDecodingStream(
-                        zipInputStream.WithPartial(offset, packedSize, true)
-                            .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2)),
-                        _decoderOption,
-                        size,
-                        packedSize,
-                        SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1))
-                    .CalculateCrc32();
-                if (actualSize != size)
-                    throw new BadZipFileFormatException($"The unpacked size of the entry data differs between the value in the header and the actual value.: size=0x{size:x16}, actualSize=0x{actualSize:x16}");
-                progressCounter.Report();
-                return actualCrc;
-            }
-            else if (_decoderPlugin is ICompressionDecoder decoder)
-            {
-                if (_decoderOption is null)
-                    throw new InternalLogicalErrorException();
-
-                var progressCounter = new ProgressCounterUint64Uint64(progress);
-                var crcHolder = new ValueHolder<(UInt32 Crc, UInt64 Length)>();
-                using var outputStream = new NullOutputStream();
-                decoder.Decode(
-                    zipInputStream.WithPartial(offset, packedSize, true)
-                        .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2)),
-                    outputStream
-                        .WithCrc32Calculation(crcHolder),
-                    _decoderOption,
-                    size,
-                    packedSize,
-                    SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1));
-                if (crcHolder.Value.Length != size)
-                    throw new BadZipFileFormatException($"The unpacked size of the entry data differs between the value in the header and the actual value.: size=0x{size:x16}, actualSize=0x{crcHolder.Value.Length:x16}");
-                progressCounter.Report();
-                return crcHolder.Value.Crc;
-            }
-            else
-            {
-                throw new IllegalRuntimeEnvironmentException($"Can not uncompress content: method={CompressionMethodId}.");
-            }
-        }
-#endif
-
         private static ZipEntryCompressionMethod? CreateCompressionMethodDefaultInstance(IDictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder> compresssionMethodSource, CompressionMethodId compressionMethodId, Func<ICompressionCoder, ICoderOption> optionGetter)
         {
             if (!compresssionMethodSource.TryGetValue((compressionMethodId, CoderType.Decoder), out ICompressionCoder? deoderPlugin))
@@ -265,71 +202,19 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private static IDictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder> EnumeratePlugin()
         {
-            var interfaceType = typeof(ICompressionCoder);
-            var interfaceTypeName = interfaceType.FullName ?? throw new InvalidOperationException();
-            var thisAssembly = typeof(ZipEntryCompressionMethodIdExtensions).Assembly;
-            var pluginLocation = Path.GetDirectoryName(thisAssembly.Location) ?? throw new InvalidOperationException();
-            var pluginSequence =
-                Directory.EnumerateFiles(pluginLocation, "*.dll", SearchOption.AllDirectories)
-                    .Where(filePath =>
-                        _pluginFileNamePattern.IsMatch(Path.GetFileName(filePath)) &&
-                        !String.Equals(filePath, thisAssembly.Location, StringComparison.OrdinalIgnoreCase))
-                    .Select(filePath =>
-                    {
-                        try
-                        {
-                            return Assembly.LoadFile(filePath);
-                        }
-                        catch (Exception)
-                        {
-                            return null;
-                        }
-                    })
-                    .WhereNotNull()
-                    .Concat(new[]
-                    {
-                        thisAssembly,
-                        interfaceType.Assembly,
-                        typeof(Stream.Stored.StoredDecoderPlugin).Assembly,
-                        typeof(Stream.Stored.StoredEncoderPlugin).Assembly,
-                    })
-                    .DistinctAssembly(thisAssembly)
-                    .SelectMany(item =>
-                        item.assembly.GetTypes()
-                        .Where(type =>
-                            type.IsClass &&
-                            (type.IsPublic || !item.isExternalAssembly) &&
-                            !type.IsAbstract &&
-                            type.GetInterface(interfaceTypeName) is not null)
-                        .Select(type =>
-                        {
-                            try
-                            {
-                                return
-                                    type.FullName is null
-                                    ? null
-                                    : item.assembly.CreateInstance(type.FullName) as ICompressionCoder;
-                            }
-                            catch (Exception)
-                            {
-                                return null;
-                            }
-                        })
-                        .WhereNotNull()
-                        .Where(plugin => plugin is not null && plugin.CompressionMethodId != Stream.CompressionMethodId.Unknown));
             var plugins = new Dictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder>();
-            foreach (var plugin in pluginSequence)
+            foreach (var plugin in CompressionCoderPlugin.EnumeratePlugins())
             {
                 if (plugin is ICompressionDecoder or ICompressionHierarchicalDecoder)
                 {
                     if (!plugins.TryAdd((plugin.CompressionMethodId, CoderType.Decoder), plugin))
-                        throw new IllegalRuntimeEnvironmentException($"Duplicate Compress plug-in. : method = {plugin.CompressionMethodId}, type = {CoderType.Decoder}");
+                        throw new IllegalRuntimeEnvironmentException($"Duplicate Compress plug-in. : method={plugin.CompressionMethodId}, type={CoderType.Decoder}, new plugin={plugin.GetType()}");
                 }
 
                 if (plugin is ICompressionEncoder or ICompressionHierarchicalEncoder)
                 {
                     if (!plugins.TryAdd((plugin.CompressionMethodId, CoderType.Encoder), plugin))
-                        throw new IllegalRuntimeEnvironmentException($"Duplicate Compress plug-in. : method = {plugin.CompressionMethodId}, type = {CoderType.Decoder}");
+                        throw new IllegalRuntimeEnvironmentException($"Duplicate Compress plug-in. : method={plugin.CompressionMethodId}, type={CoderType.Decoder}, new plugin={plugin.GetType()}");
                 }
             }
 

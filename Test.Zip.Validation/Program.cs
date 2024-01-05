@@ -4,6 +4,8 @@ using System.Text;
 using Palmtree;
 using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
+using Palmtree.IO.Compression.Stream.Plugin.Deflate;
+using Palmtree.IO.Compression.Stream.Stored;
 
 namespace Test.ZipUtility.Validation
 {
@@ -12,6 +14,9 @@ namespace Test.ZipUtility.Validation
         static Program()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            StoredCoderPlugin.EnablePlugin();
+            DeflateCoderPlugin.EnablePlugin();
+            StoredCoderPlugin.EnablePlugin();
         }
 
         static void Main(string[] args)

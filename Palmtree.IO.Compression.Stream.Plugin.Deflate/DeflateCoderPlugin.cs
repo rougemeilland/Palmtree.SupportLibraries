@@ -1,8 +1,12 @@
 ﻿namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
 {
     public abstract class DeflateCoderPlugin
-        : ICompressionCoder
+        : ICompressionCoder, ICompressionCoderPlugin
     {
+        internal DeflateCoderPlugin()
+        {
+        }
+
         public CompressionMethodId CompressionMethodId => CompressionMethodId.Deflate;
 
         public ICoderOption DefaultOption
@@ -16,5 +20,11 @@
                 : bit1
                     ? CompressionOption.GetDeflateCompressionOption(DeflateCompressionLevel.Maximum)
                     : CompressionOption.GetDeflateCompressionOption(DeflateCompressionLevel.Normal);
+
+        public static void EnablePlugin()
+        {
+            CompressionCoderPlugin.Register(new DeflateDecoderPlugin());
+            CompressionCoderPlugin.Register(new DeflateEncoderPlugin());
+        }
     }
 }

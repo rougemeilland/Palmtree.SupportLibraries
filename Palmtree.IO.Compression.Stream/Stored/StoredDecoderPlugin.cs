@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Stream.Stored
 {
-    public class StoredDecoderPlugin
+    internal class StoredDecoderPlugin
         : StoredCoderPlugin, ICompressionHierarchicalDecoder
     {
         private class Decoder
