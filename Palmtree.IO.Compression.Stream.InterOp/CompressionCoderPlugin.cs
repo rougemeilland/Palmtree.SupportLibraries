@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Palmtree.IO.Compression.Stream
@@ -12,11 +13,27 @@ namespace Palmtree.IO.Compression.Stream
             Encoder
         }
 
+        private class PluginsCollection
+            : IEnumerable<ICompressionCoder>
+        {
+            private readonly IEnumerable<ICompressionCoder> _plugins;
+            public PluginsCollection(IEnumerable<ICompressionCoder> plugins)
+            {
+                _plugins = plugins;
+            }
+
+            public IEnumerator<ICompressionCoder> GetEnumerator() => _plugins.GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        public static event EventHandler<EventArgs>? PluginsUpdated;
+
         private static readonly IDictionary<(CompressionMethodId, CoderType), ICompressionCoder> _indexedCoders;
-        private static readonly ICollection<ICompressionCoder> _coders;
+        private static readonly List<ICompressionCoder> _coders;
 
         static CompressionCoderPlugin()
         {
+            PluginsUpdated = null;
             _indexedCoders = new Dictionary<(CompressionMethodId, CoderType), ICompressionCoder>();
             _coders = new List<ICompressionCoder>();
         }
@@ -55,7 +72,16 @@ namespace Palmtree.IO.Compression.Stream
             }
 
             if (added)
+            {
                 _coders.Add(coder);
+                try
+                {
+                    PluginsUpdated?.Invoke(new PluginsCollection(_coders), EventArgs.Empty);
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         public static IEnumerable<ICompressionCoder> EnumeratePlugins() => _coders;
