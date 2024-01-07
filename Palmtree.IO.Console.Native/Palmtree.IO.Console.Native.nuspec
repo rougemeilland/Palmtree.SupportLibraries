@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Palmtree.IO.Console.Native</id>
+    <version>1.0.3-alpha</version>
+    <title>Palmtree.IO.Console.Native</title>
+    <authors>Palmtree Software</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</projectUrl>
+    <description>This is a native code package for Linux for console input/output libraries.</description>
+    <copyright>© 2004 Palmtree Software</copyright>
+    <repository type="git" url="https://github.com/rougemeilland/Palmtree.SupportLibraries"/>
+  </metadata>
+  <files>
+    <file src="../../../Palmtree.IO.Console.Native.Linux/bin/x86/$Configuration$/libPalmtree.IO.Console.Native.linux_x86.so" target="runtimes/linux-x86"/>
+    <file src="../../../Palmtree.IO.Console.Native.Linux/bin/x86/$Configuration$/libPalmtree.IO.Console.Native.linux_x86.so" target="runtimes/linux-x64"/>
+    <file src="../../../Palmtree.IO.Console.Native.Linux/bin/x64/$Configuration$/libPalmtree.IO.Console.Native.linux_x64.so" target="runtimes/linux-x64"/>
+    <file src="../../Palmtree.IO.Console.Native.targets" target="build/"/>
+    <file src="../../README.md" target="/"/>
+  </files>
+</package>

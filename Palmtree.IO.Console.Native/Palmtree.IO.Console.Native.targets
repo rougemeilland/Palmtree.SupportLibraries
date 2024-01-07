@@ -1,0 +1,14 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- linux -->
+    <None Include="$(MSBuildThisFileDirectory)../runtimes/linux-x86/libPalmtree.IO.Console.Native.linux_x86.so">
+      <Link>libPalmtree.IO.Console.Native.linux_x86.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)../runtimes/linux-x64/libPalmtree.IO.Console.Native.linux_x64.so">
+      <Link>libPalmtree.IO.Console.Native.linux_x64.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

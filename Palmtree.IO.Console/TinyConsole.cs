@@ -19,6 +19,7 @@ namespace Palmtree.IO.Console
             Alternative,
         }
 
+        private const String _NATIVE_METHOD_DLL_NAME = "Palmtree.IO.Console.Native";
 #if USE_WIN32_API_TO_CONSOLE_OPERATION_FOR_WINDOWS
         private const Boolean _useAnsiEscapeCodeEvenOnWindows = false;
 #else
@@ -46,6 +47,8 @@ namespace Palmtree.IO.Console
 
         static TinyConsole()
         {
+            SetupNativeLibraryResolver();
+
             if (!System.Console.IsOutputRedirected)
             {
                 _consoleOutputHandle =
@@ -704,6 +707,74 @@ namespace Palmtree.IO.Console
         #endregion
 
         #region private methods
+
+        private static void SetupNativeLibraryResolver()
+            => NativeLibrary.SetDllImportResolver(
+                typeof(InterOpUnix).Assembly,
+                (libraryName, assembly, searchPath) =>
+                {
+                    if (libraryName != _NATIVE_METHOD_DLL_NAME)
+                    {
+                        return
+                            !NativeLibrary.TryLoad(libraryName, assembly, searchPath, out var handle)
+                            ? IntPtr.Zero
+                            : handle;
+                    }
+                    else if (OperatingSystem.IsWindows())
+                    {
+                        var actualLibName =
+                            RuntimeInformation.ProcessArchitecture switch
+                            {
+                                Architecture.X86 => "Palmtree.IO.Console.Native.win_x86.dll",
+                                Architecture.X64 => "Palmtree.IO.Console.Native.win_x64.dll",
+                                Architecture.Arm => "Palmtree.IO.Console.Native.win_arm32.dll",
+                                Architecture.Arm64 => "Palmtree.IO.Console.Native.win_arm64.dll",
+                                _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
+                            };
+                        return
+                            !NativeLibrary.TryLoad(actualLibName, assembly, searchPath, out var handle)
+                            ? IntPtr.Zero
+                            : handle;
+                    }
+                    else if (OperatingSystem.IsLinux())
+                    {
+                        var actualLibName =
+                            RuntimeInformation.ProcessArchitecture switch
+                            {
+                                Architecture.X86 => "libPalmtree.IO.Console.Native.linux_x86.so",
+                                Architecture.X64 => "libPalmtree.IO.Console.Native.linux_x64.so",
+                                Architecture.Arm => "libPalmtree.IO.Console.Native.linux_arm32.so",
+                                Architecture.Arm64 => "libPalmtree.IO.Console.Native.linux_arm64.so",
+                                _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
+                            };
+                        return
+                            !NativeLibrary.TryLoad(actualLibName, assembly, searchPath, out var handle)
+                            ? IntPtr.Zero
+                            : handle;
+                    }
+                    else if (OperatingSystem.IsMacOS())
+                    {
+                        String actualLibName;
+                        actualLibName =
+                            RuntimeInformation.ProcessArchitecture switch
+                            {
+                                Architecture.X86 => "libPalmtree.IO.Console.Native.osx_x86.dylib",
+                                Architecture.X64 => "libPalmtree.IO.Console.Native.osx_x64.dylib",
+                                Architecture.Arm => "libPalmtree.IO.Console.Native.osx_arm32.dylib",
+                                Architecture.Arm64 => "libPalmtree.IO.Console.Native.osx_arm64.dylib",
+                                _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
+                            };
+
+                        return
+                            !NativeLibrary.TryLoad(actualLibName, assembly, searchPath, out var handle)
+                            ? IntPtr.Zero
+                            : handle;
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("Running on this operating system is not supported.");
+                    }
+                });
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetBackgroundColorCore(ConsoleColor value)

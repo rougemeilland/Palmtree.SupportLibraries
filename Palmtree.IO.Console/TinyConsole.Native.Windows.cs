@@ -6,7 +6,7 @@ namespace Palmtree.IO.Console
 {
     partial class TinyConsole
     {
-        private static class InterOpWindows
+        private static partial class InterOpWindows
         {
             public static readonly UInt32 STD_INPUT_HANDLE = unchecked((UInt32)(-10));
             public static readonly UInt32 STD_OUTPUT_HANDLE = unchecked((UInt32)(-11));
@@ -48,44 +48,72 @@ namespace Palmtree.IO.Console
                 public Boolean bVisible;
             }
 
-            [DllImport("kernel32.dll")]
-            public extern static IntPtr GetStdHandle(UInt32 nStdHandle);
+            [LibraryImport("kernel32.dll")]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+            public static partial IntPtr GetStdHandle(UInt32 nStdHandle);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean GetConsoleScreenBufferInfo(IntPtr hConsoleHandle, out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
+            public static partial Boolean GetConsoleScreenBufferInfo(IntPtr hConsoleHandle, out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean SetConsoleTextAttribute(IntPtr hConsoleHandle, UInt16 wAttributes);
+            public static partial Boolean SetConsoleTextAttribute(IntPtr hConsoleHandle, UInt16 wAttributes);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean SetConsoleCursorPosition(IntPtr hConsoleOutput, COORD cursorPosition);
+            public static partial Boolean SetConsoleCursorPosition(IntPtr hConsoleOutput, COORD cursorPosition);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean GetConsoleCursorInfo(IntPtr hConsoleHandle, out CONSOLE_CURSOR_INFO lpConsoleCursorInfo);
+            private static unsafe partial Boolean GetConsoleCursorInfo(IntPtr hConsoleHandle, CONSOLE_CURSOR_INFO* lpConsoleCursorInfo);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean SetConsoleCursorInfo(IntPtr hConsoleHandle, ref CONSOLE_CURSOR_INFO lpConsoleCursorInfo);
+            private static unsafe partial Boolean SetConsoleCursorInfo(IntPtr hConsoleHandle, CONSOLE_CURSOR_INFO* lpConsoleCursorInfo);
 
-            [DllImport("kernel32.dll", EntryPoint = "FillConsoleOutputCharacterW", SetLastError = true)]
+            [LibraryImport("kernel32.dll", EntryPoint = "FillConsoleOutputCharacterW", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean FillConsoleOutputCharacter(IntPtr hConsoleHandle, Int16 cCharacter, UInt32 nLength, COORD dwWriteCoord, out UInt32 lpNumberOfCharsWritten);
+            public static partial Boolean FillConsoleOutputCharacter(IntPtr hConsoleHandle, Int16 cCharacter, UInt32 nLength, COORD dwWriteCoord, out UInt32 lpNumberOfCharsWritten);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean FillConsoleOutputAttribute(IntPtr hConsoleHandle, UInt16 wAttribute, UInt32 nLength, COORD dwWriteCoord, out UInt32 lpNumberOfAttrsWritten);
+            public static partial Boolean FillConsoleOutputAttribute(IntPtr hConsoleHandle, UInt16 wAttribute, UInt32 nLength, COORD dwWriteCoord, out UInt32 lpNumberOfAttrsWritten);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean GetConsoleMode(IntPtr hConsoleHandle, out UInt32 mode);
+            public static partial Boolean GetConsoleMode(IntPtr hConsoleHandle, out UInt32 mode);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
+            [LibraryImport("kernel32.dll", SetLastError = true)]
+            [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public extern static Boolean SetConsoleMode(IntPtr hConsoleHandle, UInt32 mode);
+            public static partial Boolean SetConsoleMode(IntPtr hConsoleHandle, UInt32 mode);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static unsafe Boolean GetConsoleCursorInfo(IntPtr hConsoleHandle, out CONSOLE_CURSOR_INFO lpConsoleCursorInfo)
+            {
+                fixed (CONSOLE_CURSOR_INFO* p = &lpConsoleCursorInfo)
+                {
+                    return GetConsoleCursorInfo(hConsoleHandle, p);
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static unsafe Boolean SetConsoleCursorInfo(IntPtr hConsoleHandle, ref CONSOLE_CURSOR_INFO lpConsoleCursorInfo)
+            {
+                fixed (CONSOLE_CURSOR_INFO* p = &lpConsoleCursorInfo)
+                {
+                    return SetConsoleCursorInfo(hConsoleHandle, p);
+                }
+            }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static UInt16 FromConsoleColorsToConsoleAttribute(ConsoleColor backgroundColor, ConsoleColor foregroundColor)
