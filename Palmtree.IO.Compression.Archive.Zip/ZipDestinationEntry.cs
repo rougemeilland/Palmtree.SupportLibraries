@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
+using Palmtree.IO.Compression.Stream;
 using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -771,10 +772,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
 
-                var compressionMethod = CompressionMethodId.GetCompressionMethod(CompressionLevel);
+                var compressionMethod = CompressionMethodId.GetCompressionMethod();
+                var compressionOption = GetCompressionOption(CompressionMethodId, CompressionLevel);
+                SetCompressionOptionFlag();
 
                 temporaryFile = new FilePath(Path.GetTempFileName());
-
                 packedTemporaryFile =
                     CompressionMethodId == ZipEntryCompressionMethodId.Stored
                     ? null
@@ -790,6 +792,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     : compressionMethod.GetEncodingStream(
                         packedTemporaryFile.Create()
                             .WithCache(),
+                        compressionOption,
                         SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), UInt64>(
                             unpackedCountProgress,
                             value => value.unpackedCount / 2));
@@ -839,27 +842,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             }
                         }
 
-                        //
-                        // 圧縮方式が Deflate の場合、圧縮レベルをフラグとして設定する
-                        //
-                        if (CompressionMethodId.IsAnyOf(ZipEntryCompressionMethodId.Deflate, ZipEntryCompressionMethodId.Deflate64))
-                        {
-                            switch (CompressionLevel)
-                            {
-                                case ZipEntryCompressionLevel.Normal:
-                                default:
-                                    break;
-                                case ZipEntryCompressionLevel.Maximum:
-                                    _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
-                                    break;
-                                case ZipEntryCompressionLevel.Fast:
-                                    _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption1;
-                                    break;
-                                case ZipEntryCompressionLevel.SuperFast:
-                                    _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0 | ZipEntryGeneralPurposeBitFlag.CompresssionOption1;
-                                    break;
-                            }
-                        }
+                        SetCompressionOptionFlag();
 
                         var localHeader =
                             ZipEntryLocalHeader.Build(
@@ -947,29 +930,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
 
-            var compressionMethod = CompressionMethodId.GetCompressionMethod(CompressionLevel);
-
-            //
-            // 圧縮方式が Deflate の場合、圧縮レベルをフラグとして設定する
-            //
-            if (CompressionMethodId.IsAnyOf(ZipEntryCompressionMethodId.Deflate, ZipEntryCompressionMethodId.Deflate64))
-            {
-                switch (CompressionLevel)
-                {
-                    case ZipEntryCompressionLevel.Normal:
-                    default:
-                        break;
-                    case ZipEntryCompressionLevel.Maximum:
-                        _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
-                        break;
-                    case ZipEntryCompressionLevel.Fast:
-                        _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption1;
-                        break;
-                    case ZipEntryCompressionLevel.SuperFast:
-                        _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0 | ZipEntryGeneralPurposeBitFlag.CompresssionOption1;
-                        break;
-                }
-            }
+            var compressionMethod = CompressionMethodId.GetCompressionMethod();
+            var compressionOption = GetCompressionOption(CompressionMethodId, CompressionLevel);
+            SetCompressionOptionFlag();
 
             var localHeaderInfo =
                 ZipEntryLocalHeader.Build(
@@ -986,6 +949,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 compressionMethod.GetEncodingStream(
                     _zipWriterStreamAccesser.MainStream
                         .WithEndAction(packedSize => packedSizeHolder.Value = packedSize, true),
+                    compressionOption,
                     SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), UInt64>(
                         unpackedCountProgress,
                         value => value.unpackedCount / 2))
@@ -1042,6 +1006,51 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         _zipWriterStreamAccesser.SetErrorMark();
                     _zipWriterStreamAccesser.UnlockZipStream();
                 }
+            }
+        }
+
+        private static ICoderOption GetCompressionOption(ZipEntryCompressionMethodId compressionMethodId, ZipEntryCompressionLevel compressionLevel) => compressionMethodId switch
+        {
+            ZipEntryCompressionMethodId.Stored => new ZipStoredCompressionCoderOption(),
+            ZipEntryCompressionMethodId.Deflate => new ZipDeflateCompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel() },
+            ZipEntryCompressionMethodId.Deflate64 => new ZipDeflate64CompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel() },
+            ZipEntryCompressionMethodId.BZIP2 => new ZipBzip2CompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel() },
+            ZipEntryCompressionMethodId.LZMA => new ZipLzmaCompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel(), UseEndOfStreamMarker = true },
+            _ => throw new CompressionMethodNotSupportedException(compressionMethodId),
+        };
+
+        private void SetCompressionOptionFlag()
+        {
+            switch (CompressionMethodId)
+            {
+                case ZipEntryCompressionMethodId.Deflate:
+                case ZipEntryCompressionMethodId.Deflate64:
+                {
+                    switch (CompressionLevel)
+                    {
+                        case ZipEntryCompressionLevel.Maximum:
+                            _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
+                            break;
+                        case ZipEntryCompressionLevel.Fast:
+                            _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption1;
+                            break;
+                        case ZipEntryCompressionLevel.SuperFast:
+                            _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption1 | ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
+                            break;
+                        case ZipEntryCompressionLevel.Normal:
+                        default:
+                            break;
+                    }
+
+                    break;
+                }
+                case ZipEntryCompressionMethodId.LZMA:
+                {
+                    _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
+                    break;
+                }
+                default:
+                    break;
             }
         }
 

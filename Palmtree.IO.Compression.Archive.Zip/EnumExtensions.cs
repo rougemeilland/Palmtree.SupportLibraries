@@ -1,4 +1,5 @@
 ﻿using System;
+using Palmtree.IO.Compression.Stream;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
@@ -11,7 +12,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
                      ZipEntryGeneralPurposeBitFlag.StrongEncrypted))
                 != ZipEntryGeneralPurposeBitFlag.None;
 
-        public static Int32 GetCompressionOptionValue(this ZipEntryGeneralPurposeBitFlag flag)
-            => ((UInt16)flag >> 1) & 3;
+        public static ZipCompressionDecoderParameter GetDecoderParameter(this ZipEntryGeneralPurposeBitFlag flag)
+        {
+            var result = ZipCompressionDecoderParameter.None;
+            if (flag.HasFlag(ZipEntryGeneralPurposeBitFlag.CompresssionOption0))
+                result |= ZipCompressionDecoderParameter.Bit1;
+            if (flag.HasFlag(ZipEntryGeneralPurposeBitFlag.CompresssionOption1))
+                result |= ZipCompressionDecoderParameter.Bit2;
+            return result;
+        }
     }
 }

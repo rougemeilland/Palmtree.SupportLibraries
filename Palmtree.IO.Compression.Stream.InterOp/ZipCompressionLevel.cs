@@ -1,10 +1,7 @@
-﻿using System;
-
-namespace Palmtree.IO.Compression.Stream
+﻿namespace Palmtree.IO.Compression.Stream
 {
-    public enum DeflateCompressionLevel
-        : Int32
-    { 
+    public enum ZipCompressionLevel
+    {
         /// <summary>
         /// 通常の圧縮です。
         /// </summary>

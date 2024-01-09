@@ -63,7 +63,7 @@ namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
                 throw new ArgumentNullException(nameof(baseStream));
             if (option is null)
                 throw new ArgumentNullException(nameof(option));
-            if (option is not DeflateCompressionOption)
+            if (option is not ZipDeflateCompressionCoderOption)
                 throw new ArgumentException($"Illegal {nameof(option)} data", nameof(option));
 
             return new Decoder(baseStream, unpackedStreamSize, unpackedCountProgress, leaveOpen);

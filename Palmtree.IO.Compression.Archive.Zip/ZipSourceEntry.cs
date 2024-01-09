@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Parser;
+using Palmtree.IO.Compression.Stream;
 using Palmtree.Linq;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -396,9 +397,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
         public ISequentialInputByteStream GetContentStream(IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
         {
             var stream =
-                CompressionMethodId.GetCompressionMethod(_generalPurposeBitFlag)
+                CompressionMethodId.GetCompressionMethod()
                 .GetDecodingStream(
                     _zipStream.Stream.WithPartial(DataPosition, PackedSize, true),
+                    GetDecoderOption(),
                     Size,
                     PackedSize,
                     progress)
@@ -441,9 +443,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
             try
             {
                 var actualCrc =
-                    CompressionMethodId.GetCompressionMethod(_generalPurposeBitFlag)
+                    CompressionMethodId.GetCompressionMethod()
                     .GetDecodingStream(
                         _zipStream.Stream.WithPartial(DataPosition, PackedSize, true),
+                        GetDecoderOption(),
                         Size,
                         PackedSize,
                         progress)
@@ -483,9 +486,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
             try
             {
                 var result =
-                    await CompressionMethodId.GetCompressionMethod(_generalPurposeBitFlag)
+                    await CompressionMethodId.GetCompressionMethod()
                     .GetDecodingStream(
                         _zipStream.Stream.WithPartial(DataPosition, PackedSize, true),
+                        GetDecoderOption(),
                         Size,
                         PackedSize,
                         progress)
@@ -512,5 +516,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
         internal Boolean RequiredZip64ForCentralDirectoryHeader { get; }
         internal ZipStreamPosition LocalHeaderPosition { get; }
         internal ZipStreamPosition DataPosition { get; }
+
+        private ICoderOption GetDecoderOption() => CompressionMethodId switch
+        {
+            ZipEntryCompressionMethodId.Stored => ZipStoredCompressionCoderOption.CreateDecoderOption(),
+            ZipEntryCompressionMethodId.Deflate => ZipDeflateCompressionCoderOption.CreateDecoderOption(_generalPurposeBitFlag.GetDecoderParameter()),
+            ZipEntryCompressionMethodId.Deflate64 => ZipDeflate64CompressionCoderOption.CreateDecoderOption(_generalPurposeBitFlag.GetDecoderParameter()),
+            ZipEntryCompressionMethodId.BZIP2 => ZipBzip2CompressionCoderOption.CreateDecoderOption(),
+            ZipEntryCompressionMethodId.LZMA => ZipLzmaCompressionCoderOption.CreateDecoderOption(_generalPurposeBitFlag.GetDecoderParameter()),
+            _ => throw new CompressionMethodNotSupportedException(CompressionMethodId),
+        };
     }
 }

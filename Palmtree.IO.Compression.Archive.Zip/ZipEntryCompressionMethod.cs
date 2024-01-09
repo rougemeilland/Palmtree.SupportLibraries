@@ -19,9 +19,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private static readonly IDictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder> _compresssionMethods;
 
         private readonly ICompressionCoder? _decoderPlugin;
-        private readonly ICoderOption? _decoderOption;
         private readonly ICompressionCoder? _encoderPlugin;
-        private readonly ICoderOption? _encoderOption;
 
         static ZipEntryCompressionMethod()
         {
@@ -39,7 +37,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             };
         }
 
-        internal ZipEntryCompressionMethod(ZipEntryCompressionMethodId compressMethodId, ICompressionCoder? decoderPlugin, ICoderOption? decoderOption, ICompressionCoder? encoderPlugin, ICoderOption? encoderOption)
+        internal ZipEntryCompressionMethod(ZipEntryCompressionMethodId compressMethodId, ICompressionCoder? decoderPlugin, ICompressionCoder? encoderPlugin)
         {
             if (decoderPlugin is null && encoderPlugin is null)
                 throw new ArgumentException($"Both {nameof(decoderPlugin)} and {nameof(encoderPlugin)} are null.");
@@ -47,10 +45,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 throw new ArgumentException($"{nameof(decoderPlugin)} does not implement the required interface.");
             if (encoderPlugin is not null and not ICompressionEncoder and not ICompressionHierarchicalEncoder)
                 throw new ArgumentException($"{nameof(encoderPlugin)} does not implement the required interface.");
-            if (decoderPlugin is not null && decoderOption is null)
-                throw new ArgumentNullException(nameof(decoderOption));
-            if (encoderPlugin is not null && encoderOption is null)
-                throw new ArgumentNullException(nameof(encoderOption));
 
             CompressionMethodId = compressMethodId;
             IsSupportedGetDecodingStream = decoderPlugin is ICompressionHierarchicalDecoder;
@@ -58,9 +52,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             IsSupportedGetEncodingStream = encoderPlugin is ICompressionHierarchicalEncoder;
             IsSupportedEncode = encoderPlugin is ICompressionEncoder;
             _decoderPlugin = decoderPlugin;
-            _decoderOption = decoderOption;
             _encoderPlugin = encoderPlugin;
-            _encoderOption = encoderOption;
         }
 
         public static IEnumerable<ZipEntryCompressionMethodId> SupportedCompresssionMethodIds
@@ -83,55 +75,43 @@ namespace Palmtree.IO.Compression.Archive.Zip
         public Boolean IsSupportedGetEncodingStream { get; }
         public Boolean IsSupportedEncode { get; }
 
-        public ISequentialInputByteStream GetDecodingStream(ISequentialInputByteStream baseStream, UInt64 unpackedSize, UInt64 packedSize, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
+        public ISequentialInputByteStream GetDecodingStream(ISequentialInputByteStream baseStream, ICoderOption decoderOption, UInt64 unpackedSize, UInt64 packedSize, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
 
-            return InternalGetDecodingStream(baseStream, unpackedSize, packedSize, progress);
+            return InternalGetDecodingStream(baseStream, decoderOption, unpackedSize, packedSize, progress);
         }
 
-        public ISequentialOutputByteStream GetEncodingStream(ISequentialOutputByteStream baseStream, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
+        public ISequentialOutputByteStream GetEncodingStream(ISequentialOutputByteStream baseStream, ICoderOption encoderOption, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
 
-            return InternalGetEncodingStream(baseStream, progress);
+            return InternalGetEncodingStream(baseStream, encoderOption, progress);
         }
 
-        internal static ZipEntryCompressionMethod GetCompressionMethod(ZipEntryCompressionMethodId compressionMethodId, ZipEntryGeneralPurposeBitFlag flag)
+        internal static ZipEntryCompressionMethod GetCompressionMethod(ZipEntryCompressionMethodId compressionMethodId)
         {
-            var instance =
-                CreateCompressionMethodDefaultInstance(
-                    GetPluginId(compressionMethodId),
-                    plugin => plugin.GetOptionFromGeneralPurposeFlag(
-                        flag.HasFlag(ZipEntryGeneralPurposeBitFlag.CompresssionOption0),
-                        flag.HasFlag(ZipEntryGeneralPurposeBitFlag.CompresssionOption1)));
-            return
-                instance ?? throw new CompressionMethodNotSupportedException(compressionMethodId);
-        }
-
-        private static ZipEntryCompressionMethod? CreateCompressionMethodDefaultInstance(CompressionMethodId compressionMethodId, Func<ICompressionCoder, ICoderOption> optionGetter)
-        {
+            var pluginId = GetPluginId(compressionMethodId);
             ICompressionCoder? deoderPlugin;
             ICompressionCoder? enoderPlugin;
             lock (_lockObject)
             {
-                if (!_compresssionMethods.TryGetValue((compressionMethodId, CoderType.Decoder), out deoderPlugin))
+                if (!_compresssionMethods.TryGetValue((pluginId, CoderType.Decoder), out deoderPlugin))
                     deoderPlugin = null;
-                if (!_compresssionMethods.TryGetValue((compressionMethodId, CoderType.Encoder), out enoderPlugin))
+                if (!_compresssionMethods.TryGetValue((pluginId, CoderType.Encoder), out enoderPlugin))
                     enoderPlugin = null;
             }
 
+            if (deoderPlugin is null && enoderPlugin is null)
+                throw new CompressionMethodNotSupportedException(compressionMethodId);
+
             return
-                deoderPlugin is null && enoderPlugin is null
-                ? null
-                : new ZipEntryCompressionMethod(
-                    GetCompressionMethodId(compressionMethodId),
+                new ZipEntryCompressionMethod(
+                    compressionMethodId,
                     deoderPlugin,
-                    deoderPlugin is null ? null : optionGetter(deoderPlugin),
-                    enoderPlugin,
-                    enoderPlugin is null ? null : optionGetter(enoderPlugin));
+                    enoderPlugin);
         }
 
         private static void SearchPlugins(IDictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder> plugins)
@@ -179,6 +159,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private ISequentialInputByteStream InternalGetDecodingStream(
             ISequentialInputByteStream baseStream,
+            ICoderOption decoderOption,
             UInt64 unpackedSize,
             UInt64 packedSize,
             IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress)
@@ -187,14 +168,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 case ICompressionHierarchicalDecoder hierarchicalDecoder:
                 {
-                    Validation.Assert(_decoderOption is not null, "_decoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     return
                         hierarchicalDecoder.GetDecodingStream(
                             baseStream
                                 .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2, 0, packedSize)),
-                            _decoderOption,
+                            decoderOption,
                             unpackedSize,
                             packedSize,
                             SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1, 0, unpackedSize))
@@ -203,10 +183,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 case ICompressionDecoder decoder:
                 {
-                    Validation.Assert(_decoderOption is not null, "_decoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     var queue = new InProcessPipe();
-                    var decoderOption = _decoderOption;
                     _ = Task.Run(() =>
                     {
                         try
@@ -239,13 +217,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private ISequentialOutputByteStream InternalGetEncodingStream(
             ISequentialOutputByteStream baseStream,
+            ICoderOption encoderOption,
             IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress)
         {
             switch (_encoderPlugin)
             {
                 case ICompressionHierarchicalEncoder hierarchicalEncoder:
                 {
-                    Validation.Assert(_encoderOption is not null, "_encoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     return
@@ -253,17 +231,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             baseStream
                                 .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2))
                                 .WithEndAction(_ => progressCounter.Report()),
-                            _encoderOption,
+                            encoderOption,
                             SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1))
                         .WithCache();
                 }
                 case ICompressionEncoder encoder:
                 {
-                    Validation.Assert(_encoderOption is not null, "_encoderOption is not null");
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     var queue = new InProcessPipe();
-                    var encoderOption = _encoderOption;
                     _ = Task.Run(() =>
                     {
                         try
