@@ -41,13 +41,11 @@ namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
                 throw new ArgumentNullException(nameof(option));
             if (option is not DeflateCompressionOption deflateOption)
                 throw new ArgumentException($"Illegal {nameof(option)} data", nameof(option));
-            if (deflateOption.CompressionLevel is < DeflateCompressionLevel.Minimum or > DeflateCompressionLevel.Maximum)
-                throw new ArgumentException($"Illegal {nameof(option)}.CompressionLevel value", nameof(option));
 
             var level = deflateOption.CompressionLevel switch
             {
-                DeflateCompressionLevel.Level0 or DeflateCompressionLevel.Level1 or DeflateCompressionLevel.Level2 or DeflateCompressionLevel.Level3 => CompressionLevel.Fastest,
-                DeflateCompressionLevel.Level7 or DeflateCompressionLevel.Level8 or DeflateCompressionLevel.Level9 => CompressionLevel.SmallestSize,
+                DeflateCompressionLevel.Fast or DeflateCompressionLevel.SuperFast => CompressionLevel.Fastest,
+                DeflateCompressionLevel.Maximum => CompressionLevel.SmallestSize,
                 _ => CompressionLevel.Optimal,
             };
             return new Encoder(baseStream, level, unpackedCountProgress, leaveOpen);

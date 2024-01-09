@@ -4,21 +4,25 @@ namespace Palmtree.IO.Compression.Stream
 {
     public enum DeflateCompressionLevel
         : Int32
-    {
-        Level0 = 0,
-        Level1 = 1,
-        Level2 = 2,
-        Level3 = 3,
-        Level4 = 4,
-        Level5 = 5,
-        Level6 = 6,
-        Level7 = 7,
-        Level8 = 8,
-        Level9 = 9,
-        SuperFast = Level0,
-        Fast = Level3,
-        Normal = Level5,
-        Minimum = Level0,
-        Maximum = Level9,
+    { 
+        /// <summary>
+        /// 通常の圧縮です。
+        /// </summary>
+        Normal = 0,
+
+        /// <summary>
+        /// 最大の圧縮率です。
+        /// </summary>
+        Maximum,
+
+        /// <summary>
+        /// 高速な圧縮です。ただし圧縮率は <see cref="Normal"/> より低下します。
+        /// </summary>
+        Fast,
+
+        /// <summary>
+        /// 非常に高速な圧縮です。ただし圧縮率 <see cref="Fast"/> より低下します。
+        /// </summary>
+        SuperFast
     }
 }
