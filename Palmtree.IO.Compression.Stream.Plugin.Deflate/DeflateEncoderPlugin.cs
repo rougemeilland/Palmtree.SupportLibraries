@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System;
+using System.IO.Compression;
 
 namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
 {

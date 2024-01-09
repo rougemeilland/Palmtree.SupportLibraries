@@ -2,22 +2,22 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net7.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.1.1</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
-    <Product>Palmtree Support Library ($(AssemblyName))</Product>
+    <Product>Zip compression plugin (Deflate)</Product>
     <Title>$(AssemblyName)</Title>
-    <Copyright>© 2023 Palmtree Software</Copyright>
+    <Copyright>© 2023-2024 Palmtree Software</Copyright>
     <PackageProjectUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>Palmtree Software</Authors>
     <Description>This is a plugin package for the deflate compression library.</Description>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>deflate</PackageTags>
+    <PackageTags>deflate zip plugin</PackageTags>
     <RepositoryUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</RepositoryUrl>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
