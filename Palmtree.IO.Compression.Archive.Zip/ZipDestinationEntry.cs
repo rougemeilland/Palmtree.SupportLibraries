@@ -773,8 +773,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
 
                 var compressionMethod = CompressionMethodId.GetCompressionMethod();
-                var compressionOption = GetCompressionOption(CompressionMethodId, CompressionLevel);
-                SetCompressionOptionFlag();
+                var compressionOption = CompressionMethodId.GetEncoderOption(CompressionLevel);
 
                 temporaryFile = new FilePath(Path.GetTempFileName());
                 packedTemporaryFile =
@@ -842,7 +841,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             }
                         }
 
-                        SetCompressionOptionFlag();
+                        _generalPurposeBitFlag |= CompressionMethodId.GettEncoderOptionFlags(CompressionLevel);
 
                         var localHeader =
                             ZipEntryLocalHeader.Build(
@@ -931,8 +930,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
 
             var compressionMethod = CompressionMethodId.GetCompressionMethod();
-            var compressionOption = GetCompressionOption(CompressionMethodId, CompressionLevel);
-            SetCompressionOptionFlag();
+            var compressionOption = CompressionMethodId.GetEncoderOption(CompressionLevel);
+            _generalPurposeBitFlag |= CompressionMethodId.GettEncoderOptionFlags(CompressionLevel);
 
             var localHeaderInfo =
                 ZipEntryLocalHeader.Build(
@@ -1006,51 +1005,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         _zipWriterStreamAccesser.SetErrorMark();
                     _zipWriterStreamAccesser.UnlockZipStream();
                 }
-            }
-        }
-
-        private static ICoderOption GetCompressionOption(ZipEntryCompressionMethodId compressionMethodId, ZipEntryCompressionLevel compressionLevel) => compressionMethodId switch
-        {
-            ZipEntryCompressionMethodId.Stored => new ZipStoredCompressionCoderOption(),
-            ZipEntryCompressionMethodId.Deflate => new ZipDeflateCompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel() },
-            ZipEntryCompressionMethodId.Deflate64 => new ZipDeflate64CompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel() },
-            ZipEntryCompressionMethodId.BZIP2 => new ZipBzip2CompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel() },
-            ZipEntryCompressionMethodId.LZMA => new ZipLzmaCompressionCoderOption { Level = compressionLevel.ToZipCompressionLevel(), UseEndOfStreamMarker = true },
-            _ => throw new CompressionMethodNotSupportedException(compressionMethodId),
-        };
-
-        private void SetCompressionOptionFlag()
-        {
-            switch (CompressionMethodId)
-            {
-                case ZipEntryCompressionMethodId.Deflate:
-                case ZipEntryCompressionMethodId.Deflate64:
-                {
-                    switch (CompressionLevel)
-                    {
-                        case ZipEntryCompressionLevel.Maximum:
-                            _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
-                            break;
-                        case ZipEntryCompressionLevel.Fast:
-                            _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption1;
-                            break;
-                        case ZipEntryCompressionLevel.SuperFast:
-                            _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption1 | ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
-                            break;
-                        case ZipEntryCompressionLevel.Normal:
-                        default:
-                            break;
-                    }
-
-                    break;
-                }
-                case ZipEntryCompressionMethodId.LZMA:
-                {
-                    _generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.CompresssionOption0;
-                    break;
-                }
-                default:
-                    break;
             }
         }
 
