@@ -675,7 +675,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 catch (Exception ex)
                 {
-                    throw Validation.GetFailErrorException("Unknown payload location update failed.", ex);
+                    throw new BadZipFileFormatException($"Some payloads overlap.: position=\"{position}\", size=0x{size:16}", ex);
                 }
             }
         }
