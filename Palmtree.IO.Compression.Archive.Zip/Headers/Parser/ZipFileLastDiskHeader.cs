@@ -59,6 +59,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 
             var foundHeaders =
                 EnumerateLastDiskHeaders(
+                    zipInputStream,
                     buffer,
                     zipInputStream.LastDiskStartPosition + possibleFirstHeaderOffsetOnLastDisk,
                     new DiskHeaderEnumeratorParameter(zipInputStream, stringency))
@@ -79,6 +80,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
         }
 
         private static IEnumerable<(ZipFileLastDiskHeader header, Boolean mayBeMultiVolume, UInt32 lastDiskNumber)> EnumerateLastDiskHeaders(
+            IZipInputStream zipInputStream,
             ReadOnlyMemory<Byte> buffer,
             ZipStreamPosition possibleFirstHeaderPosition,
             DiskHeaderEnumeratorParameter parameter)
@@ -125,8 +127,47 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                     var positionWhereZip64EOCDLMayBe = checked(eocdr.HeaderPosition - ZipFileZip64EOCDL.FixedHeaderSize);
                     var eocdlBuffer = buffer.Slice(checked((Int32)(positionWhereZip64EOCDLMayBe - possibleFirstHeaderPosition)), checked((Int32)ZipFileZip64EOCDL.FixedHeaderSize));
 
-                    // ZIP64 EOCDL を解析する
-                    zip64EOCDL = ZipFileZip64EOCDL.Parse(eocdlBuffer.Span, positionWhereZip64EOCDLMayBe);
+                    var tryParseZip64EOCDL = eocdr.IsRequiresZip64;
+                    if (!tryParseZip64EOCDL)
+                    {
+                        // EOCDR が ZIP64 拡張を要求していない場合
+
+                        // セントラルディレクトリヘッダの開始位置を取得する。
+                        var firstCentralDirectoryHeaderPosition = zipInputStream.GetPosition(eocdr.DiskWhereCentralDirectoryStarts, eocdr.OffsetOfStartOfCentralDirectory);
+                        if (firstCentralDirectoryHeaderPosition is null)
+                        {
+                            // セントラルディレクトリヘッダの開始位置が無効である場合
+
+                            // 原因は、シングルボリュームと仮定しているにもかかわらず、実はマルチボリュームであった場合など。
+                            // この時点で ZIP64 EOCDL の存在の確認はしない。
+                            tryParseZip64EOCDL = false;
+                        }
+                        else
+                        {
+                            // セントラルディレクトリヘッダの開始位置が有効である場合
+
+                            if (eocdr.HeaderPosition - firstCentralDirectoryHeaderPosition < checked(eocdr.SizeOfCentralDirectory + ZipFileZip64EOCDR.MinimumHeaderSize + ZipFileZip64EOCDL.FixedHeaderSize))
+                            {
+                                // セントラルディレクトリヘッダの開始位置とEOCDRの開始位置との差が、期待されている最低限の値より小さい場合
+
+                                // この場合、EOCDL は存在し得ない。
+                                tryParseZip64EOCDL = false;
+                            }
+                            else
+                            {
+                                // セントラルディレクトリヘッダの開始位置とEOCDRの開始位置との差が、期待されている最低限の値と等しいかより大きい場合
+
+                                // この場合、EOCDL は存在するかもしれない。
+                                tryParseZip64EOCDL = true;
+                            }
+                        }
+                    }
+
+                    if (tryParseZip64EOCDL)
+                    {
+                        // ZIP64 EOCDL を解析する
+                        zip64EOCDL = ZipFileZip64EOCDL.Parse(eocdlBuffer.Span, positionWhereZip64EOCDLMayBe);
+                    }
                 }
 
                 var mayBeMultiVolume = false;
