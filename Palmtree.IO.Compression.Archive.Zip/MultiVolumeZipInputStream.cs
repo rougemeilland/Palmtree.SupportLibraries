@@ -164,7 +164,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
             if (!_isDisposed)
             {
                 if (disposing)
+                {
                     _streamCache.Dispose();
+                    _volumeDisks.Dispose();
+                }
 
                 _isDisposed = true;
             }
@@ -177,6 +180,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             if (!_isDisposed)
             {
                 await _streamCache.DisposeAsync().ConfigureAwait(false);
+                _volumeDisks.Dispose();
                 _isDisposed = true;
             }
 
