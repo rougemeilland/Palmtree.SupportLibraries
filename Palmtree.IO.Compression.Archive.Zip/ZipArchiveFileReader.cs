@@ -87,6 +87,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR = numberOfCentralDirectoryHeadersOnTheSameDiskAsEOCDR;
             CommentBytes = commentBytes;
             var commentEncoding = _paramter.ZipEntryNameEncodingProvider.GetBestEncodings(ReadOnlyMemory<Byte>.Empty, null, commentBytes, null).FirstOrDefault();
+            Length = _zipInputStream.Length;
             Comment =
                 commentEncoding is not null
                 ? commentEncoding.GetString(commentBytes)
@@ -100,6 +101,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _isEnumerating = false;
             _isEnumeratedAllUnknownPayloads = false;
         }
+
+        /// <summary>
+        /// ZIP アーカイブファイルの長さを取得します。
+        /// </summary>
+        /// <value>
+        /// ZIP アーカイブファイルの長さ (バイト数) を示す <see cref="UInt64"/> 値です。
+        /// </value>
+        public UInt64 Length { get; }
 
         /// <summary>
         /// ZIP アーカイブのコメントの文字列を取得します。

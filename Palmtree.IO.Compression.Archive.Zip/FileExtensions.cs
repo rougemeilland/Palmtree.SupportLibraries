@@ -399,6 +399,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 using (var zipFile = file.OpenAsZipFile(zipEntryNameEncodingProvider, stringency))
                 {
+                    zipArchiveSize = zipFile.Length;
                     var entries = zipFile.EnumerateEntries();
                     ReportDoubleProgress(progress, () => totalProcessedRate);
                     foreach (var entry in entries)
@@ -470,6 +471,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 using (var zipFile = file.OpenAsZipFile(zipEntryNameEncodingProvider, stringency))
                 {
+                    zipArchiveSize = zipFile.Length;
                     var entries = zipFile.EnumerateEntriesAsync(null, cancellationToken);
                     ReportDoubleProgress(progress, () => totalProcessedRate);
                     var enumerator = entries.GetAsyncEnumerator(cancellationToken);
