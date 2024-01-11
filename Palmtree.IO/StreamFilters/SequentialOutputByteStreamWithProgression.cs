@@ -35,12 +35,6 @@ namespace Palmtree.IO.StreamFilters
             return length;
         }
 
-        protected override void FlushCore()
-            => _baseStream.Flush();
-
-        protected override Task FlushAsyncCore(CancellationToken cancellationToken = default)
-            => _baseStream.FlushAsync(cancellationToken);
-
         protected override void Dispose(Boolean disposing)
         {
             if (!_isDisposed)

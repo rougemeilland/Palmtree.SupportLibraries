@@ -46,7 +46,7 @@ namespace Palmtree
             }
 
             if (needToReport)
-                Report();
+                InternalReport();
         }
 
         public void ReportIfInitial()
@@ -56,6 +56,16 @@ namespace Palmtree
         }
 
         public void Report()
+        {
+            InternalReport();
+
+            lock (this)
+            {
+                _nextTimeToReport = DateTime.UtcNow + _minimumStepTime;
+            }
+        }
+
+        private void InternalReport()
         {
             if (_progress is not null)
             {

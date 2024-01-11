@@ -64,11 +64,6 @@ namespace Palmtree.IO.StreamFilters
             return length;
         }
 
-        protected override void FlushCore()
-            => _baseStream.Flush();
-        protected override Task FlushAsyncCore(CancellationToken cancellationToken = default)
-            => _baseStream.FlushAsync(cancellationToken);
-
         private Int32 GetWriteCount(Int32 bufferLength)
         {
             if (bufferLength <= 0)

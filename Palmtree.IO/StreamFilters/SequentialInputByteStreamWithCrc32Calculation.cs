@@ -24,14 +24,14 @@ namespace Palmtree.IO.StreamFilters
         protected override Int32 ReadCore(Span<Byte> buffer)
         {
             var length = _baseStream.Read(buffer);
-            ProgressCalculation(buffer, length);
+            ProcessCalculation(buffer, length);
             return length;
         }
 
         protected override async Task<Int32> ReadAsyncCore(Memory<Byte> buffer, CancellationToken cancellationToken)
         {
             var length = await _baseStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
-            ProgressCalculation(buffer.Span, length);
+            ProcessCalculation(buffer.Span, length);
             return length;
         }
 
@@ -70,7 +70,7 @@ namespace Palmtree.IO.StreamFilters
                 ReportCrcValue();
         }
 
-        private void ProgressCalculation(Span<Byte> buffer, Int32 length)
+        private void ProcessCalculation(Span<Byte> buffer, Int32 length)
         {
             if (length > 0)
                 _session.Put(buffer[..length]);

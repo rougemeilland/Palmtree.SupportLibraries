@@ -24,22 +24,16 @@ namespace Palmtree.IO.StreamFilters
         protected override Int32 WriteCore(ReadOnlySpan<Byte> buffer)
         {
             var length = _baseStream.Write(buffer);
-            CalculateCrc(buffer, length);
+            ProcessCalculation(buffer, length);
             return length;
         }
 
         protected override async Task<Int32> WriteAsyncCore(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
         {
             var length = await _baseStream.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
-            CalculateCrc(buffer.Span, length);
+            ProcessCalculation(buffer.Span, length);
             return length;
         }
-
-        protected override void FlushCore()
-            => _baseStream.Flush();
-
-        protected override Task FlushAsyncCore(CancellationToken cancellationToken = default)
-            => _baseStream.FlushAsync(cancellationToken);
 
         protected override void Dispose(Boolean disposing)
         {
@@ -76,7 +70,7 @@ namespace Palmtree.IO.StreamFilters
                 ReportCrcValue();
         }
 
-        private void CalculateCrc(ReadOnlySpan<Byte> buffer, Int32 length)
+        private void ProcessCalculation(ReadOnlySpan<Byte> buffer, Int32 length)
         {
             if (length > 0)
                 _session.Put(buffer[..length]);

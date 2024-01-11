@@ -1,37 +1,33 @@
 ﻿using System;
-using System.Linq;
-using Palmtree.Collections;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
     internal class ProgressCounterUint64Uint64
     {
-        private const UInt64 DEFAULT_MINIMUM_STEP = 64 * 1024;
+        private static readonly TimeSpan _DEFAULT_MINIMUM_STEP_TIME = TimeSpan.FromMilliseconds(100);
+
         private readonly IProgress<(UInt64 value1, UInt64 value2)>? _progress;
-        private readonly UInt64 _minimumStepValue;
-        private UInt64 _previousCounter1;
-        private UInt64 _previousCounter2;
+        private readonly TimeSpan _minimumStepTime;
+
+        private DateTime _nextTimeToReport;
 
         public ProgressCounterUint64Uint64(IProgress<(UInt64 value1, UInt64 value2)>? progress)
-            : this(progress, DEFAULT_MINIMUM_STEP)
+            : this(progress, _DEFAULT_MINIMUM_STEP_TIME)
         {
         }
 
-        public ProgressCounterUint64Uint64(IProgress<(UInt64 value1, UInt64 value2)>? progress, UInt64 minimumStepValue)
+        public ProgressCounterUint64Uint64(IProgress<(UInt64 value1, UInt64 value2)>? progress, TimeSpan minimumStepTime)
         {
-            if (minimumStepValue <= 0)
-                throw new ArgumentOutOfRangeException(nameof(minimumStepValue));
+            if (minimumStepTime < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(minimumStepTime));
 
             _progress = progress;
-            _minimumStepValue = minimumStepValue;
-            InstandeId = RandomSequence.GetUInt64Sequence().First();
+            _minimumStepTime = minimumStepTime;
+            _nextTimeToReport = DateTime.UtcNow;
             Value1 = 0;
             Value2 = 0;
-            _previousCounter1 = 0;
-            _previousCounter2 = 0;
         }
 
-        public UInt64 InstandeId { get; }
         public UInt64 Value1 { get; private set; }
         public UInt64 Value2 { get; private set; }
 
@@ -116,25 +112,35 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public void Report()
         {
-            try
+            InternalReport();
+
+            lock (this)
             {
-                _progress?.Report((Value1, Value2));
+                _nextTimeToReport = DateTime.UtcNow + _minimumStepTime;
             }
-            catch (Exception)
+        }
+
+        private void InternalReport()
+        {
+            if (_progress is not null)
             {
+                try
+                {
+                    _progress.Report((Value1, Value2));
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
         private Boolean CheckIfNeedToReport()
         {
-            if (Value1 < checked(_previousCounter1 + _minimumStepValue)
-                && Value2 < checked(_previousCounter2 + _minimumStepValue))
-            {
+            var now = DateTime.UtcNow;
+            if (now < _nextTimeToReport)
                 return false;
-            }
 
-            _previousCounter1 = Value1;
-            _previousCounter2 = Value2;
+            _nextTimeToReport = now + _minimumStepTime;
             return true;
         }
     }

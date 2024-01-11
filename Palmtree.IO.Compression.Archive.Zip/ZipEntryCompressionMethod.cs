@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Stream;
 using Palmtree.Threading;
@@ -47,10 +48,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 throw new ArgumentException($"{nameof(encoderPlugin)} does not implement the required interface.");
 
             CompressionMethodId = compressMethodId;
-            IsSupportedGetDecodingStream = decoderPlugin is ICompressionHierarchicalDecoder;
-            IsSupportedDecode = decoderPlugin is ICompressionDecoder;
-            IsSupportedGetEncodingStream = encoderPlugin is ICompressionHierarchicalEncoder;
-            IsSupportedEncode = encoderPlugin is ICompressionEncoder;
             _decoderPlugin = decoderPlugin;
             _encoderPlugin = encoderPlugin;
         }
@@ -70,10 +67,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
         }
 
         public ZipEntryCompressionMethodId CompressionMethodId { get; }
-        public Boolean IsSupportedGetDecodingStream { get; }
-        public Boolean IsSupportedDecode { get; }
-        public Boolean IsSupportedGetEncodingStream { get; }
-        public Boolean IsSupportedEncode { get; }
 
         public ISequentialInputByteStream GetDecodingStream(ISequentialInputByteStream baseStream, ICoderOption decoderOption, UInt64 unpackedSize, UInt64 packedSize, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
         {
@@ -240,6 +233,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     var progressCounter = new ProgressCounterUint64Uint64(progress);
                     progressCounter.Report();
                     var queue = new InProcessPipe();
+                    var syncObject = new ManualResetEventSlim();
+
                     _ = Task.Run(() =>
                     {
                         try
@@ -256,10 +251,19 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         catch (Exception)
                         {
                         }
+                        finally
+                        {
+                            syncObject.Set();
+                        }
                     });
                     return
                         queue.OpenOutputStream()
-                        .WithCache();
+                        .WithCache()
+                        .WithEndAction(_ =>
+                        {
+                            syncObject.Wait();
+                            syncObject.Dispose();
+                        });
                 }
 
                 default:
