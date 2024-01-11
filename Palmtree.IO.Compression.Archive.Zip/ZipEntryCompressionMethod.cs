@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Stream;
+using Palmtree.IO.Compression.Stream.Plugin;
 using Palmtree.Threading;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -27,7 +28,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _lockObject = new Object();
             _compresssionMethods = new Dictionary<(CompressionMethodId CompressionMethodId, CoderType CoderType), ICompressionCoder>();
 
-            Stream.Stored.StoredCoderPlugin.EnablePlugin();
+            StoredCoderPlugin.EnablePlugin();
             SearchPlugins(_compresssionMethods);
             CompressionCoderPlugin.PluginsUpdated += (s, e) =>
             {

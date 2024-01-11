@@ -1,4 +1,4 @@
-﻿namespace Palmtree.IO.Compression.Stream.Stored
+﻿namespace Palmtree.IO.Compression.Stream.Plugin
 {
     public abstract class StoredCoderPlugin
         : ICompressionCoder, ICompressionCoderPlugin

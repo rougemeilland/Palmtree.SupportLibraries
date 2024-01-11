@@ -12,17 +12,9 @@ This package is a plugin library package to support the Deflate compression meth
 
 | Item | Condition |
 | --- | --- |
-| CPU | x64 / x86 |
-| OS | Windows / Linux |
+| CPU | (Any) |
+| OS | (Any) |
 | .NET rumtime | 7.0 / 8.0 |
-| 7-zip | Confirmed to work with 7-zip 23.01 |
-
-<!--
-別途、 7-zip のインストールが必要です。
-詳細については パッケージ "SevenZip.Compression.Wrapper.NET" のドキュメントを参照してください。
--->
-7-zip must be installed separately.
-See [documentation for package `SevenZip.Compression.Wrapper.NET`](https://github.com/rougemeilland/SevenZip.Compression.Wrapper.NET/blob/main/docs/HowToInstall7z_en.md) for more information.
 
 ## 3. Usage
 

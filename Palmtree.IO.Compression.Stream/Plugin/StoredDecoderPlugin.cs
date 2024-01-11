@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Palmtree.IO.Compression.Stream.Stored
+namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class StoredDecoderPlugin
         : StoredCoderPlugin, ICompressionHierarchicalDecoder

@@ -5,7 +5,6 @@ using Palmtree.Collections;
 using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
 using Palmtree.IO.Compression.Stream.Plugin;
-using Palmtree.IO.Compression.Stream.Stored;
 
 namespace Test.ZipUtility.MultiVolume
 {
