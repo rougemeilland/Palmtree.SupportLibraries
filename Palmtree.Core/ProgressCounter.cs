@@ -7,18 +7,21 @@ namespace Palmtree
         where VALUE_T : struct, IComparable<VALUE_T>, IAdditionOperators<VALUE_T, VALUE_T, VALUE_T>
     {
         private readonly IProgress<VALUE_T>? _progress;
-        private readonly VALUE_T _minimumStepValue;
-        private VALUE_T _previousCounter;
+        private readonly VALUE_T _initialCounterValue;
+        private readonly TimeSpan _minimumStepTime;
 
-        public ProgressCounter(IProgress<VALUE_T>? progress, VALUE_T minimumStepValue)
+        private DateTime _nextTimeToReport;
+
+        public ProgressCounter(IProgress<VALUE_T>? progress, VALUE_T initialCounterValue, TimeSpan minimumStepTime)
         {
-            if (minimumStepValue.CompareTo(default) <= 0)
-                throw new ArgumentOutOfRangeException(nameof(minimumStepValue));
+            if (minimumStepTime < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(minimumStepTime));
 
             _progress = progress;
-            _minimumStepValue = minimumStepValue;
-            Value = default;
-            _previousCounter = default;
+            _initialCounterValue = initialCounterValue;
+            _minimumStepTime = minimumStepTime;
+            Value = initialCounterValue;
+            _nextTimeToReport = DateTime.UtcNow;
         }
 
         public VALUE_T Value { get; private set; }
@@ -26,6 +29,7 @@ namespace Palmtree
         public void AddValue(VALUE_T value)
         {
             var needToReport = false;
+            var now = DateTime.UtcNow;
 
             lock (this)
             {
@@ -34,10 +38,10 @@ namespace Palmtree
                     Value += value;
                 }
 
-                if (Value.CompareTo(checked(_previousCounter + _minimumStepValue)) >= 0)
+                if (now >= _nextTimeToReport)
                 {
                     needToReport = true;
-                    _previousCounter = Value;
+                    _nextTimeToReport = now + _minimumStepTime;
                 }
             }
 
@@ -47,18 +51,21 @@ namespace Palmtree
 
         public void ReportIfInitial()
         {
-            if (Value.CompareTo(default) <= 0)
+            if (Value.CompareTo(_initialCounterValue) <= 0)
                 Report();
         }
 
         public void Report()
         {
-            try
+            if (_progress is not null)
             {
-                _progress?.Report(Value);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    _progress.Report(Value);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
     }

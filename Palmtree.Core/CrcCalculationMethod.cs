@@ -9,8 +9,6 @@ namespace Palmtree
     internal abstract class CrcCalculationMethod<CRC_VALUE_T>
            where CRC_VALUE_T : struct
     {
-        private const UInt64 _PROGRESS_STEP_COUNT = 1024UL * 1024UL;
-
         #region private class
 
         private class CrcCalculationSession
@@ -96,7 +94,7 @@ namespace Palmtree
             if (byteSequence is null)
                 throw new ArgumentNullException(nameof(byteSequence));
 
-            var progressCounter = new ProgressCounterUInt64(progress, _PROGRESS_STEP_COUNT);
+            var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
             var crc = InitialValue;
             foreach (var data in byteSequence)
@@ -114,7 +112,7 @@ namespace Palmtree
             if (byteSequence is null)
                 throw new ArgumentNullException(nameof(byteSequence));
 
-            var progressCounter = new ProgressCounterUInt64(progress, _PROGRESS_STEP_COUNT);
+            var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
             var crc = InitialValue;
             var enumerator = byteSequence.GetAsyncEnumerator(cancellationToken);
@@ -139,7 +137,7 @@ namespace Palmtree
             if (result is null)
                 throw new ArgumentNullException(nameof(result));
 
-            var progressCounter = new ProgressCounterUInt64(progress, _PROGRESS_STEP_COUNT);
+            var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
             var session = CreateSession();
             foreach (var data in source)
@@ -160,7 +158,7 @@ namespace Palmtree
             if (result is null)
                 throw new ArgumentNullException(nameof(result));
 
-            var progressCounter = new ProgressCounterUInt64(progress, _PROGRESS_STEP_COUNT);
+            var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
             var session = CreateSession();
             var enumerator = source.GetAsyncEnumerator(cancellationToken);

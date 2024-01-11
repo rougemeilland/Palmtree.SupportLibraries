@@ -5,18 +5,18 @@ namespace Palmtree
     public class ProgressCounterUInt64
         : ProgressCounter<UInt64>
     {
-        private const UInt64 DEFAULT_MINIMUM_STEP = 64 * 1024;
+        private static readonly TimeSpan _DEFAULT_MINIMUM_STEP_TIME = TimeSpan.FromMilliseconds(100);
 
         public ProgressCounterUInt64(IProgress<UInt64>? progress)
-            : this(progress, DEFAULT_MINIMUM_STEP)
+            : this(progress, _DEFAULT_MINIMUM_STEP_TIME)
         {
         }
 
-        public ProgressCounterUInt64(IProgress<UInt64>? progress, UInt64 minimumStepValue)
-            : base(progress, minimumStepValue)
+        public ProgressCounterUInt64(IProgress<UInt64>? progress, TimeSpan minimumStepTime)
+            : base(progress, 0, minimumStepTime)
         {
-            if (minimumStepValue <= 0)
-                throw new ArgumentOutOfRangeException(nameof(minimumStepValue));
+            if (minimumStepTime < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(minimumStepTime));
         }
 
         public void Increment() => AddValue(1);
