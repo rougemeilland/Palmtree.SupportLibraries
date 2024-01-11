@@ -1,4 +1,4 @@
-﻿namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
+﻿namespace Palmtree.IO.Compression.Stream.Plugin
 {
     public abstract class DeflateCoderPlugin
         : ICompressionCoder, ICompressionCoderPlugin

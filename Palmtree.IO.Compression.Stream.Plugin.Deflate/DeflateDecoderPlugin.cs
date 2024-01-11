@@ -3,7 +3,7 @@ using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
+namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class DeflateDecoderPlugin
         : DeflateCoderPlugin, ICompressionHierarchicalDecoder

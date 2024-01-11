@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.1.5</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Zip compression plugin (Deflate)</Product>
     <Title>$(AssemblyName)</Title>
@@ -20,6 +20,7 @@
     <PackageTags>deflate zip plugin</PackageTags>
     <RepositoryUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</RepositoryUrl>
     <Platforms>AnyCPU</Platforms>
+    <RootNamespace>Palmtree.IO.Compression.Stream.Plugin</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

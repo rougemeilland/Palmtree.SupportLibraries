@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO.Compression;
 
-namespace Palmtree.IO.Compression.Stream.Plugin.Deflate
+namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class DeflateEncoderPlugin
         : DeflateCoderPlugin, ICompressionHierarchicalEncoder
