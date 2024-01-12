@@ -20,32 +20,29 @@ namespace Test.ZipUtility.Validation
 
         static void Main(string[] args)
         {
-            var fileList = args.EnumerateFilesFromArgument(true);
+            var fileList =
+                args.EnumerateFilesFromArgument(true)
+                .Where(file => file.Extension.IsAnyOf(".zip", ".001", ".exe", ".epub", StringComparison.OrdinalIgnoreCase))
+                .ToList();
             var totalSize = fileList.Aggregate(0UL, (length, file) => checked(length + file.Length));
             var completed = 0UL;
             foreach (var file in fileList)
             {
-                if (string.Equals(file.Extension, ".zip", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(file.Extension, ".001", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(file.Extension, ".exe", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(file.Extension, ".epub", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    try
+                    var result = file.ValidateAsZipFile(ValidationStringency.Strict | ValidationStringency.AllowNullPayloadAfterEOCDR, SafetyProgress.CreateIncreasingProgress<double>(value => Console.Write($"  {(completed + value * file.Length) * 100.0 / totalSize:F2}%\r")));
+                    if (result.ResultId != ZipArchiveValidationResultId.Ok)
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    checked
                     {
-                        var result = file.ValidateAsZipFile(ValidationStringency.Strict | ValidationStringency.AllowNullPayloadAfterEOCDR, SafetyProgress.CreateIncreasingProgress<double>(value => Console.Write($"  {(completed + value * file.Length) * 100.0 / totalSize:F2}%\r")));
-                        if (result.ResultId != ZipArchiveValidationResultId.Ok)
-                            Console.ForegroundColor = ConsoleColor.Red;
-                        checked
-                        {
-                            completed += file.Length;
-                        }
+                        completed += file.Length;
+                    }
 
-                        Console.WriteLine($"\"{(double)completed * 100 / totalSize:F2}% {file.FullName}\": {result.ResultId}, \"{result.Message}\"");
-                    }
-                    finally
-                    {
-                        Console.ResetColor();
-                    }
+                    Console.WriteLine($"\"{(double)completed * 100 / totalSize:F2}% {file.FullName}\": {result.ResultId}, \"{result.Message}\"");
+                }
+                finally
+                {
+                    Console.ResetColor();
                 }
             }
 

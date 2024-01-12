@@ -69,7 +69,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public ZipEntryCompressionMethodId CompressionMethodId { get; }
 
-        public ISequentialInputByteStream GetDecodingStream(ISequentialInputByteStream baseStream, ICoderOption decoderOption, UInt64 unpackedSize, UInt64 packedSize, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
+        public ISequentialInputByteStream GetDecodingStream(
+            ISequentialInputByteStream baseStream,
+            ICoderOption decoderOption,
+            UInt64 unpackedSize,
+            UInt64 packedSize,
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
@@ -77,7 +82,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
             return InternalGetDecodingStream(baseStream, decoderOption, unpackedSize, packedSize, progress);
         }
 
-        public ISequentialOutputByteStream GetEncodingStream(ISequentialOutputByteStream baseStream, ICoderOption encoderOption, IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
+        public ISequentialOutputByteStream GetEncodingStream(
+            ISequentialOutputByteStream baseStream,
+            ICoderOption encoderOption,
+            IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
@@ -156,52 +164,43 @@ namespace Palmtree.IO.Compression.Archive.Zip
             ICoderOption decoderOption,
             UInt64 unpackedSize,
             UInt64 packedSize,
-            IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress)
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress)
         {
             switch (_decoderPlugin)
             {
                 case ICompressionHierarchicalDecoder hierarchicalDecoder:
                 {
-                    var progressCounter = new ProgressCounterUint64Uint64(progress);
-                    progressCounter.Report();
                     return
                         hierarchicalDecoder.GetDecodingStream(
-                            baseStream
-                                .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2, 0, packedSize)),
+                            baseStream,
                             decoderOption,
                             unpackedSize,
                             packedSize,
-                            SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1, 0, unpackedSize))
-                        .WithCache()
-                        .WithEndAction(_ => progressCounter.Report());
+                            progress)
+                        .WithCache();
                 }
                 case ICompressionDecoder decoder:
                 {
-                    var progressCounter = new ProgressCounterUint64Uint64(progress);
                     var queue = new InProcessPipe();
                     _ = Task.Run(() =>
                     {
                         try
                         {
-                            progressCounter.Report();
                             using var queueWriter = queue.OpenOutputStream();
                             decoder.Decode(
-                                baseStream
-                                    .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2, 0, packedSize)),
+                                baseStream,
                                 queueWriter
                                     .WithCache(),
                                 decoderOption,
                                 unpackedSize,
                                 packedSize,
-                                SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1, 0, unpackedSize));
+                                progress);
                         }
                         catch (Exception)
                         {
                         }
                     });
-                    return
-                        queue.OpenInputStream()
-                        .WithEndAction(_ => progressCounter.Report());
+                    return queue.OpenInputStream();
                 }
 
                 default:
@@ -212,27 +211,21 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private ISequentialOutputByteStream InternalGetEncodingStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption encoderOption,
-            IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress)
+            IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             switch (_encoderPlugin)
             {
                 case ICompressionHierarchicalEncoder hierarchicalEncoder:
                 {
-                    var progressCounter = new ProgressCounterUint64Uint64(progress);
-                    progressCounter.Report();
                     return
                         hierarchicalEncoder.GetEncodingStream(
-                            baseStream
-                                .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2))
-                                .WithEndAction(_ => progressCounter.Report()),
+                            baseStream,
                             encoderOption,
-                            SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1))
+                            progress)
                         .WithCache();
                 }
                 case ICompressionEncoder encoder:
                 {
-                    var progressCounter = new ProgressCounterUint64Uint64(progress);
-                    progressCounter.Report();
                     var queue = new InProcessPipe();
                     var syncObject = new ManualResetEventSlim();
 
@@ -243,11 +236,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             using var queueReader = queue.OpenInputStream();
                             encoder.Encode(
                                 queueReader,
-                                baseStream
-                                    .WithProgression(SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue2))
-                                    .WithEndAction(_ => progressCounter.Report()),
+                                baseStream,
                                 encoderOption,
-                                SafetyProgress.CreateIncreasingProgress<UInt64>(progressCounter.SetValue1));
+                                progress);
                         }
                         catch (Exception)
                         {

@@ -7,7 +7,7 @@ namespace Palmtree.IO.Compression.Stream
         ISequentialOutputByteStream GetEncodingStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption option,
-            IProgress<UInt64>? unpackedCountProgress,
+            IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen = false);
     }
 }

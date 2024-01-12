@@ -24,8 +24,7 @@ namespace Palmtree.IO
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var length = ReadCore(buffer);
-            return length;
+            return ReadCore(buffer);
         }
 
         public Task<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default)

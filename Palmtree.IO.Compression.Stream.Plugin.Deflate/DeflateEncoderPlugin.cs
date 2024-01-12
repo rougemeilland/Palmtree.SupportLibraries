@@ -4,35 +4,38 @@ using System.IO.Compression;
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class DeflateEncoderPlugin
-        : DeflateCoderPlugin, ICompressionHierarchicalEncoder
+        : ICompressionCoder, ICompressionHierarchicalEncoder
     {
         private class Encoder
             : HierarchicalEncoder
         {
-            public Encoder(ISequentialOutputByteStream baseStream, CompressionLevel level, IProgress<UInt64>? unpackedCountProgress, Boolean leaveOpen)
-                : base(GetBaseStream(baseStream, level), unpackedCountProgress, leaveOpen)
+            private Encoder(
+                ISequentialOutputByteStream baseStream,
+                IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen,
+                Func<ISequentialOutputByteStream, ISequentialOutputByteStream> encoderStreamCreator)
+                : base(baseStream, progress, leaveOpen, encoderStreamCreator)
             {
             }
 
-            private static ISequentialOutputByteStream GetBaseStream(ISequentialOutputByteStream baseStream, CompressionLevel level)
-            {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
-
-                return new DeflateStream(baseStream.AsDotNetStream(), level).AsOutputByteStream();
-            }
-
-            protected override void FlushDestinationStream(ISequentialOutputByteStream destinationStream, Boolean isEndOfData)
-            {
-                if (isEndOfData)
-                    destinationStream.Dispose();
-            }
+            public static ISequentialOutputByteStream Create(
+                ISequentialOutputByteStream baseStream,
+                IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen,
+                CompressionLevel level)
+                => new Encoder(
+                    baseStream,
+                    progress,
+                    leaveOpen,
+                    stream => new DeflateStream(stream.AsDotNetStream(), level).AsOutputByteStream());
         }
+
+        CompressionMethodId ICompressionCoder.CompressionMethodId => DeflateCoderPlugin.COMPRESSION_METHOD_ID;
 
         ISequentialOutputByteStream IHierarchicalEncoder.GetEncodingStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption option,
-            IProgress<UInt64>? unpackedCountProgress,
+            IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen)
         {
             if (baseStream is null)
@@ -48,7 +51,7 @@ namespace Palmtree.IO.Compression.Stream.Plugin
                 ZipCompressionLevel.Maximum => CompressionLevel.SmallestSize,
                 _ => CompressionLevel.Optimal,
             };
-            return new Encoder(baseStream, level, unpackedCountProgress, leaveOpen);
+            return Encoder.Create(baseStream, progress, leaveOpen, level);
         }
     }
 }

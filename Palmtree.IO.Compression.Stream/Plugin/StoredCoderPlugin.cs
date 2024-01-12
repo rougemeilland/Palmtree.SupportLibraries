@@ -1,13 +1,9 @@
 ﻿namespace Palmtree.IO.Compression.Stream.Plugin
 {
-    public abstract class StoredCoderPlugin
-        : ICompressionCoder, ICompressionCoderPlugin
+    public class StoredCoderPlugin
+        : ICompressionCoderPlugin
     {
-        internal StoredCoderPlugin()
-        {
-        }
-
-        public CompressionMethodId CompressionMethodId => CompressionMethodId.Stored;
+        internal const CompressionMethodId COMPRESSION_METHOD_ID = CompressionMethodId.Stored;
 
         public static void EnablePlugin()
         {

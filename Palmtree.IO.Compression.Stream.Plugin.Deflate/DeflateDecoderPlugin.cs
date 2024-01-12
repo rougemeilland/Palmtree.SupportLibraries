@@ -1,62 +1,45 @@
 ﻿using System;
 using System.IO.Compression;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class DeflateDecoderPlugin
-        : DeflateCoderPlugin, ICompressionHierarchicalDecoder
+        : ICompressionCoder, ICompressionHierarchicalDecoder
     {
         private class Decoder
             : HierarchicalDecoder
         {
-            public Decoder(ISequentialInputByteStream baseStream, UInt64 unpackedStreamSize, IProgress<UInt64>? unpackedCountProgress, Boolean leaveOpen)
-                : base(GetBaseStream(baseStream), unpackedStreamSize, unpackedCountProgress, leaveOpen)
+            private Decoder(
+                ISequentialInputByteStream baseStream,
+                UInt64 unpackedStreamSize,
+                IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen,
+                Func<ISequentialInputByteStream, ISequentialInputByteStream> decoderStreamCreator)
+                : base(baseStream, unpackedStreamSize, progress, leaveOpen, decoderStreamCreator)
             {
             }
 
-            protected override Int32 ReadFromSourceStream(ISequentialInputByteStream sourceStream, Span<Byte> buffer)
-            {
-                try
-                {
-                    return base.ReadFromSourceStream(sourceStream, buffer);
-                }
-                catch (Exception ex)
-                {
-                    throw new DataErrorException("Detected data error", ex);
-                }
-            }
-
-            protected override async Task<Int32> ReadFromSourceStreamAsync(ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
-            {
-                try
-                {
-                    return await base.ReadFromSourceStreamAsync(sourceStream, buffer, cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    throw new DataErrorException("Detected data error", ex);
-                }
-            }
-
-            private static ISequentialInputByteStream GetBaseStream(ISequentialInputByteStream baseStream)
-            {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
-
-                return
-                    new DeflateStream(baseStream.AsDotNetStream(), CompressionMode.Decompress)
-                    .AsInputByteStream();
-            }
+            public static ISequentialInputByteStream Create(
+                ISequentialInputByteStream baseStream,
+                UInt64 unpackedStreamSize,
+                IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen)
+                => new Decoder(
+                    baseStream,
+                    unpackedStreamSize,
+                    progress,
+                    leaveOpen,
+                    stream => new DeflateStream(stream.AsDotNetStream(), CompressionMode.Decompress).AsInputByteStream());
         }
+
+        CompressionMethodId ICompressionCoder.CompressionMethodId => DeflateCoderPlugin.COMPRESSION_METHOD_ID;
 
         ISequentialInputByteStream IHierarchicalDecoder.GetDecodingStream(
             ISequentialInputByteStream baseStream,
             ICoderOption option,
             UInt64 unpackedStreamSize,
             UInt64 packedStreamSize,
-            IProgress<UInt64>? unpackedCountProgress,
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen)
         {
             if (baseStream is null)
@@ -66,7 +49,7 @@ namespace Palmtree.IO.Compression.Stream.Plugin
             if (option is not ZipDeflateCompressionCoderOption)
                 throw new ArgumentException($"Illegal {nameof(option)} data", nameof(option));
 
-            return new Decoder(baseStream, unpackedStreamSize, unpackedCountProgress, leaveOpen);
+            return Decoder.Create(baseStream, unpackedStreamSize, progress, leaveOpen);
         }
     }
 }

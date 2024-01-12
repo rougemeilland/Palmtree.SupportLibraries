@@ -12,7 +12,7 @@ namespace Palmtree.IO.Compression.Stream
             ICoderOption option,
             UInt64 unpackedSize,
             UInt64 packedSize,
-            IProgress<UInt64>? unpackedCountProgress = null);
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress);
 
         Task<Exception?> DecodeAsync(
             ISequentialInputByteStream sourceStream,
@@ -20,7 +20,7 @@ namespace Palmtree.IO.Compression.Stream
             ICoderOption option,
             UInt64 unpackedSize,
             UInt64 packedSize,
-            IProgress<UInt64>? unpackedCountProgress = null,
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
             CancellationToken cancellationToken = default);
     }
 }

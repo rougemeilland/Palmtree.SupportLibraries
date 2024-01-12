@@ -388,13 +388,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// 処理の進行状況の通知を受け取るためのオブジェクトです。通知を受け取らない場合は null です。
         /// </para>
         /// <para>
-        /// 進行状況は、読み込みが完了したデータの長さを示すタプル値です。このタプル値は、解凍されたデータの長さと圧縮されたデータの長さのペアです。
+        /// 進行状況は、読み込みが完了したデータの長さを示すタプル値です。このタプル値は、圧縮されたデータの長さと解凍されたデータの長さのペアです。
         /// </para>
         /// </param>
         /// <returns>
         /// エントリのデータを読み込むためのストリームオブジェクトです。
         /// </returns>
-        public ISequentialInputByteStream GetContentStream(IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
+        public ISequentialInputByteStream GetContentStream(IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress = null)
         {
             var stream =
                 CompressionMethodId.GetCompressionMethod()
@@ -428,13 +428,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// 処理の進行状況の通知を受け取るためのオブジェクトです。通知を受け取らない場合は null です。
         /// </para>
         /// <para>
-        /// 進行状況は、読み込みが完了したデータの長さを示すタプル値です。このタプル値は、解凍されたデータの長さと圧縮されたデータの長さのペアです。
+        /// 進行状況は、読み込みが完了したデータの長さを示すタプル値です。このタプル値は、圧縮されたデータの長さと解凍されたデータの長さのペアです。
         /// </para>
         /// </param>
         /// <exception cref="BadZipFileFormatException">
         /// エントリの CRC が一致しません。おそらく、エントリのデータが破損しています。
         /// </exception>
-        public void ValidateData(IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null)
+        public void ValidateData(IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress = null)
         {
             if (!IsFile)
                 return;
@@ -468,7 +468,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// 処理の進行状況の通知を受け取るためのオブジェクトです。通知を受け取らない場合は null です。
         /// </para>
         /// <para>
-        /// 進行状況は、読み込みが完了したデータの長さを示すタプル値です。このタプル値は、解凍されたデータの長さと圧縮されたデータの長さのペアです。
+        /// 進行状況は、読み込みが完了したデータの長さを示すタプル値です。このタプル値は、圧縮されたデータの長さと解凍されたデータの長さのペアです。
         /// </para>
         /// </param>
         /// <param name="cancellationToken">
@@ -477,7 +477,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <exception cref="BadZipFileFormatException">
         /// エントリの CRC が一致しません。おそらく、エントリのデータが破損しています。
         /// </exception>
-        public async Task ValidateDataAsync(IProgress<(UInt64 unpackedCount, UInt64 packedCount)>? progress = null, CancellationToken cancellationToken = default)
+        public async Task ValidateDataAsync(IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress = null, CancellationToken cancellationToken = default)
         {
             if (!IsFile)
                 return;

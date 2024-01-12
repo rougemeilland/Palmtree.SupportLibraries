@@ -1,93 +1,74 @@
 ﻿using System;
-using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Palmtree.IO.StreamFilters;
 
 namespace Palmtree.IO.Compression.Stream
 {
     public abstract class HierarchicalEncoder
-        : SequentialOutputByteStreamFilter
+        : SequentialOutputByteStream
     {
         private readonly ISequentialOutputByteStream _baseStream;
-        private readonly ProgressCounterUInt64 _unpackedSizeCounter;
+        private readonly IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? _progress;
+        private readonly Boolean _leaveOpen;
+        private readonly ValueHolder<UInt64> _uncomprssedStreamProcessedCount;
+        private readonly ValueHolder<UInt64> _comprssedStreamProcessedCount;
 
         private Boolean _isDisposed;
-        private Boolean _isEndOfWriting;
 
-        public HierarchicalEncoder(ISequentialOutputByteStream baseStream, IProgress<UInt64>? unpackedCountProgress, Boolean leaveOpen)
-            : base(baseStream, leaveOpen)
+        public HierarchicalEncoder(
+            ISequentialOutputByteStream baseStream,
+            IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
+            Boolean leaveOpen,
+            Func<ISequentialOutputByteStream, ISequentialOutputByteStream> encoderStreamCreator)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
+            if (encoderStreamCreator is null)
+                throw new ArgumentNullException(nameof(encoderStreamCreator));
 
+            _comprssedStreamProcessedCount = new ValueHolder<UInt64>();
+            _uncomprssedStreamProcessedCount = new ValueHolder<UInt64>();
+            _baseStream =
+                encoderStreamCreator(
+                    progress is null
+                    ? baseStream
+                    : baseStream
+                        .WithProgression(
+                            new SimpleProgress<UInt64>(value =>
+                            {
+                                _comprssedStreamProcessedCount.Value = value;
+                                progress.Report((_uncomprssedStreamProcessedCount.Value, _comprssedStreamProcessedCount.Value));
+                            })));
+            _progress = progress;
+            _leaveOpen = leaveOpen;
             _isDisposed = false;
-            _baseStream = baseStream;
-            _unpackedSizeCounter = new ProgressCounterUInt64(unpackedCountProgress);
-            _isEndOfWriting = false;
         }
 
         protected override Int32 WriteCore(ReadOnlySpan<Byte> buffer)
         {
-            _unpackedSizeCounter.ReportIfInitial();
+            if (_uncomprssedStreamProcessedCount.Value <= 0 && _progress is not null)
+                _progress.Report((_uncomprssedStreamProcessedCount.Value, _comprssedStreamProcessedCount.Value));
             if (buffer.Length <= 0)
                 return 0;
-            var written = WriteToDestinationStream(_baseStream, buffer);
-            if (written > 0)
-                _unpackedSizeCounter.AddValue(checked((UInt32)written));
-            return written;
+            ProcessProgress(buffer.Length);
+            _baseStream.WriteBytes(buffer);
+            return buffer.Length;
         }
 
         protected override async Task<Int32> WriteAsyncCore(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
         {
-            _unpackedSizeCounter.ReportIfInitial();
+            if (_uncomprssedStreamProcessedCount.Value <= 0 && _progress is not null)
+                _progress.Report((_uncomprssedStreamProcessedCount.Value, _comprssedStreamProcessedCount.Value));
             if (buffer.Length <= 0)
                 return 0;
-            var written = await WriteToDestinationStreamAsync(_baseStream, buffer, cancellationToken).ConfigureAwait(false);
-            if (written > 0)
-                _unpackedSizeCounter.AddValue(checked((UInt32)written));
-            return written;
+            ProcessProgress(buffer.Length);
+            await _baseStream.WriteBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
+            return buffer.Length;
         }
 
-        protected override void FlushCore()
-        {
-            try
-            {
-                FlushDestinationStream(_baseStream, false);
-            }
-            catch (IOException)
-            {
-                throw;
-            }
-            catch (ObjectDisposedException ex)
-            {
-                throw new IOException("Stream is closed.", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("Can not flush stream.", ex);
-            }
-        }
-
-        protected override async Task FlushAsyncCore(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                await FlushDestinationStreamAsync(_baseStream, false, cancellationToken).ConfigureAwait(false);
-            }
-            catch (IOException)
-            {
-                throw;
-            }
-            catch (ObjectDisposedException ex)
-            {
-                throw new IOException("Stream is closed.", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("Can not flush stream.", ex);
-            }
-        }
+        protected override void FlushCore() => _baseStream.Flush();
+        protected override Task FlushAsyncCore(CancellationToken cancellationToken = default) => _baseStream.FlushAsync(cancellationToken);
 
         protected override void Dispose(Boolean disposing)
         {
@@ -95,19 +76,11 @@ namespace Palmtree.IO.Compression.Stream
             {
                 if (disposing)
                 {
-                    try
-                    {
-                        FlushDestinationStream(_baseStream, true);
-                        _isEndOfWriting = true;
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    _baseStream.Dispose();
+                    if (!_leaveOpen)
+                        _baseStream.Dispose();
+                    _progress?.Report((_uncomprssedStreamProcessedCount.Value, _comprssedStreamProcessedCount.Value));
                 }
 
-                _unpackedSizeCounter.Report();
                 _isDisposed = true;
 
             }
@@ -119,38 +92,30 @@ namespace Palmtree.IO.Compression.Stream
         {
             if (!_isDisposed)
             {
-                try
-                {
-                    await FlushDestinationStreamAsync(_baseStream, true, default).ConfigureAwait(false);
-                    _isEndOfWriting = true;
-                }
-                catch (Exception)
-                {
-                }
-
-                await _baseStream.DisposeAsync().ConfigureAwait(false);
-                _unpackedSizeCounter.Report();
+                if (!_leaveOpen)
+                    await _baseStream.DisposeAsync().ConfigureAwait(false);
+                _progress?.Report((_uncomprssedStreamProcessedCount.Value, _comprssedStreamProcessedCount.Value));
                 _isDisposed = true;
             }
 
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
-        protected virtual Int32 WriteToDestinationStream(ISequentialOutputByteStream destinationStream, ReadOnlySpan<Byte> buffer)
-            => destinationStream.Write(buffer);
-
-        protected virtual Task<Int32> WriteToDestinationStreamAsync(ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
-            => destinationStream.WriteAsync(buffer, cancellationToken);
-
-        protected virtual void FlushDestinationStream(ISequentialOutputByteStream destinationStream, Boolean isEndOfData)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ProcessProgress(Int32 length)
         {
-            if (!_isEndOfWriting)
-                destinationStream.Flush();
-        }
+            if (length > 0)
+            {
+                if (_progress is not null)
+                {
+                    checked
+                    {
+                        _uncomprssedStreamProcessedCount.Value += (UInt64)length;
+                    }
 
-        protected virtual Task FlushDestinationStreamAsync(ISequentialOutputByteStream destinationStream, Boolean isEndOfData, CancellationToken cancellationToken)
-            => !_isEndOfWriting
-                ? destinationStream.FlushAsync(cancellationToken)
-                : Task.CompletedTask;
+                    _progress.Report((_uncomprssedStreamProcessedCount.Value, _comprssedStreamProcessedCount.Value));
+                }
+            }
+        }
     }
 }

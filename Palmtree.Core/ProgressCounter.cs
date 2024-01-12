@@ -8,9 +8,9 @@ namespace Palmtree
     {
         private readonly IProgress<VALUE_T>? _progress;
         private readonly VALUE_T _initialCounterValue;
-        private readonly TimeSpan _minimumStepTime;
+        private readonly Int64 _minimumStepTimeMilliSeconds;
 
-        private DateTime _nextTimeToReport;
+        private Int64 _previousReportedTime;
 
         public ProgressCounter(IProgress<VALUE_T>? progress, VALUE_T initialCounterValue, TimeSpan minimumStepTime)
         {
@@ -19,9 +19,9 @@ namespace Palmtree
 
             _progress = progress;
             _initialCounterValue = initialCounterValue;
-            _minimumStepTime = minimumStepTime;
+            _minimumStepTimeMilliSeconds = checked((Int64)minimumStepTime.TotalMilliseconds);
             Value = initialCounterValue;
-            _nextTimeToReport = DateTime.UtcNow;
+            _previousReportedTime = Environment.TickCount64;
         }
 
         public VALUE_T Value { get; private set; }
@@ -29,7 +29,7 @@ namespace Palmtree
         public void AddValue(VALUE_T value)
         {
             var needToReport = false;
-            var now = DateTime.UtcNow;
+            var now = Environment.TickCount64;
 
             lock (this)
             {
@@ -38,10 +38,10 @@ namespace Palmtree
                     Value += value;
                 }
 
-                if (now >= _nextTimeToReport)
+                if (unchecked(now - _previousReportedTime) >= _minimumStepTimeMilliSeconds)
                 {
                     needToReport = true;
-                    _nextTimeToReport = now + _minimumStepTime;
+                    _previousReportedTime = now;
                 }
             }
 
@@ -61,7 +61,7 @@ namespace Palmtree
 
             lock (this)
             {
-                _nextTimeToReport = DateTime.UtcNow + _minimumStepTime;
+                _previousReportedTime = Environment.TickCount64;
             }
         }
 

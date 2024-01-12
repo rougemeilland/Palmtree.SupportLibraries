@@ -49,8 +49,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (zipArchiveFile is null)
                 throw new ArgumentNullException(nameof(zipArchiveFile));
-            if (!String.Equals(zipArchiveFile.Extension, ".zip", StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException($"The extension of zip archive files must be \"zip\".: {nameof(zipArchiveFile)}=\"{zipArchiveFile}\"", nameof(zipArchiveFile));
             if (maximumVolumeSize < _minimumAtomicDataSize)
                 throw new ArgumentOutOfRangeException($"Maximum volume size is too short. To create a ZIP archive, the maximum volume size must be at least {maximumVolumeSize:N0} bytes.");
 

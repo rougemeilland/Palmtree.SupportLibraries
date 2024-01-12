@@ -3,22 +3,34 @@
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class StoredEncoderPlugin
-        : StoredCoderPlugin, ICompressionHierarchicalEncoder
+        : ICompressionCoder, ICompressionHierarchicalEncoder
     {
         private class Encoder
             : HierarchicalEncoder
         {
-            public Encoder(ISequentialOutputByteStream baseStream, IProgress<UInt64>? unpackedCountProgress, Boolean leaveOpen)
-                : base(baseStream, unpackedCountProgress, leaveOpen)
+            private Encoder(
+                ISequentialOutputByteStream baseStream,
+                IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen,
+                Func<ISequentialOutputByteStream, ISequentialOutputByteStream> encoderStreamCreator)
+                : base(baseStream, progress, leaveOpen, encoderStreamCreator)
             {
             }
+
+            public static ISequentialOutputByteStream Create(
+                ISequentialOutputByteStream baseStream,
+                IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen)
+                => new Encoder(baseStream, progress, leaveOpen, stream => stream);
         }
+
+        CompressionMethodId ICompressionCoder.CompressionMethodId => StoredCoderPlugin.COMPRESSION_METHOD_ID;
 
         ISequentialOutputByteStream IHierarchicalEncoder.GetEncodingStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption option,
-            IProgress<UInt64>? unpackedCountProgress,
+            IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen)
-            => new Encoder(baseStream, unpackedCountProgress, leaveOpen);
+            => Encoder.Create(baseStream, progress, leaveOpen);
     }
 }

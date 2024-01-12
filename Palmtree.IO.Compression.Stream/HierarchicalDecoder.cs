@@ -3,60 +3,89 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Palmtree.IO.StreamFilters;
 
 namespace Palmtree.IO.Compression.Stream
 {
     public abstract class HierarchicalDecoder
-        : SequentialInputByteStreamFilter
+        : SequentialInputByteStream
     {
         private readonly ISequentialInputByteStream _baseStream;
         private readonly UInt64 _size;
-        private readonly ProgressCounterUInt64 _unpackedSizeCounter;
+        private readonly IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? _progress;
+        private readonly Boolean _leaveOpen;
+        private readonly ValueHolder<UInt64> _comprssedStreamProcessedCount;
+        private readonly ValueHolder<UInt64> _uncomprssedStreamProcessedCount;
 
         private Boolean _isDisposed;
         private Boolean _isEndOfStream;
 
-        public HierarchicalDecoder(ISequentialInputByteStream baseStream, UInt64 size, IProgress<UInt64>? unpackedCountProgress, Boolean leaveOpen)
-            : base(baseStream, leaveOpen)
+        public HierarchicalDecoder(
+            ISequentialInputByteStream baseStream,
+            UInt64 size,
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
+            Boolean leaveOpen,
+            Func<ISequentialInputByteStream, ISequentialInputByteStream> decoderStreamCreator)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
+            if (decoderStreamCreator is null)
+                throw new ArgumentNullException(nameof(decoderStreamCreator));
 
-            _isDisposed = false;
-            _baseStream = baseStream;
+            _comprssedStreamProcessedCount = new ValueHolder<UInt64>();
+            _uncomprssedStreamProcessedCount = new ValueHolder<UInt64>();
+
+            _baseStream =
+                decoderStreamCreator(
+                    progress is null
+                    ? baseStream
+                    : baseStream
+                        .WithProgression(
+                            new SimpleProgress<UInt64>(value =>
+                            {
+                                _comprssedStreamProcessedCount.Value = value;
+                                progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
+                            })));
             _size = size;
-            _unpackedSizeCounter = new ProgressCounterUInt64(unpackedCountProgress);
+            _progress = progress;
+            _leaveOpen = leaveOpen;
+            _isDisposed = false;
         }
 
         protected override Int32 ReadCore(Span<Byte> buffer)
         {
-            _unpackedSizeCounter.ReportIfInitial();
+            if (_uncomprssedStreamProcessedCount.Value <= 0 && _progress is not null)
+                _progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
             if (_isEndOfStream || buffer.Length <= 0)
                 return 0;
-            var length = ReadFromSourceStream(_baseStream, buffer);
-            ProgressCounter(length);
-            return length;
+
+            try
+            {
+                var length = _baseStream.Read(buffer);
+                ProcessProgress(length);
+                return length;
+            }
+            catch (Exception ex)
+            {
+                throw new DataErrorException("Failed to uncompression.", ex);
+            }
         }
 
         protected override async Task<Int32> ReadAsyncCore(Memory<Byte> buffer, CancellationToken cancellationToken)
         {
-            _unpackedSizeCounter.ReportIfInitial();
+            if (_uncomprssedStreamProcessedCount.Value <= 0 && _progress is not null)
+                _progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
             if (_isEndOfStream || buffer.Length <= 0)
                 return 0;
-            var length = await ReadFromSourceStreamAsync(_baseStream, buffer, cancellationToken).ConfigureAwait(false);
-            ProgressCounter(length);
-            return length;
-        }
-
-        protected virtual Int32 ReadFromSourceStream(ISequentialInputByteStream sourceStream, Span<Byte> buffer)
-            => sourceStream.Read(buffer);
-
-        protected virtual Task<Int32> ReadFromSourceStreamAsync(ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken)
-            => sourceStream.ReadAsync(buffer, cancellationToken);
-
-        protected virtual void OnEndOfStream()
-        {
+            try
+            {
+                var length = await _baseStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+                ProcessProgress(length);
+                return length;
+            }
+            catch (Exception ex)
+            {
+                throw new DataErrorException("Failed to uncompression.", ex);
+            }
         }
 
         protected override void Dispose(Boolean disposing)
@@ -65,40 +94,50 @@ namespace Palmtree.IO.Compression.Stream
             {
                 if (disposing)
                 {
+                    if (!_leaveOpen)
+                        _baseStream.Dispose();
+                    _progress?.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
                 }
 
-                _unpackedSizeCounter.Report();
                 _isDisposed = true;
             }
 
             base.Dispose(disposing);
         }
 
-        protected override Task DisposeAsyncCore()
+        protected override async Task DisposeAsyncCore()
         {
             if (!_isDisposed)
             {
-                _unpackedSizeCounter.Report();
+                if (!_leaveOpen)
+                    await _baseStream.DisposeAsync().ConfigureAwait(false);
+                _progress?.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
                 _isDisposed = true;
             }
 
-            return Task.CompletedTask;
+            await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProgressCounter(Int32 length)
+        private void ProcessProgress(Int32 length)
         {
             if (length > 0)
             {
-                _unpackedSizeCounter.AddValue(checked((UInt32)length));
+                if (_progress is not null)
+                {
+                    checked
+                    {
+                        _uncomprssedStreamProcessedCount.Value += (UInt64)length;
+                    }
+
+                    _progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
+                }
             }
             else
             {
                 _isEndOfStream = true;
-                if (_unpackedSizeCounter.Value != _size)
+                if (_uncomprssedStreamProcessedCount.Value != _size)
                     throw new IOException("Size not match");
-                else
-                    OnEndOfStream();
             }
         }
     }

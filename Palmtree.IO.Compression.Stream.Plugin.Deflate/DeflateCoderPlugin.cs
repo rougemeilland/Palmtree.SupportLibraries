@@ -1,13 +1,13 @@
 ﻿namespace Palmtree.IO.Compression.Stream.Plugin
 {
-    public abstract class DeflateCoderPlugin
-        : ICompressionCoder, ICompressionCoderPlugin
+    public class DeflateCoderPlugin
+        : ICompressionCoderPlugin
     {
         internal DeflateCoderPlugin()
         {
         }
 
-        public CompressionMethodId CompressionMethodId => CompressionMethodId.Deflate;
+        internal const CompressionMethodId COMPRESSION_METHOD_ID = CompressionMethodId.Deflate;
 
         public static void EnablePlugin()
         {

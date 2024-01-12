@@ -42,6 +42,28 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        private class SimpleProgress<VALUE_T>
+            : IProgress<VALUE_T>
+        {
+            private readonly Action<VALUE_T> _action;
+
+            public SimpleProgress(Action<VALUE_T> action)
+            {
+                _action = action;
+            }
+
+            public void Report(VALUE_T value)
+            {
+                try
+                {
+                    _action(value);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
         private static readonly Encoding _utf8Encoding;
         private static readonly Regex _dotEntryNamePattern;
 
@@ -633,7 +655,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <summary>
         /// エントリのデータを書き込むためのストリームを取得します。
         /// </summary>
-        /// <param name="unpackedCountProgress">
+        /// <param name="progress">
         /// <para>
         /// 処理の進行状況の通知を受け取るためのオブジェクトです。通知を受け取らない場合は null です。
         /// </para>
@@ -647,7 +669,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <exception cref="InvalidOperationException">
         /// 既にデータは出力済みです。
         /// </exception>
-        public ISequentialOutputByteStream GetContentStream(IProgress<UInt64>? unpackedCountProgress = null)
+        public ISequentialOutputByteStream GetContentStream(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress = null)
         {
             _zipWriterStreamAccesser.LockZipStream();
             _zipWriterStreamAccesser.BeginToWriteContent();
@@ -667,8 +689,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 var stream =
                     _useDataDescriptor
-                    ? GetContentStreamWithDataDescriptor(unpackedCountProgress)
-                    : GetContentStreamWithoutDataDescriptor(unpackedCountProgress);
+                    ? GetContentStreamWithDataDescriptor(progress)
+                    : GetContentStreamWithoutDataDescriptor(progress);
                 success = true;
                 return stream;
             }
@@ -755,7 +777,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private ISequentialOutputByteStream GetContentStreamWithoutDataDescriptor(IProgress<UInt64>? unpackedCountProgress)
+        private ISequentialOutputByteStream GetContentStreamWithoutDataDescriptor(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             var temporaryFile = (FilePath?)null;
             var packedTemporaryFile = (FilePath?)null;
@@ -764,7 +786,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 try
                 {
-                    unpackedCountProgress?.Report(0);
+                    progress?.Report((0, 0));
                 }
                 catch (Exception)
                 {
@@ -792,12 +814,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         packedTemporaryFile.Create()
                             .WithCache(),
                         compressionOption,
-                        SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), UInt64>(
-                            unpackedCountProgress,
-                            value => value.unpackedCount / 2));
+                        SafetyProgress.CreateProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount), (UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>(
+                            progress,
+                            value => (value.inUncompressedStreamProcessedCount / 2, value.outCompressedStreamProcessedCount / 2)));
 
                 var tempraryFileStream =
-                    (packedOutputStream is null ? outputStrem : outputStrem.Branch(packedOutputStream))
+                    (packedOutputStream is null ? (progress is null ? outputStrem : outputStrem.WithProgression(new SimpleProgress<UInt64>(value => progress.Report((value / 2, value / 2))))) : outputStrem.Branch(packedOutputStream))
                     .WithCrc32Calculation(EndOfCopyingToTemporaryFile);
                 success = true;
                 return tempraryFileStream;
@@ -816,112 +838,109 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var success = false;
                 try
                 {
-                    if (temporaryFile is not null && temporaryFile.Exists)
+                    Validation.Assert(temporaryFile is not null && temporaryFile.Exists, "temporaryFile is not null && temporaryFile.Exists");
+                    Validation.Assert(CompressionMethodId == ZipEntryCompressionMethodId.Stored == (packedTemporaryFile is null), "CompressionMethodId == ZipEntryCompressionMethodId.Stored != (packedTemporaryFile is null)");
+                    var size = temporaryFile.Length;
+                    var packedSize = temporaryFile.Length;
+                    var crc = actualCrc;
+                    Validation.Assert(size == actualSize, "size == actualSize");
+                    if (packedTemporaryFile is not null)
                     {
-                        Validation.Assert(CompressionMethodId == ZipEntryCompressionMethodId.Stored == (packedTemporaryFile is null), "CompressionMethodId == ZipEntryCompressionMethodId.Stored != (packedTemporaryFile is null)");
-                        var size = temporaryFile.Length;
-                        var packedSize = temporaryFile.Length;
-                        var crc = actualCrc;
-                        Validation.Assert(size == actualSize, "size == actualSize");
-                        if (packedTemporaryFile is not null)
+                        Validation.Assert(packedTemporaryFile.Exists, "packedTemporaryFile.Exists");
+                        packedSize = packedTemporaryFile.Length;
+
+                        if (size <= 0 || packedSize >= size)
                         {
-                            Validation.Assert(packedTemporaryFile.Exists, "packedTemporaryFile.Exists");
-                            packedSize = packedTemporaryFile.Length;
+                            // 圧縮前のサイズが 0、または圧縮後のサイズが圧縮前のサイズより小さくなっていない場合
 
-                            if (size <= 0 || packedSize >= size)
-                            {
-                                // 圧縮前のサイズが 0、または圧縮後のサイズが圧縮前のサイズより小さくなっていない場合
-
-                                // 圧縮方式を強制的に Stored に変更する。
-                                CompressionMethodId = ZipEntryCompressionMethodId.Stored;
-                                CompressionLevel = ZipEntryCompressionLevel.Normal;
-                                packedSize = size;
-                                packedTemporaryFile.SafetyDelete();
-                                packedTemporaryFile = null;
-                            }
+                            // 圧縮方式を強制的に Stored に変更する。
+                            CompressionMethodId = ZipEntryCompressionMethodId.Stored;
+                            CompressionLevel = ZipEntryCompressionLevel.Normal;
+                            packedSize = size;
+                            packedTemporaryFile.SafetyDelete();
+                            packedTemporaryFile = null;
                         }
-
-                        _generalPurposeBitFlag |= CompressionMethodId.GettEncoderOptionFlags(CompressionLevel);
-
-                        var localHeader =
-                            ZipEntryLocalHeader.Build(
-                                _zipWriterParameter,
-                                _generalPurposeBitFlag,
-                                CompressionMethodId,
-                                size,
-                                packedSize,
-                                crc,
-                                _localHeaderExtraFields,
-                                FullNameBytes,
-                                LastWriteTimeUtc,
-                                IsDirectory);
-                        var localHeaderPosition = localHeader.WriteTo(_zipWriterStreamAccesser.MainStream);
-
-                        var centralDirectoryHeader =
-                            ZipEntryCentralDirectoryHeader.Build(
-                                _zipWriterParameter,
-                                localHeaderPosition,
-                                _generalPurposeBitFlag,
-                                CompressionMethodId,
-                                size,
-                                packedSize,
-                                crc,
-                                ExternalAttributes,
-                                _centralDirectoryHeaderExtraFields,
-                                FullNameBytes,
-                                CommentBytes,
-                                LastWriteTimeUtc,
-                                IsDirectory,
-                                false);
-                        _zipWriterStreamAccesser.StreamForCentralDirectoryHeaders.WriteUInt32LE(centralDirectoryHeader.Length);
-                        centralDirectoryHeader.WriteTo(_zipWriterStreamAccesser.StreamForCentralDirectoryHeaders);
-
-                        using var sourceStream = (packedTemporaryFile is null ? temporaryFile : packedTemporaryFile).OpenRead();
-                        sourceStream.CopyTo(
-                            _zipWriterStreamAccesser.MainStream,
-                            SafetyProgress.CreateProgress<UInt64, UInt64>(
-                                unpackedCountProgress,
-                                value =>
-                                    CompressionMethodId == ZipEntryCompressionMethodId.Stored
-                                    ? checked((size + value) / 2)
-                                    : packedSize <= 0
-                                    ? 0
-                                    : checked((UInt64)(size + (Double)value / packedSize * size) / 2)));
-                        _size = size;
-                        _packedSize = packedSize;
-                        _crc = crc;
-
-                        try
-                        {
-                            unpackedCountProgress?.Report(size);
-                        }
-                        catch (Exception)
-                        {
-                        }
-
-                        _zipWriterStreamAccesser.EndToWritingContent();
-                        _written = true;
-                        success = true;
                     }
+
+                    var progressRate = (Double)size / packedSize / 2;
+                    var inUncompressedStreamProcessedCountProgress = size / 2;
+                    var outCompressedStreamProcessedCountProgress = packedSize / 2;
+
+                    _generalPurposeBitFlag |= CompressionMethodId.GettEncoderOptionFlags(CompressionLevel);
+
+                    var localHeader =
+                        ZipEntryLocalHeader.Build(
+                            _zipWriterParameter,
+                            _generalPurposeBitFlag,
+                            CompressionMethodId,
+                            size,
+                            packedSize,
+                            crc,
+                            _localHeaderExtraFields,
+                            FullNameBytes,
+                            LastWriteTimeUtc,
+                            IsDirectory);
+                    var localHeaderPosition = localHeader.WriteTo(_zipWriterStreamAccesser.MainStream);
+
+                    var centralDirectoryHeader =
+                        ZipEntryCentralDirectoryHeader.Build(
+                            _zipWriterParameter,
+                            localHeaderPosition,
+                            _generalPurposeBitFlag,
+                            CompressionMethodId,
+                            size,
+                            packedSize,
+                            crc,
+                            ExternalAttributes,
+                            _centralDirectoryHeaderExtraFields,
+                            FullNameBytes,
+                            CommentBytes,
+                            LastWriteTimeUtc,
+                            IsDirectory,
+                            false);
+                    _zipWriterStreamAccesser.StreamForCentralDirectoryHeaders.WriteUInt32LE(centralDirectoryHeader.Length);
+                    centralDirectoryHeader.WriteTo(_zipWriterStreamAccesser.StreamForCentralDirectoryHeaders);
+
+                    using var sourceStream = (packedTemporaryFile is null ? temporaryFile : packedTemporaryFile).OpenRead();
+                    sourceStream.CopyTo(
+                        _zipWriterStreamAccesser.MainStream,
+                        SafetyProgress.CreateProgress<UInt64, (UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>(
+                            progress,
+                            compressedCount => (checked(inUncompressedStreamProcessedCountProgress + (UInt64)(compressedCount * progressRate)), checked(outCompressedStreamProcessedCountProgress + compressedCount / 2))));
+                    _size = size;
+                    _packedSize = packedSize;
+                    _crc = crc;
+
+                    try
+                    {
+                        progress?.Report((size, packedSize));
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    _zipWriterStreamAccesser.EndToWritingContent();
+                    _written = true;
+                    success = true;
                 }
                 finally
                 {
                     if (!success)
                         _zipWriterStreamAccesser.SetErrorMark();
-                    temporaryFile.SafetyDelete();
+                    temporaryFile?.SafetyDelete();
                     packedTemporaryFile?.SafetyDelete();
                     _zipWriterStreamAccesser.UnlockZipStream();
                 }
             }
         }
 
-        private ISequentialOutputByteStream GetContentStreamWithDataDescriptor(IProgress<UInt64>? unpackedCountProgress)
+        private ISequentialOutputByteStream GetContentStreamWithDataDescriptor(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             var packedSizeHolder = new ValueHolder<UInt64>();
             var localHeaderPosition = (ZipStreamPosition?)null;
             try
             {
-                unpackedCountProgress?.Report(0);
+                progress?.Report((0, 0));
             }
             catch (Exception)
             {
@@ -949,9 +968,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     _zipWriterStreamAccesser.MainStream
                         .WithEndAction(packedSize => packedSizeHolder.Value = packedSize, true),
                     compressionOption,
-                    SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), UInt64>(
-                        unpackedCountProgress,
-                        value => value.unpackedCount / 2))
+                    progress)
                 .WithCrc32Calculation(EndOfWrintingContents);
             return contentStream;
 
@@ -989,7 +1006,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                     try
                     {
-                        unpackedCountProgress?.Report(actualSize);
+                        progress?.Report((actualSize, actualPackedSize));
                     }
                     catch (Exception)
                     {

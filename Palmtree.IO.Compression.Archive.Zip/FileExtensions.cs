@@ -407,9 +407,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         try
                         {
                             entry.ValidateData(
-                                SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), Double>(
+                                SafetyProgress.CreateProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount), Double>(
                                     progress,
-                                    value => totalProcessedRate + (Double)value.packedCount / zipArchiveSize));
+                                    value => totalProcessedRate + (Double)value.inCompressedStreamProcessedCount / zipArchiveSize));
                             ++entryCount;
                             processedUnpackedSize += entry.Size;
                             processedPackedSize += entry.PackedSize;

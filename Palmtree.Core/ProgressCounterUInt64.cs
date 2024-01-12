@@ -5,10 +5,8 @@ namespace Palmtree
     public class ProgressCounterUInt64
         : ProgressCounter<UInt64>
     {
-        private static readonly TimeSpan _DEFAULT_MINIMUM_STEP_TIME = TimeSpan.FromMilliseconds(100);
-
         public ProgressCounterUInt64(IProgress<UInt64>? progress)
-            : this(progress, _DEFAULT_MINIMUM_STEP_TIME)
+            : this(progress, TimeSpan.Zero)
         {
         }
 

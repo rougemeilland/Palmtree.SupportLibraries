@@ -3,24 +3,38 @@
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
     internal class StoredDecoderPlugin
-        : StoredCoderPlugin, ICompressionHierarchicalDecoder
+        : ICompressionCoder, ICompressionHierarchicalDecoder
     {
         private class Decoder
             : HierarchicalDecoder
         {
-            public Decoder(ISequentialInputByteStream baseStream, UInt64 unpackedStreamSize, IProgress<UInt64>? unpackedCountProgress, Boolean leaveOpen)
-                : base(baseStream, unpackedStreamSize, unpackedCountProgress, leaveOpen)
+            private Decoder(
+                ISequentialInputByteStream baseStream,
+                UInt64 unpackedStreamSize,
+                IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen,
+                Func<ISequentialInputByteStream, ISequentialInputByteStream> decoderStreamCreator)
+                : base(baseStream, unpackedStreamSize, progress, leaveOpen, decoderStreamCreator)
             {
             }
+
+            public static ISequentialInputByteStream Create(
+                ISequentialInputByteStream baseStream,
+                UInt64 unpackedStreamSize,
+                IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
+                Boolean leaveOpen)
+                => new Decoder(baseStream, unpackedStreamSize, progress, leaveOpen, stream => stream);
         }
+
+        CompressionMethodId ICompressionCoder.CompressionMethodId => StoredCoderPlugin.COMPRESSION_METHOD_ID;
 
         ISequentialInputByteStream IHierarchicalDecoder.GetDecodingStream(
             ISequentialInputByteStream baseStream,
             ICoderOption option,
             UInt64 unpackedStreamSize,
             UInt64 packedStreamSize,
-            IProgress<UInt64>? unpackedCountProgress,
+            IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen)
-            => new Decoder(baseStream, unpackedStreamSize, unpackedCountProgress, leaveOpen);
+            => Decoder.Create(baseStream, unpackedStreamSize, progress, leaveOpen);
     }
 }
