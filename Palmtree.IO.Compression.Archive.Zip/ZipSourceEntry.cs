@@ -394,11 +394,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <returns>
         /// エントリのデータを読み込むためのストリームオブジェクトです。
         /// </returns>
-        public ISequentialInputByteStream GetContentStream(IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress = null)
+        public ISequentialInputByteStream OpenContentStream(IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress = null)
         {
             var stream =
                 CompressionMethodId.GetCompressionMethod()
-                .GetDecodingStream(
+                .CreateDecoderStream(
                     _zipStream.Stream.WithPartial(DataPosition, PackedSize, true),
                     GetDecoderOption(),
                     Size,
@@ -444,7 +444,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 var actualCrc =
                     CompressionMethodId.GetCompressionMethod()
-                    .GetDecodingStream(
+                    .CreateDecoderStream(
                         _zipStream.Stream.WithPartial(DataPosition, PackedSize, true),
                         GetDecoderOption(),
                         Size,
@@ -487,7 +487,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 var result =
                     await CompressionMethodId.GetCompressionMethod()
-                    .GetDecodingStream(
+                    .CreateDecoderStream(
                         _zipStream.Stream.WithPartial(DataPosition, PackedSize, true),
                         GetDecoderOption(),
                         Size,

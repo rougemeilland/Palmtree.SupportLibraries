@@ -10,7 +10,7 @@ namespace Palmtree.IO.Compression.Stream
         : SequentialInputByteStream
     {
         private readonly ISequentialInputByteStream _baseStream;
-        private readonly UInt64 _size;
+        private readonly UInt64 _unpackedStreamSize;
         private readonly IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? _progress;
         private readonly Boolean _leaveOpen;
         private readonly ValueHolder<UInt64> _comprssedStreamProcessedCount;
@@ -21,7 +21,7 @@ namespace Palmtree.IO.Compression.Stream
 
         public HierarchicalDecoder(
             ISequentialInputByteStream baseStream,
-            UInt64 size,
+            UInt64 unpackedStreamSize,
             IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen,
             Func<ISequentialInputByteStream, ISequentialInputByteStream> decoderStreamCreator)
@@ -45,7 +45,7 @@ namespace Palmtree.IO.Compression.Stream
                                 _comprssedStreamProcessedCount.Value = value;
                                 progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
                             })));
-            _size = size;
+            _unpackedStreamSize = unpackedStreamSize;
             _progress = progress;
             _leaveOpen = leaveOpen;
             _isDisposed = false;
@@ -136,7 +136,7 @@ namespace Palmtree.IO.Compression.Stream
             else
             {
                 _isEndOfStream = true;
-                if (_uncomprssedStreamProcessedCount.Value != _size)
+                if (_uncomprssedStreamProcessedCount.Value != _unpackedStreamSize)
                     throw new IOException("Size not match");
             }
         }

@@ -69,7 +69,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public ZipEntryCompressionMethodId CompressionMethodId { get; }
 
-        public ISequentialInputByteStream GetDecodingStream(
+        public ISequentialInputByteStream CreateDecoderStream(
             ISequentialInputByteStream baseStream,
             ICoderOption decoderOption,
             UInt64 unpackedSize,
@@ -78,19 +78,23 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
+            if (decoderOption is null)
+                throw new ArgumentNullException(nameof(decoderOption));
 
-            return InternalGetDecodingStream(baseStream, decoderOption, unpackedSize, packedSize, progress);
+            return InternalCreateDecoderStream(baseStream, decoderOption, unpackedSize, packedSize, progress);
         }
 
-        public ISequentialOutputByteStream GetEncodingStream(
+        public ISequentialOutputByteStream CreateEncoderStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption encoderOption,
             IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             if (baseStream is null)
                 throw new ArgumentNullException(nameof(baseStream));
+            if (encoderOption is null)
+                throw new ArgumentNullException(nameof(encoderOption));
 
-            return InternalGetEncodingStream(baseStream, encoderOption, progress);
+            return InternalCreateEncoderStream(baseStream, encoderOption, progress);
         }
 
         internal static ZipEntryCompressionMethod GetCompressionMethod(ZipEntryCompressionMethodId compressionMethodId)
@@ -159,7 +163,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 _ => ZipEntryCompressionMethodId.Unknown,
             };
 
-        private ISequentialInputByteStream InternalGetDecodingStream(
+        private ISequentialInputByteStream InternalCreateDecoderStream(
             ISequentialInputByteStream baseStream,
             ICoderOption decoderOption,
             UInt64 unpackedSize,
@@ -171,7 +175,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 case ICompressionHierarchicalDecoder hierarchicalDecoder:
                 {
                     return
-                        hierarchicalDecoder.GetDecodingStream(
+                        hierarchicalDecoder.CreateDecoderStream(
                             baseStream,
                             decoderOption,
                             unpackedSize,
@@ -208,7 +212,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private ISequentialOutputByteStream InternalGetEncodingStream(
+        private ISequentialOutputByteStream InternalCreateEncoderStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption encoderOption,
             IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
@@ -218,7 +222,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 case ICompressionHierarchicalEncoder hierarchicalEncoder:
                 {
                     return
-                        hierarchicalEncoder.GetEncodingStream(
+                        hierarchicalEncoder.CreateEncoderStream(
                             baseStream,
                             encoderOption,
                             progress)

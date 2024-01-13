@@ -4,7 +4,7 @@ namespace Palmtree.IO.Compression.Stream
 {
     public interface IHierarchicalDecoder
     {
-        ISequentialInputByteStream GetDecodingStream(
+        ISequentialInputByteStream CreateDecoderStream(
             ISequentialInputByteStream baseStream,
             ICoderOption option,
             UInt64 unpackedStreamSize,

@@ -4,7 +4,7 @@ namespace Palmtree.IO.Compression.Stream
 {
     public interface IHierarchicalEncoder
     {
-        ISequentialOutputByteStream GetEncodingStream(
+        ISequentialOutputByteStream CreateEncoderStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption option,
             IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,

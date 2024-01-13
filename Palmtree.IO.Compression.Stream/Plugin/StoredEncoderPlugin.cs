@@ -26,7 +26,7 @@ namespace Palmtree.IO.Compression.Stream.Plugin
 
         CompressionMethodId ICompressionCoder.CompressionMethodId => StoredCoderPlugin.COMPRESSION_METHOD_ID;
 
-        ISequentialOutputByteStream IHierarchicalEncoder.GetEncodingStream(
+        ISequentialOutputByteStream IHierarchicalEncoder.CreateEncoderStream(
             ISequentialOutputByteStream baseStream,
             ICoderOption option,
             IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,

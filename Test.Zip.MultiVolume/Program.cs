@@ -155,7 +155,7 @@ namespace Test.ZipUtility.MultiVolume
                 throw new ArgumentOutOfRangeException(nameof(contentLength));
 
             var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-            using var outStream1 = fileEntry.GetContentStream();
+            using var outStream1 = fileEntry.CreateContentStream();
             var dataLength = checked(contentLength - (sizeof(uint) + sizeof(ulong)));
             outStream1.WriteUInt64LE(dataLength);
             using (var outStream2 = outStream1.WithCrc32Calculation(crcHolder, true))
@@ -182,7 +182,7 @@ namespace Test.ZipUtility.MultiVolume
                 try
                 {
                     var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-                    using var inStream1 = entry.GetContentStream();
+                    using var inStream1 = entry.OpenContentStream();
                     var contentLength = inStream1.ReadUInt64LE();
                     using (var inStream2 = inStream1.WithCrc32Calculation(crcHolder, true))
                     {

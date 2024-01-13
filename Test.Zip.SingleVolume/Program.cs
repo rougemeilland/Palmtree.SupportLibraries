@@ -82,7 +82,7 @@ namespace Test.ZipUtility.SingleVolume
         {
             const ulong maximumLength = 1024UL * 1024UL;
 
-            using var outStream1 = fileEntry.GetContentStream();
+            using var outStream1 = fileEntry.CreateContentStream();
             var remain = contentLength;
             while (remain > 0)
             {

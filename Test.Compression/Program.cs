@@ -113,7 +113,7 @@ namespace Test.Compression
                 throw new ArgumentOutOfRangeException(nameof(contentLength));
 
             var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-            using var outStream1 = fileEntry.GetContentStream(new MyProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
+            using var outStream1 = fileEntry.CreateContentStream(new MyProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
             var dataLength = checked(contentLength - (sizeof(uint) + sizeof(ulong)));
             outStream1.WriteUInt64LE(dataLength);
             using (var outStream2 = outStream1.WithCrc32Calculation(crcHolder, true))
@@ -138,7 +138,7 @@ namespace Test.Compression
                 try
                 {
                     var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-                    using var inStream1 = entry.GetContentStream(new MyProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Reading] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
+                    using var inStream1 = entry.OpenContentStream(new MyProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Reading] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
                     var contentLength = inStream1.ReadUInt64LE();
                     using (var inStream2 = inStream1.WithCrc32Calculation(crcHolder, true))
                     {

@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
-using Palmtree.IO.Compression.Stream;
 using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -669,7 +668,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <exception cref="InvalidOperationException">
         /// 既にデータは出力済みです。
         /// </exception>
-        public ISequentialOutputByteStream GetContentStream(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress = null)
+        public ISequentialOutputByteStream CreateContentStream(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress = null)
         {
             _zipWriterStreamAccesser.LockZipStream();
             _zipWriterStreamAccesser.BeginToWriteContent();
@@ -689,8 +688,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 var stream =
                     _useDataDescriptor
-                    ? GetContentStreamWithDataDescriptor(progress)
-                    : GetContentStreamWithoutDataDescriptor(progress);
+                    ? CreateContentStreamWithDataDescriptor(progress)
+                    : CreateContentStreamWithoutDataDescriptor(progress);
                 success = true;
                 return stream;
             }
@@ -777,7 +776,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private ISequentialOutputByteStream GetContentStreamWithoutDataDescriptor(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
+        private ISequentialOutputByteStream CreateContentStreamWithoutDataDescriptor(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             var temporaryFile = (FilePath?)null;
             var packedTemporaryFile = (FilePath?)null;
@@ -810,7 +809,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var packedOutputStream =
                     packedTemporaryFile is null
                     ? null
-                    : compressionMethod.GetEncodingStream(
+                    : compressionMethod.CreateEncoderStream(
                         packedTemporaryFile.Create()
                             .WithCache(),
                         compressionOption,
@@ -934,7 +933,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private ISequentialOutputByteStream GetContentStreamWithDataDescriptor(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
+        private ISequentialOutputByteStream CreateContentStreamWithDataDescriptor(IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
             var packedSizeHolder = new ValueHolder<UInt64>();
             var localHeaderPosition = (ZipStreamPosition?)null;
@@ -964,7 +963,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             localHeaderPosition = localHeaderInfo.WriteTo(_zipWriterStreamAccesser.MainStream);
 
             var contentStream =
-                compressionMethod.GetEncodingStream(
+                compressionMethod.CreateEncoderStream(
                     _zipWriterStreamAccesser.MainStream
                         .WithEndAction(packedSize => packedSizeHolder.Value = packedSize, true),
                     compressionOption,
