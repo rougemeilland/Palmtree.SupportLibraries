@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Palmtree;
 
@@ -8,7 +9,7 @@ namespace Palmtree.IO.StreamFilters
     internal class DotNetStreamBySequentialInputByteStream
         : Stream
     {
-        private readonly ISequentialInputByteStream _basicStream;
+        private readonly ISequentialInputByteStream _baseStream;
         private readonly Boolean _leaveOpen;
         private readonly IRandomInputByteStream<UInt64>? _randomAccessStream;
 
@@ -21,7 +22,7 @@ namespace Palmtree.IO.StreamFilters
                 if (baseStream is null)
                     throw new ArgumentNullException(nameof(baseStream));
 
-                _basicStream = baseStream;
+                _baseStream = baseStream;
                 _leaveOpen = leaveOpen;
                 _isDisposed = false;
                 _randomAccessStream = baseStream as IRandomInputByteStream<UInt64>;
@@ -131,11 +132,63 @@ namespace Palmtree.IO.StreamFilters
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
 
-            return _basicStream.Read(buffer.AsSpan(offset, count));
+            return _baseStream.Read(buffer.AsSpan(offset, count));
+        }
+
+        public override Int32 Read(Span<Byte> buffer)
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return _baseStream.Read(buffer);
+        }
+
+        public override Int32 ReadByte()
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            Span<Byte> buffer = stackalloc Byte[1];
+            var length = _baseStream.ReadBytes(buffer);
+            if (length != buffer.Length)
+                return -1;
+            return buffer[0];
+        }
+
+        public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken)
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            return _baseStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public override async ValueTask<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default)
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return await _baseStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
 
         public override void Write(Byte[] buffer, Int32 offset, Int32 count) => throw new NotSupportedException();
+        public override void Write(ReadOnlySpan<Byte> buffer) => throw new NotSupportedException();
+        public override void WriteByte(Byte value) => throw new NotSupportedException();
+        public override Task WriteAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public override ValueTask WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
         public override void Flush() { }
 
@@ -146,7 +199,7 @@ namespace Palmtree.IO.StreamFilters
                 if (disposing)
                 {
                     if (!_leaveOpen)
-                        _basicStream.Dispose();
+                        _baseStream.Dispose();
                 }
 
                 _isDisposed = true;
@@ -160,7 +213,7 @@ namespace Palmtree.IO.StreamFilters
             if (!_isDisposed)
             {
                 if (!_leaveOpen)
-                    _basicStream.Dispose();
+                    _baseStream.Dispose();
                 _isDisposed = true;
             }
 
