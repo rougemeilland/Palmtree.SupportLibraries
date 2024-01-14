@@ -14,8 +14,11 @@ namespace Experiment.CSharp
             using (var inStream = InputTestDataStream.Create(1024 * 1024 * 2, b => (byte)(b & 0x3f)))
             using (var outStream = OutputTestDataStream.Create(ex => exception = ex))
             {
-                inStream.CopyTo(outStream, new SimpleProgress<ulong>(value => Console.WriteLine($"copied {value:N0} (0x{value:x16}) bytes.")));
+                var progressValue = new ProgressCounterUInt64(value => Console.WriteLine($"copied {value:N0} (0x{value:x16}) bytes."), TimeSpan.FromMilliseconds(1000));
+                progressValue.Report();
+                inStream.CopyTo(outStream, new SimpleProgress<ulong>(value => progressValue.Value = value));
                 outStream.Flush();
+                progressValue.Report();
             }
 
             if (exception is not null)
