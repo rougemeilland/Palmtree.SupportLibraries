@@ -11,19 +11,6 @@ namespace Test.Compression
 {
     internal class Program
     {
-        private class MyProgress<VALUE_T>
-            : IProgress<VALUE_T>
-        {
-            private readonly Action<VALUE_T> _action;
-
-            public MyProgress(Action<VALUE_T> action)
-            {
-                _action = action;
-            }
-
-            public void Report(VALUE_T value) => _action(value);
-        }
-
         static Program()
         {
             StoredCoderPlugin.EnablePlugin();
@@ -34,7 +21,7 @@ namespace Test.Compression
         static void Main(string[] args)
         {
             Console.WriteLine("**Stored**");
-            //DoTest1(3, 1024 * 1024, ZipEntryCompressionMethodId.Stored);
+            DoTest1(3, 1024 * 1024, ZipEntryCompressionMethodId.Stored);
             Console.WriteLine();
             Console.WriteLine();
 
@@ -113,7 +100,7 @@ namespace Test.Compression
                 throw new ArgumentOutOfRangeException(nameof(contentLength));
 
             var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-            using var outStream1 = fileEntry.CreateContentStream(new MyProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
+            using var outStream1 = fileEntry.CreateContentStream(new SimpleProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
             var dataLength = checked(contentLength - (sizeof(uint) + sizeof(ulong)));
             outStream1.WriteUInt64LE(dataLength);
             using (var outStream2 = outStream1.WithCrc32Calculation(crcHolder, true))
@@ -138,7 +125,7 @@ namespace Test.Compression
                 try
                 {
                     var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-                    using var inStream1 = entry.OpenContentStream(new MyProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Reading] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
+                    using var inStream1 = entry.OpenContentStream(new SimpleProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Reading] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
                     var contentLength = inStream1.ReadUInt64LE();
                     using (var inStream2 = inStream1.WithCrc32Calculation(crcHolder, true))
                     {

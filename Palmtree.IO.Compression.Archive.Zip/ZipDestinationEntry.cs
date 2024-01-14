@@ -41,28 +41,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private class SimpleProgress<VALUE_T>
-            : IProgress<VALUE_T>
-        {
-            private readonly Action<VALUE_T> _action;
-
-            public SimpleProgress(Action<VALUE_T> action)
-            {
-                _action = action;
-            }
-
-            public void Report(VALUE_T value)
-            {
-                try
-                {
-                    _action(value);
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
         private static readonly Encoding _utf8Encoding;
         private static readonly Regex _dotEntryNamePattern;
 
@@ -813,8 +791,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         packedTemporaryFile.Create()
                             .WithCache(),
                         compressionOption,
-                        SafetyProgress.CreateProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount), (UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>(
-                            progress,
+                        progress?.Cast<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount), (UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>(
                             value => (value.inUncompressedStreamProcessedCount / 2, value.outCompressedStreamProcessedCount / 2)));
 
                 var tempraryFileStream =
@@ -903,9 +880,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     using var sourceStream = (packedTemporaryFile is null ? temporaryFile : packedTemporaryFile).OpenRead();
                     sourceStream.CopyTo(
                         _zipWriterStreamAccesser.MainStream,
-                        SafetyProgress.CreateProgress<UInt64, (UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>(
-                            progress,
-                            compressedCount => (checked(inUncompressedStreamProcessedCountProgress + (UInt64)(compressedCount * progressRate)), checked(outCompressedStreamProcessedCountProgress + compressedCount / 2))));
+                        progress?.Cast<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount), UInt64>(compressedCount => (checked(inUncompressedStreamProcessedCountProgress + (UInt64)(compressedCount * progressRate)), checked(outCompressedStreamProcessedCountProgress + compressedCount / 2))));
                     _size = size;
                     _packedSize = packedSize;
                     _crc = crc;

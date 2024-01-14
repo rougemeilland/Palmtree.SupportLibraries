@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Palmtree.IO.Compression.Stream
+namespace Palmtree
 {
-    internal class SimpleProgress<VALUE_T>
+    public class SimpleProgress<VALUE_T>
         : IProgress<VALUE_T>
     {
         private readonly Action<VALUE_T> _action;
@@ -12,7 +12,7 @@ namespace Palmtree.IO.Compression.Stream
             _action = action;
         }
 
-        void IProgress<VALUE_T>.Report(VALUE_T value)
+        public void Report(VALUE_T value)
         {
             try
             {

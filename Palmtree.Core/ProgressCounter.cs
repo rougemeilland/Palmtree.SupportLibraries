@@ -11,6 +11,7 @@ namespace Palmtree
         private readonly Int64 _minimumStepTimeMilliSeconds;
 
         private Int64 _previousReportedTime;
+        private VALUE_T _value;
 
         public ProgressCounter(IProgress<VALUE_T>? progress, VALUE_T initialCounterValue, TimeSpan minimumStepTime)
         {
@@ -20,11 +21,20 @@ namespace Palmtree
             _progress = progress;
             _initialCounterValue = initialCounterValue;
             _minimumStepTimeMilliSeconds = checked((Int64)minimumStepTime.TotalMilliseconds);
-            Value = initialCounterValue;
+            _value = initialCounterValue;
             _previousReportedTime = Environment.TickCount64;
         }
 
-        public VALUE_T Value { get; private set; }
+        public VALUE_T Value
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _value;
+                }
+            }
+        }
 
         public void AddValue(VALUE_T value)
         {
@@ -35,7 +45,7 @@ namespace Palmtree
             {
                 checked
                 {
-                    Value += value;
+                    _value += value;
                 }
 
                 if (unchecked(now - _previousReportedTime) >= _minimumStepTimeMilliSeconds)
@@ -49,9 +59,34 @@ namespace Palmtree
                 InternalReport();
         }
 
+        public void SetValue(VALUE_T value)
+        {
+            var needToReport = false;
+            var now = Environment.TickCount64;
+
+            lock (this)
+            {
+                _value = value;
+                if (unchecked(now - _previousReportedTime) >= _minimumStepTimeMilliSeconds)
+                {
+                    needToReport = true;
+                    _previousReportedTime = now;
+                }
+            }
+
+            if (needToReport)
+                InternalReport();
+        }
+
         public void ReportIfInitial()
         {
-            if (Value.CompareTo(_initialCounterValue) <= 0)
+            Boolean needToReport;
+            lock (this)
+            {
+                needToReport = _value.CompareTo(_initialCounterValue) <= 0;
+            }
+
+            if (needToReport)
                 Report();
         }
 

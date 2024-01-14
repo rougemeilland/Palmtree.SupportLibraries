@@ -35,7 +35,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Palmtree.IO.Console.Native.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Palmtree.IO.Console.Native", "Palmtree.IO.Console.Native\Palmtree.IO.Console.Native.vcxproj", "{E8F0891A-AF23-4EEB-AF70-0E24BEFC21E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Compression", "Test.Compression\Test.Compression.csproj", "{DE9E16B5-AF96-487D-B19B-FD8ED30A462B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Compression", "Test.Compression\Test.Compression.csproj", "{DE9E16B5-AF96-487D-B19B-FD8ED30A462B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

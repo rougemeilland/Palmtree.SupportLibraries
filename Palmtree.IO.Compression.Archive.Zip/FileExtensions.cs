@@ -389,27 +389,30 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 if (file.Length <= 0)
                     throw new BadZipFileFormatException($"ZIP archive file size is zero.: \"{file.FullName}\"");
 
-                ReportDoubleProgress(progress, () => 0.0);
-
                 var entryCount = 0UL;
                 var zipArchiveSize = file.Length;
                 var processedUnpackedSize = 0UL;
                 var processedPackedSize = 0UL;
                 var totalProcessedRate = 0.0;
 
+                var progressCounter =
+                    progress is null
+                    ? null
+                    : new ProgressCounter<Double>(progress, 0.0, TimeSpan.FromMilliseconds(100));
+                progressCounter?.SetValue(0);
+
                 using (var zipFile = file.OpenAsZipFile(zipEntryNameEncodingProvider, stringency))
                 {
                     zipArchiveSize = zipFile.Length;
                     var entries = zipFile.EnumerateEntries();
-                    ReportDoubleProgress(progress, () => totalProcessedRate);
+                    progressCounter?.SetValue(totalProcessedRate);
                     foreach (var entry in entries)
                     {
                         try
                         {
                             entry.ValidateData(
-                                SafetyProgress.CreateProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount), Double>(
-                                    progress,
-                                    value => totalProcessedRate + (Double)value.inCompressedStreamProcessedCount / zipArchiveSize));
+                                new SimpleProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>(
+                                    value => progressCounter?.SetValue(totalProcessedRate + (Double)value.inCompressedStreamProcessedCount / zipArchiveSize)));
                             ++entryCount;
                             processedUnpackedSize += entry.Size;
                             processedPackedSize += entry.PackedSize;
@@ -417,14 +420,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         }
                         finally
                         {
-                            ReportDoubleProgress(progress, () => totalProcessedRate);
+                            progressCounter?.SetValue(totalProcessedRate);
                         }
                     }
 
                     CheckIfExistUnknownPayloads(zipFile, stringency);
                 }
 
-                ReportDoubleProgress(progress, () => 1.0);
+                progressCounter?.SetValue(1);
                 return new ZipArchiveValidationResult(ZipArchiveValidationResultId.Ok, $"entries = {entryCount}, total entry size = {processedUnpackedSize:N0} bytes, total compressed entry size = {processedPackedSize:N0} bytes", null);
             }
             catch (EncryptedZipFileNotSupportedException ex)
@@ -461,19 +464,23 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 if (file.Length <= 0)
                     throw new BadZipFileFormatException($"ZIP archive file size is zero.: \"{file.FullName}\"");
 
-                ReportDoubleProgress(progress, () => 0.0);
-
                 var entryCount = 0UL;
                 var zipArchiveSize = file.Length;
                 var processedUnpackedSize = 0UL;
                 var processedPackedSize = 0UL;
                 var totalProcessedRate = 0.0;
 
+                var progressCounter =
+                    progress is null
+                    ? null
+                    : new ProgressCounter<Double>(progress, 0.0, TimeSpan.FromMilliseconds(100));
+                progressCounter?.SetValue(0);
+
                 using (var zipFile = file.OpenAsZipFile(zipEntryNameEncodingProvider, stringency))
                 {
                     zipArchiveSize = zipFile.Length;
                     var entries = zipFile.EnumerateEntriesAsync(null, cancellationToken);
-                    ReportDoubleProgress(progress, () => totalProcessedRate);
+                    progressCounter?.SetValue(totalProcessedRate);
                     var enumerator = entries.GetAsyncEnumerator(cancellationToken);
                     await using (enumerator.ConfigureAwait(false))
                     {
@@ -483,9 +490,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             try
                             {
                                 await entry.ValidateDataAsync(
-                                    SafetyProgress.CreateProgress<(UInt64 unpackedCount, UInt64 packedCount), Double>(
-                                        progress,
-                                        value => totalProcessedRate + (Double)value.packedCount / zipArchiveSize),
+                                    new SimpleProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>(
+                                        value => progressCounter?.SetValue(totalProcessedRate + (Double)value.inCompressedStreamProcessedCount / zipArchiveSize)),
                                     cancellationToken).ConfigureAwait(false);
                                 ++entryCount;
                                 processedUnpackedSize += entry.Size;
@@ -494,7 +500,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             }
                             finally
                             {
-                                ReportDoubleProgress(progress, () => totalProcessedRate);
+                                progressCounter?.SetValue(totalProcessedRate);
                             }
                         }
                     }
@@ -502,7 +508,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     CheckIfExistUnknownPayloads(zipFile, stringency);
                 }
 
-                ReportDoubleProgress(progress, () => 1.0);
+                progressCounter?.SetValue(1.0);
                 return new ZipArchiveValidationResult(ZipArchiveValidationResultId.Ok, $"entries = {entryCount}, total entry size = {processedUnpackedSize:N0} bytes, total compressed entry size = {processedPackedSize:N0} bytes", null);
             }
             catch (EncryptedZipFileNotSupportedException ex)
@@ -642,19 +648,5 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 : diskNumber < lastDiskNumber
                 ? baseDirectory.GetFile($"{fileNameWithoutExtension}.z{diskNumber + 1:D2}")
                 : baseFile;
-
-        private static void ReportDoubleProgress(IProgress<Double>? progress, Func<Double> valueGetter)
-        {
-            if (progress is not null)
-            {
-                try
-                {
-                    progress.Report(valueGetter());
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
     }
 }
