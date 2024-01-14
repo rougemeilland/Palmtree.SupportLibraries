@@ -37,6 +37,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Palmtree.IO.Console.Native"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Compression", "Test.Compression\Test.Compression.csproj", "{DE9E16B5-AF96-487D-B19B-FD8ED30A462B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palmtree.Debug", "Palmtree.Debug\Palmtree.Debug.csproj", "{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -257,6 +259,18 @@ Global
 		{DE9E16B5-AF96-487D-B19B-FD8ED30A462B}.Release|x64.Build.0 = Release|Any CPU
 		{DE9E16B5-AF96-487D-B19B-FD8ED30A462B}.Release|x86.ActiveCfg = Release|Any CPU
 		{DE9E16B5-AF96-487D-B19B-FD8ED30A462B}.Release|x86.Build.0 = Release|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Debug|x64.Build.0 = Debug|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Debug|x86.Build.0 = Debug|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Release|x64.ActiveCfg = Release|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Release|x64.Build.0 = Release|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Release|x86.ActiveCfg = Release|Any CPU
+		{8850A3BC-C432-4272-88B0-AA0C4C8D67D1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
