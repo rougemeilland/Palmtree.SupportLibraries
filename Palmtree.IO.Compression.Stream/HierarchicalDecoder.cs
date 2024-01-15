@@ -36,15 +36,13 @@ namespace Palmtree.IO.Compression.Stream
 
             _baseStream =
                 decoderStreamCreator(
-                    progress is null
-                    ? baseStream
-                    : baseStream
-                        .WithProgression(
-                            new SimpleProgress<UInt64>(value =>
-                            {
-                                _comprssedStreamProcessedCount.Value = value;
-                                progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
-                            })));
+                    baseStream
+                    .WithProgression(
+                        new SimpleProgress<UInt64>(value =>
+                        {
+                            _comprssedStreamProcessedCount.Value = value;
+                            progress?.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
+                        })));
             _unpackedStreamSize = unpackedStreamSize;
             _progress = progress;
             _leaveOpen = leaveOpen;
@@ -53,8 +51,8 @@ namespace Palmtree.IO.Compression.Stream
 
         protected override Int32 ReadCore(Span<Byte> buffer)
         {
-            if (_uncomprssedStreamProcessedCount.Value <= 0 && _progress is not null)
-                _progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
+            if (_uncomprssedStreamProcessedCount.Value <= 0)
+                _progress?.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
             if (_isEndOfStream || buffer.Length <= 0)
                 return 0;
 
@@ -72,8 +70,8 @@ namespace Palmtree.IO.Compression.Stream
 
         protected override async Task<Int32> ReadAsyncCore(Memory<Byte> buffer, CancellationToken cancellationToken)
         {
-            if (_uncomprssedStreamProcessedCount.Value <= 0 && _progress is not null)
-                _progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
+            if (_uncomprssedStreamProcessedCount.Value <= 0)
+                _progress?.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
             if (_isEndOfStream || buffer.Length <= 0)
                 return 0;
             try
@@ -123,15 +121,12 @@ namespace Palmtree.IO.Compression.Stream
         {
             if (length > 0)
             {
-                if (_progress is not null)
+                checked
                 {
-                    checked
-                    {
-                        _uncomprssedStreamProcessedCount.Value += (UInt64)length;
-                    }
-
-                    _progress.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
+                    _uncomprssedStreamProcessedCount.Value += (UInt64)length;
                 }
+
+                _progress?.Report((_comprssedStreamProcessedCount.Value, _uncomprssedStreamProcessedCount.Value));
             }
             else
             {
