@@ -154,6 +154,69 @@ namespace Palmtree.IO
             }
         }
 
+        public DirectoryPath GetSubDirectory(String subDirectoryName1, String subDirectoryName2)
+        {
+            if (String.IsNullOrEmpty(subDirectoryName1))
+                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null.", nameof(subDirectoryName1));
+            if (String.IsNullOrEmpty(subDirectoryName2))
+                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null.", nameof(subDirectoryName2));
+
+            _directory.Refresh();
+            try
+            {
+                return new DirectoryPath(Path.Combine(_directory.FullName, subDirectoryName1, subDirectoryName2));
+            }
+            finally
+            {
+                _directory.Refresh();
+            }
+        }
+
+        public DirectoryPath GetSubDirectory(String subDirectoryName1, String subDirectoryName2, String subDirectoryName3)
+        {
+            if (String.IsNullOrEmpty(subDirectoryName1))
+                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null.", nameof(subDirectoryName1));
+            if (String.IsNullOrEmpty(subDirectoryName2))
+                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null.", nameof(subDirectoryName2));
+            if (String.IsNullOrEmpty(subDirectoryName3))
+                throw new ArgumentException($"'{nameof(subDirectoryName3)}' must not be null.", nameof(subDirectoryName3));
+
+            _directory.Refresh();
+            try
+            {
+                return new DirectoryPath(Path.Combine(_directory.FullName, subDirectoryName1, subDirectoryName2, subDirectoryName3));
+            }
+            finally
+            {
+                _directory.Refresh();
+            }
+        }
+
+        public DirectoryPath GetSubDirectory(params String[] subDirectoryNames)
+        {
+            if (subDirectoryNames is null)
+                throw new ArgumentNullException(nameof(subDirectoryNames));
+
+            var pathElements = new String[subDirectoryNames.Length + 1];
+            pathElements[0] = _directory.FullName;
+            for (var index = 0; index < subDirectoryNames.Length; ++index)
+            {
+                if (String.IsNullOrEmpty(subDirectoryNames[index]))
+                    throw new ArgumentException($"'{nameof(subDirectoryNames)}[{index}]' must not be null.", nameof(subDirectoryNames));
+                pathElements[index + 1] = subDirectoryNames[index];
+            }
+
+            _directory.Refresh();
+            try
+            {
+                return new DirectoryPath(Path.Combine(pathElements));
+            }
+            finally
+            {
+                _directory.Refresh();
+            }
+        }
+
         public void MoveTo(DirectoryPath destinationDirectory)
         {
             if (destinationDirectory is null)

@@ -27,7 +27,8 @@ namespace Palmtree.IO.Console
 #endif
         private const Char _alternativeCharacterSetMapMinimumKey = '\u0020';
         private const Char _alternativeCharacterSetMapMaximumKey = '\u007e';
-        private static readonly Boolean _isWindows = OperatingSystem.IsWindows();
+
+        private static readonly NativeDllNameResolver _dllNameResolver;
         private static readonly IntPtr _consoleOutputHandle;
         private static readonly Int32 _consoleOutputFileNo;
         private static readonly TextWriter _consoleTextWriter;
@@ -37,6 +38,7 @@ namespace Palmtree.IO.Console
         private static readonly TerminalInfo? ___thisTerminalInfo = TerminalInfo.GetTerminalInfo(true);
         private static readonly Regex _cprResponsePattern = new(@"^\e\[(?<row>\d*)(;(?<column>\d*))?R", RegexOptions.Compiled);
         private static readonly Char[] _alternativeCharacterSetMap;
+
         private static ConsoleColor _currentBackgrouongColor = System.Console.BackgroundColor;
         private static ConsoleColor _currentForegrouongColor = System.Console.ForegroundColor;
         private static CharacterSet _currentCharSet;
@@ -47,17 +49,20 @@ namespace Palmtree.IO.Console
 
         static TinyConsole()
         {
-            SetupNativeLibraryResolver();
+            _dllNameResolver = new NativeDllNameResolver();
+            NativeLibrary.SetDllImportResolver(
+                typeof(InterOpUnix).Assembly,
+                (libraryName, assembly, searchPath) => _dllNameResolver.ResolveDllName(libraryName, assembly, searchPath));
 
             if (!System.Console.IsOutputRedirected)
             {
                 _consoleOutputHandle =
-                    _isWindows
+                    OperatingSystem.IsWindows()
                     ? InterOpWindows.GetStdHandle(InterOpWindows.STD_OUTPUT_HANDLE)
                     : InterOpWindows.INVALID_HANDLE_VALUE;
 
                 _consoleOutputFileNo =
-                    _isWindows
+                    OperatingSystem.IsWindows()
                     ? -1
                     : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_OUT);
                 _consoleTextWriter =
@@ -72,11 +77,11 @@ namespace Palmtree.IO.Console
             else if (!System.Console.IsErrorRedirected)
             {
                 _consoleOutputHandle =
-                    _isWindows
+                    OperatingSystem.IsWindows()
                     ? InterOpWindows.GetStdHandle(InterOpWindows.STD_ERROR_HANDLE)
                     : InterOpWindows.INVALID_HANDLE_VALUE;
                 _consoleOutputFileNo =
-                    _isWindows
+                    OperatingSystem.IsWindows()
                     ? -1
                     : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_ERR);
                 _consoleTextWriter =
@@ -117,7 +122,7 @@ namespace Palmtree.IO.Console
                 }
             }
 
-            if (_isWindows && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
+            if (OperatingSystem.IsWindows() && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
                 // Windows プラットフォームであり、かつ
                 // コンソール出力ハンドルが有効である (つまり標準出力と標準エラー出力のどちらかがリダイレクトされていない) 場合
@@ -708,74 +713,6 @@ namespace Palmtree.IO.Console
 
         #region private methods
 
-        private static void SetupNativeLibraryResolver()
-            => NativeLibrary.SetDllImportResolver(
-                typeof(InterOpUnix).Assembly,
-                (libraryName, assembly, searchPath) =>
-                {
-                    if (libraryName != _NATIVE_METHOD_DLL_NAME)
-                    {
-                        return
-                            !NativeLibrary.TryLoad(libraryName, assembly, searchPath, out var handle)
-                            ? IntPtr.Zero
-                            : handle;
-                    }
-                    else if (OperatingSystem.IsWindows())
-                    {
-                        var actualLibName =
-                            RuntimeInformation.ProcessArchitecture switch
-                            {
-                                Architecture.X86 => "Palmtree.IO.Console.Native.win_x86.dll",
-                                Architecture.X64 => "Palmtree.IO.Console.Native.win_x64.dll",
-                                Architecture.Arm => "Palmtree.IO.Console.Native.win_arm32.dll",
-                                Architecture.Arm64 => "Palmtree.IO.Console.Native.win_arm64.dll",
-                                _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
-                            };
-                        return
-                            !NativeLibrary.TryLoad(actualLibName, assembly, searchPath, out var handle)
-                            ? IntPtr.Zero
-                            : handle;
-                    }
-                    else if (OperatingSystem.IsLinux())
-                    {
-                        var actualLibName =
-                            RuntimeInformation.ProcessArchitecture switch
-                            {
-                                Architecture.X86 => "libPalmtree.IO.Console.Native.linux_x86.so",
-                                Architecture.X64 => "libPalmtree.IO.Console.Native.linux_x64.so",
-                                Architecture.Arm => "libPalmtree.IO.Console.Native.linux_arm32.so",
-                                Architecture.Arm64 => "libPalmtree.IO.Console.Native.linux_arm64.so",
-                                _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
-                            };
-                        return
-                            !NativeLibrary.TryLoad(actualLibName, assembly, searchPath, out var handle)
-                            ? IntPtr.Zero
-                            : handle;
-                    }
-                    else if (OperatingSystem.IsMacOS())
-                    {
-                        String actualLibName;
-                        actualLibName =
-                            RuntimeInformation.ProcessArchitecture switch
-                            {
-                                Architecture.X86 => "libPalmtree.IO.Console.Native.osx_x86.dylib",
-                                Architecture.X64 => "libPalmtree.IO.Console.Native.osx_x64.dylib",
-                                Architecture.Arm => "libPalmtree.IO.Console.Native.osx_arm32.dylib",
-                                Architecture.Arm64 => "libPalmtree.IO.Console.Native.osx_arm64.dylib",
-                                _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
-                            };
-
-                        return
-                            !NativeLibrary.TryLoad(actualLibName, assembly, searchPath, out var handle)
-                            ? IntPtr.Zero
-                            : handle;
-                    }
-                    else
-                    {
-                        throw new NotSupportedException("Running on this operating system is not supported.");
-                    }
-                });
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetBackgroundColorCore(ConsoleColor value)
         {
@@ -842,7 +779,7 @@ namespace Palmtree.IO.Console
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static (Int32 windowWidth, Int32 windowHeight) GetWindowSizeCore()
         {
-            if (_isWindows)
+            if (OperatingSystem.IsWindows())
             {
                 if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
                     throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to get window size.");
@@ -953,7 +890,7 @@ namespace Palmtree.IO.Console
         private static Boolean ImplementWithWin32Api
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => !_useAnsiEscapeCodeEvenOnWindows && _isWindows;
+            get => !_useAnsiEscapeCodeEvenOnWindows && OperatingSystem.IsWindows();
         }
 
         private static void ClearScreenCore(Int32 startX, Int32 startY, Int32 length, UInt16 attribute)
