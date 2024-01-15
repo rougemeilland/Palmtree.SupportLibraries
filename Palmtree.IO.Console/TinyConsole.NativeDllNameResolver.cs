@@ -52,45 +52,13 @@ namespace Palmtree.IO.Console
             private static IEnumerable<String> EnumerateNativeMethodDllNames(Assembly assembly)
             {
                 if (OperatingSystem.IsWindows())
-                {
-                    return
-                        RuntimeInformation.ProcessArchitecture switch
-                        {
-                            Architecture.X86 => EnumerablePath(assembly, "Palmtree.IO.Console.Native.win_x86.dll", "win-x86"),
-                            Architecture.X64 => EnumerablePath(assembly, "Palmtree.IO.Console.Native.win_x64.dll", "win-x64"),
-                            Architecture.Arm => EnumerablePath(assembly, "Palmtree.IO.Console.Native.win_arm32.dll", "win-arm"),
-                            Architecture.Arm64 => EnumerablePath(assembly, "Palmtree.IO.Console.Native.win_arm64.dll", "win-arm64"),
-                            _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
-                        };
-                }
+                    return EnumerablePath(assembly, $"Palmtree.IO.Console.Native.{Platform.NativeCodeId}.dll", Platform.NugetResourceId);
                 else if (OperatingSystem.IsLinux())
-                {
-                    return
-                        RuntimeInformation.ProcessArchitecture switch
-                        {
-                            Architecture.X86 => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.linux_x86.so", "linux-x86"),
-                            Architecture.X64 => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.linux_x64.so", "linux-x64"),
-                            Architecture.Arm => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.linux_arm32.so", "linux-arm"),
-                            Architecture.Arm64 => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.linux_arm64.so", "linux-arm32"),
-                            _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
-                        };
-                }
+                    return EnumerablePath(assembly, $"libPalmtree.IO.Console.Native.{Platform.NativeCodeId}.so", Platform.NugetResourceId);
                 else if (OperatingSystem.IsMacOS())
-                {
-                    return
-                        RuntimeInformation.ProcessArchitecture switch
-                        {
-                            Architecture.X86 => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.osx_x86.dylib", "osx-x86"),
-                            Architecture.X64 => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.osx_x64.dylib", "osx-x64"),
-                            Architecture.Arm => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.osx_arm32.dylib", "osx-arm"),
-                            Architecture.Arm64 => EnumerablePath(assembly, "libPalmtree.IO.Console.Native.osx_arm64.dylib", "osx-arm64"),
-                            _ => throw new NotSupportedException($"Running on this architecture is not supported. : architecture={RuntimeInformation.ProcessArchitecture}"),
-                        };
-                }
+                    return EnumerablePath(assembly, $"libPalmtree.IO.Console.Native.{Platform.NativeCodeId}.dylib", Platform.NugetResourceId);
                 else
-                {
                     throw new NotSupportedException("Running on this operating system is not supported.");
-                }
             }
 
             private static IEnumerable<String> EnumerablePath(Assembly assembly, String libraryName, String platformId)
