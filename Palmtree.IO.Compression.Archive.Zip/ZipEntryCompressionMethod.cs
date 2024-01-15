@@ -81,7 +81,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
             if (decoderOption is null)
                 throw new ArgumentNullException(nameof(decoderOption));
 
-            return InternalCreateDecoderStream(baseStream, decoderOption, unpackedSize, packedSize, progress);
+            return
+                InternalCreateDecoderStream(
+                    baseStream.WithCache(),
+                    decoderOption,
+                    unpackedSize,
+                    packedSize,
+                    progress);
         }
 
         public ISequentialOutputByteStream CreateEncoderStream(
@@ -94,7 +100,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
             if (encoderOption is null)
                 throw new ArgumentNullException(nameof(encoderOption));
 
-            return InternalCreateEncoderStream(baseStream, encoderOption, progress);
+            return
+                InternalCreateEncoderStream(
+                    baseStream.WithCache(),
+                    encoderOption,
+                    progress);
         }
 
         internal static ZipEntryCompressionMethod GetCompressionMethod(ZipEntryCompressionMethodId compressionMethodId)
@@ -185,26 +195,30 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 case ICompressionDecoder decoder:
                 {
-                    var queue = new InProcessPipe();
+                    var pipe = new InProcessPipe();
                     _ = Task.Run(() =>
                     {
                         try
                         {
-                            using var queueWriter = queue.OpenOutputStream();
+                            using var pipeWriter = pipe.OpenOutputStream();
                             decoder.Decode(
                                 baseStream,
-                                queueWriter
-                                    .WithCache(),
+                                pipeWriter,
                                 decoderOption,
                                 unpackedSize,
                                 packedSize,
                                 progress);
+                            pipeWriter.Flush();
                         }
                         catch (Exception)
                         {
                         }
+                        finally
+                        {
+                            baseStream.Dispose();
+                        }
                     });
-                    return queue.OpenInputStream();
+                    return pipe.OpenInputStream();
                 }
 
                 default:
@@ -230,31 +244,31 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
                 case ICompressionEncoder encoder:
                 {
-                    var queue = new InProcessPipe();
+                    var pipe = new InProcessPipe();
                     var syncObject = new ManualResetEventSlim();
-
                     _ = Task.Run(() =>
                     {
                         try
                         {
-                            using var queueReader = queue.OpenInputStream();
+                            using var pipeReader = pipe.OpenInputStream();
                             encoder.Encode(
-                                queueReader,
+                                pipeReader,
                                 baseStream,
                                 encoderOption,
                                 progress);
+                            baseStream.Flush();
                         }
                         catch (Exception)
                         {
                         }
                         finally
                         {
+                            baseStream.Dispose();
                             syncObject.Set();
                         }
                     });
                     return
-                        queue.OpenOutputStream()
-                        .WithCache()
+                        pipe.OpenOutputStream()
                         .WithEndAction(_ =>
                         {
                             syncObject.Wait();
