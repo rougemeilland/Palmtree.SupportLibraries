@@ -61,10 +61,12 @@ namespace Palmtree.IO.Console
                     throw new NotSupportedException("Running on this operating system is not supported.");
             }
 
-            private static IEnumerable<String> EnumerablePath(Assembly assembly, String libraryName, String platformId)
+            private static IEnumerable<String> EnumerablePath(Assembly assembly, String libraryFileName, String nugetResourceId)
             {
+                var baseDirectory = assembly.GetBaseDirectory();
+
                 // アセンブリと同じディレクトリの下にライブラリファイルが存在しているかどうかを確認する
-                var dllFile1 = assembly.GetBaseDirectory().GetFile(libraryName);
+                var dllFile1 = baseDirectory.GetFile(libraryFileName);
                 if (dllFile1.Exists)
                 {
                     // 存在していればそのフルパスを返す
@@ -72,7 +74,7 @@ namespace Palmtree.IO.Console
                 }
 
                 // アセンブリと同じディレクトリの "./runtimes/<platform-id>/native" の下にライブラリファイルが存在しているかどうかを確認する
-                var dllFile2 = assembly.GetBaseDirectory().GetSubDirectory("runtimes", platformId, "native").GetFile(libraryName);
+                var dllFile2 = baseDirectory.GetSubDirectory("runtimes", nugetResourceId, "native").GetFile(libraryFileName);
                 if (dllFile2.Exists)
                 {
                     // 存在していればそのフルパスを返す
@@ -80,7 +82,7 @@ namespace Palmtree.IO.Console
                 }
 
                 // 与えられたライブラリ名をそのまま返す。
-                yield return libraryName;
+                yield return libraryFileName;
             }
         }
     }
