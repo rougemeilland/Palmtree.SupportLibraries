@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -99,7 +98,6 @@ namespace Palmtree.Threading
                 _ = taskCompletionSource.TrySetResult(true);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AsynchronousTaskCompletionSource CreateAsynchronousTaskCompletionSource() => new();
     }
 }

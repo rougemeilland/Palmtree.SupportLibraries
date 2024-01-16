@@ -713,7 +713,6 @@ namespace Palmtree.IO.Console
 
         #region private methods
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetBackgroundColorCore(ConsoleColor value)
         {
             if (ImplementWithWin32Api)
@@ -745,7 +744,6 @@ namespace Palmtree.IO.Console
             _currentBackgrouongColor = value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetForegroundColorCore(ConsoleColor value)
         {
             if (ImplementWithWin32Api)
@@ -776,7 +774,6 @@ namespace Palmtree.IO.Console
             _currentForegrouongColor = value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static (Int32 windowWidth, Int32 windowHeight) GetWindowSizeCore()
         {
             if (OperatingSystem.IsWindows())
@@ -800,7 +797,6 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MoveCursorVertically(Int32 n, Action errorHandler)
         {
             if (ImplementWithWin32Api)
@@ -839,7 +835,6 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MoveCursorHorizontally(Int32 n, Action errorHandler)
         {
             if (ImplementWithWin32Api)

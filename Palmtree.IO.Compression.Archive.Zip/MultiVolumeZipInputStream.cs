@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -240,7 +239,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 throw new InvalidOperationException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
             var condition = _volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
@@ -248,10 +246,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             return volumeDiskSize;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private UInt64 GetCurrentVolumeDiskSize() => GetVolumeDiskSize(_currentVolumeDiskNumber);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private IRandomInputByteStream<UInt64> GetCurrentVolumeDiskStream() => _streamCache.GetStream(_currentVolumeDiskNumber);
     }
 }

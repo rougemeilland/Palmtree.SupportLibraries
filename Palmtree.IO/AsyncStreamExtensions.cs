@@ -1009,7 +1009,6 @@ namespace Palmtree.IO
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadAsync(this Stream stream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1022,7 +1021,6 @@ namespace Palmtree.IO
             return stream.ReadAsync(buffer.Slice(offset), cancellationToken).AsTask();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadAsync(this Stream stream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1042,7 +1040,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadAsync(this Stream stream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1056,7 +1053,6 @@ namespace Palmtree.IO
             return stream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadAsync(this Stream stream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1073,7 +1069,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadAsync(this ISequentialInputByteStream stream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1086,7 +1081,6 @@ namespace Palmtree.IO
             return stream.ReadAsync(buffer.Slice(offset), cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadAsync(this ISequentialInputByteStream stream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1103,7 +1097,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadAsync(this ISequentialInputByteStream stream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1117,7 +1110,6 @@ namespace Palmtree.IO
             return stream.ReadAsync(buffer.Slice(offset, count), cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadAsync(this ISequentialInputByteStream stream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1134,7 +1126,6 @@ namespace Palmtree.IO
             return stream.ReadAsync(buffer.Slice(offset, count), cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadAsync(this ISequentialInputByteStream stream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -1155,7 +1146,6 @@ namespace Palmtree.IO
 
         #region ReadByteOrNullAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Byte?> ReadByteOrNullAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1168,7 +1158,6 @@ namespace Palmtree.IO
                 : null;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Byte?> ReadByteOrNullAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1185,7 +1174,6 @@ namespace Palmtree.IO
 
         #region ReadByteAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Byte> ReadByteAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1198,7 +1186,6 @@ namespace Palmtree.IO
             return buffer[0];
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Byte> ReadByteAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1215,7 +1202,6 @@ namespace Palmtree.IO
 
         #region ReadBytesAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this Stream sourceStream, Int32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1236,7 +1222,6 @@ namespace Palmtree.IO
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this Stream sourceStream, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1254,7 +1239,6 @@ namespace Palmtree.IO
             return buffer;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1268,7 +1252,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer, _offset, _count, cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1284,7 +1267,6 @@ namespace Palmtree.IO
                 (_offset, _count) => sourceStream.ReadAsync(buffer, _offset, _count, cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1302,7 +1284,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1320,7 +1301,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer, _offset, _count, cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1341,7 +1321,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer, _offset, _count, cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1359,7 +1338,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1371,7 +1349,6 @@ namespace Palmtree.IO
                     _buffer => sourceStream.ReadAsync(_buffer, cancellationToken).AsTask());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Int32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1391,7 +1368,6 @@ namespace Palmtree.IO
             return buffer;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this ISequentialInputByteStream sourceStream, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1409,7 +1385,6 @@ namespace Palmtree.IO
             return buffer;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1424,7 +1399,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1441,7 +1415,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1459,7 +1432,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1477,7 +1449,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1497,7 +1468,6 @@ namespace Palmtree.IO
                     (_offset, _count) => sourceStream.ReadAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1515,7 +1485,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1655,7 +1624,6 @@ namespace Palmtree.IO
 
         #region ReadInt16LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int16> ReadInt16LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1668,7 +1636,6 @@ namespace Palmtree.IO
             return buffer.ToInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int16> ReadInt16LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1685,7 +1652,6 @@ namespace Palmtree.IO
 
         #region ReadUInt16LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt16> ReadUInt16LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1698,7 +1664,6 @@ namespace Palmtree.IO
             return buffer.ToUInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt16> ReadUInt16LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1715,7 +1680,6 @@ namespace Palmtree.IO
 
         #region ReadInt32LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int32> ReadInt32LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1728,7 +1692,6 @@ namespace Palmtree.IO
             return buffer.ToInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int32> ReadInt32LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1745,7 +1708,6 @@ namespace Palmtree.IO
 
         #region ReadUInt32LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadUInt32LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1758,7 +1720,6 @@ namespace Palmtree.IO
             return buffer.ToUInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadUInt32LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1775,7 +1736,6 @@ namespace Palmtree.IO
 
         #region ReadInt64LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int64> ReadInt64LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1788,7 +1748,6 @@ namespace Palmtree.IO
             return buffer.ToInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int64> ReadInt64LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1805,7 +1764,6 @@ namespace Palmtree.IO
 
         #region ReadUInt64LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt64> ReadUInt64LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1818,7 +1776,6 @@ namespace Palmtree.IO
             return buffer.ToUInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt64> ReadUInt64LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1835,7 +1792,6 @@ namespace Palmtree.IO
 
         #region ReadSingleLEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Single> ReadSingleLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1848,7 +1804,6 @@ namespace Palmtree.IO
             return buffer.ToSingleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Single> ReadSingleLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1865,7 +1820,6 @@ namespace Palmtree.IO
 
         #region ReadDoubleLEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Double> ReadDoubleLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1878,7 +1832,6 @@ namespace Palmtree.IO
             return buffer.ToDoubleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Double> ReadDoubleLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1895,7 +1848,6 @@ namespace Palmtree.IO
 
         #region ReadDecimalLEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Decimal> ReadDecimalLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1908,7 +1860,6 @@ namespace Palmtree.IO
             return buffer.ToDecimalLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Decimal> ReadDecimalLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1925,7 +1876,6 @@ namespace Palmtree.IO
 
         #region ReadInt16BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int16> ReadInt16BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1938,7 +1888,6 @@ namespace Palmtree.IO
             return buffer.ToInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int16> ReadInt16BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1955,7 +1904,6 @@ namespace Palmtree.IO
 
         #region ReadUInt16BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt16> ReadUInt16BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1968,7 +1916,6 @@ namespace Palmtree.IO
             return buffer.ToUInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt16> ReadUInt16BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1985,7 +1932,6 @@ namespace Palmtree.IO
 
         #region ReadInt32BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int32> ReadInt32BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -1998,7 +1944,6 @@ namespace Palmtree.IO
             return buffer.ToInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int32> ReadInt32BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2015,7 +1960,6 @@ namespace Palmtree.IO
 
         #region ReadUInt32BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadUInt32BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2028,7 +1972,6 @@ namespace Palmtree.IO
             return buffer.ToUInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> ReadUInt32BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2045,7 +1988,6 @@ namespace Palmtree.IO
 
         #region ReadInt64BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int64> ReadInt64BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2058,7 +2000,6 @@ namespace Palmtree.IO
             return buffer.ToInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int64> ReadInt64BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2075,7 +2016,6 @@ namespace Palmtree.IO
 
         #region ReadUInt64BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt64> ReadUInt64BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2088,7 +2028,6 @@ namespace Palmtree.IO
             return buffer.ToUInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt64> ReadUInt64BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2105,7 +2044,6 @@ namespace Palmtree.IO
 
         #region ReadSingleBEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Single> ReadSingleBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2118,7 +2056,6 @@ namespace Palmtree.IO
             return buffer.ToSingleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Single> ReadSingleBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2135,7 +2072,6 @@ namespace Palmtree.IO
 
         #region ReadDoubleBEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Double> ReadDoubleBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2148,7 +2084,6 @@ namespace Palmtree.IO
             return buffer.ToDoubleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Double> ReadDoubleBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2165,7 +2100,6 @@ namespace Palmtree.IO
 
         #region ReadDecimalBEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Decimal> ReadDecimalBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2178,7 +2112,6 @@ namespace Palmtree.IO
             return buffer.ToDecimalBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Decimal> ReadDecimalBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
             if (sourceStream is null)
@@ -2195,7 +2128,6 @@ namespace Palmtree.IO
 
         #region WriteAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int32> WriteAsync(this Stream stream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2210,7 +2142,6 @@ namespace Palmtree.IO
             return count;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> WriteAsync(this Stream stream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2225,7 +2156,6 @@ namespace Palmtree.IO
             return (UInt32)count;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> WriteAsync(this Stream stream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2239,7 +2169,6 @@ namespace Palmtree.IO
             return count;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Int32> WriteAsync(this Stream stream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2249,7 +2178,6 @@ namespace Palmtree.IO
             return buffer.Length;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> WriteAsync(this ISequentialOutputByteStream stream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2262,7 +2190,6 @@ namespace Palmtree.IO
             return stream.WriteAsync(buffer.Slice(offset), cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> WriteAsync(this ISequentialOutputByteStream stream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2279,7 +2206,6 @@ namespace Palmtree.IO
                 .ConfigureAwait(false)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Int32> WriteAsync(this ISequentialOutputByteStream stream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2296,7 +2222,6 @@ namespace Palmtree.IO
             return stream.WriteAsync(buffer.Slice(offset, count), cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<UInt32> WriteAsync(this ISequentialOutputByteStream stream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (stream is null)
@@ -2328,7 +2253,6 @@ namespace Palmtree.IO
 
         #region WriteBytesAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2339,7 +2263,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2352,7 +2275,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, offset, buffer.Length - offset, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2365,7 +2287,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, (Int32)offset, buffer.Length - (Int32)offset, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2379,7 +2300,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, offset, count, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2396,7 +2316,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, offset, count, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2409,7 +2328,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, (Int32)offset, (Int32)count, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2418,7 +2336,6 @@ namespace Palmtree.IO
             return destinationStream.WriteAsync(buffer, cancellationToken).AsTask();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2433,7 +2350,6 @@ namespace Palmtree.IO
                     (_offset, _count) => destinationStream.WriteAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2449,7 +2365,6 @@ namespace Palmtree.IO
                 (_offset, _count) => destinationStream.WriteAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2466,7 +2381,6 @@ namespace Palmtree.IO
                     (_offset, _count) => destinationStream.WriteAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2482,7 +2396,6 @@ namespace Palmtree.IO
                     (_offset, _count) => destinationStream.WriteAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2503,7 +2416,6 @@ namespace Palmtree.IO
                     (_offset, _count) => destinationStream.WriteAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2520,7 +2432,6 @@ namespace Palmtree.IO
                     (_offset, _count) => destinationStream.WriteAsync(buffer.Slice(_offset, _count), cancellationToken));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2665,7 +2576,6 @@ namespace Palmtree.IO
 
         #region WriteInt16LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt16LEAsync(this Stream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2676,7 +2586,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt16LEAsync(this ISequentialOutputByteStream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2691,7 +2600,6 @@ namespace Palmtree.IO
 
         #region WriteUInt16LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt16LEAsync(this Stream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2702,7 +2610,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt16LEAsync(this ISequentialOutputByteStream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2717,7 +2624,6 @@ namespace Palmtree.IO
 
         #region WriteInt32LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt32LEAsync(this Stream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2728,7 +2634,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt32LEAsync(this ISequentialOutputByteStream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2743,7 +2648,6 @@ namespace Palmtree.IO
 
         #region WriteUInt32LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt32LEAsync(this Stream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2754,7 +2658,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt32LEAsync(this ISequentialOutputByteStream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2769,7 +2672,6 @@ namespace Palmtree.IO
 
         #region WriteInt64LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt64LEAsync(this Stream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2780,7 +2682,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt64LEAsync(this ISequentialOutputByteStream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2795,7 +2696,6 @@ namespace Palmtree.IO
 
         #region WriteUInt64LEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt64LEAsync(this Stream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2806,7 +2706,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt64LEAsync(this ISequentialOutputByteStream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2821,7 +2720,6 @@ namespace Palmtree.IO
 
         #region WriteSingleLEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteSingleLEAsync(this Stream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2832,7 +2730,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteSingleLEAsync(this ISequentialOutputByteStream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2847,7 +2744,6 @@ namespace Palmtree.IO
 
         #region WriteDoubleLEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDoubleLEAsync(this Stream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2858,7 +2754,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDoubleLEAsync(this ISequentialOutputByteStream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2873,7 +2768,6 @@ namespace Palmtree.IO
 
         #region WriteDecimalLEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDecimalLEAsync(this Stream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2884,7 +2778,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDecimalLEAsync(this ISequentialOutputByteStream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2899,7 +2792,6 @@ namespace Palmtree.IO
 
         #region WriteInt16BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt16BEAsync(this Stream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2910,7 +2802,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt16BEAsync(this ISequentialOutputByteStream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2925,7 +2816,6 @@ namespace Palmtree.IO
 
         #region WriteUInt16BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt16BEAsync(this Stream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2936,7 +2826,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt16BEAsync(this ISequentialOutputByteStream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2951,7 +2840,6 @@ namespace Palmtree.IO
 
         #region WriteInt32BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt32BEAsync(this Stream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2962,7 +2850,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt32BEAsync(this ISequentialOutputByteStream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2977,7 +2864,6 @@ namespace Palmtree.IO
 
         #region WriteUInt32BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt32BEAsync(this Stream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -2988,7 +2874,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt32BEAsync(this ISequentialOutputByteStream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3003,7 +2888,6 @@ namespace Palmtree.IO
 
         #region WriteInt64BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt64BEAsync(this Stream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3014,7 +2898,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteInt64BEAsync(this ISequentialOutputByteStream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3029,7 +2912,6 @@ namespace Palmtree.IO
 
         #region WriteUInt64BEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt64BEAsync(this Stream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3040,7 +2922,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteUInt64BEAsync(this ISequentialOutputByteStream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3055,7 +2936,6 @@ namespace Palmtree.IO
 
         #region WriteSingleBEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteSingleBEAsync(this Stream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3066,7 +2946,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteSingleBEAsync(this ISequentialOutputByteStream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3081,7 +2960,6 @@ namespace Palmtree.IO
 
         #region WriteDoubleBEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDoubleBEAsync(this Stream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3092,7 +2970,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDoubleBEAsync(this ISequentialOutputByteStream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3107,7 +2984,6 @@ namespace Palmtree.IO
 
         #region WriteDecimalBEAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDecimalBEAsync(this Stream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3118,7 +2994,6 @@ namespace Palmtree.IO
             return destinationStream.WriteBytesAsync(buffer, cancellationToken);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteDecimalBEAsync(this ISequentialOutputByteStream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
             if (destinationStream is null)
@@ -3731,7 +3606,6 @@ namespace Palmtree.IO
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async IAsyncEnumerable<Byte> InternalGetByteSequence<POSITION_T>(ISequentialInputByteStream baseStream, POSITION_T? offset, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
             where POSITION_T : struct
         {
@@ -3780,7 +3654,6 @@ namespace Palmtree.IO
 
         #region InternalStreamBytesEqualAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<Boolean> InternalStreamBytesEqualAsync(this Stream stream1, Stream stream2, IProgress<UInt64>? progress, CancellationToken cancellationToken)
         {
             var byteStream1 = stream1.AsInputByteStream(true);
@@ -3794,7 +3667,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<Boolean> InternalStreamBytesEqualAsync(this ISequentialInputByteStream stream1, ISequentialInputByteStream stream2, IProgress<UInt64>? progress, CancellationToken cancellationToken)
         {
             const Int32 bufferSize = 81920;
@@ -3845,7 +3717,6 @@ namespace Palmtree.IO
 
         #region InternalCopyToAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task InternalCopyToAsync(this Stream source, Stream destination, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken)
         {
             try
@@ -3873,7 +3744,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task InternalCopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken)
         {
             var processedCounter = new ProgressCounterUInt64(progress);
@@ -3910,7 +3780,6 @@ namespace Palmtree.IO
 
         #region InternalReadBytesAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<Int32> InternalReadBytesAsync(Int32 offset, Int32 count, Func<Int32, Int32, Task<Int32>> reader)
         {
             var index = 0;
@@ -3926,7 +3795,6 @@ namespace Palmtree.IO
             return index;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<Int32> InternalReadBytesAsync(Memory<Byte> buffer, Func<Memory<Byte>, Task<Int32>> reader)
         {
             var index = 0;
@@ -4003,7 +3871,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task InternalWriteBytesAsync(Int32 offset, Int32 count, Func<Int32, Int32, Task<Int32>> writer)
         {
             var index = 0;
@@ -4025,7 +3892,6 @@ namespace Palmtree.IO
         private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc32Async(this ISequentialInputByteStream inputStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
             => InternalCalculateCrcAsync(inputStream, bufferSize, progress, Crc32.CreateCalculationState(), cancellationToken);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrcAsync(ISequentialInputByteStream inputStream, Int32 bufferSize, IProgress<UInt64>? progress, ICrcCalculationState<UInt32> session, CancellationToken cancellationToken)
         {
             var processedCounter = new ProgressCounterUInt64(progress);

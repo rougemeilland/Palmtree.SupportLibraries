@@ -26,7 +26,6 @@ namespace Palmtree
 
         #region GetOffsetAndLength
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (Boolean IsOk, Int32 Offset, Int32 Length) GetOffsetAndLength<ELEMENT_T>(this ELEMENT_T[] source, Range range)
         {
             if (source is null)
@@ -42,7 +41,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (Boolean IsOk, Int32 Offset, Int32 Length) GetOffsetAndLength<ELEMENT_T>(this Span<ELEMENT_T> source, Range range)
         {
             try
@@ -56,7 +54,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (Boolean IsOk, Int32 Offset, Int32 Length) GetOffsetAndLength<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, Range range)
         {
             try
@@ -74,7 +71,6 @@ namespace Palmtree
 
         #region AsReadOnly
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnly<ELEMENT_T>(this ELEMENT_T[] source)
         {
             if (source is null)
@@ -83,7 +79,6 @@ namespace Palmtree
             return new ReadOnlyMemory<ELEMENT_T>(source);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnly<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset, Int32 count)
         {
             if (source is null)
@@ -98,7 +93,6 @@ namespace Palmtree
             return new ReadOnlyMemory<ELEMENT_T>(source, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnly<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 length)
         {
             if (sourceArray is null)
@@ -119,7 +113,6 @@ namespace Palmtree
 
         #region AsMemory
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> AsMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset)
         {
             if (sourceArray is null)
@@ -137,7 +130,6 @@ namespace Palmtree
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> AsMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 length)
         {
             if (sourceArray is null)
@@ -152,7 +144,6 @@ namespace Palmtree
 
         #region AsSpan
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<ELEMENT_T> AsSpan<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset)
         {
             if (sourceArray is null)
@@ -177,7 +168,6 @@ namespace Palmtree
 
         #region AsReadOnlyMemory
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnlyMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray)
         {
             if (sourceArray is null)
@@ -186,7 +176,6 @@ namespace Palmtree
             return new ReadOnlyMemory<ELEMENT_T>(sourceArray);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnlyMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset)
         {
             if (sourceArray is null)
@@ -197,7 +186,6 @@ namespace Palmtree
             return new ReadOnlyMemory<ELEMENT_T>(sourceArray, offset, sourceArray.Length - offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnlyMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset)
         {
             if (sourceArray is null)
@@ -208,7 +196,6 @@ namespace Palmtree
             return new ReadOnlyMemory<ELEMENT_T>(sourceArray, (Int32)offset, (Int32)(sourceArray.Length - offset));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnlyMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 length)
         {
             if (sourceArray is null)
@@ -223,7 +210,6 @@ namespace Palmtree
             return new ReadOnlyMemory<ELEMENT_T>(sourceArray, offset, length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<ELEMENT_T> AsReadOnlyMemory<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 length)
         {
             if (sourceArray is null)
@@ -238,7 +224,6 @@ namespace Palmtree
 
         #region AsReadOnlySpan
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<ELEMENT_T> AsReadOnlySpan<ELEMENT_T>(this ELEMENT_T[] sourceArray)
         {
             if (sourceArray is null)
@@ -247,7 +232,6 @@ namespace Palmtree
             return (ReadOnlySpan<ELEMENT_T>)sourceArray;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<ELEMENT_T> AsReadOnlySpan<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset)
         {
             if (sourceArray is null)
@@ -258,7 +242,6 @@ namespace Palmtree
             return new ReadOnlySpan<ELEMENT_T>(sourceArray, offset, sourceArray.Length - offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<ELEMENT_T> AsReadOnlySpan<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset)
         {
             if (sourceArray is null)
@@ -269,7 +252,6 @@ namespace Palmtree
             return new Span<ELEMENT_T>(sourceArray, (Int32)offset, sourceArray.Length - (Int32)offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<ELEMENT_T> AsReadOnlySpan<ELEMENT_T>(this ELEMENT_T[] sourceArray, Range range)
         {
             if (sourceArray is null)
@@ -281,7 +263,6 @@ namespace Palmtree
             return new ReadOnlySpan<ELEMENT_T>(sourceArray, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<ELEMENT_T> AsReadOnlySpan<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count)
         {
             if (sourceArray is null)
@@ -296,7 +277,6 @@ namespace Palmtree
             return new ReadOnlySpan<ELEMENT_T>(sourceArray, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<ELEMENT_T> AsReadOnlySpan<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count)
         {
             if (sourceArray is null)
@@ -327,8 +307,6 @@ namespace Palmtree
         /// <paramref name="buffer"/> 内に <paramref name="value"/> と一致する要素が見つかった場合は、最初に見つかった位置を示すインデックス番号が返ります。
         /// 一致する要素が見つからなかった場合は負の整数が返ります。
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 IndexOf<VALUE_T>(this ReadOnlySpan<VALUE_T> buffer, VALUE_T value)
         {
             for (var index = 0; index < buffer.Length; ++index)
@@ -359,8 +337,6 @@ namespace Palmtree
         /// <paramref name="buffer"/> 内に <paramref name="predicate"/> を満たす要素が見つかった場合は、最初に見つかった位置を示すインデックス番号が返ります。
         /// 条件を満たす要素が見つからなかった場合は負の整数が返ります。
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 IndexOf<VALUE_T>(this Span<VALUE_T> buffer, Func<VALUE_T, Boolean> predicate)
         {
             for (var index = 0; index < buffer.Length; ++index)
@@ -376,7 +352,6 @@ namespace Palmtree
 
         #region Slice
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> Slice<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset)
         {
             if (sourceArray is null)
@@ -387,7 +362,6 @@ namespace Palmtree
             return new Memory<ELEMENT_T>(sourceArray, offset, sourceArray.Length - offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> Slice<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset)
         {
             if (sourceArray is null)
@@ -398,7 +372,6 @@ namespace Palmtree
             return new Memory<ELEMENT_T>(sourceArray, (Int32)offset, (Int32)(sourceArray.Length - offset));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> Slice<ELEMENT_T>(this ELEMENT_T[] sourceArray, Range range)
         {
             if (sourceArray is null)
@@ -417,7 +390,6 @@ namespace Palmtree
             return new Memory<ELEMENT_T>(sourceArray, offset, length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> Slice<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 length)
         {
             if (sourceArray is null)
@@ -432,7 +404,6 @@ namespace Palmtree
             return new Memory<ELEMENT_T>(sourceArray, offset, length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Memory<ELEMENT_T> Slice<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 length)
         {
             if (sourceArray is null)
@@ -2075,7 +2046,6 @@ namespace Palmtree
 
         #region ClearArray
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearArray<ELEMENT_T>(this ELEMENT_T[] buffer)
         {
             if (buffer is null)
@@ -2084,7 +2054,6 @@ namespace Palmtree
             Array.Clear(buffer, 0, buffer.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearArray<ELEMENT_T>(this ELEMENT_T[] buffer, Int32 offset)
         {
             if (buffer is null)
@@ -2099,7 +2068,6 @@ namespace Palmtree
         public static void ClearArray<ELEMENT_T>(this ELEMENT_T[] buffer, UInt32 offset)
             => buffer.ClearArray(checked((Int32)offset));
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearArray<ELEMENT_T>(this ELEMENT_T[] buffer, Range range)
         {
             if (buffer is null)
@@ -2111,7 +2079,6 @@ namespace Palmtree
             Array.Clear(buffer, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearArray<ELEMENT_T>(this ELEMENT_T[] buffer, Int32 offset, Int32 count)
         {
             if (buffer is null)
@@ -2126,7 +2093,6 @@ namespace Palmtree
             Array.Clear(buffer, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ClearArray<ELEMENT_T>(this ELEMENT_T[] buffer, UInt32 offset, UInt32 count)
         {
             if (buffer is null)
@@ -2142,7 +2108,6 @@ namespace Palmtree
 
         #region FillArray
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, ELEMENT_T value)
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
         {
@@ -2152,7 +2117,6 @@ namespace Palmtree
             Array.Fill(buffer, value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, ELEMENT_T value, Int32 offset)
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
         {
@@ -2164,7 +2128,6 @@ namespace Palmtree
             Array.Fill(buffer, value, offset, buffer.Length - offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, ELEMENT_T value, UInt32 offset)
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
         {
@@ -2174,7 +2137,6 @@ namespace Palmtree
             buffer.FillArray(value, checked((Int32)offset));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, ELEMENT_T value, Range range)
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
         {
@@ -2187,7 +2149,6 @@ namespace Palmtree
             Array.Fill(buffer, value, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, ELEMENT_T value, Int32 offset, Int32 count)
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
         {
@@ -2203,7 +2164,6 @@ namespace Palmtree
             Array.Fill(buffer, value, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, ELEMENT_T value, UInt32 offset, UInt32 count)
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
         {
@@ -2218,7 +2178,6 @@ namespace Palmtree
             where ELEMENT_T : struct // もし ELEMENT_T が参照型だと同じ参照がすべての要素にコピーされバグの原因となりやすいため、値型に限定する
             => buffer.Fill(value);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, Func<Int32, ELEMENT_T> valueGetter)
         {
             if (buffer is null)
@@ -2231,7 +2190,6 @@ namespace Palmtree
                 buffer[index] = valueGetter(index);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, Func<Int32, ELEMENT_T> valueGetter, Int32 offset)
         {
             if (buffer is null)
@@ -2246,7 +2204,6 @@ namespace Palmtree
                 buffer[offset + index] = valueGetter(index);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, Func<Int32, ELEMENT_T> valueGetter, Range range)
         {
             if (buffer is null)
@@ -2261,7 +2218,6 @@ namespace Palmtree
                 buffer[offset + index] = valueGetter(index);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, Func<Int32, ELEMENT_T> valueGetter, Int32 offset, Int32 count)
         {
             if (buffer is null)
@@ -2279,7 +2235,6 @@ namespace Palmtree
                 buffer[offset + index] = valueGetter(index);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, Func<UInt32, ELEMENT_T> valueGetter, UInt32 offset)
         {
             if (buffer is null)
@@ -2294,7 +2249,6 @@ namespace Palmtree
                 buffer[offset + index] = valueGetter(index);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this ELEMENT_T[] buffer, Func<UInt32, ELEMENT_T> valueGetter, UInt32 offset, UInt32 count)
         {
             if (buffer is null)
@@ -2308,7 +2262,6 @@ namespace Palmtree
                 buffer[offset + index] = valueGetter(index);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillArray<ELEMENT_T>(this Span<ELEMENT_T> buffer, Func<Int32, ELEMENT_T> valueGetter)
         {
             if (valueGetter is null)
@@ -2323,7 +2276,6 @@ namespace Palmtree
 
         #region CopyTo
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, ELEMENT_T[] destinationArray, UInt32 destinationArrayOffset)
         {
             if (sourceArray is null)
@@ -2336,7 +2288,6 @@ namespace Palmtree
             sourceArray.CopyTo(destinationArray, (Int32)destinationArrayOffset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 sourceArrayOffset, ELEMENT_T[] destinationArray, Int32 destinationArrayOffset, Int32 count)
         {
             if (sourceArray is null)
@@ -2357,7 +2308,6 @@ namespace Palmtree
             Array.Copy(sourceArray, sourceArrayOffset, destinationArray, destinationArrayOffset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 sourceArrayOffset, ELEMENT_T[] destinationArray, UInt32 destinationArrayOffset, UInt32 count)
         {
             if (sourceArray is null)
@@ -2372,7 +2322,6 @@ namespace Palmtree
             Array.Copy(sourceArray, (Int32)sourceArrayOffset, destinationArray, (Int32)destinationArrayOffset, (Int32)count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, Span<ELEMENT_T> destinationArray)
         {
             if (sourceArray is null)
@@ -2381,7 +2330,6 @@ namespace Palmtree
             ((Span<ELEMENT_T>)sourceArray).CopyTo(destinationArray);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<ELEMENT_T>(this Span<ELEMENT_T> sourceArray, ELEMENT_T[] destinationArray)
         {
             if (destinationArray is null)
@@ -2398,7 +2346,6 @@ namespace Palmtree
 
         #region CopyMemoryTo
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, ELEMENT_T[] destinationArray)
         {
             if (sourceArray is null)
@@ -2411,7 +2358,6 @@ namespace Palmtree
             InternalCopyMemory(sourceArray, 0, destinationArray, 0, sourceArray.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, ELEMENT_T[] destinationArray, Int32 destinationArrayOffset)
         {
             if (sourceArray is null)
@@ -2426,7 +2372,6 @@ namespace Palmtree
             InternalCopyMemory(sourceArray, 0, destinationArray, destinationArrayOffset, sourceArray.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, ELEMENT_T[] destinationArray, UInt32 destinationArrayOffset)
         {
             if (sourceArray is null)
@@ -2439,7 +2384,6 @@ namespace Palmtree
             InternalCopyMemory(sourceArray, 0, destinationArray, (Int32)destinationArrayOffset, sourceArray.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 sourceArrayOffset, ELEMENT_T[] destinationArray, Int32 destinationArrayOffset, Int32 count)
         {
             if (sourceArray is null)
@@ -2460,7 +2404,6 @@ namespace Palmtree
             InternalCopyMemory(sourceArray, sourceArrayOffset, destinationArray, destinationArrayOffset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 sourceArrayOffset, ELEMENT_T[] destinationArray, UInt32 destinationArrayOffset, UInt32 count)
         {
             if (sourceArray is null)
@@ -2475,7 +2418,6 @@ namespace Palmtree
             InternalCopyMemory(sourceArray, (Int32)sourceArrayOffset, destinationArray, (Int32)destinationArrayOffset, (Int32)count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ELEMENT_T[] sourceArray, Span<ELEMENT_T> destinationArray)
         {
             if (sourceArray is null)
@@ -2486,7 +2428,6 @@ namespace Palmtree
             InternalCopyMemory((ReadOnlySpan<ELEMENT_T>)sourceArray, destinationArray);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this Span<ELEMENT_T> sourceArray, ELEMENT_T[] destinationArray)
         {
             if (destinationArray is null)
@@ -2497,7 +2438,6 @@ namespace Palmtree
             InternalCopyMemory((ReadOnlySpan<ELEMENT_T>)sourceArray, (Span<ELEMENT_T>)destinationArray);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this Span<ELEMENT_T> sourceArray, Span<ELEMENT_T> destinationArray)
         {
             if (destinationArray.Length < sourceArray.Length)
@@ -2506,7 +2446,6 @@ namespace Palmtree
             InternalCopyMemory((ReadOnlySpan<ELEMENT_T>)sourceArray, destinationArray);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> sourceArray, ELEMENT_T[] destinationArray)
         {
             if (destinationArray.Length < sourceArray.Length)
@@ -2515,7 +2454,6 @@ namespace Palmtree
             InternalCopyMemory(sourceArray, (Span<ELEMENT_T>)destinationArray);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyMemoryTo<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> sourceArray, Span<ELEMENT_T> destinationArray)
         {
             if (destinationArray.Length < sourceArray.Length)
@@ -2792,7 +2730,6 @@ namespace Palmtree
 
         #region InternalQuickSort
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T>(ELEMENT_T[] source, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -2846,7 +2783,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T, KEY_T>(ELEMENT_T[] source, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
         {
@@ -2900,7 +2836,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T>(ELEMENT_T[] source, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
             if (source.Length < 2)
@@ -2953,7 +2888,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T, KEY_T>(ELEMENT_T[] source, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
         {
             if (source.Length < 2)
@@ -3006,7 +2940,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T>(Span<ELEMENT_T> source)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -3060,7 +2993,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -3114,7 +3046,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T>(Span<ELEMENT_T> source, IComparer<ELEMENT_T> comparer)
         {
             if (source.Length < 2)
@@ -3167,7 +3098,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalQuickSort<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter, IComparer<KEY_T> keyComparer)
         {
             if (source.Length < 2)
@@ -5513,7 +5443,6 @@ namespace Palmtree
 
         #region InternalQuickSortUnmanaged
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void InternalQuickSortUnmanaged<ELEMENT_T>(ref ELEMENT_T source, Int32 count)
             where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
         {
@@ -5528,7 +5457,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void InternalQuickSortUnmanaged<ELEMENT_T, KEY_T>(ref ELEMENT_T source, Int32 count, Func<ELEMENT_T, KEY_T> keySelector)
             where ELEMENT_T : unmanaged
             where KEY_T : IComparable<KEY_T>
@@ -5544,7 +5472,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void InternalQuickSortUnmanaged<ELEMENT_T>(ref ELEMENT_T source, Int32 count, IComparer<ELEMENT_T> comparer)
             where ELEMENT_T : unmanaged
         {
@@ -5559,7 +5486,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void InternalQuickSortUnmanaged<ELEMENT_T, KEY_T>(ref ELEMENT_T source, Int32 count, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
             where ELEMENT_T : unmanaged
         {
@@ -6724,7 +6650,6 @@ namespace Palmtree
 
         #region InternalSequenceEqual
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Boolean InternalSequenceEqual<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length)
             where ELEMENT_T : IEquatable<ELEMENT_T>
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
@@ -6745,7 +6670,6 @@ namespace Palmtree
                 _ => InternalSequenceEqualManaged(array1, array1Offset, array1Length, array2, array2Offset, array2Length),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Boolean InternalSequenceEqual<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, IEqualityComparer<ELEMENT_T> equalityComparer)
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
             {
@@ -6765,7 +6689,6 @@ namespace Palmtree
                 _ => InternalSequenceEqualManaged(array1, array1Offset, array1Length, array2, array2Offset, array2Length, equalityComparer),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqual<ELEMENT_T, KEY_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
@@ -6782,7 +6705,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqual<ELEMENT_T, KEY_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
             if (array1Length != array2Length)
@@ -6796,7 +6718,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Boolean InternalSequenceEqual<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2)
             where ELEMENT_T : IEquatable<ELEMENT_T>
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
@@ -6817,7 +6738,6 @@ namespace Palmtree
                 _ => InternalSequenceEqualManaged(array1, array2),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Boolean InternalSequenceEqual<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
             {
@@ -6837,7 +6757,6 @@ namespace Palmtree
                 _ => InternalSequenceEqualManaged(array1, array2, equalityComparer),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqual<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
@@ -6856,7 +6775,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqual<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
             if (array1.Length != array2.Length)
@@ -6876,7 +6794,6 @@ namespace Palmtree
 
         #region InternalSequenceEqualManaged
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqualManaged<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
@@ -6892,7 +6809,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqualManaged<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
             if (array1Length != array2Length)
@@ -6907,7 +6823,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqualManaged<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
@@ -6924,7 +6839,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalSequenceEqualManaged<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
             if (array1.Length != array2.Length)
@@ -6944,7 +6858,6 @@ namespace Palmtree
 
         #region InternalSequenceEqualUnmanaged
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe Boolean InternalSequenceEqualUnmanaged<ELEMENT_T>(ref ELEMENT_T array1, Int32 array1Length, ref ELEMENT_T array2, Int32 array2Length)
             where ELEMENT_T : unmanaged
         {
@@ -6969,7 +6882,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe Boolean InternalSequenceEqualUnmanaged<ELEMENT_T>(ref ELEMENT_T array1, Int32 array1Length, ref ELEMENT_T array2, Int32 array2Length, IEqualityComparer<ELEMENT_T> equalityComparer)
             where ELEMENT_T : unmanaged
         {
@@ -7000,7 +6912,6 @@ namespace Palmtree
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe Boolean InternalSequenceEqualUnmanagedByUInt32(Byte* pointer1, Byte* pointer2, Int32 count)
         {
             const Int32 alignmentMask = sizeof(UInt32) - 1;
@@ -7121,7 +7032,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe Boolean InternalSequenceEqualUnmanagedByUInt64(Byte* pointer1, Byte* pointer2, Int32 count)
         {
             const Int32 alignmentMask = sizeof(UInt64) - 1;
@@ -7253,7 +7163,6 @@ namespace Palmtree
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe Boolean InternalSequenceEqualUnmanagedByByte(Byte* pointer1, Byte* pointer2, Int32 count)
         {
 #if DEBUG
@@ -7331,7 +7240,6 @@ namespace Palmtree
 
         #region InternalSequenceCompare
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Int32 InternalSequenceCompare<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length)
             where ELEMENT_T : IComparable<ELEMENT_T>
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
@@ -7352,7 +7260,6 @@ namespace Palmtree
                 _ => InternalSequenceCompareManaged(array1, array1Offset, array1Length, array2, array2Offset, array2Length),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Int32 InternalSequenceCompare<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, IComparer<ELEMENT_T> comparer)
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
             {
@@ -7372,7 +7279,6 @@ namespace Palmtree
                 _ => InternalSequenceCompareManaged(array1, array1Offset, array1Length, array2, array2Offset, array2Length, comparer),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompare<ELEMENT_T, KEY_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -7387,7 +7293,6 @@ namespace Palmtree
             return array1Length.CompareTo(array2Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompare<ELEMENT_T, KEY_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             var count = array1Length.Minimum(array2Length);
@@ -7401,7 +7306,6 @@ namespace Palmtree
             return array1Length.CompareTo(array2Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Int32 InternalSequenceCompare<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
@@ -7422,7 +7326,6 @@ namespace Palmtree
                 _ => InternalSequenceCompareManaged(array1, array2),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static Int32 InternalSequenceCompare<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
             => Type.GetTypeCode(typeof(ELEMENT_T)) switch
             {
@@ -7442,7 +7345,6 @@ namespace Palmtree
                 _ => InternalSequenceCompareManaged(array1, array2, comparer),
             };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompare<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -7460,7 +7362,6 @@ namespace Palmtree
             return array1.Length.CompareTo(array2.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompare<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             if (keySelecter is null)
@@ -7483,7 +7384,6 @@ namespace Palmtree
 
         #region InternalSequenceCompareManaged
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompareManaged<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -7498,7 +7398,6 @@ namespace Palmtree
             return array1Length.CompareTo(array2Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompareManaged<ELEMENT_T>(ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Length, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Length, IComparer<ELEMENT_T> comparer)
         {
             var count = array1Length.Minimum(array2Length);
@@ -7512,7 +7411,6 @@ namespace Palmtree
             return array1Length.CompareTo(array2Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompareManaged<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -7527,7 +7425,6 @@ namespace Palmtree
             return array1.Length.CompareTo(array2.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompareManaged<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
             var count = array1.Length.Minimum(array2.Length);
@@ -7545,7 +7442,6 @@ namespace Palmtree
 
         #region InternalSequenceCompareUnmanaged
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe Int32 InternalSequenceCompareUnmanaged<ELEMENT_T>(ref ELEMENT_T array1, Int32 array1Length, ref ELEMENT_T array2, Int32 array2Length)
             where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
         {
@@ -7566,7 +7462,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe Int32 InternalSequenceCompareUnmanaged<ELEMENT_T>(ref ELEMENT_T array1, Int32 array1Length, ref ELEMENT_T array2, Int32 array2Length, IComparer<ELEMENT_T> comparer)
             where ELEMENT_T : unmanaged
         {
@@ -7587,7 +7482,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe Int32 InternalSequenceCompareUnmanaged<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, Int32 array1Length, ReadOnlySpan<ELEMENT_T> array2, Int32 array2Length)
             where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
         {
@@ -7608,7 +7502,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe Int32 InternalSequenceCompareUnmanaged<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, Int32 array1Length, ReadOnlySpan<ELEMENT_T> array2, Int32 array2Length, IComparer<ELEMENT_T> comparer)
             where ELEMENT_T : unmanaged
         {
@@ -7633,7 +7526,6 @@ namespace Palmtree
 
         #region InternalCopyMemory
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalCopyMemory<ELEMENT_T>(ELEMENT_T[] sourceArray, Int32 sourceArrayOffset, ELEMENT_T[] destinationArray, Int32 destinationArrayOffset, Int32 count)
         {
             switch (Type.GetTypeCode(typeof(ELEMENT_T)))
@@ -7683,7 +7575,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalCopyMemory<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> sourceArray, Span<ELEMENT_T> destinationArray)
         {
             switch (Type.GetTypeCode(typeof(ELEMENT_T)))
@@ -7852,7 +7743,6 @@ namespace Palmtree
 
         #region InternalCopyMemoryUnmanagedByUInt64
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt64(UInt64* sourcePointer, UInt64* destinationPointer, Int32 count)
         {
             if (((Int32)sourcePointer & (sizeof(UInt64) - 1)) != 0 || ((Int32)destinationPointer & (sizeof(UInt64) - 1)) != 0)
@@ -7908,7 +7798,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt64(UInt32* sourcePointer, UInt32* destinationPointer, Int32 count)
         {
             if (((Int32)sourcePointer & (sizeof(UInt32) - 1)) != 0 || ((Int32)destinationPointer & (sizeof(UInt32) - 1)) != 0)
@@ -7991,7 +7880,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt64(UInt16* sourcePointer, UInt16* destinationPointer, Int32 count)
         {
             if (((Int32)sourcePointer & (sizeof(UInt16) - 1)) != 0 || ((Int32)destinationPointer & (sizeof(UInt16) - 1)) != 0)
@@ -8097,7 +7985,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt64(Byte* sourcePointer, Byte* destinationPointer, Int32 count)
         {
             switch (((-(Int32)destinationPointer & (sizeof(UInt64) - 1)) / sizeof(Byte)).Minimum(count))
@@ -8241,7 +8128,6 @@ namespace Palmtree
 
         #region InternalCopyMemoryUnmanagedByUInt32
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt32(UInt32* sourcePointer, UInt32* destinationPointer, Int32 count)
         {
             if (((Int32)sourcePointer & (sizeof(UInt32) - 1)) != 0 || ((Int32)destinationPointer & (sizeof(UInt32) - 1)) != 0)
@@ -8297,7 +8183,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt32(UInt16* sourcePointer, UInt16* destinationPointer, Int32 count)
         {
             if (((Int32)sourcePointer & (sizeof(UInt16) - 1)) != 0 || ((Int32)destinationPointer & (sizeof(UInt16) - 1)) != 0)
@@ -8380,7 +8265,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt32(Byte* sourcePointer, Byte* destinationPointer, Int32 byteCount)
         {
             switch (((-(Int32)destinationPointer & (sizeof(UInt32) - 1)) / sizeof(Byte)).Minimum(byteCount))
@@ -8482,7 +8366,6 @@ namespace Palmtree
 
         #region InternalCopyMemoryUnmanagedByUInt16
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt16(UInt16* sourcePointer, UInt16* destinationPointer, Int32 count)
         {
             while (count >= 8)
@@ -8530,7 +8413,6 @@ namespace Palmtree
 #endif
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByUInt16(Byte* sourcePointer, Byte* destinationPointer, Int32 count)
         {
             switch ((((Int32)destinationPointer & (sizeof(UInt16) - 1)) / sizeof(Byte)).Minimum(count))
@@ -8607,7 +8489,6 @@ namespace Palmtree
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static unsafe void InternalCopyMemoryUnmanagedByByte(Byte* sourcePointer, Byte* destinationPointer, Int32 count)
         {
             while (count >= 8)
@@ -8657,7 +8538,6 @@ namespace Palmtree
 
         #region InternalReverseArray
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void InternalReverseArray<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset, Int32 count)
         {
             switch (Type.GetTypeCode(typeof(ELEMENT_T)))
@@ -8707,7 +8587,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void InternalReverseArray<ELEMENT_T>(Span<ELEMENT_T> source)
         {
             switch (Type.GetTypeCode(typeof(ELEMENT_T)))
@@ -8789,7 +8668,6 @@ namespace Palmtree
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void InternalReverseArrayUnmanaged<ELEMENT_T>(ref ELEMENT_T source, Int32 count)
             where ELEMENT_T : unmanaged
         {

@@ -76,7 +76,6 @@ namespace Palmtree.Numerics
         /// <item><term>denominator</term><description>変換された分母である<see cref="Int32"/>値です。</description></item>
         /// </list>
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (Int32 numerator, Int32 denominator) ParseAsInt32Fraction(this String s)
         {
             var match = _rationalNumberPattern.Match(s);

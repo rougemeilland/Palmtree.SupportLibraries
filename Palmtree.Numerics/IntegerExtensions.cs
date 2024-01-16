@@ -345,10 +345,10 @@ namespace Palmtree.Numerics
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt32 AbsoluteWithoutCheck(this Int32 value) => unchecked(value >= 0 ? (UInt32)value : (UInt32)(-value));
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt64 AbsoluteWithoutCheck(this Int64 value) => unchecked(value >= 0 ? (UInt32)value : (UInt32)(-value));
     }
 }

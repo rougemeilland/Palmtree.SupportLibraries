@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -116,7 +115,6 @@ namespace Palmtree.IO.Compression.Stream
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProcessProgress(Int32 length)
         {
             if (length > 0)

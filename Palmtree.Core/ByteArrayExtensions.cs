@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Palmtree;
@@ -435,7 +434,6 @@ namespace Palmtree
 
         #region ToInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16LE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -450,7 +448,6 @@ namespace Palmtree
             return unchecked((Int16)array.InternalToUInt16LE(startIndex));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16LE(this Memory<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -459,7 +456,6 @@ namespace Palmtree
             return unchecked((Int16)((ReadOnlySpan<Byte>)array.Span).InternalToUInt16LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16LE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -468,7 +464,6 @@ namespace Palmtree
             return unchecked((Int16)array.Span.InternalToUInt16LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16LE(this Span<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -477,7 +472,6 @@ namespace Palmtree
             return unchecked((Int16)((ReadOnlySpan<Byte>)array).InternalToUInt16LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16LE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -490,7 +484,6 @@ namespace Palmtree
 
         #region ToUInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16LE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -505,7 +498,6 @@ namespace Palmtree
             return array.InternalToUInt16LE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16LE(this Memory<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -514,7 +506,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToUInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16LE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -523,7 +514,6 @@ namespace Palmtree
             return array.Span.InternalToUInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16LE(this Span<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -532,7 +522,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToUInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16LE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -545,7 +534,6 @@ namespace Palmtree
 
         #region ToInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32LE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -560,7 +548,6 @@ namespace Palmtree
             return unchecked((Int32)array.InternalToUInt32LE(startIndex));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32LE(this Memory<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -569,7 +556,6 @@ namespace Palmtree
             return unchecked((Int32)((ReadOnlySpan<Byte>)array.Span).InternalToUInt32LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32LE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -578,7 +564,6 @@ namespace Palmtree
             return unchecked((Int32)array.Span.InternalToUInt32LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32LE(this Span<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -587,7 +572,6 @@ namespace Palmtree
             return unchecked((Int32)((ReadOnlySpan<Byte>)array).InternalToUInt32LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32LE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -600,7 +584,6 @@ namespace Palmtree
 
         #region ToUInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32LE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -615,7 +598,6 @@ namespace Palmtree
             return array.InternalToUInt32LE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32LE(this Memory<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -624,7 +606,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToUInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32LE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -633,7 +614,6 @@ namespace Palmtree
             return array.Span.InternalToUInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32LE(this Span<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -642,7 +622,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToUInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32LE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -655,7 +634,6 @@ namespace Palmtree
 
         #region ToInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64LE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -670,7 +648,6 @@ namespace Palmtree
             return unchecked((Int64)array.InternalToUInt64LE(startIndex));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64LE(this Memory<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -679,7 +656,6 @@ namespace Palmtree
             return unchecked((Int64)((ReadOnlySpan<Byte>)array.Span).InternalToUInt64LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64LE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -688,7 +664,6 @@ namespace Palmtree
             return unchecked((Int64)array.Span.InternalToUInt64LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64LE(this Span<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -697,7 +672,6 @@ namespace Palmtree
             return unchecked((Int64)((ReadOnlySpan<Byte>)array).InternalToUInt64LE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64LE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -710,7 +684,6 @@ namespace Palmtree
 
         #region ToUInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64LE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -725,7 +698,6 @@ namespace Palmtree
             return array.InternalToUInt64LE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64LE(this Memory<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -734,7 +706,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToUInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64LE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -743,7 +714,6 @@ namespace Palmtree
             return array.Span.InternalToUInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64LE(this Span<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -752,7 +722,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToUInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64LE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -764,7 +733,6 @@ namespace Palmtree
 
         #region ToSingleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleLE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -779,7 +747,6 @@ namespace Palmtree
             return array.InternalToSingleLE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleLE(this Memory<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -788,7 +755,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToSingleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleLE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -797,7 +763,6 @@ namespace Palmtree
             return array.Span.InternalToSingleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleLE(this Span<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -806,7 +771,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToSingleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleLE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -819,7 +783,6 @@ namespace Palmtree
 
         #region ToDoubleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleLE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -834,7 +797,6 @@ namespace Palmtree
             return array.InternalToDoubleLE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleLE(this Memory<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -843,7 +805,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToDoubleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleLE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -852,7 +813,6 @@ namespace Palmtree
             return array.Span.InternalToDoubleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleLE(this Span<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -861,7 +821,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToDoubleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleLE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -874,7 +833,6 @@ namespace Palmtree
 
         #region ToDecimalLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalLE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -889,7 +847,6 @@ namespace Palmtree
             return array.InternalToDecimalLE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalLE(this Memory<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -898,7 +855,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToDecimalLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalLE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -907,7 +863,6 @@ namespace Palmtree
             return array.Span.InternalToDecimalLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalLE(this Span<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -916,7 +871,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToDecimalLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalLE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -929,7 +883,6 @@ namespace Palmtree
 
         #region ToInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16BE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -944,7 +897,6 @@ namespace Palmtree
             return unchecked((Int16)array.InternalToUInt16BE(startIndex));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16BE(this Memory<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -953,7 +905,6 @@ namespace Palmtree
             return unchecked((Int16)((ReadOnlySpan<Byte>)array.Span).InternalToUInt16BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16BE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -962,7 +913,6 @@ namespace Palmtree
             return unchecked((Int16)array.Span.InternalToUInt16BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16BE(this Span<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -971,7 +921,6 @@ namespace Palmtree
             return unchecked((Int16)((ReadOnlySpan<Byte>)array).InternalToUInt16BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16BE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Int16) > array.Length)
@@ -984,7 +933,6 @@ namespace Palmtree
 
         #region ToUInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16BE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -999,7 +947,6 @@ namespace Palmtree
             return array.InternalToUInt16BE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16BE(this Memory<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -1008,7 +955,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToUInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16BE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -1017,7 +963,6 @@ namespace Palmtree
             return array.Span.InternalToUInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16BE(this Span<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -1026,7 +971,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToUInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16BE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(UInt16) > array.Length)
@@ -1039,7 +983,6 @@ namespace Palmtree
 
         #region ToInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32BE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1054,7 +997,6 @@ namespace Palmtree
             return unchecked((Int32)array.InternalToUInt32BE(startIndex));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32BE(this Memory<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -1063,7 +1005,6 @@ namespace Palmtree
             return unchecked((Int32)((ReadOnlySpan<Byte>)array.Span).InternalToUInt32BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32BE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -1072,7 +1013,6 @@ namespace Palmtree
             return unchecked((Int32)array.Span.InternalToUInt32BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32BE(this Span<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -1081,7 +1021,6 @@ namespace Palmtree
             return unchecked((Int32)((ReadOnlySpan<Byte>)array).InternalToUInt32BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32BE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Int32) > array.Length)
@@ -1094,7 +1033,6 @@ namespace Palmtree
 
         #region ToUInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32BE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1109,7 +1047,6 @@ namespace Palmtree
             return array.InternalToUInt32BE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32BE(this Memory<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -1118,7 +1055,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToUInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32BE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -1127,7 +1063,6 @@ namespace Palmtree
             return array.Span.InternalToUInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32BE(this Span<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -1136,7 +1071,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToUInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32BE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(UInt32) > array.Length)
@@ -1149,7 +1083,6 @@ namespace Palmtree
 
         #region ToInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64BE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1164,7 +1097,6 @@ namespace Palmtree
             return unchecked((Int64)array.InternalToUInt64BE(startIndex));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64BE(this Memory<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -1173,7 +1105,6 @@ namespace Palmtree
             return unchecked((Int64)((ReadOnlySpan<Byte>)array.Span).InternalToUInt64BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64BE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -1182,7 +1113,6 @@ namespace Palmtree
             return unchecked((Int64)array.Span.InternalToUInt64BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64BE(this Span<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -1191,7 +1121,6 @@ namespace Palmtree
             return unchecked((Int64)((ReadOnlySpan<Byte>)array).InternalToUInt64BE());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64BE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Int64) > array.Length)
@@ -1204,7 +1133,6 @@ namespace Palmtree
 
         #region ToUInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64BE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1219,7 +1147,6 @@ namespace Palmtree
             return array.InternalToUInt64BE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64BE(this Memory<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -1228,7 +1155,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToUInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64BE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -1237,7 +1163,6 @@ namespace Palmtree
             return array.Span.InternalToUInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64BE(this Span<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -1246,7 +1171,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToUInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64BE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(UInt64) > array.Length)
@@ -1259,7 +1183,6 @@ namespace Palmtree
 
         #region ToSingleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleBE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1274,7 +1197,6 @@ namespace Palmtree
             return array.InternalToSingleBE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleBE(this Memory<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -1283,7 +1205,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToSingleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleBE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -1292,7 +1213,6 @@ namespace Palmtree
             return array.Span.InternalToSingleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleBE(this Span<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -1301,7 +1221,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToSingleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleBE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Single) > array.Length)
@@ -1314,7 +1233,6 @@ namespace Palmtree
 
         #region ToDoubleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleBE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1329,7 +1247,6 @@ namespace Palmtree
             return array.InternalToDoubleBE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleBE(this Memory<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -1338,7 +1255,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToDoubleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleBE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -1347,7 +1263,6 @@ namespace Palmtree
             return array.Span.InternalToDoubleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleBE(this Span<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -1356,7 +1271,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToDoubleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleBE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Double) > array.Length)
@@ -1369,7 +1283,6 @@ namespace Palmtree
 
         #region ToDecimalBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalBE(this Byte[] array, Int32 startIndex = 0)
         {
             if (array is null)
@@ -1384,7 +1297,6 @@ namespace Palmtree
             return array.InternalToDecimalBE(startIndex);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalBE(this Memory<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -1393,7 +1305,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array.Span).InternalToDecimalBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalBE(this ReadOnlyMemory<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -1402,7 +1313,6 @@ namespace Palmtree
             return array.Span.InternalToDecimalBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalBE(this Span<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -1411,7 +1321,6 @@ namespace Palmtree
             return ((ReadOnlySpan<Byte>)array).InternalToDecimalBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalBE(this ReadOnlySpan<Byte> array)
         {
             if (sizeof(Decimal) > array.Length)
@@ -1795,7 +1704,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Char ToBase64Character(Int32 n, Char char62, Char char63)
         {
             Validation.Assert(n >= 0, "n >= 0");
@@ -1811,7 +1719,6 @@ namespace Palmtree
             return char63;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 FromBase64Character(Char c, Char char62, Char char63)
             => c.IsBetween('A', 'Z')
                 ? c - 'A'
@@ -1825,7 +1732,6 @@ namespace Palmtree
 
         #region InternalToUInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt16 InternalToUInt16LE(this Byte[] array, Int32 startIndex)
             => (UInt16)
                 (
@@ -1833,7 +1739,6 @@ namespace Palmtree
                     | (array[startIndex + 1] << 8)
                 );
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt16 InternalToUInt16LE(this ReadOnlySpan<Byte> array)
             => (UInt16)
                 (
@@ -1845,14 +1750,12 @@ namespace Palmtree
 
         #region InternalToUInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt32 InternalToUInt32LE(this Byte[] array, Int32 startIndex)
             => ((UInt32)array[startIndex + 0] << 00)
                 | ((UInt32)array[startIndex + 1] << 08)
                 | ((UInt32)array[startIndex + 2] << 16)
                 | ((UInt32)array[startIndex + 3] << 24);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt32 InternalToUInt32LE(this ReadOnlySpan<Byte> array)
             => ((UInt32)array[0] << 00)
                 | ((UInt32)array[1] << 08)
@@ -1863,7 +1766,6 @@ namespace Palmtree
 
         #region InternalToUInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt64 InternalToUInt64LE(this Byte[] array, Int32 startIndex)
             => ((UInt64)array[startIndex + 0] << 0)
                 | ((UInt64)array[startIndex + 1] << 8)
@@ -1874,7 +1776,6 @@ namespace Palmtree
                 | ((UInt64)array[startIndex + 6] << 48)
                 | ((UInt64)array[startIndex + 7] << 56);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt64 InternalToUInt64LE(this ReadOnlySpan<Byte> array)
             => ((UInt64)array[0] << 0)
                 | ((UInt64)array[1] << 8)
@@ -1889,7 +1790,6 @@ namespace Palmtree
 
         #region InternalToSingleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Single InternalToSingleLE(this Byte[] array, Int32 startIndex)
         {
             if (BitConverter.IsLittleEndian)
@@ -1909,7 +1809,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Single InternalToSingleLE(this ReadOnlySpan<Byte> array)
         {
             if (BitConverter.IsLittleEndian)
@@ -1933,7 +1832,6 @@ namespace Palmtree
 
         #region InternalToDoubleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Double InternalToDoubleLE(this Byte[] array, Int32 startIndex)
         {
             if (BitConverter.IsLittleEndian)
@@ -1957,7 +1855,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Double InternalToDoubleLE(this ReadOnlySpan<Byte> array)
         {
             if (BitConverter.IsLittleEndian)
@@ -1985,7 +1882,6 @@ namespace Palmtree
 
         #region InternalToDecimalLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalLE(this Byte[] array, Int32 startIndex)
         {
             ReadOnlySpan<Int32> buffer = stackalloc Int32[]
@@ -1998,7 +1894,6 @@ namespace Palmtree
             return new Decimal(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalLE(this ReadOnlySpan<Byte> array)
         {
             Span<Int32> buffer = stackalloc Int32[]
@@ -2015,7 +1910,6 @@ namespace Palmtree
 
         #region InternalToUInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt16 InternalToUInt16BE(this Byte[] array, Int32 startIndex)
             => (UInt16)
                 (
@@ -2023,7 +1917,6 @@ namespace Palmtree
                     | (array[startIndex + 1] << 0)
                 );
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt16 InternalToUInt16BE(this ReadOnlySpan<Byte> array)
             => (UInt16)
                 (
@@ -2035,14 +1928,12 @@ namespace Palmtree
 
         #region InternalToUInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt32 InternalToUInt32BE(this Byte[] array, Int32 startIndex)
             => ((UInt32)array[startIndex + 0] << 24)
                 | ((UInt32)array[startIndex + 1] << 16)
                 | ((UInt32)array[startIndex + 2] << 08)
                 | ((UInt32)array[startIndex + 3] << 00);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt32 InternalToUInt32BE(this ReadOnlySpan<Byte> array)
             => ((UInt32)array[0] << 24)
                 | ((UInt32)array[1] << 16)
@@ -2053,7 +1944,6 @@ namespace Palmtree
 
         #region InternalToUInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt64 InternalToUInt64BE(this Byte[] array, Int32 startIndex)
             => ((UInt64)array[startIndex + 0] << 56)
                 | ((UInt64)array[startIndex + 1] << 48)
@@ -2064,7 +1954,6 @@ namespace Palmtree
                 | ((UInt64)array[startIndex + 6] << 08)
                 | ((UInt64)array[startIndex + 7] << 00);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static UInt64 InternalToUInt64BE(this ReadOnlySpan<Byte> array)
             => ((UInt64)array[0] << 56)
                 | ((UInt64)array[1] << 48)
@@ -2079,7 +1968,6 @@ namespace Palmtree
 
         #region InternalToSingleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Single InternalToSingleBE(this Byte[] array, Int32 startIndex)
         {
             if (BitConverter.IsLittleEndian)
@@ -2100,7 +1988,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Single InternalToSingleBE(this ReadOnlySpan<Byte> array)
         {
             if (BitConverter.IsLittleEndian)
@@ -2125,7 +2012,6 @@ namespace Palmtree
 
         #region InternalToDoubleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Double InternalToDoubleBE(this Byte[] array, Int32 startIndex)
         {
             if (BitConverter.IsLittleEndian)
@@ -2150,7 +2036,6 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Double InternalToDoubleBE(this ReadOnlySpan<Byte> array)
         {
             if (BitConverter.IsLittleEndian)
@@ -2179,7 +2064,6 @@ namespace Palmtree
 
         #region InternalToDecimalBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalBE(this Byte[] array, Int32 startIndex)
         {
             ReadOnlySpan<Int32> buffer = stackalloc Int32[]
@@ -2192,7 +2076,6 @@ namespace Palmtree
             return new Decimal(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalBE(this ReadOnlySpan<Byte> array)
         {
             Span<Int32> buffer = stackalloc Int32[]

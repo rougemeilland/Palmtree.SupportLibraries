@@ -1590,7 +1590,6 @@ namespace Palmtree.IO
 
         #region Read
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this Stream stream, Byte[] buffer)
         {
             if (stream is null)
@@ -1601,7 +1600,6 @@ namespace Palmtree.IO
             return stream.Read(buffer, 0, buffer.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this Stream stream, Byte[] buffer, Int32 offset)
         {
             if (stream is null)
@@ -1618,7 +1616,6 @@ namespace Palmtree.IO
                     buffer.Length - offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Read(this Stream stream, Byte[] buffer, UInt32 offset)
         {
             if (stream is null)
@@ -1639,7 +1636,6 @@ namespace Palmtree.IO
                 .Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this Stream stream, Byte[] buffer, Range range)
         {
             if (stream is null)
@@ -1660,7 +1656,6 @@ namespace Palmtree.IO
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Read(this Stream stream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
             if (stream is null)
@@ -1677,7 +1672,6 @@ namespace Palmtree.IO
                     (Int32)count).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this Stream stream, Memory<Byte> buffer)
         {
             if (stream is null)
@@ -1686,7 +1680,6 @@ namespace Palmtree.IO
             return stream.Read(buffer.Span);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this ISequentialInputByteStream stream, Byte[] buffer)
         {
             if (stream is null)
@@ -1697,7 +1690,6 @@ namespace Palmtree.IO
             return stream.Read(buffer.AsSpan());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this ISequentialInputByteStream stream, Byte[] buffer, Int32 offset)
         {
             if (stream is null)
@@ -1710,7 +1702,6 @@ namespace Palmtree.IO
             return stream.Read(buffer.AsSpan(offset));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Read(this ISequentialInputByteStream stream, Byte[] buffer, UInt32 offset)
         {
             if (stream is null)
@@ -1723,7 +1714,6 @@ namespace Palmtree.IO
             return (UInt32)stream.Read(buffer.AsSpan(offset)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this ISequentialInputByteStream stream, Byte[] buffer, Range range)
         {
             if (stream is null)
@@ -1737,7 +1727,6 @@ namespace Palmtree.IO
             return stream.Read(buffer.AsSpan(offset, count));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this ISequentialInputByteStream stream, Byte[] buffer, Int32 offset, Int32 count)
         {
             if (stream is null)
@@ -1754,7 +1743,6 @@ namespace Palmtree.IO
             return stream.Read(buffer.AsSpan(offset, count));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Read(this ISequentialInputByteStream stream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
             if (stream is null)
@@ -1767,7 +1755,6 @@ namespace Palmtree.IO
             return (UInt32)stream.Read(buffer.AsSpan(offset, count));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(this ISequentialInputByteStream stream, Memory<Byte> buffer)
         {
             if (stream is null)
@@ -1780,7 +1767,6 @@ namespace Palmtree.IO
 
         #region ReadByteOrNull
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte? ReadByteOrNull(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -1793,7 +1779,6 @@ namespace Palmtree.IO
                 : null;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte? ReadByteOrNull(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -1810,11 +1795,11 @@ namespace Palmtree.IO
 
         #region ReadByte
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte ReadByte(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
                 throw new ArgumentNullException(nameof(sourceStream));
+
             Span<Byte> buffer = stackalloc Byte[1];
             if (sourceStream.Read(buffer) <= 0)
                 throw new UnexpectedEndOfStreamException();
@@ -2256,7 +2241,6 @@ namespace Palmtree.IO
 
         #region ReadInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ReadInt16LE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2269,7 +2253,6 @@ namespace Palmtree.IO
             return buffer.ToInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ReadInt16LE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2286,7 +2269,6 @@ namespace Palmtree.IO
 
         #region ReadUInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ReadUInt16LE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2299,7 +2281,6 @@ namespace Palmtree.IO
             return buffer.ToUInt16LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ReadUInt16LE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2316,7 +2297,6 @@ namespace Palmtree.IO
 
         #region ReadInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ReadInt32LE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2329,7 +2309,6 @@ namespace Palmtree.IO
             return buffer.ToInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ReadInt32LE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2346,7 +2325,6 @@ namespace Palmtree.IO
 
         #region ReadUInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ReadUInt32LE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2360,7 +2338,6 @@ namespace Palmtree.IO
                 buffer.ToUInt32LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ReadUInt32LE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2377,7 +2354,6 @@ namespace Palmtree.IO
 
         #region ReadInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ReadInt64LE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2390,7 +2366,6 @@ namespace Palmtree.IO
             return buffer.ToInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ReadInt64LE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2407,7 +2382,6 @@ namespace Palmtree.IO
 
         #region ReadUInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ReadUInt64LE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2420,7 +2394,6 @@ namespace Palmtree.IO
             return buffer.ToUInt64LE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ReadUInt64LE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2437,7 +2410,6 @@ namespace Palmtree.IO
 
         #region ReadSingleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ReadSingleLE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2450,7 +2422,6 @@ namespace Palmtree.IO
             return buffer.ToSingleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ReadSingleLE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2467,7 +2438,6 @@ namespace Palmtree.IO
 
         #region ReadDoubleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ReadDoubleLE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2480,7 +2450,6 @@ namespace Palmtree.IO
             return buffer.ToDoubleLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ReadDoubleLE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2497,7 +2466,6 @@ namespace Palmtree.IO
 
         #region ReadDecimalLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ReadDecimalLE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2510,7 +2478,6 @@ namespace Palmtree.IO
             return buffer.ToDecimalLE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ReadDecimalLE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2527,7 +2494,6 @@ namespace Palmtree.IO
 
         #region ReadInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ReadInt16BE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2540,7 +2506,6 @@ namespace Palmtree.IO
             return buffer.ToInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ReadInt16BE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2557,7 +2522,6 @@ namespace Palmtree.IO
 
         #region ReadUInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ReadUInt16BE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2570,7 +2534,6 @@ namespace Palmtree.IO
             return buffer.ToUInt16BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ReadUInt16BE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2587,7 +2550,6 @@ namespace Palmtree.IO
 
         #region ReadInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ReadInt32BE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2600,7 +2562,6 @@ namespace Palmtree.IO
             return buffer.ToInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ReadInt32BE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2617,7 +2578,6 @@ namespace Palmtree.IO
 
         #region ReadUInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ReadUInt32BE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2630,7 +2590,6 @@ namespace Palmtree.IO
             return buffer.ToUInt32BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ReadUInt32BE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2647,7 +2606,6 @@ namespace Palmtree.IO
 
         #region ReadInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ReadInt64BE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2660,7 +2618,6 @@ namespace Palmtree.IO
             return buffer.ToInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ReadInt64BE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2677,7 +2634,6 @@ namespace Palmtree.IO
 
         #region ReadUInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ReadUInt64BE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2690,7 +2646,6 @@ namespace Palmtree.IO
             return buffer.ToUInt64BE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ReadUInt64BE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2707,7 +2662,6 @@ namespace Palmtree.IO
 
         #region ReadSingleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ReadSingleBE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2720,7 +2674,6 @@ namespace Palmtree.IO
             return buffer.ToSingleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ReadSingleBE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2737,7 +2690,6 @@ namespace Palmtree.IO
 
         #region ReadDoubleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ReadDoubleBE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2750,7 +2702,6 @@ namespace Palmtree.IO
             return buffer.ToDoubleBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ReadDoubleBE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2767,7 +2718,6 @@ namespace Palmtree.IO
 
         #region ReadDecimalBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ReadDecimalBE(this Stream sourceStream)
         {
             if (sourceStream is null)
@@ -2780,7 +2730,6 @@ namespace Palmtree.IO
             return buffer.ToDecimalBE();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ReadDecimalBE(this ISequentialInputByteStream sourceStream)
         {
             if (sourceStream is null)
@@ -2804,7 +2753,6 @@ namespace Palmtree.IO
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Write(this Stream stream, Byte[] buffer, Int32 offset)
         {
             if (stream is null)
@@ -2819,7 +2767,6 @@ namespace Palmtree.IO
             return count;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Write(this Stream stream, Byte[] buffer, UInt32 offset)
         {
             if (stream is null)
@@ -2846,7 +2793,6 @@ namespace Palmtree.IO
         }
 #endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Write(this Stream stream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
             if (stream is null)
@@ -2866,7 +2812,6 @@ namespace Palmtree.IO
             return count;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Write(this Stream stream, ReadOnlyMemory<Byte> buffer)
         {
             if (stream is null)
@@ -2876,7 +2821,6 @@ namespace Palmtree.IO
             return buffer.Length;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Write(this ISequentialOutputByteStream stream, Byte[] buffer, Int32 offset)
         {
             if (stream is null)
@@ -2889,7 +2833,6 @@ namespace Palmtree.IO
             return stream.Write(buffer.AsSpan(offset));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Write(this ISequentialOutputByteStream stream, Byte[] buffer, UInt32 offset)
         {
             if (stream is null)
@@ -2902,7 +2845,6 @@ namespace Palmtree.IO
             return (UInt32)stream.Write(buffer.AsSpan((Int32)offset)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Write(this ISequentialOutputByteStream stream, Byte[] buffer, Int32 offset, Int32 count)
         {
             if (stream is null)
@@ -2919,7 +2861,6 @@ namespace Palmtree.IO
             return stream.Write(buffer.AsSpan(offset, count));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Write(this ISequentialOutputByteStream stream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
             if (stream is null)
@@ -2932,7 +2873,6 @@ namespace Palmtree.IO
             return (UInt32)stream.Write(buffer.AsSpan(offset, count)).Maximum(0);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Write(this ISequentialOutputByteStream stream, ReadOnlyMemory<Byte> buffer)
         {
             if (stream is null)
@@ -2965,7 +2905,6 @@ namespace Palmtree.IO
 
         #region WriteBytes
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer)
         {
             if (destinationStream is null)
@@ -2976,7 +2915,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer, 0, buffer.Length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, Int32 offset)
         {
             if (destinationStream is null)
@@ -2989,7 +2927,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer, offset, buffer.Length - offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, UInt32 offset)
         {
             if (destinationStream is null)
@@ -3006,7 +2943,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer, (Int32)offset, buffer.Length - (Int32)offset);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, Range range)
         {
             if (destinationStream is null)
@@ -3020,7 +2956,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, Int32 offset, Int32 count)
         {
             if (destinationStream is null)
@@ -3037,7 +2972,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer, offset, count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
             if (destinationStream is null)
@@ -3056,7 +2990,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer, (Int32)offset, (Int32)count);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, ReadOnlyMemory<Byte> buffer)
         {
             if (destinationStream is null)
@@ -3065,7 +2998,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer.Span);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, ReadOnlySpan<Byte> buffer)
         {
             if (destinationStream is null)
@@ -3074,7 +3006,6 @@ namespace Palmtree.IO
             destinationStream.Write(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this Stream destinationStream, IEnumerable<ReadOnlyMemory<Byte>> buffers)
         {
             if (destinationStream is null)
@@ -3086,7 +3017,6 @@ namespace Palmtree.IO
                 destinationStream.Write(buffer.Span);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer)
         {
             if (destinationStream is null)
@@ -3097,7 +3027,6 @@ namespace Palmtree.IO
             InternalWriteBytes(0, buffer.Length, (_offset, _count) => destinationStream.Write(buffer.AsSpan(_offset, _count)));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset)
         {
             if (destinationStream is null)
@@ -3110,7 +3039,6 @@ namespace Palmtree.IO
             InternalWriteBytes(0, buffer.Length, (_offset, _count) => destinationStream.Write(buffer.AsSpan(_offset, _count)));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset)
         {
             if (destinationStream is null)
@@ -3127,7 +3055,6 @@ namespace Palmtree.IO
             InternalWriteBytes((Int32)offset, buffer.Length - (Int32)offset, (_offset, _count) => destinationStream.Write(buffer.AsSpan(_offset, _count)));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Range range)
         {
             if (destinationStream is null)
@@ -3139,7 +3066,6 @@ namespace Palmtree.IO
             InternalWriteBytes(offset, count, (_offset, _count) => destinationStream.Write(buffer.AsSpan(_offset, _count)));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count)
         {
             if (destinationStream is null)
@@ -3156,7 +3082,6 @@ namespace Palmtree.IO
             InternalWriteBytes(offset, count, (_offset, _count) => destinationStream.Write(buffer.AsSpan(_offset, _count)));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
             if (destinationStream is null)
@@ -3175,7 +3100,6 @@ namespace Palmtree.IO
             InternalWriteBytes((Int32)offset, (Int32)count, (_offset, _count) => destinationStream.Write(buffer.AsSpan(_offset, _count)));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer)
         {
             if (destinationStream is null)
@@ -3191,7 +3115,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, ReadOnlySpan<Byte> buffer)
         {
             if (destinationStream is null)
@@ -3206,7 +3129,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, IEnumerable<ReadOnlyMemory<Byte>> buffers)
         {
             if (destinationStream is null)
@@ -3284,7 +3206,6 @@ namespace Palmtree.IO
 
         #region WriteInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt16LE(this Stream destinationStream, Int16 value)
         {
             if (destinationStream is null)
@@ -3295,7 +3216,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt16LE(this ISequentialOutputByteStream destinationStream, Int16 value)
         {
             if (destinationStream is null)
@@ -3310,7 +3230,6 @@ namespace Palmtree.IO
 
         #region WriteUInt16LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt16LE(this Stream destinationStream, UInt16 value)
         {
             if (destinationStream is null)
@@ -3321,7 +3240,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt16LE(this ISequentialOutputByteStream destinationStream, UInt16 value)
         {
             if (destinationStream is null)
@@ -3336,7 +3254,6 @@ namespace Palmtree.IO
 
         #region WriteInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt32LE(this Stream destinationStream, Int32 value)
         {
             if (destinationStream is null)
@@ -3347,7 +3264,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt32LE(this ISequentialOutputByteStream destinationStream, Int32 value)
         {
             if (destinationStream is null)
@@ -3362,7 +3278,6 @@ namespace Palmtree.IO
 
         #region WriteUInt32LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt32LE(this Stream destinationStream, UInt32 value)
         {
             if (destinationStream is null)
@@ -3373,7 +3288,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt32LE(this ISequentialOutputByteStream destinationStream, UInt32 value)
         {
             if (destinationStream is null)
@@ -3388,7 +3302,6 @@ namespace Palmtree.IO
 
         #region WriteInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt64LE(this Stream destinationStream, Int64 value)
         {
             if (destinationStream is null)
@@ -3399,7 +3312,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt64LE(this ISequentialOutputByteStream destinationStream, Int64 value)
         {
             if (destinationStream is null)
@@ -3414,7 +3326,6 @@ namespace Palmtree.IO
 
         #region WriteUInt64LE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt64LE(this Stream destinationStream, UInt64 value)
         {
             if (destinationStream is null)
@@ -3425,7 +3336,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt64LE(this ISequentialOutputByteStream destinationStream, UInt64 value)
         {
             if (destinationStream is null)
@@ -3440,7 +3350,6 @@ namespace Palmtree.IO
 
         #region WriteSingleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteSingleLE(this Stream destinationStream, Single value)
         {
             if (destinationStream is null)
@@ -3451,7 +3360,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteSingleLE(this ISequentialOutputByteStream destinationStream, Single value)
         {
             if (destinationStream is null)
@@ -3466,7 +3374,6 @@ namespace Palmtree.IO
 
         #region WriteDoubleLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDoubleLE(this Stream destinationStream, Double value)
         {
             if (destinationStream is null)
@@ -3477,7 +3384,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDoubleLE(this ISequentialOutputByteStream destinationStream, Double value)
         {
             if (destinationStream is null)
@@ -3492,7 +3398,6 @@ namespace Palmtree.IO
 
         #region WriteDecimalLE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDecimalLE(this Stream destinationStream, Decimal value)
         {
             if (destinationStream is null)
@@ -3503,7 +3408,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDecimalLE(this ISequentialOutputByteStream destinationStream, Decimal value)
         {
             if (destinationStream is null)
@@ -3518,7 +3422,6 @@ namespace Palmtree.IO
 
         #region WriteInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt16BE(this Stream destinationStream, Int16 value)
         {
             if (destinationStream is null)
@@ -3529,7 +3432,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt16BE(this ISequentialOutputByteStream destinationStream, Int16 value)
         {
             if (destinationStream is null)
@@ -3544,7 +3446,6 @@ namespace Palmtree.IO
 
         #region WriteUInt16BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt16BE(this Stream destinationStream, UInt16 value)
         {
             if (destinationStream is null)
@@ -3555,7 +3456,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt16BE(this ISequentialOutputByteStream destinationStream, UInt16 value)
         {
             if (destinationStream is null)
@@ -3570,7 +3470,6 @@ namespace Palmtree.IO
 
         #region WriteInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt32BE(this Stream destinationStream, Int32 value)
         {
             if (destinationStream is null)
@@ -3581,7 +3480,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt32BE(this ISequentialOutputByteStream destinationStream, Int32 value)
         {
             if (destinationStream is null)
@@ -3596,7 +3494,6 @@ namespace Palmtree.IO
 
         #region WriteUInt32BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt32BE(this Stream destinationStream, UInt32 value)
         {
             if (destinationStream is null)
@@ -3607,7 +3504,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt32BE(this ISequentialOutputByteStream destinationStream, UInt32 value)
         {
             if (destinationStream is null)
@@ -3622,7 +3518,6 @@ namespace Palmtree.IO
 
         #region WriteInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt64BE(this Stream destinationStream, Int64 value)
         {
             if (destinationStream is null)
@@ -3633,7 +3528,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteInt64BE(this ISequentialOutputByteStream destinationStream, Int64 value)
         {
             if (destinationStream is null)
@@ -3648,7 +3542,6 @@ namespace Palmtree.IO
 
         #region WriteUInt64BE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt64BE(this Stream destinationStream, UInt64 value)
         {
             if (destinationStream is null)
@@ -3659,7 +3552,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteUInt64BE(this ISequentialOutputByteStream destinationStream, UInt64 value)
         {
             if (destinationStream is null)
@@ -3674,7 +3566,6 @@ namespace Palmtree.IO
 
         #region WriteSingleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteSingleBE(this Stream destinationStream, Single value)
         {
             if (destinationStream is null)
@@ -3685,7 +3576,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteSingleBE(this ISequentialOutputByteStream destinationStream, Single value)
         {
             if (destinationStream is null)
@@ -3700,7 +3590,6 @@ namespace Palmtree.IO
 
         #region WriteDoubleBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDoubleBE(this Stream destinationStream, Double value)
         {
             if (destinationStream is null)
@@ -3711,7 +3600,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDoubleBE(this ISequentialOutputByteStream destinationStream, Double value)
         {
             if (destinationStream is null)
@@ -3726,7 +3614,6 @@ namespace Palmtree.IO
 
         #region WriteDecimalBE
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDecimalBE(this Stream destinationStream, Decimal value)
         {
             if (destinationStream is null)
@@ -3737,7 +3624,6 @@ namespace Palmtree.IO
             destinationStream.WriteBytes(buffer);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteDecimalBE(this ISequentialOutputByteStream destinationStream, Decimal value)
         {
             if (destinationStream is null)
@@ -4030,7 +3916,6 @@ namespace Palmtree.IO
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IEnumerable<Byte> InternalGetByteSequence<POSITION_T>(ISequentialInputByteStream baseStream, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen)
             where POSITION_T : struct
         {
@@ -4066,7 +3951,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IEnumerable<Byte> InternalGetByteSequence<POSITION_T>(ISequentialInputByteStream baseStream, POSITION_T offset, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen)
             where POSITION_T : struct
         {
@@ -4106,7 +3990,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IEnumerable<Byte> InternalGetReverseByteSequence<POSITION_T>(this IRandomInputByteStream<POSITION_T> baseStream, POSITION_T offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen = false)
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         {
@@ -4153,7 +4036,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean InternalStreamBytesEqual(this ISequentialInputByteStream stream1, ISequentialInputByteStream stream2, IProgress<UInt64>? progress)
         {
             const Int32 bufferSize = 81920;
@@ -4200,7 +4082,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyTo(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, IProgress<UInt64>? progress)
         {
             var processedCounter = new ProgressCounterUInt64(progress);
@@ -4227,7 +4108,6 @@ namespace Palmtree.IO
 
         #region InternalReadBytes
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalReadBytes(Int32 offset, Int32 count, Func<Int32, Int32, Int32> reader)
         {
             var index = 0;
@@ -4243,7 +4123,6 @@ namespace Palmtree.IO
             return index;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalReadBytes(Memory<Byte> buffer, Func<Memory<Byte>, Int32> reader)
         {
             var index = 0;
@@ -4261,7 +4140,6 @@ namespace Palmtree.IO
 
         #endregion
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IEnumerable<Byte> InternalReadByteSequence(UInt64 count, Func<Int32, IEnumerable<Byte>?> reader)
         {
             var byteArrayChain = Array.Empty<Byte>().AsEnumerable();
@@ -4278,7 +4156,6 @@ namespace Palmtree.IO
             return byteArrayChain;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ReadOnlyMemory<Byte> InternalReadAllBytes(Func<Byte[], Int32, Int32, Int32> reader)
         {
             const Int32 BUFFER_SIZE = 80 * 2024;
@@ -4322,7 +4199,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalWriteBytes(Int32 offset, Int32 count, Func<Int32, Int32, Int32> writer)
         {
             while (count > 0)
@@ -4346,7 +4222,6 @@ namespace Palmtree.IO
         private static (UInt32 Crc, UInt64 Length) InternalCalculateCrc32(this ISequentialInputByteStream inputStream, Int32 bufferSize, IProgress<UInt64>? progress)
             => InternalCalculateCrc(inputStream, bufferSize, progress, Crc32.CreateCalculationState());
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static (UInt32 Crc, UInt64 Length) InternalCalculateCrc(ISequentialInputByteStream inputStream, Int32 bufferSize, IProgress<UInt64>? progress, ICrcCalculationState<UInt32> session)
         {
             var processedCounter = new ProgressCounterUInt64(progress);

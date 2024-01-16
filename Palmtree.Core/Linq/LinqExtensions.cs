@@ -2014,7 +2014,6 @@ namespace Palmtree.Linq
         /// <exception cref="ArgumentException">
         /// 入力シーケンス <paramref name="source"/> に要素が 2 つ以上あります。
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ELEMENT_T? SingleOrNone<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
             var matchedItems = source.Take(2).ToList();
@@ -2043,7 +2042,6 @@ namespace Palmtree.Linq
         /// <exception cref="ArgumentException">
         /// 入力シーケンス <paramref name="source"/> に条件 <paramref name="predicate"/> を満たす要素が 2 つ以上あります。
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ELEMENT_T? SingleOrNone<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate)
         {
             var matchedItems = source.Where(predicate).Take(2).ToList();
@@ -2221,7 +2219,6 @@ namespace Palmtree.Linq
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ELEMENT_T InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
@@ -2240,7 +2237,6 @@ namespace Palmtree.Linq
             return max ?? throw new InvalidOperationException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static VALUE_T InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
@@ -2262,7 +2258,6 @@ namespace Palmtree.Linq
             return max ?? throw new InvalidOperationException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ELEMENT_T? InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
@@ -2284,7 +2279,6 @@ namespace Palmtree.Linq
             return max;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static VALUE_T? InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
@@ -2309,7 +2303,6 @@ namespace Palmtree.Linq
             return max;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ELEMENT_T InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
@@ -2328,7 +2321,6 @@ namespace Palmtree.Linq
             return min ?? throw new InvalidOperationException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static VALUE_T InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
@@ -2350,7 +2342,6 @@ namespace Palmtree.Linq
             return min ?? throw new InvalidOperationException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ELEMENT_T? InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
@@ -2372,7 +2363,6 @@ namespace Palmtree.Linq
             return min;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static VALUE_T? InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
@@ -2407,7 +2397,6 @@ namespace Palmtree.Linq
                     return true;
                 });
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : struct, INumberBase<ELEMENT_T>
         {
@@ -2426,7 +2415,6 @@ namespace Palmtree.Linq
             return sum;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
             where VALUE_T : struct, INumberBase<VALUE_T>
         {
@@ -2448,7 +2436,6 @@ namespace Palmtree.Linq
             return sum;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
             where ELEMENT_T : struct, INumberBase<ELEMENT_T>
         {
@@ -2470,7 +2457,6 @@ namespace Palmtree.Linq
             return sum;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
             where VALUE_T : struct, INumberBase<VALUE_T>
         {
