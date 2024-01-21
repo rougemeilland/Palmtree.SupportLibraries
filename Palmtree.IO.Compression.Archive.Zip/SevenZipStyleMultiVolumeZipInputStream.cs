@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Palmtree.IO.Compression.Archive.Zip
@@ -160,6 +161,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Boolean MoveToNextDisk()
         {
             if (_currentInternalVolmeDiskNumber >= _internalVolumeDisks.LastVolumeDiskNumber)
@@ -205,6 +207,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
             var condition = _internalVolumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
@@ -212,8 +215,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
             return volumeDiskSize;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt64 GetCurrentVolumeDiskSize() => GetVolumeDiskSize(_currentInternalVolmeDiskNumber);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private IRandomInputByteStream<UInt64> GetCurrentVolumeDiskStream() => _streamCache.GetStream(_currentInternalVolmeDiskNumber);
     }
 }

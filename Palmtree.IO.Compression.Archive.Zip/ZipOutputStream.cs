@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -205,6 +206,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Int32 GetSizeToWrite(IRandomOutputByteStream<UInt64> stream, ReadOnlySpan<Byte> buffer)
         {
             var sizeToWrite = checked((Int32)(MaximumDiskSizeCore - stream.Length).Minimum((UInt64)buffer.Length));

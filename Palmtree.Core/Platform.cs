@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Palmtree
@@ -7,6 +8,7 @@ namespace Palmtree
     {
         public static String NugetResourceId
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 if (OperatingSystem.IsWindows())
@@ -54,6 +56,7 @@ namespace Palmtree
 
         public static String NativeCodeId
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 if (OperatingSystem.IsWindows())

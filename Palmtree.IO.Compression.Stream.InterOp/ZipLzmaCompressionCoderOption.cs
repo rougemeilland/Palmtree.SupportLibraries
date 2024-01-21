@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Compression.Stream
 {
@@ -7,6 +8,7 @@ namespace Palmtree.IO.Compression.Stream
     {
         public Boolean UseEndOfStreamMarker { get; set; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ICoderOption CreateDecoderOption(ZipCompressionDecoderParameter parameter)
             => new ZipLzmaCompressionCoderOption
             {

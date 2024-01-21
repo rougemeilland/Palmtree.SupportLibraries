@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -243,6 +244,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 GetSizeToRead(IRandomInputByteStream<UInt64> currentStream, Span<Byte> buffer)
             => checked((Int32)((UInt64)buffer.Length).Minimum(currentStream.Length - currentStream.Position));
     }

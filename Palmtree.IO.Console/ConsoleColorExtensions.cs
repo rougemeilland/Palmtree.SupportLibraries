@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
     internal static class ConsoleColorExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color16 ToAnsiColor16(this ConsoleColor color)
             => color switch
             {
@@ -26,6 +28,7 @@ namespace Palmtree.IO.Console
                 _ => throw new ArgumentOutOfRangeException(nameof(color)),
             };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color8 ToColor8(this ConsoleColor color)
             => color switch
             {

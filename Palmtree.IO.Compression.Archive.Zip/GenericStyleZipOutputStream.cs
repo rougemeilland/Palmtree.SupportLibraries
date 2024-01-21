@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Palmtree.Collections;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
@@ -256,6 +257,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void MoveToNextVolumeDisk()
         {
             ThrowExceptionIfLocked();
@@ -278,18 +280,22 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _currentBaseStream = _baseZipArchiveFile.Create().WithCache();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowExceptionIfLocked()
         {
             if (_isLocked)
                 throw new InvalidOperationException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private FilePath GetVolumeFilePath(UInt32 diskNumber)
             => GetVolumeFilePath(_baseZipArchiveFile, _baseDirectory, diskNumber);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FilePath GetVolumeFilePath(FilePath baseZipArchiveFile, DirectoryPath baseDirectory, UInt32 diskNumber)
             => baseDirectory.GetFile($"{Path.GetFileNameWithoutExtension(baseZipArchiveFile.Name)}.z{diskNumber + 1:d2}");
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
             Validation.Assert(diskNumber <= _volumeDisks.Count, "diskNumber <= _volumeDisks.Count");

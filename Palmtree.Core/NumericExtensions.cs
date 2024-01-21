@@ -315,6 +315,7 @@ namespace Palmtree
 
         #region SetValueLE
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int16 value)
         {
             if (buffer is null)
@@ -329,6 +330,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, (UInt16)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
             if (buffer is null)
@@ -343,6 +345,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int32 value)
         {
             if (buffer is null)
@@ -357,6 +360,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, (UInt32)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
             if (buffer is null)
@@ -371,6 +375,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int64 value)
         {
             if (buffer is null)
@@ -385,6 +390,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, (UInt64)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
             if (buffer is null)
@@ -399,6 +405,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Single value)
         {
             if (buffer is null)
@@ -413,6 +420,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Double value)
         {
             if (buffer is null)
@@ -427,6 +435,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
             if (buffer is null)
@@ -441,6 +450,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, Int16 value)
         {
             if (sizeof(Int16) > buffer.Length)
@@ -449,6 +459,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE((UInt16)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, UInt16 value)
         {
             if (sizeof(UInt16) > buffer.Length)
@@ -457,6 +468,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, Int32 value)
         {
             if (sizeof(Int32) > buffer.Length)
@@ -465,6 +477,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE((UInt32)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, UInt32 value)
         {
             if (sizeof(UInt32) > buffer.Length)
@@ -473,6 +486,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, Int64 value)
         {
             if (sizeof(Int64) > buffer.Length)
@@ -481,6 +495,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE((UInt64)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, UInt64 value)
         {
             if (sizeof(UInt64) > buffer.Length)
@@ -489,6 +504,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, Single value)
         {
             if (sizeof(Single) > buffer.Length)
@@ -497,6 +513,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, Double value)
         {
             if (sizeof(Double) > buffer.Length)
@@ -505,6 +522,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Memory<Byte> buffer, Decimal value)
         {
             if (sizeof(Decimal) > buffer.Length)
@@ -513,6 +531,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, Int16 value)
         {
             if (sizeof(Int16) > buffer.Length)
@@ -521,6 +540,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE((UInt16)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, UInt16 value)
         {
             if (sizeof(UInt16) > buffer.Length)
@@ -529,6 +549,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, Int32 value)
         {
             if (sizeof(Int32) > buffer.Length)
@@ -537,6 +558,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE((UInt32)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, UInt32 value)
         {
             if (sizeof(UInt32) > buffer.Length)
@@ -545,6 +567,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, Int64 value)
         {
             if (sizeof(Int64) > buffer.Length)
@@ -553,6 +576,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE((UInt64)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, UInt64 value)
         {
             if (sizeof(UInt64) > buffer.Length)
@@ -561,6 +585,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, Single value)
         {
             if (sizeof(Single) > buffer.Length)
@@ -569,6 +594,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, Double value)
         {
             if (sizeof(Double) > buffer.Length)
@@ -577,6 +603,7 @@ namespace Palmtree
             buffer.InternalCopyValueLE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Span<Byte> buffer, Decimal value)
         {
             if (sizeof(Decimal) > buffer.Length)
@@ -589,6 +616,7 @@ namespace Palmtree
 
         #region SetValueBE
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int16 value)
         {
             if (buffer is null)
@@ -603,6 +631,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, (UInt16)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
             if (buffer is null)
@@ -617,6 +646,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int32 value)
         {
             if (buffer is null)
@@ -631,6 +661,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, (UInt32)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
             if (buffer is null)
@@ -645,6 +676,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int64 value)
         {
             if (buffer is null)
@@ -659,6 +691,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, (UInt64)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
             if (buffer is null)
@@ -673,6 +706,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Single value)
         {
             if (buffer is null)
@@ -687,6 +721,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Double value)
         {
             if (buffer is null)
@@ -701,6 +736,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
             if (buffer is null)
@@ -715,6 +751,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(startIndex, value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, Int16 value)
         {
             if (sizeof(Int16) > buffer.Length)
@@ -723,6 +760,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE((UInt16)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, UInt16 value)
         {
             if (sizeof(UInt16) > buffer.Length)
@@ -731,6 +769,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, Int32 value)
         {
             if (sizeof(Int32) > buffer.Length)
@@ -739,6 +778,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE((UInt32)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, UInt32 value)
         {
             if (sizeof(UInt32) > buffer.Length)
@@ -747,6 +787,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, Int64 value)
         {
             if (sizeof(Int64) > buffer.Length)
@@ -755,6 +796,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE((UInt64)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, UInt64 value)
         {
             if (sizeof(UInt64) > buffer.Length)
@@ -763,6 +805,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, Single value)
         {
             if (sizeof(Single) > buffer.Length)
@@ -771,6 +814,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, Double value)
         {
             if (sizeof(Double) > buffer.Length)
@@ -779,6 +823,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Memory<Byte> buffer, Decimal value)
         {
             if (sizeof(Decimal) > buffer.Length)
@@ -787,6 +832,7 @@ namespace Palmtree
             buffer.Span.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, Int16 value)
         {
             if (sizeof(Int16) > buffer.Length)
@@ -795,6 +841,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE((UInt16)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, UInt16 value)
         {
             if (sizeof(UInt16) > buffer.Length)
@@ -803,6 +850,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, Int32 value)
         {
             if (sizeof(Int32) > buffer.Length)
@@ -811,6 +859,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE((UInt32)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, UInt32 value)
         {
             if (sizeof(UInt32) > buffer.Length)
@@ -819,6 +868,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, Int64 value)
         {
             if (sizeof(Int64) > buffer.Length)
@@ -827,6 +877,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE((UInt64)value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, UInt64 value)
         {
             if (sizeof(UInt64) > buffer.Length)
@@ -835,6 +886,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, Single value)
         {
             if (sizeof(Single) > buffer.Length)
@@ -843,6 +895,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, Double value)
         {
             if (sizeof(Double) > buffer.Length)
@@ -851,6 +904,7 @@ namespace Palmtree
             buffer.InternalCopyValueBE(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Span<Byte> buffer, Decimal value)
         {
             if (sizeof(Decimal) > buffer.Length)

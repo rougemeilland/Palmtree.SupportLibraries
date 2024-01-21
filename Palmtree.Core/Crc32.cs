@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree
 {
     public static class Crc32
     {
-        public static ICrcCalculationState<UInt32> CreateCalculationState() => ByteArrayExtensions.CreateCrc32CalculationState();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ICrcCalculationState<UInt32> CreateCalculationState()
+            => ByteArrayExtensions.CreateCrc32CalculationState();
     }
 }

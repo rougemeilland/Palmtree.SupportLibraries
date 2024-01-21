@@ -9,89 +9,6 @@ namespace Palmtree.IO
 {
     public static class AsyncFileExtensions
     {
-        /// <remarks>
-        /// .NET 7 以降では不要な実装だが、.NET 6 では必要なので実装する。
-        /// </remarks>
-        private class ReadLinesEnumerable
-            : IAsyncEnumerable<String>
-        {
-            private class Enumerator
-                : IAsyncEnumerator<String>
-            {
-                private readonly TextReader _reader;
-                private readonly CancellationToken _cancellationToken;
-
-                private Boolean _isDisposed;
-                private String? _currentValue;
-                private Boolean _endOfStream;
-
-                public Enumerator(TextReader reader, CancellationToken cancellationToken)
-                {
-                    _reader = reader;
-                    _cancellationToken = cancellationToken;
-                    _isDisposed = false;
-                    _currentValue = null;
-                    _endOfStream = false;
-                }
-
-                public String Current
-                {
-                    get
-                    {
-                        if (_isDisposed)
-                            throw new ObjectDisposedException(GetType().FullName);
-                        if (_currentValue is null)
-                            throw new InvalidOperationException();
-                        if (_endOfStream)
-                            throw new InvalidOperationException();
-                        _cancellationToken.ThrowIfCancellationRequested();
-
-                        return _currentValue;
-                    }
-                }
-
-                public async ValueTask<Boolean> MoveNextAsync()
-                {
-                    if (_isDisposed)
-                        throw new ObjectDisposedException(GetType().FullName);
-                    _cancellationToken.ThrowIfCancellationRequested();
-
-                    if (_endOfStream)
-                        return false;
-                    _currentValue = await _reader.ReadLineAsync().ConfigureAwait(false);
-                    if (_currentValue is null)
-                    {
-                        _endOfStream = true;
-                        return false;
-                    }
-
-                    return true;
-                }
-
-                public ValueTask DisposeAsync()
-                {
-                    if (!_isDisposed)
-                    {
-                        _reader.Dispose();
-                        _isDisposed = true;
-                    }
-
-                    GC.SuppressFinalize(this);
-                    return ValueTask.CompletedTask;
-                }
-            }
-
-            private readonly TextReader _reader;
-
-            public ReadLinesEnumerable(TextReader reader)
-            {
-                _reader = reader;
-            }
-
-            public IAsyncEnumerator<String> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-                => new Enumerator(_reader, cancellationToken);
-        }
-
         static AsyncFileExtensions()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -128,40 +45,40 @@ namespace Palmtree.IO
             return File.ReadAllLinesAsync(file.FullName, cancellationToken);
         }
 
-        public static IAsyncEnumerable<String> ReadLinesAsync(this FileInfo file)
+        public static IAsyncEnumerable<String> ReadLinesAsync(this FileInfo file, CancellationToken cancellationToken = default)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
 
-            return new ReadLinesEnumerable(new StreamReader(file.FullName, Encoding.UTF8));
+            return File.ReadLinesAsync(file.FullName, cancellationToken);
         }
 
-        public static IAsyncEnumerable<String> ReadLinesAsync(this FilePath file)
+        public static IAsyncEnumerable<String> ReadLinesAsync(this FilePath file, CancellationToken cancellationToken = default)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
 
-            return new ReadLinesEnumerable(new StreamReader(file.FullName, Encoding.UTF8));
+            return File.ReadLinesAsync(file.FullName, cancellationToken);
         }
 
-        public static IAsyncEnumerable<String> ReadLinesAsync(this FileInfo file, Encoding encoding)
+        public static IAsyncEnumerable<String> ReadLinesAsync(this FileInfo file, Encoding encoding, CancellationToken cancellationToken = default)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
             if (encoding is null)
                 throw new ArgumentNullException(nameof(encoding));
 
-            return new ReadLinesEnumerable(new StreamReader(file.FullName, encoding));
+            return File.ReadLinesAsync(file.FullName, encoding, cancellationToken);
         }
 
-        public static IAsyncEnumerable<String> ReadLinesAsync(this FilePath file, Encoding encoding)
+        public static IAsyncEnumerable<String> ReadLinesAsync(this FilePath file, Encoding encoding, CancellationToken cancellationToken = default)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
             if (encoding is null)
                 throw new ArgumentNullException(nameof(encoding));
 
-            return new ReadLinesEnumerable(new StreamReader(file.FullName, encoding));
+            return File.ReadLinesAsync(file.FullName, encoding, cancellationToken);
         }
 
         public static async Task WriteAllBytesAsync(this FileInfo file, IEnumerable<Byte> data, CancellationToken cancellationToken = default)
@@ -460,7 +377,10 @@ namespace Palmtree.IO
             return sourceFile.OpenRead().CalculateCrc32Async(progress, cancellationToken);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2016:'CancellationToken' パラメーターをメソッドに転送する", Justification = "<保留中>")]
+#if NET8_0_OR_GREATER
+#else
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2016:'CancellationToken' パラメーターをメソッドに転送する", Justification = "<保留中>")]
+#endif
         private static async Task InternalWriteAllLinesAsync(String fileFullPath, IAsyncEnumerable<String> lines, Encoding encoding, CancellationToken cancellationToken)
         {
             var writer = new StreamWriter(fileFullPath, false, encoding);
@@ -476,8 +396,11 @@ namespace Palmtree.IO
                     }
                 }
 
-                /// TextWriter.FlushAsync(bool cancellationToken) のオーバーロードのサポートは .NET 8.0 以降。
+#if NET8_0_OR_GREATER
+                await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
+#else
                 await writer.FlushAsync().ConfigureAwait(false);
+#endif
             }
         }
     }

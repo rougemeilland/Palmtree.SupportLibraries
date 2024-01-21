@@ -48,50 +48,60 @@ namespace Palmtree.IO.Console
                 public Boolean bVisible;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll")]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             public static partial IntPtr GetStdHandle(UInt32 nStdHandle);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static partial Boolean GetConsoleScreenBufferInfo(IntPtr hConsoleHandle, out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static partial Boolean SetConsoleTextAttribute(IntPtr hConsoleHandle, UInt16 wAttributes);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static partial Boolean SetConsoleCursorPosition(IntPtr hConsoleOutput, COORD cursorPosition);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             private static unsafe partial Boolean GetConsoleCursorInfo(IntPtr hConsoleHandle, CONSOLE_CURSOR_INFO* lpConsoleCursorInfo);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             private static unsafe partial Boolean SetConsoleCursorInfo(IntPtr hConsoleHandle, CONSOLE_CURSOR_INFO* lpConsoleCursorInfo);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", EntryPoint = "FillConsoleOutputCharacterW", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static partial Boolean FillConsoleOutputCharacter(IntPtr hConsoleHandle, Int16 cCharacter, UInt32 nLength, COORD dwWriteCoord, out UInt32 lpNumberOfCharsWritten);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static partial Boolean FillConsoleOutputAttribute(IntPtr hConsoleHandle, UInt16 wAttribute, UInt32 nLength, COORD dwWriteCoord, out UInt32 lpNumberOfAttrsWritten);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static partial Boolean GetConsoleMode(IntPtr hConsoleHandle, out UInt32 mode);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport("kernel32.dll", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
             [return: MarshalAs(UnmanagedType.Bool)]

@@ -2,444 +2,851 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.Numerics
 {
     public readonly struct UBigInt
-        : IComparable, IComparable<BigInt>, IComparable<UBigInt>, IComparable<BigInteger>, IComparable<Int64>, IComparable<UInt64>, IComparable<Int32>, IComparable<UInt32>, IEquatable<BigInt>, IEquatable<UBigInt>, IEquatable<BigInteger>, IEquatable<Int64>, IEquatable<UInt64>, IEquatable<Int32>, IEquatable<UInt32>, IFormattable, IBigIntInternalValue
+        : ISpanFormattable, IComparable, IComparable<UBigInt>, IEquatable<UBigInt>, IBinaryInteger<UBigInt>, ISignedNumber<UBigInt>
     {
-        private readonly BigInteger _value;
+        public static readonly UBigInt One;
+        public static readonly UBigInt Zero;
+
+        private static readonly UBigInt AdditiveIdentity;
+        private static readonly UBigInt MultiplicativeIdentity;
+        private static readonly Int32 Radix;
+
+        internal readonly UnsignedIntegerCapsule<BigInteger> Value;
 
         #region constructor
 
         static UBigInt()
         {
-            One = new UBigInt(BigInteger.One);
-            Zero = new UBigInt(BigInteger.Zero);
+            Zero = new UBigInt(UnsignedIntegerCapsule<BigInteger>.ZeroValue);
+            One = new UBigInt(UnsignedIntegerCapsule<BigInteger>.OneValue);
+            MultiplicativeIdentity = new UBigInt(UnsignedIntegerCapsule<BigInteger>.MultiplicativeIdentityValue);
+            AdditiveIdentity = new UBigInt(UnsignedIntegerCapsule<BigInteger>.AdditiveIdentityValue);
+            Radix = UnsignedIntegerCapsule<BigInteger>.RadixValue;
         }
 
         public UBigInt()
-            : this(BigInteger.Zero)
+            : this(new UnsignedIntegerCapsule<BigInteger>(BigInteger.Zero))
         {
         }
 
         public UBigInt(Int32 value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
         }
 
         public UBigInt(UInt32 value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
         }
 
         public UBigInt(Int64 value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
         }
 
         public UBigInt(UInt64 value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
         }
 
-        public UBigInt(BigInteger value)
+#if NET7_0_OR_GREATER
+        public UBigInt(Int128 value)
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
-            if (value < 0)
-                throw new OverflowException();
-
-            _value = value;
         }
+
+        public UBigInt(UInt128 value)
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
+        {
+        }
+#endif // NET7_0_OR_GREATER
 
         public UBigInt(Single value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
         }
 
         public UBigInt(Double value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
         }
 
         public UBigInt(Decimal value)
-            : this(new BigInteger(value))
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
+        {
+        }
+
+        public UBigInt(BigInteger value)
+            : this(new UnsignedIntegerCapsule<BigInteger>(value))
         {
         }
 
         public UBigInt(ReadOnlyMemory<Byte> value, Boolean isBigEndian = false)
-            : this(new BigInteger(value.Span, true, isBigEndian))
+            : this(CreateInstance(value.Span, false, isBigEndian) ?? throw new ArgumentException("Invalid binary format.", nameof(value)))
         {
         }
 
         public UBigInt(ReadOnlySpan<Byte> value, Boolean isBigEndian = false)
-            : this(new BigInteger(value, true, isBigEndian))
+            : this(CreateInstance(value, true, isBigEndian) ?? throw new ArgumentException("Invalid binary format.", nameof(value)))
         {
+        }
+
+        private UBigInt(UnsignedIntegerCapsule<BigInteger> value)
+        {
+            Value = value;
         }
 
         #endregion
 
         #region properties
 
-        public static UBigInt Zero { get; }
-        public static UBigInt One { get; }
-        BigInteger IBigIntInternalValue.Value => _value;
-
-        #endregion
-
-        public UBigInt Add(UBigInt other) => new(_value + other._value);
-        public UBigInt Subtract(UBigInt other) => new(_value - other._value);
-        public UBigInt Multiply(UBigInt other) => new(_value * other._value);
-        public UBigInt Divide(UBigInt other) => new(_value / other._value);
-
-        #region Remainder
-
-        public UBigInt Remainder(UBigInt other) => new(_value % other._value);
-        public UInt64 Remainder(UInt64 other) => (UInt64)(_value % other);
-        public UInt32 Remainder(UInt32 other) => (UInt32)(_value % other);
-
-        #endregion
-
-        #region DivRem
-
-        public (UBigInt Quotient, UBigInt Remainder) DivRem(UBigInt divisor)
+        public Boolean IsEven
         {
-            var quotient = BigInteger.DivRem(_value, divisor._value, out var remainder);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Value.NativeValue.IsEven;
+        }
+
+        public Boolean IsOne
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Value.NativeValue.IsOne;
+        }
+
+        public Boolean IsZero
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Value.NativeValue.IsZero;
+        }
+
+        public Boolean IsPowerOfTwo
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Value.NativeValue.IsPowerOfTwo;
+        }
+
+        #endregion
+
+        #region methods
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public UBigInt Add(UBigInt other) => new(Value.NativeValue + other.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 CompareTo(Object? other)
+        {
+            if (other is null)
+                return 1;
+            if (other.GetType() == typeof(BigInt))
+                return CompareTo((BigInt)other);
+            else if (other.GetType() == typeof(UBigInt))
+                return CompareTo((UBigInt)other);
+            else
+                return Value.NativeValue.CompareTo(other);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 CompareTo(BigInt other) => Value.NativeValue.CompareTo(other.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 CompareTo(UBigInt other) => Value.NativeValue.CompareTo(other.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 CompareTo(BigInteger other) => Value.NativeValue.CompareTo(other);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 CompareTo(UInt64 other) => Value.NativeValue.CompareTo(other);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 CompareTo(Int64 other) => Value.NativeValue.CompareTo(other);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override Boolean Equals(Object? other)
+        {
+            if (other is null)
+                return false;
+            else if (other.GetType() == typeof(BigInt))
+                return Equals((BigInt)other);
+            else if (other.GetType() == typeof(UBigInt))
+                return Equals((UBigInt)other);
+            else
+                return Value.NativeValue.Equals(other);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean Equals(BigInt other) => Value.NativeValue.Equals(other.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean Equals(UBigInt other) => Value.NativeValue.Equals(other.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean Equals(BigInteger other) => Value.NativeValue.Equals(other);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean Equals(UInt64 other) => Value.NativeValue.Equals(other);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean Equals(Int64 other) => Value.NativeValue.Equals(other);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int64 GetBitLength() => Value.NativeValue.GetBitLength();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Int32 GetByteCount(Boolean isUnsigned = false) => Value.NativeValue.GetByteCount(isUnsigned);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override Int32 GetHashCode() => Value.NativeValue.GetHashCode();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Byte[] ToByteArray() => Value.NativeValue.ToByteArray();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Byte[] ToByteArray(Boolean isBigEndian = false) => Value.NativeValue.ToByteArray(true, isBigEndian);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public String ToString(String? format, IFormatProvider? provider) => Value.NativeValue.ToString(format, provider);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public String ToString(String? format) => Value.NativeValue.ToString(format);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public String ToString(IFormatProvider? provider) => Value.NativeValue.ToString(provider);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override String ToString() => Value.NativeValue.ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean TryFormat(Span<Char> destination, out Int32 charsWritten, ReadOnlySpan<Char> format = default, IFormatProvider? provider = default) => Value.NativeValue.TryFormat(destination, out charsWritten, format, provider);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Boolean TryWriteBytes(Span<Byte> destination, out Int32 bytesWritten, Boolean isUnsigned = false, Boolean isBigEndian = false) => Value.NativeValue.TryWriteBytes(destination, out bytesWritten, isUnsigned, isBigEndian);
+
+        #endregion
+
+        #region static methods
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Abs(UBigInt value) => new(BigInteger.Abs(value.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Clamp(UBigInt value, UBigInt min, UBigInt max) => new(BigInteger.Clamp(value.Value.NativeValue, min.Value.NativeValue, max.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Int32 Compare(UBigInt left, UBigInt right) => BigInteger.Compare(left.Value.NativeValue, right.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt CreateChecked<TOther>(TOther value)
+            where TOther : INumberBase<TOther>
+        {
+            if (typeof(TOther) == typeof(BigInt))
+                return new UBigInt(((BigInt)(Object)value).Value.NativeValue);
+            else if (typeof(TOther) == typeof(UBigInt))
+                return (UBigInt)(Object)value;
+            else
+                return new UBigInt(BigInteger.CreateChecked(value));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt CreateSaturating<TOther>(TOther value)
+            where TOther : INumberBase<TOther>
+        {
+            if (typeof(TOther) == typeof(BigInt))
+                return new UBigInt(((BigInt)(Object)value).Value.NativeValue);
+            else if (typeof(TOther) == typeof(UBigInt))
+                return (UBigInt)(Object)value;
+            else
+                return new UBigInt(BigInteger.CreateSaturating(value));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt CreateTruncating<TOther>(TOther value)
+            where TOther : INumberBase<TOther>
+        {
+            if (typeof(TOther) == typeof(BigInt))
+                return new UBigInt(((BigInt)(Object)value).Value.NativeValue);
+            else if (typeof(TOther) == typeof(UBigInt))
+                return (UBigInt)(Object)value;
+            else
+                return new UBigInt(BigInteger.CreateTruncating(value));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Divide(UBigInt dividend, UBigInt divisor) => new(BigInteger.Divide(dividend.Value.NativeValue, divisor.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (UBigInt Quotient, UBigInt Remainder) DivRem(UBigInt left, UBigInt right)
+        {
+            var (quotient, remainder) = BigInteger.DivRem(left.Value.NativeValue, right.Value.NativeValue);
             return (new UBigInt(quotient), new UBigInt(remainder));
         }
 
-        public (UBigInt Quotient, UInt64 Remainder) DivRem(UInt64 divisor)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt DivRem(UBigInt dividend, UBigInt divisor, out UBigInt remainder)
         {
-            var quotient = BigInteger.DivRem(_value, divisor, out var remainder);
-            return (new UBigInt(quotient), checked((UInt64)remainder));
+            var quotient = BigInteger.DivRem(dividend.Value.NativeValue, divisor.Value.NativeValue, out var r);
+            remainder = new UBigInt(r);
+            return new UBigInt(quotient);
         }
 
-        public (UBigInt Quotient, UInt32 Remainder) DivRem(UInt32 divisor)
-        {
-            var quotient = BigInteger.DivRem(_value, divisor, out var remainder);
-            return (new UBigInt(quotient), checked((UInt32)remainder));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt GreatestCommonDivisor(UBigInt left, UBigInt right) => new(BigInteger.GreatestCommonDivisor(left.Value.NativeValue, right.Value.NativeValue));
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsEvenInteger(UBigInt value) => BigInteger.IsEvenInteger(value.Value.NativeValue);
 
-        public UBigInt Xor(UBigInt other) => new(_value ^ other._value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsNegative(UBigInt value) => BigInteger.IsNegative(value.Value.NativeValue);
 
-        #region BitwiseAnd
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsOddInteger(UBigInt value) => BigInteger.IsOddInteger(value.Value.NativeValue);
 
-        public UBigInt BitwiseAnd(UBigInt other) => new(_value & other._value);
-        public UInt64 BitwiseAnd(UInt64 other) => (UInt64)(_value & other);
-        public UInt32 BitwiseAnd(UInt32 other) => (UInt32)(_value & other);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsPositive(UBigInt value) => BigInteger.IsPositive(value.Value.NativeValue);
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsPow2(UBigInt value) => BigInteger.IsPow2(value.Value.NativeValue);
 
-        public UBigInt BitwiseOr(UBigInt other) => new(_value | other._value);
-        public UBigInt LeftShift(Int32 shiftCount) => new(_value << shiftCount);
-        public UBigInt RightShift(Int32 shiftCount) => new(_value >> shiftCount);
-        public UBigInt Decrement() => new(_value - 1);
-        public UBigInt Increment() => new(_value + 1);
-        public BigInt Negate() => new(BigInteger.Negate(_value));
-        public UBigInt Plus() => this;
-        public BigInt OnesComplement() => new(~_value);
-        public Int64 GetBitLength() => _value.GetBitLength();
-        public Int32 GetByteCount() => _value.GetByteCount(false);
-        public UBigInt GreatestCommonDivisor(UBigInt other) => new(BigInteger.GreatestCommonDivisor(_value, other._value));
-        public UBigInt Pow(Int32 exponent) => new(BigInteger.Pow(_value, exponent));
-        public UBigInt ModPow(UBigInt exponent, UBigInt modulus) => new(BigInteger.ModPow(_value, exponent._value, modulus._value));
-        public Double Log() => BigInteger.Log(_value);
-        public Double Log(Double baseValue) => BigInteger.Log(_value, baseValue);
-        public Double Log10() => BigInteger.Log10(_value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt LeadingZeroCount(UBigInt value) => new(BigInteger.LeadingZeroCount(value.Value.NativeValue));
 
-        #region Parse
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Double Log(UBigInt value) => BigInteger.Log(value.Value.NativeValue);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Double Log10(UBigInt value) => BigInteger.Log10(value.Value.NativeValue);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Log2(UBigInt value) => new(BigInteger.Log2(value.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Max(UBigInt left, UBigInt right) => new(BigInteger.Max(left.Value.NativeValue, right.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt MaxMagnitude(UBigInt x, UBigInt y) => new(BigInteger.MaxMagnitude(x.Value.NativeValue, y.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Min(UBigInt left, UBigInt right) => new(BigInteger.Min(left.Value.NativeValue, right.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt MinMagnitude(UBigInt x, UBigInt y) => new(BigInteger.MinMagnitude(x.Value.NativeValue, y.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt ModPow(UBigInt value, UBigInt exponent, UBigInt modulus) => new(BigInteger.ModPow(value.Value.NativeValue, exponent.Value.NativeValue, modulus.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Multiply(UBigInt left, UBigInt right) => new(BigInteger.Multiply(left.Value.NativeValue, right.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Negate(UBigInt value) => new(BigInteger.Negate(value.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UBigInt Parse(String value) => new(BigInteger.Parse(value));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Parse(ReadOnlySpan<Char> s, IFormatProvider? provider) => new(BigInteger.Parse(s, provider));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UBigInt Parse(String value, NumberStyles style) => new(BigInteger.Parse(value, style));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UBigInt Parse(String value, IFormatProvider? provider) => new(BigInteger.Parse(value, provider));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Parse(ReadOnlySpan<Char> value, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = default) => new(BigInteger.Parse(value, style, provider));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UBigInt Parse(String value, NumberStyles style, IFormatProvider? provider) => new(BigInteger.Parse(value, style, provider));
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt PopCount(UBigInt value) => new(BigInteger.PopCount(value.Value.NativeValue));
 
-        #region TryParse
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Pow(UBigInt value, Int32 exponent) => new(BigInteger.Pow(value.Value.NativeValue, exponent));
 
-        public static Boolean TryParse([NotNullWhen(true)] String? value, NumberStyles style, IFormatProvider? provider, out UBigInt result)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Remainder(UBigInt dividend, UBigInt divisor) => new(BigInteger.Remainder(dividend.Value.NativeValue, divisor.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt RotateLeft(UBigInt value, Int32 rotateAmount) => new(BigInteger.RotateLeft(value.Value.NativeValue, rotateAmount));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt RotateRight(UBigInt value, Int32 rotateAmount) => new(BigInteger.RotateRight(value.Value.NativeValue, rotateAmount));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt Subtract(UBigInt left, UBigInt right) => new(BigInteger.Subtract(left.Value.NativeValue, right.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt TrailingZeroCount(UBigInt value) => new(BigInteger.TrailingZeroCount(value.Value.NativeValue));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean TryParse(ReadOnlySpan<Char> value, NumberStyles style, IFormatProvider? provider, out UBigInt result)
         {
-            if (!BigInteger.TryParse(value, style, provider, out BigInteger bigIntegerValue))
+            if (!BigInteger.TryParse(value, style, provider, out var r))
             {
-                result = Zero;
+                result = default;
                 return false;
             }
 
-            result = new UBigInt(bigIntegerValue);
+            result = new UBigInt(r);
             return true;
         }
 
-        public static Boolean TryParse([NotNullWhen(true)] String? value, out UBigInt result)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean TryParse(String? s, IFormatProvider? provider, out UBigInt result)
         {
-            if (!BigInteger.TryParse(value, out BigInteger bigIntegerValue))
+            if (!BigInteger.TryParse(s, provider, out var r))
             {
-                result = Zero;
+                result = default;
                 return false;
             }
 
-            result = new UBigInt(bigIntegerValue);
+            result = new UBigInt(r);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean TryParse(ReadOnlySpan<Char> s, IFormatProvider? provider, out UBigInt result)
+        {
+            if (!BigInteger.TryParse(s, provider, out var r))
+            {
+                result = default;
+                return false;
+            }
+
+            result = new UBigInt(r);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean TryParse(String? value, out UBigInt result)
+        {
+            if (!BigInteger.TryParse(value, out var r))
+            {
+                result = default;
+                return false;
+            }
+
+            result = new UBigInt(r);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean TryParse(ReadOnlySpan<Char> value, out UBigInt result)
+        {
+            if (!BigInteger.TryParse(value, out var r))
+            {
+                result = default;
+                return false;
+            }
+
+            result = new UBigInt(r);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean TryParse(String? value, NumberStyles style, IFormatProvider? provider, out UBigInt result)
+        {
+            if (!BigInteger.TryParse(value, style, provider, out var r))
+            {
+                result = default;
+                return false;
+            }
+
+            result = new UBigInt(r);
             return true;
         }
 
         #endregion
 
-        #region ToByteArray
+        #region explicit interface members
 
-        public Byte[] ToByteArray(Boolean isBigEndian = false) => _value.ToByteArray(true, isBigEndian);
+        static UBigInt INumberBase<UBigInt>.One => One;
+        static Int32 INumberBase<UBigInt>.Radix => Radix;
+        static UBigInt INumberBase<UBigInt>.Zero => Zero;
+        static UBigInt IAdditiveIdentity<UBigInt, UBigInt>.AdditiveIdentity => AdditiveIdentity;
+        static UBigInt IMultiplicativeIdentity<UBigInt, UBigInt>.MultiplicativeIdentity => MultiplicativeIdentity;
+        static UBigInt ISignedNumber<UBigInt>.NegativeOne => throw new NotSupportedException();
+        Int32 IBinaryInteger<UBigInt>.GetByteCount() => Value.GetByteCount();
+        Int32 IBinaryInteger<UBigInt>.GetShortestBitLength() => Value.GetShortestBitLength();
+        Boolean IBinaryInteger<UBigInt>.TryWriteBigEndian(Span<Byte> destination, out Int32 bytesWritten) => Value.TryWriteBigEndian(destination, out bytesWritten);
+        Boolean IBinaryInteger<UBigInt>.TryWriteLittleEndian(Span<Byte> destination, out Int32 bytesWritten) => Value.TryWriteLittleEndian(destination, out bytesWritten);
+        static Boolean IBinaryInteger<UBigInt>.TryReadBigEndian(ReadOnlySpan<Byte> source, Boolean isUnsigned, out UBigInt value)
+        {
+            if (!UnsignedIntegerCapsule<BigInteger>.TryReadBigEndian(source, isUnsigned, out var x))
+            {
+                value = default;
+                return false;
+            }
 
-        #endregion
+            value = new UBigInt(x);
+            return true;
+        }
 
-        #region CompareTo
+        static Boolean IBinaryInteger<UBigInt>.TryReadLittleEndian(ReadOnlySpan<Byte> source, Boolean isUnsigned, out UBigInt value)
+        {
+            if (!UnsignedIntegerCapsule<BigInteger>.TryReadLittleEndian(source, isUnsigned, out var x))
+            {
+                value = default;
+                return false;
+            }
 
-        public Int32 CompareTo(BigInt other) => _value.CompareTo(((IBigIntInternalValue)other).Value);
-        public Int32 CompareTo(UBigInt other) => _value.CompareTo(other._value);
-        public Int32 CompareTo(BigInteger other) => _value.CompareTo(other);
-        public Int32 CompareTo(Int64 other) => _value.CompareTo(other);
-        public Int32 CompareTo(UInt64 other) => _value.CompareTo(other);
-        public Int32 CompareTo(Int32 other) => _value.CompareTo(other);
-        public Int32 CompareTo(UInt32 other) => _value.CompareTo(other);
+            value = new UBigInt(x);
+            return true;
+        }
 
-        public Int32 CompareTo(Object? obj)
-            => obj is null
-                ? 1
-                : obj is BigInt BigIntValue
-                ? CompareTo(BigIntValue)
-                : obj is UBigInt UBigIntValue
-                ? CompareTo(UBigIntValue)
-                : obj is BigInteger BigIntegerValue
-                ? CompareTo(BigIntegerValue)
-                : obj is Int64 Int64Value
-                ? CompareTo(Int64Value)
-                : obj is UInt64 UInt64Value
-                ? CompareTo(UInt64Value)
-                : obj is Int32 Int32Value
-                ? CompareTo(Int32Value)
-                : obj is UInt32 UInt32Value
-                ? CompareTo(UInt32Value)
-                : _value.CompareTo(obj);
+        static Boolean INumberBase<UBigInt>.IsCanonical(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsCanonical(value.Value);
+        static Boolean INumberBase<UBigInt>.IsComplexNumber(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsComplexNumber(value.Value);
+        static Boolean INumberBase<UBigInt>.IsFinite(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsFinite(value.Value);
+        static Boolean INumberBase<UBigInt>.IsImaginaryNumber(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsImaginaryNumber(value.Value);
+        static Boolean INumberBase<UBigInt>.IsInfinity(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsInfinity(value.Value);
+        static Boolean INumberBase<UBigInt>.IsInteger(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsInteger(value.Value);
+        static Boolean INumberBase<UBigInt>.IsNaN(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsNaN(value.Value);
+        static Boolean INumberBase<UBigInt>.IsNegativeInfinity(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsNegativeInfinity(value.Value);
+        static Boolean INumberBase<UBigInt>.IsNormal(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsNormal(value.Value);
+        static Boolean INumberBase<UBigInt>.IsPositiveInfinity(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsPositiveInfinity(value.Value);
+        static Boolean INumberBase<UBigInt>.IsRealNumber(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsRealNumber(value.Value);
+        static Boolean INumberBase<UBigInt>.IsSubnormal(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsSubnormal(value.Value);
+        static Boolean INumberBase<UBigInt>.IsZero(UBigInt value) => UnsignedIntegerCapsule<BigInteger>.IsZero(value.Value);
+        static UBigInt INumberBase<UBigInt>.MaxMagnitudeNumber(UBigInt x, UBigInt y) => new(UnsignedIntegerCapsule<BigInteger>.MaxMagnitudeNumber(x.Value, y.Value));
+        static UBigInt INumberBase<UBigInt>.MinMagnitudeNumber(UBigInt x, UBigInt y) => new(UnsignedIntegerCapsule<BigInteger>.MinMagnitudeNumber(x.Value, y.Value));
 
-        #endregion
+        static Boolean INumberBase<UBigInt>.TryConvertFromChecked<TOther>(TOther value, [MaybeNullWhen(false)] out UBigInt result)
+        {
+            if (!UnsignedIntegerCapsule<BigInteger>.TryConvertFromChecked(value, out var r))
+            {
+                result = default;
+                return false;
+            }
 
-        #region Equals
+            result = new UBigInt(r);
+            return true;
+        }
 
-        public Boolean Equals(BigInt other) => _value.Equals(((IBigIntInternalValue)other).Value);
-        public Boolean Equals(UBigInt other) => _value.Equals(other._value);
-        public Boolean Equals(BigInteger other) => _value.Equals(other);
-        public Boolean Equals(Int64 other) => _value.Equals(other);
-        public Boolean Equals(UInt64 other) => _value.Equals(other);
-        public Boolean Equals(Int32 other) => _value.Equals(other);
-        public Boolean Equals(UInt32 other) => _value.Equals(other);
+        static Boolean INumberBase<UBigInt>.TryConvertFromSaturating<TOther>(TOther value, [MaybeNullWhen(false)] out UBigInt result)
+        {
+            if (!UnsignedIntegerCapsule<BigInteger>.TryConvertFromSaturating(value, out var r))
+            {
+                result = default;
+                return false;
+            }
 
-        public override Boolean Equals([NotNullWhen(true)] Object? obj)
-            => obj is null
-                ? false
-                : obj is BigInt BigIntValue
-                ? Equals(BigIntValue)
-                : obj is UBigInt UBigIntValue
-                ? Equals(UBigIntValue)
-                : obj is BigInteger BigIntegerValue
-                ? Equals(BigIntegerValue)
-                : obj is Int64 Int64Value
-                ? Equals(Int64Value)
-                : obj is UInt64 UInt64Value
-                ? Equals(UInt64Value)
-                : obj is Int32 Int32Value
-                ? Equals(Int32Value)
-                : obj is UInt32 UInt32Value
-                ? Equals(UInt32Value)
-                : _value.Equals(obj);
+            result = new UBigInt(r);
+            return true;
+        }
 
-        #endregion
+        static Boolean INumberBase<UBigInt>.TryConvertFromTruncating<TOther>(TOther value, [MaybeNullWhen(false)] out UBigInt result)
+        {
+            if (!UnsignedIntegerCapsule<BigInteger>.TryConvertFromTruncating(value, out var r))
+            {
+                result = default;
+                return false;
+            }
 
-        public override Int32 GetHashCode() => _value.GetHashCode();
+            result = new UBigInt(r);
+            return true;
+        }
 
-        #region ToString
-
-        public String ToString(String? format) => _value.ToString(format, null);
-        public String ToString(IFormatProvider? formatProvider) => _value.ToString(null, formatProvider);
-        public String ToString(String? format, IFormatProvider? formatProvider) => _value.ToString(format, formatProvider);
-        public override String ToString() => _value.ToString();
-
-        #endregion
-
-        public static UBigInt operator +(UBigInt left, UBigInt right) => new(left._value + right._value);
-
-        #region operator -
-
-        public static UBigInt operator -(UBigInt left, UBigInt right) => new(left._value - right._value);
-        public static UInt64 operator -(UInt64 left, UBigInt right) => (UInt64)(left - right._value);
-        public static UInt32 operator -(UInt32 left, UBigInt right) => (UInt32)(left - right._value);
-
-        #endregion
-
-        public static UBigInt operator *(UBigInt left, UBigInt right) => new(left._value * right._value);
-
-        #region operator /
-
-        public static UBigInt operator /(UBigInt left, UBigInt right) => new(left._value / right._value);
-        public static UBigInt operator /(UBigInt left, UInt64 right) => new(left._value / right);
-        public static UBigInt operator /(UBigInt left, UInt32 right) => new(left._value / right);
-        public static UInt64 operator /(UInt64 left, UBigInt right) => (UInt64)(left / right._value);
-        public static UInt32 operator /(UInt32 left, UBigInt right) => (UInt32)(left / right._value);
+        static Boolean INumberBase<UBigInt>.TryConvertToChecked<TOther>(UBigInt value, [MaybeNullWhen(false)] out TOther result) => UnsignedIntegerCapsule<BigInteger>.TryConvertToChecked(value.Value, out result);
+        static Boolean INumberBase<UBigInt>.TryConvertToSaturating<TOther>(UBigInt value, [MaybeNullWhen(false)] out TOther result) => UnsignedIntegerCapsule<BigInteger>.TryConvertToSaturating(value.Value, out result);
+        static Boolean INumberBase<UBigInt>.TryConvertToTruncating<TOther>(UBigInt value, [MaybeNullWhen(false)] out TOther result) => UnsignedIntegerCapsule<BigInteger>.TryConvertToTruncating(value.Value, out result);
 
         #endregion
 
-        #region operator %
+        #region operators
 
-        public static UBigInt operator %(UBigInt left, UBigInt right) => new(left._value % right._value);
-        public static UInt64 operator %(UBigInt left, UInt64 right) => (UInt64)(left._value % right);
-        public static UInt32 operator %(UBigInt left, UInt32 right) => (UInt32)(left._value % right);
-        public static UInt64 operator %(UInt64 left, UBigInt right) => (UInt64)(left % right._value);
-        public static UInt32 operator %(UInt32 left, UBigInt right) => (UInt32)(left % right._value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator +(UBigInt left, UBigInt right) => new(left.Value.NativeValue + right.Value.NativeValue);
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator -(UBigInt left, UBigInt right) => new(left.Value.NativeValue - right.Value.NativeValue);
 
-        public static UBigInt operator ++(UBigInt value) => new(value._value + 1);
-        public static UBigInt operator --(UBigInt value) => new(value._value - 1);
-        public static UBigInt operator +(UBigInt value) => value;
-        public static BigInt operator -(UBigInt value) => new(-value._value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator *(UBigInt left, UBigInt right) => new(left.Value.NativeValue * right.Value.NativeValue);
 
-        public static UBigInt operator <<(UBigInt value, Int32 shift) => new(value._value << shift);
-        public static UBigInt operator >>(UBigInt value, Int32 shift) => new(value._value >> shift);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator /(UBigInt dividend, UBigInt divisor) => new(dividend.Value.NativeValue / divisor.Value.NativeValue);
 
-        #region operator &
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator %(UBigInt dividend, UBigInt divisor) => new(dividend.Value.NativeValue % divisor.Value.NativeValue);
 
-        public static UBigInt operator &(UBigInt left, UBigInt right) => new(left._value & right._value);
-        public static UInt64 operator &(UBigInt left, UInt64 right) => (UInt64)(left._value & right);
-        public static UInt32 operator &(UBigInt left, UInt32 right) => (UInt32)(left._value & right);
-        public static UInt64 operator &(UInt64 left, UBigInt right) => (UInt64)(left & right._value);
-        public static UInt32 operator &(UInt32 left, UBigInt right) => (UInt32)(left & right._value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator +(UBigInt value) => new(+value.Value.NativeValue);
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator -(UBigInt value) => new(-value.Value.NativeValue);
 
-        public static UBigInt operator |(UBigInt left, UBigInt right) => new(left._value | right._value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator ++(UBigInt value)
+        {
+            var x = value.Value.NativeValue;
+            return new UBigInt(++x);
+        }
 
-        public static UBigInt operator ^(UBigInt left, UBigInt right) => new(left._value ^ right._value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator --(UBigInt value)
+        {
+            var x = value.Value.NativeValue;
+            return new UBigInt(--x);
+        }
 
-        #region oeprator ==
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator &(UBigInt left, UBigInt right) => new(left.Value.NativeValue & right.Value.NativeValue);
 
-        public static Boolean operator ==(UBigInt left, UBigInt right) => left.Equals(right);
-        public static Boolean operator ==(UBigInt left, BigInteger right) => left.Equals(right);
-        public static Boolean operator ==(UBigInt left, Int64 right) => left.Equals(right);
-        public static Boolean operator ==(UBigInt left, UInt64 right) => left.Equals(right);
-        public static Boolean operator ==(UBigInt left, Int32 right) => left.Equals(right);
-        public static Boolean operator ==(UBigInt left, UInt32 right) => left.Equals(right);
-        public static Boolean operator ==(BigInteger left, UBigInt right) => right.Equals(left);
-        public static Boolean operator ==(Int64 left, UBigInt right) => right.Equals(left);
-        public static Boolean operator ==(UInt64 left, UBigInt right) => right.Equals(left);
-        public static Boolean operator ==(Int32 left, UBigInt right) => right.Equals(left);
-        public static Boolean operator ==(UInt32 left, UBigInt right) => right.Equals(left);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator |(UBigInt left, UBigInt right) => new(left.Value.NativeValue | right.Value.NativeValue);
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator ^(UBigInt left, UBigInt right) => new(left.Value.NativeValue ^ right.Value.NativeValue);
 
-        #region oeprator !=
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator ~(UBigInt value) => new(~value.Value.NativeValue);
 
-        public static Boolean operator !=(UBigInt left, UBigInt right) => !left.Equals(right);
-        public static Boolean operator !=(UBigInt left, BigInteger right) => !left.Equals(right);
-        public static Boolean operator !=(UBigInt left, Int64 right) => !left.Equals(right);
-        public static Boolean operator !=(UBigInt left, UInt64 right) => !left.Equals(right);
-        public static Boolean operator !=(UBigInt left, Int32 right) => !left.Equals(right);
-        public static Boolean operator !=(UBigInt left, UInt32 right) => !left.Equals(right);
-        public static Boolean operator !=(BigInteger left, UBigInt right) => !right.Equals(left);
-        public static Boolean operator !=(Int64 left, UBigInt right) => !right.Equals(left);
-        public static Boolean operator !=(UInt64 left, UBigInt right) => !right.Equals(left);
-        public static Boolean operator !=(Int32 left, UBigInt right) => !right.Equals(left);
-        public static Boolean operator !=(UInt32 left, UBigInt right) => !right.Equals(left);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator <<(UBigInt value, Int32 shift) => new(value.Value.NativeValue << shift);
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator >>(UBigInt value, Int32 shift) => new(value.Value.NativeValue >> shift);
 
-        #region oeprator >
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UBigInt operator >>>(UBigInt value, Int32 shift) => new(value.Value.NativeValue >>> shift);
 
-        public static Boolean operator >(UBigInt left, UBigInt right) => left.CompareTo(right) > 0;
-        public static Boolean operator >(UBigInt left, BigInteger right) => left.CompareTo(right) > 0;
-        public static Boolean operator >(UBigInt left, Int64 right) => left.CompareTo(right) > 0;
-        public static Boolean operator >(UBigInt left, UInt64 right) => left.CompareTo(right) > 0;
-        public static Boolean operator >(UBigInt left, Int32 right) => left.CompareTo(right) > 0;
-        public static Boolean operator >(UBigInt left, UInt32 right) => left.CompareTo(right) > 0;
-        public static Boolean operator >(BigInteger left, UBigInt right) => right.CompareTo(left) < 0;
-        public static Boolean operator >(Int64 left, UBigInt right) => right.CompareTo(left) < 0;
-        public static Boolean operator >(UInt64 left, UBigInt right) => right.CompareTo(left) < 0;
-        public static Boolean operator >(Int32 left, UBigInt right) => right.CompareTo(left) < 0;
-        public static Boolean operator >(UInt32 left, UBigInt right) => right.CompareTo(left) < 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(UBigInt left, UBigInt right) => left.Value.NativeValue == right.Value.NativeValue;
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(UBigInt left, BigInteger right) => left.Value.NativeValue == right;
 
-        #region oeprator >=
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(UBigInt left, UInt64 right) => left.Value.NativeValue == right;
 
-        public static Boolean operator >=(UBigInt left, UBigInt right) => left.CompareTo(right) >= 0;
-        public static Boolean operator >=(UBigInt left, BigInteger right) => left.CompareTo(right) >= 0;
-        public static Boolean operator >=(UBigInt left, Int64 right) => left.CompareTo(right) >= 0;
-        public static Boolean operator >=(UBigInt left, UInt64 right) => left.CompareTo(right) >= 0;
-        public static Boolean operator >=(UBigInt left, Int32 right) => left.CompareTo(right) >= 0;
-        public static Boolean operator >=(UBigInt left, UInt32 right) => left.CompareTo(right) >= 0;
-        public static Boolean operator >=(BigInteger left, UBigInt right) => right.CompareTo(left) <= 0;
-        public static Boolean operator >=(Int64 left, UBigInt right) => right.CompareTo(left) <= 0;
-        public static Boolean operator >=(UInt64 left, UBigInt right) => right.CompareTo(left) <= 0;
-        public static Boolean operator >=(Int32 left, UBigInt right) => right.CompareTo(left) <= 0;
-        public static Boolean operator >=(UInt32 left, UBigInt right) => right.CompareTo(left) <= 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(UBigInt left, Int64 right) => left.Value.NativeValue == right;
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(BigInteger left, UBigInt right) => left == right.Value.NativeValue;
 
-        #region oeprator <
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(UInt64 left, UBigInt right) => left == right.Value.NativeValue;
 
-        public static Boolean operator <(UBigInt left, UBigInt right) => left.CompareTo(right) < 0;
-        public static Boolean operator <(UBigInt left, BigInteger right) => left.CompareTo(right) < 0;
-        public static Boolean operator <(UBigInt left, Int64 right) => left.CompareTo(right) < 0;
-        public static Boolean operator <(UBigInt left, UInt64 right) => left.CompareTo(right) < 0;
-        public static Boolean operator <(UBigInt left, Int32 right) => left.CompareTo(right) < 0;
-        public static Boolean operator <(UBigInt left, UInt32 right) => left.CompareTo(right) < 0;
-        public static Boolean operator <(BigInteger left, UBigInt right) => right.CompareTo(left) > 0;
-        public static Boolean operator <(Int64 left, UBigInt right) => right.CompareTo(left) > 0;
-        public static Boolean operator <(UInt64 left, UBigInt right) => right.CompareTo(left) > 0;
-        public static Boolean operator <(Int32 left, UBigInt right) => right.CompareTo(left) > 0;
-        public static Boolean operator <(UInt32 left, UBigInt right) => right.CompareTo(left) > 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator ==(Int64 left, UBigInt right) => left == right.Value.NativeValue;
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(UBigInt left, UBigInt right) => left.Value.NativeValue != right.Value.NativeValue;
 
-        #region oeprator <=
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(UBigInt left, BigInteger right) => left.Value.NativeValue != right;
 
-        public static Boolean operator <=(UBigInt left, UBigInt right) => left.CompareTo(right) <= 0;
-        public static Boolean operator <=(UBigInt left, BigInteger right) => left.CompareTo(right) <= 0;
-        public static Boolean operator <=(UBigInt left, Int64 right) => left.CompareTo(right) <= 0;
-        public static Boolean operator <=(UBigInt left, UInt64 right) => left.CompareTo(right) <= 0;
-        public static Boolean operator <=(UBigInt left, Int32 right) => left.CompareTo(right) <= 0;
-        public static Boolean operator <=(UBigInt left, UInt32 right) => left.CompareTo(right) <= 0;
-        public static Boolean operator <=(BigInteger left, UBigInt right) => right.CompareTo(left) >= 0;
-        public static Boolean operator <=(Int64 left, UBigInt right) => right.CompareTo(left) >= 0;
-        public static Boolean operator <=(UInt64 left, UBigInt right) => right.CompareTo(left) >= 0;
-        public static Boolean operator <=(Int32 left, UBigInt right) => right.CompareTo(left) >= 0;
-        public static Boolean operator <=(UInt32 left, UBigInt right) => right.CompareTo(left) >= 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(UBigInt left, UInt64 right) => left.Value.NativeValue != right;
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(UBigInt left, Int64 right) => left.Value.NativeValue != right;
 
-        #region operator explicit
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(BigInteger left, UBigInt right) => left != right.Value.NativeValue;
 
-        public static explicit operator SByte(UBigInt value) => (SByte)value._value;
-        public static explicit operator Byte(UBigInt value) => (Byte)value._value;
-        public static explicit operator Int16(UBigInt value) => (Int16)value._value;
-        public static explicit operator UInt16(UBigInt value) => (UInt16)value._value;
-        public static explicit operator Int32(UBigInt value) => (Int32)value._value;
-        public static explicit operator UInt32(UBigInt value) => (UInt32)value._value;
-        public static explicit operator Int64(UBigInt value) => (Int64)value._value;
-        public static explicit operator UInt64(UBigInt value) => (UInt64)value._value;
-        public static explicit operator BigInteger(UBigInt value) => value._value;
-        public static explicit operator Single(UBigInt value) => (Single)value._value;
-        public static explicit operator Double(UBigInt value) => (Double)value._value;
-        public static explicit operator Decimal(UBigInt value) => (Decimal)value._value;
-        public static explicit operator UBigInt(Single value) => new(value);
-        public static explicit operator UBigInt(Double value) => new(value);
-        public static explicit operator UBigInt(Decimal value) => new(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(UInt64 left, UBigInt right) => left != right.Value.NativeValue;
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator !=(Int64 left, UBigInt right) => left != right.Value.NativeValue;
 
-        #region operator implicit
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(UBigInt left, UBigInt right) => left.Value.NativeValue > right.Value.NativeValue;
 
-        public static implicit operator UBigInt(Byte value) => new(value);
-        public static implicit operator UBigInt(UInt16 value) => new(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(UBigInt left, BigInteger right) => left.Value.NativeValue > right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(UBigInt left, UInt64 right) => left.Value.NativeValue > right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(UBigInt left, Int64 right) => left.Value.NativeValue > right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(BigInteger left, UBigInt right) => left > right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(UInt64 left, UBigInt right) => left > right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >(Int64 left, UBigInt right) => left > right.Value.NativeValue;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(UBigInt left, UBigInt right) => left.Value.NativeValue < right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(UBigInt left, BigInteger right) => left.Value.NativeValue < right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(UBigInt left, UInt64 right) => left.Value.NativeValue < right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(UBigInt left, Int64 right) => left.Value.NativeValue < right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(BigInteger left, UBigInt right) => left < right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(UInt64 left, UBigInt right) => left < right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <(Int64 left, UBigInt right) => left < right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(UBigInt left, UBigInt right) => left.Value.NativeValue >= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(UBigInt left, BigInteger right) => left.Value.NativeValue >= right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(UBigInt left, UInt64 right) => left.Value.NativeValue >= right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(UBigInt left, Int64 right) => left.Value.NativeValue >= right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(BigInteger left, UBigInt right) => left >= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(UInt64 left, UBigInt right) => left >= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator >=(Int64 left, UBigInt right) => left >= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(UBigInt left, UBigInt right) => left.Value.NativeValue <= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(UBigInt left, BigInteger right) => left.Value.NativeValue <= right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(UBigInt left, UInt64 right) => left.Value.NativeValue <= right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(UBigInt left, Int64 right) => left.Value.NativeValue <= right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(BigInteger left, UBigInt right) => left <= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(UInt64 left, UBigInt right) => left <= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean operator <=(Int64 left, UBigInt right) => left <= right.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Char(UBigInt value) => (Char)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator SByte(UBigInt value) => (SByte)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Byte(UBigInt value) => (Byte)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Int16(UBigInt value) => (Int16)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UInt16(UBigInt value) => (UInt16)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Int32(UBigInt value) => (Int32)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UInt32(UBigInt value) => (UInt32)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Int64(UBigInt value) => (Int64)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UInt64(UBigInt value) => (UInt64)value.Value.NativeValue;
+
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Int128(UBigInt value) => (Int128)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UInt128(UBigInt value) => (UInt128)value.Value.NativeValue;
+#endif // NET7_0_OR_GREATER
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Single(UBigInt value) => (Single)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Double(UBigInt value) => (Double)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Decimal(UBigInt value) => (Decimal)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UBigInt(Half value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UBigInt(Single value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UBigInt(Double value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator UBigInt(Decimal value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(Char value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(SByte value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(Byte value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(Int16 value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(UInt16 value) => new((BigInteger)value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(Int32 value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator UBigInt(UInt32 value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(Int64 value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator UBigInt(UInt64 value) => new(value);
+
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(Int128 value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(UInt128 value) => new(value);
+#endif // NET7_0_OR_GREATER
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UBigInt(BigInteger value) => new(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator BigInteger(UBigInt value) => value.Value.NativeValue;
+
+        #endregion
+
+        #region private methods
+
+        private static UnsignedIntegerCapsule<BigInteger>? CreateInstance(ReadOnlySpan<Byte> value, Boolean isUnsigned, Boolean isBigEndian)
+        {
+            if (isBigEndian)
+                return UnsignedIntegerCapsule<BigInteger>.TryReadBigEndian(value, isUnsigned, out var result) ? result : null;
+            else
+                return UnsignedIntegerCapsule<BigInteger>.TryReadLittleEndian(value, isUnsigned, out var result) ? result : null;
+        }
 
         #endregion
     }

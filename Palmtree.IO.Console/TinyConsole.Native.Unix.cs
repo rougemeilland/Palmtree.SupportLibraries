@@ -24,6 +24,7 @@ namespace Palmtree.IO.Console
 
             #region GetStandardFileNo
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static Int32 GetStandardFileNo(Int32 standardFileType)
             {
                 Validation.Assert(OperatingSystem.IsWindows() == false, "OperatingSystem.IsWindows() == false");
@@ -35,10 +36,12 @@ namespace Palmtree.IO.Console
                     throw new NotSupportedException("Running on this operating system is not supported.");
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport(_NATIVE_METHOD_DLL_NAME, EntryPoint = "PalmtreeNative_GetStandardFileNo", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
             private static partial Int32 GetStandardFileNo_linux(Int32 standardFileType);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport(_NATIVE_METHOD_DLL_NAME, EntryPoint = "PalmtreeNative_GetStandardFileNo", SetLastError = true)]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
             private static partial Int32 GetStandardFileNo_osx(Int32 standardFileType);
@@ -47,6 +50,7 @@ namespace Palmtree.IO.Console
 
             #region GetWindowSize
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static Int32 GetWindowSize(Int32 consoleFileNo, out WinSize windowSize, out Int32 errno)
             {
                 Validation.Assert(OperatingSystem.IsWindows() == false, "OperatingSystem.IsWindows() == false");
@@ -58,10 +62,12 @@ namespace Palmtree.IO.Console
                     throw new NotSupportedException("Running on this operating system is not supported.");
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport(_NATIVE_METHOD_DLL_NAME, EntryPoint = "PalmtreeNative_GetWindowSize")]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
             private static partial Int32 GetWindowSize_linux(Int32 consoleFileNo, out WinSize windowSize, out Int32 errno);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [LibraryImport(_NATIVE_METHOD_DLL_NAME, EntryPoint = "PalmtreeNative_GetWindowSize")]
             [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
             private static partial Int32 GetWindowSize_osx(Int32 consoleFileNo, out WinSize windowSize, out Int32 errno);

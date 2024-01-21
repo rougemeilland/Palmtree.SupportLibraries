@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
@@ -46,6 +47,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         #region Add
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ZipStreamPosition Add(UInt64 x)
         {
             Validation.Assert(Host is not null, "Host is not null");
@@ -56,12 +58,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         #region Subtract
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UInt64 Subtract(ZipStreamPosition x)
         {
             Validation.Assert(Host is not null, "Host is not null");
             return Host.Subtract(this, x);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ZipStreamPosition Subtract(UInt64 x)
         {
             Validation.Assert(Host is not null, "Host is not null");
@@ -70,12 +74,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         #endregion
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Int32 CompareTo(ZipStreamPosition other)
         {
             Validation.Assert(Host is not null, "Host is not null");
             return Host.Compare(this, other);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean Equals(ZipStreamPosition other)
         {
             Validation.Assert(Host is not null, "Host is not null");

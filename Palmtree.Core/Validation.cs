@@ -25,13 +25,11 @@ namespace Palmtree
         /// <exception cref="AssertionException">
         /// 検証条件が満たされませんでした。
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Assert([DoesNotReturnIf(false)] Boolean condition, String conditionText)
         {
             if (!condition)
-            {
-                Debug.Fail(conditionText);
-                throw new AssertionException($"Failed to assert.; condition=\"{conditionText}\"");
-            }
+                FailedToAssert(conditionText);
         }
 
         /// <summary>
@@ -67,6 +65,14 @@ namespace Palmtree
         {
             Debug.Fail(message);
             return new AssertionException(message, innerException);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        [DoesNotReturn]
+        private static void FailedToAssert(String conditionText)
+        {
+            Debug.Fail(conditionText);
+            throw new AssertionException($"Failed to assert.; condition=\"{conditionText}\"");
         }
     }
 }

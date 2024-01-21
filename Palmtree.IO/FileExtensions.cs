@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -18,29 +19,77 @@ namespace Palmtree.IO
             _simpleFileNamePattern = new Regex(@"^(?<path>.*?)(\s*\([0-9]+\))+$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FileInfo GetFile(this DirectoryInfo directory, String fileName)
         {
             if (directory is null)
                 throw new ArgumentNullException(nameof(directory));
             if (String.IsNullOrEmpty(fileName))
-                throw new ArgumentException($"'{nameof(fileName)}' を NULL または空にすることはできません。", nameof(fileName));
+                throw new ArgumentException($"'{nameof(fileName)}' must not be null or empty.", nameof(fileName));
 
             return new FileInfo(Path.Combine(directory.FullName, fileName));
 
         }
 
-        public static DirectoryInfo GetSubDirectory(this DirectoryInfo directory, String directoryName)
+        #region GetSubDirectory
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DirectoryInfo GetSubDirectory(this DirectoryInfo directory, String subDirectoryName)
         {
             if (directory is null)
                 throw new ArgumentNullException(nameof(directory));
-            if (String.IsNullOrEmpty(directoryName))
-                throw new ArgumentException($"'{nameof(directoryName)}' を NULL または空にすることはできません。", nameof(directoryName));
+            if (String.IsNullOrEmpty(subDirectoryName))
+                throw new ArgumentException($"'{nameof(subDirectoryName)}' must not be null or empty.", nameof(subDirectoryName));
 
-            return new DirectoryInfo(Path.Combine(directory.FullName, directoryName));
+            return new DirectoryInfo(Path.Combine(directory.FullName, subDirectoryName));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DirectoryInfo GetSubDirectory(this DirectoryInfo directory, String subDirectoryName1, String subDirectoryName2)
+        {
+            if (String.IsNullOrEmpty(subDirectoryName1))
+                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null or empty.", nameof(subDirectoryName1));
+            if (String.IsNullOrEmpty(subDirectoryName2))
+                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null or empty.", nameof(subDirectoryName2));
+
+            return new DirectoryInfo(Path.Combine(directory.FullName, subDirectoryName1, subDirectoryName2));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DirectoryInfo GetSubDirectory(this DirectoryInfo directory, String subDirectoryName1, String subDirectoryName2, String subDirectoryName3)
+        {
+            if (String.IsNullOrEmpty(subDirectoryName1))
+                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null or empty.", nameof(subDirectoryName1));
+            if (String.IsNullOrEmpty(subDirectoryName2))
+                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null or empty.", nameof(subDirectoryName2));
+            if (String.IsNullOrEmpty(subDirectoryName3))
+                throw new ArgumentException($"'{nameof(subDirectoryName3)}' must not be null or empty.", nameof(subDirectoryName3));
+
+            return new DirectoryInfo(Path.Combine(directory.FullName, subDirectoryName1, subDirectoryName2, subDirectoryName3));
+        }
+
+        public static DirectoryInfo GetSubDirectory(this DirectoryInfo directory, params String[] subDirectoryNames)
+        {
+            if (subDirectoryNames is null)
+                throw new ArgumentNullException(nameof(subDirectoryNames));
+
+            var pathElements = new String[subDirectoryNames.Length + 1];
+            pathElements[0] = directory.FullName;
+            for (var index = 0; index < subDirectoryNames.Length; ++index)
+            {
+                if (String.IsNullOrEmpty(subDirectoryNames[index]))
+                    throw new ArgumentException($"'{nameof(subDirectoryNames)}[{index}]' must not be null or empty.", nameof(subDirectoryNames));
+                pathElements[index + 1] = subDirectoryNames[index];
+            }
+
+            return new DirectoryInfo(Path.Combine(pathElements));
+        }
+
+        #endregion
 
         #region ReadAllBytes
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte[] ReadAllBytes(this FileInfo file)
         {
             if (file is null)
@@ -49,6 +98,7 @@ namespace Palmtree.IO
             return File.ReadAllBytes(file.FullName);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte[] ReadAllBytes(this FilePath file)
         {
             if (file is null)
@@ -61,6 +111,7 @@ namespace Palmtree.IO
 
         #region ReadAllLines
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String[] ReadAllLines(this FileInfo file)
         {
             if (file is null)
@@ -69,6 +120,7 @@ namespace Palmtree.IO
             return File.ReadAllLines(file.FullName);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String[] ReadAllLines(this FilePath file)
         {
             if (file is null)
@@ -81,6 +133,7 @@ namespace Palmtree.IO
 
         #region ReadLines
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<String> ReadLines(this FileInfo file)
         {
             if (file is null)
@@ -89,6 +142,7 @@ namespace Palmtree.IO
             return File.ReadLines(file.FullName);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<String> ReadLines(this FilePath file)
         {
             if (file is null)
@@ -101,6 +155,7 @@ namespace Palmtree.IO
 
         #region WriteAllBytes
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FileInfo file, IEnumerable<Byte> data)
         {
             if (file is null)
@@ -112,6 +167,7 @@ namespace Palmtree.IO
             stream.WriteByteSequence(data);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FilePath file, IEnumerable<Byte> data)
         {
             if (file is null)
@@ -123,6 +179,7 @@ namespace Palmtree.IO
             stream.WriteByteSequence(data);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FileInfo file, Byte[] data)
         {
             if (file is null)
@@ -133,6 +190,7 @@ namespace Palmtree.IO
             File.WriteAllBytes(file.FullName, data);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FilePath file, Byte[] data)
         {
             if (file is null)
@@ -143,6 +201,7 @@ namespace Palmtree.IO
             File.WriteAllBytes(file.FullName, data);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FileInfo file, ReadOnlyMemory<Byte> data)
         {
             if (file is null)
@@ -152,6 +211,7 @@ namespace Palmtree.IO
             stream.WriteBytes(data.Span);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FilePath file, ReadOnlyMemory<Byte> data)
         {
             if (file is null)
@@ -161,6 +221,7 @@ namespace Palmtree.IO
             stream.WriteBytes(data.Span);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FileInfo file, ReadOnlySpan<Byte> data)
         {
             if (file is null)
@@ -170,6 +231,7 @@ namespace Palmtree.IO
             stream.WriteBytes(data);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllBytes(this FilePath file, ReadOnlySpan<Byte> data)
         {
             if (file is null)
@@ -183,50 +245,55 @@ namespace Palmtree.IO
 
         #region WriteAllText
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FileInfo file, String text)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
-            if (String.IsNullOrEmpty(text))
-                throw new ArgumentException($"'{nameof(text)}' を NULL または空にすることはできません。", nameof(text));
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
 
             File.WriteAllText(file.FullName, text);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FilePath file, String text)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
-            if (String.IsNullOrEmpty(text))
-                throw new ArgumentException($"'{nameof(text)}' を NULL または空にすることはできません。", nameof(text));
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
 
             File.WriteAllText(file.FullName, text);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FileInfo file, String text, Encoding encoding)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
-            if (String.IsNullOrEmpty(text))
-                throw new ArgumentException($"'{nameof(text)}' を NULL または空にすることはできません。", nameof(text));
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
             if (encoding is null)
                 throw new ArgumentNullException(nameof(encoding));
 
             File.WriteAllText(file.FullName, text, encoding);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FilePath file, String text, Encoding encoding)
         {
             if (file is null)
                 throw new ArgumentNullException(nameof(file));
-            if (String.IsNullOrEmpty(text))
-                throw new ArgumentException($"'{nameof(text)}' を NULL または空にすることはできません。", nameof(text));
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
             if (encoding is null)
                 throw new ArgumentNullException(nameof(encoding));
 
             File.WriteAllText(file.FullName, text, encoding);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FileInfo file, String[] lines)
         {
             if (file is null)
@@ -237,6 +304,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FilePath file, String[] lines)
         {
             if (file is null)
@@ -247,6 +315,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FileInfo file, IEnumerable<String> lines)
         {
             if (file is null)
@@ -257,6 +326,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FilePath file, IEnumerable<String> lines)
         {
             if (file is null)
@@ -267,6 +337,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FileInfo file, String[] lines, Encoding encoding)
         {
             if (file is null)
@@ -279,6 +350,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines, encoding);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FilePath file, String[] lines, Encoding encoding)
         {
             if (file is null)
@@ -291,6 +363,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines, encoding);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FileInfo file, IEnumerable<String> lines, Encoding encoding)
         {
             if (file is null)
@@ -303,6 +376,7 @@ namespace Palmtree.IO
             File.WriteAllLines(file.FullName, lines, encoding);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteAllText(this FilePath file, IEnumerable<String> lines, Encoding encoding)
         {
             if (file is null)
@@ -327,7 +401,7 @@ namespace Palmtree.IO
             if (sourceFile is null)
                 throw new ArgumentNullException(nameof(sourceFile));
             if (String.IsNullOrEmpty(newFileName))
-                throw new ArgumentException($"'{nameof(newFileName)}' を NULL または空にすることはできません。", nameof(newFileName));
+                throw new ArgumentException($"'{nameof(newFileName)}' must not be null or empty.", nameof(newFileName));
 
             var sourceFileDirectory = sourceFile.Directory ?? throw new ArgumentException($"{nameof(sourceFile)} is the relative path.", nameof(sourceFile));
             var sourceFileNameWithoutExtension = Path.GetFileNameWithoutExtension(newFileName);
@@ -370,6 +444,33 @@ namespace Palmtree.IO
 
         #region SafetyDelete
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SafetyDelete(this DirectoryInfo directory, Boolean recursive = false)
+        {
+            try
+            {
+                if (Directory.Exists(directory.FullName))
+                    Directory.Delete(directory.FullName, recursive);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SafetyDelete(this DirectoryPath directory, Boolean recursive = false)
+        {
+            try
+            {
+                if (directory.Exists)
+                    directory.Delete(recursive);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SafetyDelete(this FileInfo file)
         {
             try
@@ -382,6 +483,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SafetyDelete(this FilePath file)
         {
             try
@@ -396,6 +498,7 @@ namespace Palmtree.IO
 
         #endregion
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (UInt32 Crc, UInt64 Length) CalculateCrc24(this FileInfo sourceFile, IProgress<UInt64>? progress = null)
         {
             if (sourceFile is null)
@@ -404,6 +507,7 @@ namespace Palmtree.IO
             return sourceFile.OpenRead().CalculateCrc24(progress);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (UInt32 Crc, UInt64 Length) CalculateCrc32(this FileInfo sourceFile, IProgress<UInt64>? progress = null)
         {
             if (sourceFile is null)
@@ -432,6 +536,7 @@ namespace Palmtree.IO
                 });
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FilePath? TryParseAsFilePath(String path)
         {
             try
@@ -445,6 +550,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DirectoryPath? TryParseAsDirectoryPath(String path)
         {
             try

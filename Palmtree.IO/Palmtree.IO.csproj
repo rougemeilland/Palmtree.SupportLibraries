@@ -7,12 +7,12 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>$(AssemblyName)</Title>
-    <VersionPrefix>1.4.7</VersionPrefix>
+    <VersionPrefix>1.5.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Authors>Palmtree Software</Authors>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Description>This is a supplementary library that collects commonly used code in .NET. This package contains input/output related functionality. (e.g. stream interfaces limited to input or output only, stream interfaces limited to sequential access only, stream filters such as buffering and partial streams, thread-safe in-process pipes, etc.)</Description>
-    <Copyright>© 2023 Palmtree Software</Copyright>
+    <Copyright>© 2023-2024 Palmtree Software</Copyright>
     <PackageProjectUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</RepositoryUrl>

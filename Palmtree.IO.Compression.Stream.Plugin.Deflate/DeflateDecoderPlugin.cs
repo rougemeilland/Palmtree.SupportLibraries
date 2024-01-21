@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
@@ -19,6 +20,7 @@ namespace Palmtree.IO.Compression.Stream.Plugin
             {
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static ISequentialInputByteStream Create(
                 ISequentialInputByteStream baseStream,
                 UInt64 unpackedStreamSize,

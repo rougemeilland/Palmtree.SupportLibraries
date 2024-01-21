@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
@@ -515,6 +516,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void FlushLatestEntry()
         {
             // 前回のまだ書き込まれていないかもしれないコンテンツの書き込み
@@ -526,6 +528,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void LockZipStream()
         {
             lock (this)
@@ -536,6 +539,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void UnlockZipStream()
         {
             lock (this)

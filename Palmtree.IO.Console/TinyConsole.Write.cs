@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
@@ -15,6 +16,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Object? value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -32,6 +34,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Boolean value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -49,6 +52,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Char value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -66,6 +70,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Int32 value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -83,6 +88,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(UInt32 value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -100,6 +106,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Int64 value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -117,6 +124,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(UInt64 value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -134,6 +142,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Single value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -151,6 +160,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Double value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -168,6 +178,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Decimal value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -185,6 +196,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(String? value)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -202,6 +214,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Char[]? buffer)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -221,6 +234,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(Char[] buffer, Int32 index, Int32 count)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -239,6 +253,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(String format, Object? arg0)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -258,6 +273,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(String format, Object? arg0, Object? arg1)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -278,6 +294,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(String format, Object? arg0, Object? arg1, Object? arg2)
         {
             SetCharacterSet(CharacterSet.Primary);
@@ -296,6 +313,7 @@ namespace Palmtree.IO.Console
         /// <item>標準出力がリダイレクトされている場合は、標準エラー出力ストリーム</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write(String format, params Object?[] arg)
         {
             SetCharacterSet(CharacterSet.Primary);

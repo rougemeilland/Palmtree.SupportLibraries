@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Palmtree.IO.Console
@@ -47,8 +48,10 @@ namespace Palmtree.IO.Console
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IntPtr GetDllHandle(String dllName) => _loadedDllHandles.TryGetValue(dllName, out var handle) ? handle : IntPtr.Zero;
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static IEnumerable<String> EnumerateNativeMethodDllNames(Assembly assembly)
             {
                 if (OperatingSystem.IsWindows())

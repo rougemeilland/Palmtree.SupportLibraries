@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
@@ -234,6 +235,7 @@ namespace Palmtree.IO.Console
         /// <param name="value">
         /// 変換する <see cref="TrueColor"/> 値です。
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator Int32(TrueColor value)
             => (value._redComponent << 16) | (value._greenComponent << 8) | (value._blueComponent << 0);
     }

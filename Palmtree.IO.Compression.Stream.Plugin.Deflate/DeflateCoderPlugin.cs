@@ -3,7 +3,7 @@
     public class DeflateCoderPlugin
         : ICompressionCoderPlugin
     {
-        internal DeflateCoderPlugin()
+        private DeflateCoderPlugin()
         {
         }
 

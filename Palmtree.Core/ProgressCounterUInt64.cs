@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree
 {
@@ -83,6 +84,7 @@ namespace Palmtree
         /// <summary>
         /// Increment the progress value.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Increment() => UpdateValue(value => checked(value + 1));
     }
 }

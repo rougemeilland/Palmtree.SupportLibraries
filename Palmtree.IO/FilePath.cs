@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Palmtree.IO
@@ -9,11 +10,13 @@ namespace Palmtree.IO
     {
         private readonly FileInfo _file;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FilePath(String path)
             : this(GetFineInfo(path))
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private FilePath(FileInfo file)
             : base(file)
         {
@@ -26,6 +29,7 @@ namespace Palmtree.IO
 
         public DirectoryPath Directory
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 _file.Refresh();
@@ -272,6 +276,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator FileInfo(FilePath path)
         {
             if (path is null)
@@ -280,6 +285,7 @@ namespace Palmtree.IO
             return new(path._file.FullName);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator FilePath(FileInfo directory)
         {
             if (directory is null)
@@ -291,12 +297,14 @@ namespace Palmtree.IO
         /// <remarks>
         /// The same instance as the object indicated by parameter <paramref name="file"/> must not be used elsewhere.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static FilePath CreateInstance(FileInfo file) => new(file);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FileInfo GetFineInfo(String path)
         {
-            if (path is null)
-                throw new ArgumentNullException(nameof(path));
+            if (String.IsNullOrEmpty(path))
+                throw new ArgumentException($"'{nameof(path)}' must not be null or empty.", nameof(path));
 
             try
             {

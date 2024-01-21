@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Palmtree.IO.Compression.Stream;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
     static class EnumExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean HasEncryptionFlag(this ZipEntryGeneralPurposeBitFlag flag)
             => (flag &
                     (ZipEntryGeneralPurposeBitFlag.Encrypted |
@@ -12,6 +14,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                      ZipEntryGeneralPurposeBitFlag.StrongEncrypted))
                 != ZipEntryGeneralPurposeBitFlag.None;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ZipCompressionDecoderParameter GetDecoderParameter(this ZipEntryGeneralPurposeBitFlag flag)
         {
             var result = ZipCompressionDecoderParameter.None;
@@ -22,6 +25,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ICoderOption GetEncoderOption(this ZipEntryCompressionMethodId compressionMethodId, ZipEntryCompressionLevel compressionLevel)
             => compressionMethodId switch
             {
@@ -33,6 +37,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 _ => throw new CompressionMethodNotSupportedException(compressionMethodId),
             };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ZipEntryGeneralPurposeBitFlag GettEncoderOptionFlags(this ZipEntryCompressionMethodId CompressionMethodId, ZipEntryCompressionLevel CompressionLevel)
         {
             switch (CompressionMethodId)

@@ -414,6 +414,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void PrepareToEnumerate()
         {
             lock (this)
@@ -424,6 +425,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void FinishToEnumerate()
         {
             lock (this)
@@ -432,6 +434,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ZipEntryLocalHeader ParseLocalHeader(ZipEntryCentralDirectoryHeader centralDirectoryHeader)
         {
             LockZipStream();
@@ -445,6 +448,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private async Task<ZipEntryLocalHeader> ParseLocalHeaderAsync(ZipEntryCentralDirectoryHeader centralDirectoryHeader, CancellationToken cancellationToken)
         {
             await LockZipStreamAsync(cancellationToken).ConfigureAwait(false);
@@ -458,6 +462,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ReportDoubleProgress(IProgress<Double>? progress, Func<Double> valueGetter)
         {
             if (progress is not null)
@@ -661,6 +666,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ValidateCentralDirectory(UInt64 numberOfCentralDirectoriesOnLastDisk)
         {
             if (_stringency.HasFlag(ValidationStringency.StrictlyCheckNumberOfCentralDirectoryHeadersOnLastDisk))
@@ -672,8 +678,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void MarkAsKnownPayload(ZipStreamPosition position, UInt64 size) => MarkAsKnownPayload(_unknownPayloads, position, size);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MarkAsKnownPayload(FragmentSet<ZipStreamPosition, UInt64> unknownPayloads, ZipStreamPosition position, UInt64 size)
         {
             if (!unknownPayloads.IsEmpty)
@@ -689,8 +697,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void LockZipStream() => _zipStreamLockObject.Wait();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Task LockZipStreamAsync(CancellationToken cancellationToken) => _zipStreamLockObject.WaitAsync(cancellationToken);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void UnlockZipStream() => _ = _zipStreamLockObject.Release();
     }
 }

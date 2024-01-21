@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -517,6 +518,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         internal ZipStreamPosition LocalHeaderPosition { get; }
         internal ZipStreamPosition DataPosition { get; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ICoderOption GetDecoderOption() => CompressionMethodId switch
         {
             ZipEntryCompressionMethodId.Stored => ZipStoredCompressionCoderOption.CreateDecoderOption(),

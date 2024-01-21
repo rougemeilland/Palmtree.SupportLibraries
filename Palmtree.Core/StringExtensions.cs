@@ -60,6 +60,7 @@ namespace Palmtree
             return (ReadOnlyMemory<Char>)sourceString[offset..].ToCharArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<Char> Slice(this String sourceString, UInt32 offset)
             => sourceString.Slice(checked((Int32)offset));
 
@@ -68,10 +69,8 @@ namespace Palmtree
             if (sourceString is null)
                 throw new ArgumentNullException(nameof(sourceString));
             var sourceArray = sourceString.ToCharArray();
-            var (isOk, offset, count) = sourceArray.GetOffsetAndLength(range);
-            if (!isOk)
-                throw new ArgumentOutOfRangeException(nameof(range));
 
+            var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
             return sourceString.Substring(offset, count).ToCharArray();
         }
 
@@ -257,38 +256,31 @@ namespace Palmtree
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsNoneOf(this String s, String s1, String s2, StringComparison stringComparison = StringComparison.Ordinal)
-            => !String.Equals(s, s1, stringComparison)
-                && !String.Equals(s, s2, stringComparison);
+            => !s.IsAnyOf(s1, s2, stringComparison);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsNoneOf(this String s, String s1, String s2, String s3, StringComparison stringComparison = StringComparison.Ordinal)
-            => !String.Equals(s, s1, stringComparison)
-                && !String.Equals(s, s2, stringComparison)
-                && !String.Equals(s, s3, stringComparison);
+            => !s.IsAnyOf(s1, s2, s3, stringComparison);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsNoneOf(this String s, String s1, String s2, String s3, String s4, StringComparison stringComparison = StringComparison.Ordinal)
-            => !String.Equals(s, s1, stringComparison)
-                && !String.Equals(s, s2, stringComparison)
-                && !String.Equals(s, s3, stringComparison)
-                && !String.Equals(s, s4, stringComparison);
+            => !s.IsAnyOf(s1, s2, s3, s4, stringComparison);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsNoneOf(this String s, String s1, String s2, String s3, String s4, String s5, StringComparison stringComparison = StringComparison.Ordinal)
-            => !String.Equals(s, s1, stringComparison)
-                && !String.Equals(s, s2, stringComparison)
-                && !String.Equals(s, s3, stringComparison)
-                && !String.Equals(s, s4, stringComparison)
-                && !String.Equals(s, s5, stringComparison);
+            => !s.IsAnyOf(s1, s2, s3, s4, s5, stringComparison);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsNoneOf(this String s, String s1, String s2, String s3, String s4, String s5, String s6, StringComparison stringComparison = StringComparison.Ordinal)
-            => !String.Equals(s, s1, stringComparison)
-                && !String.Equals(s, s2, stringComparison)
-                && !String.Equals(s, s3, stringComparison)
-                && !String.Equals(s, s4, stringComparison)
-                && !String.Equals(s, s5, stringComparison)
-                && !String.Equals(s, s6, stringComparison);
+            => !s.IsAnyOf(s1, s2, s3, s4, s5, s6, stringComparison);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsNoneOf(this String s, String s1, String s2, String s3, String s4, String s5, String s6, String s7, StringComparison stringComparison = StringComparison.Ordinal)
+            => !s.IsAnyOf(s1, s2, s3, s4, s5, s6, s7, stringComparison);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsNoneOf(this String s, String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8, StringComparison stringComparison = StringComparison.Ordinal)
+            => !s.IsAnyOf(s1, s2, s3, s4, s5, s6, s7, s8, stringComparison);
 
         #endregion
 
@@ -329,8 +321,30 @@ namespace Palmtree
                 || String.Equals(s, s5, stringComparison)
                 || String.Equals(s, s6, stringComparison);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsAnyOf(this String s, String s1, String s2, String s3, String s4, String s5, String s6, String s7, StringComparison stringComparison = StringComparison.Ordinal)
+            => String.Equals(s, s1, stringComparison)
+                || String.Equals(s, s2, stringComparison)
+                || String.Equals(s, s3, stringComparison)
+                || String.Equals(s, s4, stringComparison)
+                || String.Equals(s, s5, stringComparison)
+                || String.Equals(s, s6, stringComparison)
+                || String.Equals(s, s7, stringComparison);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Boolean IsAnyOf(this String s, String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8, StringComparison stringComparison = StringComparison.Ordinal)
+            => String.Equals(s, s1, stringComparison)
+                || String.Equals(s, s2, stringComparison)
+                || String.Equals(s, s3, stringComparison)
+                || String.Equals(s, s4, stringComparison)
+                || String.Equals(s, s5, stringComparison)
+                || String.Equals(s, s6, stringComparison)
+                || String.Equals(s, s7, stringComparison)
+                || String.Equals(s, s8, stringComparison);
+
         #endregion
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String GetString(this Encoding encoding, ReadOnlyMemory<Byte> bytes)
         {
             if (encoding is null)
@@ -339,6 +353,7 @@ namespace Palmtree
             return encoding.GetString(bytes.Span);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<Byte> GetReadOnlyBytes(this Encoding encoding, String s)
         {
             if (encoding is null)

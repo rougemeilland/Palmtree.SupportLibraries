@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO
 {
@@ -47,6 +48,7 @@ namespace Palmtree.IO
 
         public String Extension
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 _path.Refresh();
@@ -56,6 +58,7 @@ namespace Palmtree.IO
 
         public String FullName
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 _path.Refresh();
@@ -113,6 +116,7 @@ namespace Palmtree.IO
 
         public String Name
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 _path.Refresh();
@@ -134,6 +138,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override String ToString()
         {
             _path.Refresh();

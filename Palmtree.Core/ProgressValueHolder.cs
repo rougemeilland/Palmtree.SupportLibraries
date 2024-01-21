@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree
 {
@@ -131,6 +131,7 @@ namespace Palmtree
         /// </remarks>
         public VALUE_T Value
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 lock (this)
@@ -139,6 +140,7 @@ namespace Palmtree
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set => UpdateValue(_ => value);
         }
 
@@ -151,16 +153,19 @@ namespace Palmtree
         /// <remarks>
         /// This method behaves the same as setting the <see cref="Value"/> property.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(VALUE_T value) => UpdateValue(_ => value);
 
         /// <summary>
         /// Forces a progress report only if no progress report has been made yet.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReportIfInitial()
         {
             if (CheckIfNeedToReport(Environment.TickCount))
                 InternalReport();
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             Boolean CheckIfNeedToReport(Int32 now)
             {
                 lock (this)
@@ -177,6 +182,7 @@ namespace Palmtree
         /// <summary>
         /// Force progress reports.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Report()
         {
             InternalReport();
@@ -205,6 +211,7 @@ namespace Palmtree
             if (CheckIfNeedToReport(Environment.TickCount, valueUpdater))
                 InternalReport();
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             Boolean CheckIfNeedToReport(Int32 now, Func<VALUE_T, VALUE_T> valueUpdater)
             {
                 lock (this)
@@ -218,6 +225,7 @@ namespace Palmtree
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void InternalReport()
         {
             if (_action is not null)

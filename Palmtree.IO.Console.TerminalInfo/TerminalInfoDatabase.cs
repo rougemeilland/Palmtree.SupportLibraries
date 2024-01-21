@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Palmtree;
@@ -311,11 +312,20 @@ namespace Palmtree.IO.Console
 
         public String TermInfoFilePath { get; }
         public IEnumerable<String> TerminalNames { get; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean? GetBooleanCapabilityValue(TermInfoBooleanCapabilities name) => _booleanCapabilities.TryGetValue(name, out var value) ? value : null;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean? GetBooleanCapabilityValue(String name) => _extendedBooleanCapabilities.TryGetValue(name, out var value) ? value : null;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Int32? GetNumberCapabilityValue(TermInfoNumberCapabilities name) => _numberCapabilities.TryGetValue(name, out var value) ? value : null;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Int32? GetNumberCapabilityValue(String name) => _extendedNumberCapabilities.TryGetValue(name, out var value) ? value : null;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public String? GetStringCapabilityValue(TermInfoStringCapabilities name, params Object[] args)
             => !_stringCapabilities.TryGetValue(name, out var value)
                 ? null
@@ -323,6 +333,7 @@ namespace Palmtree.IO.Console
                 ? value
                 : Expansion.ExpandArguments(value, args);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public String? GetStringCapabilityValue(String name, params Object[] args)
             => !_extendedStringCapabilities.TryGetValue(name, out var value)
                 ? null

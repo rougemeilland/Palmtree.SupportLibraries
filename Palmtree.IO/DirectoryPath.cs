@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO
 {
@@ -9,11 +10,13 @@ namespace Palmtree.IO
     {
         private readonly DirectoryInfo _directory;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath(String path)
             : this(GetDirectoryInfo(path))
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DirectoryPath(DirectoryInfo directory)
             : base(directory)
         {
@@ -22,6 +25,7 @@ namespace Palmtree.IO
 
         public DirectoryPath? Parent
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 _directory.Refresh();
@@ -35,6 +39,7 @@ namespace Palmtree.IO
 
         public DirectoryPath Root
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 _directory.Refresh();
@@ -50,22 +55,6 @@ namespace Palmtree.IO
                 if (!_directory.Exists)
                     _directory.Create();
                 return this;
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
-        }
-
-        public DirectoryPath CreateSubdirectory(String subDirectoryName)
-        {
-            if (subDirectoryName is null)
-                throw new ArgumentNullException(nameof(subDirectoryName));
-
-            _directory.Refresh();
-            try
-            {
-                return new DirectoryPath(_directory.CreateSubdirectory(subDirectoryName));
             }
             finally
             {
@@ -122,6 +111,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FilePath GetFile(String fileName)
         {
             if (fileName is null)
@@ -138,6 +128,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath GetSubDirectory(String subDirectoryName)
         {
             if (subDirectoryName is null)
@@ -154,12 +145,13 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath GetSubDirectory(String subDirectoryName1, String subDirectoryName2)
         {
             if (String.IsNullOrEmpty(subDirectoryName1))
-                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null.", nameof(subDirectoryName1));
+                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null or empty.", nameof(subDirectoryName1));
             if (String.IsNullOrEmpty(subDirectoryName2))
-                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null.", nameof(subDirectoryName2));
+                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null or empty.", nameof(subDirectoryName2));
 
             _directory.Refresh();
             try
@@ -172,14 +164,15 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath GetSubDirectory(String subDirectoryName1, String subDirectoryName2, String subDirectoryName3)
         {
             if (String.IsNullOrEmpty(subDirectoryName1))
-                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null.", nameof(subDirectoryName1));
+                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null or empty.", nameof(subDirectoryName1));
             if (String.IsNullOrEmpty(subDirectoryName2))
-                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null.", nameof(subDirectoryName2));
+                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null or empty.", nameof(subDirectoryName2));
             if (String.IsNullOrEmpty(subDirectoryName3))
-                throw new ArgumentException($"'{nameof(subDirectoryName3)}' must not be null.", nameof(subDirectoryName3));
+                throw new ArgumentException($"'{nameof(subDirectoryName3)}' must not be null or empty.", nameof(subDirectoryName3));
 
             _directory.Refresh();
             try
@@ -202,7 +195,7 @@ namespace Palmtree.IO
             for (var index = 0; index < subDirectoryNames.Length; ++index)
             {
                 if (String.IsNullOrEmpty(subDirectoryNames[index]))
-                    throw new ArgumentException($"'{nameof(subDirectoryNames)}[{index}]' must not be null.", nameof(subDirectoryNames));
+                    throw new ArgumentException($"'{nameof(subDirectoryNames)}[{index}]' must not be null or empty.", nameof(subDirectoryNames));
                 pathElements[index + 1] = subDirectoryNames[index];
             }
 
@@ -235,6 +228,7 @@ namespace Palmtree.IO
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator DirectoryInfo(DirectoryPath path)
         {
             if (path is null)
@@ -243,6 +237,7 @@ namespace Palmtree.IO
             return new(path._directory.FullName);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator DirectoryPath(DirectoryInfo directory)
         {
             if (directory is null)
@@ -254,12 +249,15 @@ namespace Palmtree.IO
         /// <remarks>
         /// The same instance as the object indicated by parameter <paramref name="directory"/> must not be used elsewhere.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static DirectoryPath CreateInstance(DirectoryInfo directory) => new(directory);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DirectoryInfo GetDirectoryInfo(String path)
         {
-            if (path is null)
-                throw new ArgumentNullException(nameof(path));
+            if (String.IsNullOrEmpty(path))
+                throw new ArgumentException($"'{nameof(path)}' must not be null or empty.", nameof(path));
+
             try
             {
                 if (path.EndsWith(Path.AltDirectorySeparatorChar) || path.EndsWith(Path.DirectorySeparatorChar))

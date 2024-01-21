@@ -292,7 +292,11 @@ namespace Palmtree.IO.Console
         /// <summary>
         /// コンソールウィンドウの行数を取得します。
         /// </summary>
-        public static Int32 WindowHeight => GetWindowSizeCore().windowHeight;
+        public static Int32 WindowHeight
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => GetWindowSizeCore().windowHeight;
+        }
 
         #endregion
 
@@ -419,6 +423,7 @@ namespace Palmtree.IO.Console
         /// <exception cref="ArgumentException">
         /// <paramref name="eraseMode"/>の値がサポートされていません。
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Erase(ConsoleEraseMode eraseMode)
         {
             if (ImplementWithWin32Api)
@@ -544,6 +549,7 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static ConsoleCursorVisiblity CursorVisible
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 if (value.IsNoneOf(ConsoleCursorVisiblity.Invisible, ConsoleCursorVisiblity.NormalMode, ConsoleCursorVisiblity.HighVisibilityMode))
@@ -603,6 +609,7 @@ namespace Palmtree.IO.Console
         /// <item>カーソルの行の移動をターミナルがサポートしていません。</item>
         /// </list>
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CursorUp(Int32 n)
             => MoveCursorVertically(-n, () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, the cursor position cannot be changed."));
 
@@ -625,6 +632,7 @@ namespace Palmtree.IO.Console
         /// <item>カーソルの行の移動をターミナルがサポートしていません。</item>
         /// </list>
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CursorDown(Int32 n)
             => MoveCursorVertically(n, () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, the cursor position cannot be changed."));
 
@@ -647,6 +655,7 @@ namespace Palmtree.IO.Console
         /// <item>カーソルの桁の移動をターミナルがサポートしていません。</item>
         /// </list>
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CursorBack(Int32 n)
             => MoveCursorHorizontally(-n, () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, the cursor position cannot be changed."));
 
@@ -669,6 +678,7 @@ namespace Palmtree.IO.Console
         /// <item>カーソルの桁の移動をターミナルがサポートしていません。</item>
         /// </list>
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CursorForward(Int32 n)
             => MoveCursorHorizontally(n, () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, the cursor position cannot be changed."));
 
@@ -774,6 +784,7 @@ namespace Palmtree.IO.Console
             _currentForegrouongColor = value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static (Int32 windowWidth, Int32 windowHeight) GetWindowSizeCore()
         {
             if (OperatingSystem.IsWindows())
@@ -797,6 +808,7 @@ namespace Palmtree.IO.Console
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MoveCursorVertically(Int32 n, Action errorHandler)
         {
             if (ImplementWithWin32Api)
@@ -835,6 +847,7 @@ namespace Palmtree.IO.Console
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MoveCursorHorizontally(Int32 n, Action errorHandler)
         {
             if (ImplementWithWin32Api)
@@ -873,6 +886,7 @@ namespace Palmtree.IO.Console
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteAnsiEscapeCodeToConsole(String ansiEscapeCode, Action errorHandler)
         {
             if (_escapeCodeWriter is not null)
@@ -888,6 +902,7 @@ namespace Palmtree.IO.Console
             get => !_useAnsiEscapeCodeEvenOnWindows && OperatingSystem.IsWindows();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ClearScreenCore(Int32 startX, Int32 startY, Int32 length, UInt16 attribute)
         {
             var startPosition =
@@ -903,6 +918,7 @@ namespace Palmtree.IO.Console
                 throw new InvalidOperationException("Failed to clear console buffer attributes.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetCharacterSet(CharacterSet charSet)
         {
             switch (charSet)

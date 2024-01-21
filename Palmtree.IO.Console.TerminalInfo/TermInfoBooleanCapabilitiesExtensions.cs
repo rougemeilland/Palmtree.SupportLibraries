@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
     internal static class TermInfoBooleanCapabilitiesExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String ToJsonPropertyName(this TermInfoBooleanCapabilities valueName)
             => valueName switch
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
@@ -28,6 +29,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// このインスタンスと <paramref name="other"/> は同じ値である場合は true です。
         /// そうではない場合は false です。
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean Equals(ZipEntryId other) => _diskNumber == other._diskNumber && _offsetOnTheDisk == other._offsetOnTheDisk;
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </item>
         /// </list>
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Int32 CompareTo(ZipEntryId other)
         {
             var c = _diskNumber.CompareTo(other._diskNumber);

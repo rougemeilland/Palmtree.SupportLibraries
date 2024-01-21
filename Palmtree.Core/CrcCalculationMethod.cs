@@ -178,6 +178,7 @@ namespace Palmtree
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array)
         {
             if (array is null)
@@ -186,6 +187,7 @@ namespace Palmtree
             return Calculate(array, 0, array.Length);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array, Int32 offset)
         {
             if (array is null)
@@ -196,6 +198,7 @@ namespace Palmtree
             return Calculate(array, offset, array.Length - offset);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array, UInt32 offset)
         {
             if (array is null)
@@ -206,14 +209,13 @@ namespace Palmtree
             return Calculate(array, (Int32)offset, array.Length - (Int32)offset);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array, Range range)
         {
             if (array is null)
                 throw new ArgumentNullException(nameof(array));
-            var (isOk, offset, count) = array.GetOffsetAndLength(range);
-            if (!isOk)
-                throw new ArgumentOutOfRangeException(nameof(range));
 
+            var (offset, count) = array.GetOffsetAndLength(range, nameof(range));
             return Calculate(array, offset, count);
         }
 
@@ -247,6 +249,7 @@ namespace Palmtree
             return Finalize(crc);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(ReadOnlyMemory<Byte> array)
             => Calculate(array.Span);
 

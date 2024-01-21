@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree
 {
@@ -44,6 +45,7 @@ namespace Palmtree
         /// <param name="value">
         /// This is the value to be added to the current progress value.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddValue(VALUE_T value) => UpdateValue(v => checked(v + value));
     }
 }

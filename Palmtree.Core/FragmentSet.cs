@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree
 {
@@ -27,7 +28,11 @@ namespace Palmtree
             _ = _fragments.AddFirst(new FragmentSetElement<POSITION_T, SIZE_T>(initialStartPosition, initialSize));
         }
 
-        public Boolean IsEmpty => _fragments.First is null;
+        public Boolean IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _fragments.First is null;
+        }
 
         public void AddFragment(FragmentSetElement<POSITION_T, SIZE_T> fragment)
         {

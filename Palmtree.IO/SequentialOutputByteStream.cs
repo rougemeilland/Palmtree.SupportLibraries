@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,15 +25,21 @@ namespace Palmtree.IO
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return WriteCore(buffer);
+            var length = WriteCore(buffer);
+            if (buffer.IsEmpty && length <= 0)
+                throw new IOException("Can not write any more");
+            return length;
         }
 
-        public Task<Int32> WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
+        public async Task<Int32> WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return WriteAsyncCore(buffer, cancellationToken);
+            var length = await WriteAsyncCore(buffer, cancellationToken).ConfigureAwait(false);
+            if (buffer.IsEmpty && length <= 0)
+                throw new IOException("Can not write any more");
+            return length;
         }
 
         public void Flush()

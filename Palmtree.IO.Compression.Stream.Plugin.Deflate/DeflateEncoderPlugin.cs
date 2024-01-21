@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
@@ -18,6 +19,7 @@ namespace Palmtree.IO.Compression.Stream.Plugin
             {
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static ISequentialOutputByteStream Create(
                 ISequentialOutputByteStream baseStream,
                 IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,

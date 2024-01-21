@@ -7,11 +7,11 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <RootNamespace>Palmtree.IO.Compression.Stream</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.6.5</VersionPrefix>
+    <VersionPrefix>1.6.6</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Title>$(AssemblyName)</Title>
-    <Copyright>© 2023 Palmtree Software</Copyright>
+    <Copyright>© 2023-2024 Palmtree Software</Copyright>
     <PackageProjectUrl>https://github.com/rougemeilland/Palmtree.SupportLibraries</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

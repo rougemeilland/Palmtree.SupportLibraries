@@ -6,20 +6,18 @@ namespace Palmtree.IO
     public class TemporaryDirectory
         : IDisposable
     {
-        private readonly String _lockFilePath;
-        private readonly String _directoryPath;
+        private readonly FilePath _lockFilePath;
+        private readonly DirectoryPath _directoryPath;
+        private readonly ISequentialOutputByteStream _lockFileStream;
 
         private Boolean _isDisposed;
 
-        private TemporaryDirectory(String lockFilePath, String directoryPath)
+        private TemporaryDirectory(FilePath lockFilePath, DirectoryPath directoryPath, ISequentialOutputByteStream lockFileStream)
         {
-            if (String.IsNullOrEmpty(lockFilePath))
-                throw new ArgumentException($"'{nameof(lockFilePath)}' を NULL または空にすることはできません。", nameof(lockFilePath));
-            if (String.IsNullOrEmpty(directoryPath))
-                throw new ArgumentException($"'{nameof(directoryPath)}' を NULL または空にすることはできません。", nameof(directoryPath));
-
             _lockFilePath = lockFilePath;
             _directoryPath = directoryPath;
+            _lockFileStream = lockFileStream;
+            _isDisposed = false;
         }
 
         ~TemporaryDirectory()
@@ -27,14 +25,14 @@ namespace Palmtree.IO
             Dispose(disposing: false);
         }
 
-        public String FullName
+        public DirectoryPath Directory
         {
             get
             {
                 if (_isDisposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                return _directoryPath ?? throw new InvalidOperationException();
+                return _directoryPath;
             }
         }
 
@@ -43,19 +41,21 @@ namespace Palmtree.IO
             while (true)
             {
                 var success = false;
-                var lockFilePath = (String?)null;
-                var directoryPath = (String?)null;
+                var lockFilePath = (FilePath?)null;
+                var directoryPath = (DirectoryPath?)null;
+                var lockFileStream = (ISequentialOutputByteStream?)null;
                 try
                 {
                     try
                     {
-                        lockFilePath = Path.GetTempFileName();
-                        directoryPath = lockFilePath + ".dir";
-                        if (!Directory.Exists(directoryPath))
+                        lockFilePath = new FilePath(Path.GetTempFileName());
+                        directoryPath = new DirectoryPath($"{lockFilePath}.dir");
+                        if (!directoryPath.Exists)
                         {
-                            _ = Directory.CreateDirectory(directoryPath);
+                            _ = directoryPath.Create();
+                            lockFileStream = lockFilePath.OpenWrite();
                             success = true;
-                            return new TemporaryDirectory(lockFilePath, directoryPath);
+                            return new TemporaryDirectory(lockFilePath, directoryPath, lockFileStream);
                         }
                     }
                     catch (IOException)
@@ -66,10 +66,9 @@ namespace Palmtree.IO
                 {
                     if (!success)
                     {
-                        if (directoryPath is not null)
-                            Directory.Delete(directoryPath, true);
-                        if (lockFilePath is not null)
-                            File.Delete(lockFilePath);
+                        lockFileStream?.Dispose();
+                        directoryPath?.SafetyDelete(true);
+                        lockFilePath?.SafetyDelete();
                     }
                 }
             }
@@ -81,11 +80,12 @@ namespace Palmtree.IO
             {
                 if (disposing)
                 {
+                    _lockFileStream.Dispose();
                 }
 
                 // ファイルはアンマネージリソース扱い
-                Directory.Delete(_directoryPath, true);
-                File.Delete(_lockFilePath);
+                _directoryPath.SafetyDelete(true);
+                _lockFilePath.SafetyDelete();
                 _isDisposed = true;
             }
         }
