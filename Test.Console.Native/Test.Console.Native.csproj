@@ -8,7 +8,6 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <Trimming>full</Trimming>
-    <PublishAot>True</PublishAot>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
