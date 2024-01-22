@@ -7,8 +7,12 @@
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Platforms>AnyCPU</Platforms>
-    <AssemblyName>__experiment</AssemblyName>
+    <AssemblyName>experiment</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <Trimming>full</Trimming>
+    <PublishAot>True</PublishAot>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,5 +22,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Palmtree.IO.Console\Palmtree.IO.Console.csproj" />
+  </ItemGroup>
 
 </Project>
