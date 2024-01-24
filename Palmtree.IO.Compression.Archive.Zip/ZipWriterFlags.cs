@@ -6,7 +6,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// ZIP アーカイブの書き込みにおいて、特殊な動作を指定するフラグの列挙体です。
     /// </summary>
     [Flags]
-    public enum ZipWriteFlags
+    public enum ZipWriterFlags
     {
         /// <summary>
         /// 特殊な動作を何も指定しません。

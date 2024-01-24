@@ -55,45 +55,45 @@ namespace Test.ZipUtility.MultiVolume
         private static void Test1_2番目以降のローカルヘッダがボリュームの先頭にある場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 2, checked((ushort)(VOLUME_SIZE - 69)), 0, false);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, checked((ushort)(VOLUME_SIZE - 69)), 0, false);
         }
 
         private static void Test2_データディスクリプタがボリュームの先頭にある場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 2, checked((ushort)(VOLUME_SIZE - 69)), 0, true);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, checked((ushort)(VOLUME_SIZE - 69)), 0, true);
         }
 
         private static void Test3_最初のセントラルディレクトリヘッダがボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 2, 16, checked((ushort)(VOLUME_SIZE - 130)), false);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, 16, checked((ushort)(VOLUME_SIZE - 130)), false);
         }
 
         private static void Test4_ZIP64_EOCDR_がボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = (uint.MaxValue + 100UL) * 2;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 2, uint.MaxValue - 97, 0, false);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, uint.MaxValue - 97, 0, false);
         }
 
         private static void Test5_ZIP64_EOCDR_があるボリュームディスクにセントラルディレクトリヘッダが部分的に含まれている場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = (uint.MaxValue + 100UL) * 2;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 4, uint.MaxValue / 2 - 70, 0, false);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 4, uint.MaxValue / 2 - 70, 0, false);
         }
         private static void Test6_EOCDR_がボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 2, VOLUME_SIZE - 180, 0, false);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, VOLUME_SIZE - 180, 0, false);
         }
 
         private static void Test7_EOCDR_があるボリュームディスクにセントラルディレクトリヘッダが部分的に含まれている場合(DirectoryPath baseDirectory, string fileName)
         {
             const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriteFlags.None, 4, VOLUME_SIZE / 2 - 150, 0, false);
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 4, VOLUME_SIZE / 2 - 150, 0, false);
         }
 
-        private static void DoTest1(DirectoryPath baseDirectory, string fileName, ulong volumeSize, ZipWriteFlags flag, int numberOfEntries, ulong contentSize, ushort commentSize, bool useDatadescriptor)
+        private static void DoTest1(DirectoryPath baseDirectory, string fileName, ulong volumeSize, ZipWriterFlags flag, int numberOfEntries, ulong contentSize, ushort commentSize, bool useDatadescriptor)
         {
             var zipArchive = baseDirectory.GetFile(fileName);
             using (var zipWriter = zipArchive.CreateAsZipFile(volumeSize))
@@ -108,7 +108,8 @@ namespace Test.ZipUtility.MultiVolume
                     file.LastAccessTimeUtc = DateTime.Now;
                     file.LastWriteTimeUtc = DateTime.Now;
                     file.CompressionMethodId = ZipEntryCompressionMethodId.Stored;
-                    file.UseDataDescriptor = useDatadescriptor;
+                    if (useDatadescriptor)
+                        file.Flags = ZipDestinationEntryFlag.UseDataDescriptor;
                     WriteContentData(file, contentSize);
                 }
             }

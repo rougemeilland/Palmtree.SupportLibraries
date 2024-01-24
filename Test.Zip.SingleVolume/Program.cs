@@ -47,7 +47,8 @@ namespace Test.ZipUtility.SingleVolume
                 file1.LastWriteTimeUtc = DateTime.Now;
                 file1.CompressionMethodId = ZipEntryCompressionMethodId.Deflate;
                 file1.CompressionLevel = ZipEntryCompressionLevel.Maximum;
-                file1.UseDataDescriptor = useDatadescriptor;
+                if (useDatadescriptor)
+                    file1.Flags = ZipDestinationEntryFlag.UseDataDescriptor;
                 WriteContentData(file1, contentLength);
 
                 Console.WriteLine($"書き込み中2... \"{zipArchive.FullName}\"");
@@ -58,7 +59,8 @@ namespace Test.ZipUtility.SingleVolume
                 file2.LastWriteTimeUtc = DateTime.Now;
                 file2.CompressionMethodId = ZipEntryCompressionMethodId.Deflate;
                 file2.CompressionLevel = ZipEntryCompressionLevel.Maximum;
-                file2.UseDataDescriptor = useDatadescriptor;
+                if (useDatadescriptor)
+                    file2.Flags = ZipDestinationEntryFlag.UseDataDescriptor;
                 WriteContentData(file2, contentLength);
 
                 Console.WriteLine($"書き込み中3... \"{zipArchive.FullName}\"");
@@ -69,7 +71,8 @@ namespace Test.ZipUtility.SingleVolume
                 file3.LastWriteTimeUtc = DateTime.Now;
                 file3.CompressionMethodId = ZipEntryCompressionMethodId.Deflate;
                 file3.CompressionLevel = ZipEntryCompressionLevel.Maximum;
-                file3.UseDataDescriptor = useDatadescriptor;
+                if (useDatadescriptor)
+                    file3.Flags = ZipDestinationEntryFlag.UseDataDescriptor;
                 WriteContentData(file3, 100);
             }
 

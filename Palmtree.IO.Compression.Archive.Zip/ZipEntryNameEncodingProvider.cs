@@ -21,6 +21,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             static EncodingProvider()
             {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
                 var unicodeCodePages =
                     Encoding.GetEncodings()
                     .Where(info => info.Name.IsAnyOf("utf-7", "utf-8", "utf-16", "utf-16BE", "utf-32", "utf-32BE", "unicodeFFFE"))

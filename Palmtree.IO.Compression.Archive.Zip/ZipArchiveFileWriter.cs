@@ -107,7 +107,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <summary>
         /// ZIP アーカイブの作成方法を制御するフラグを示す値を取得または設定します。
         /// </summary>
-        public ZipWriteFlags Flags { get; set; }
+        public ZipWriterFlags Flags { get; set; }
 
         /// <summary>
         /// サポートされている圧縮方式のIDのコレクションを取得します。
@@ -499,7 +499,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         currentDiskNumber,
                         numberOfCentralDirectoryHeadersOnCurrenetDisk,
                         _commentBytes,
-                        (Flags & ZipWriteFlags.AlwaysWriteZip64EOCDR) != ZipWriteFlags.None);
+                        (Flags & ZipWriterFlags.AlwaysWriteZip64EOCDR) != ZipWriterFlags.None);
                 lastHeaders.WriteTo(_zipOutputStream);
 
                 // ZIP アーカイブの出力が完了したことの宣言

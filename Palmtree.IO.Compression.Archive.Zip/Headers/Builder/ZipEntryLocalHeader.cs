@@ -105,11 +105,14 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             ExtraFieldCollection extraFields,
             ReadOnlyMemory<Byte> entryFullNameBytes,
             DateTime? lastWriteTimeUtc,
-            Boolean isDirectory)
+            Boolean isDirectory,
+            Boolean doNotUseExtraField)
         {
             var zip64ExtraField = new Zip64ExtendedInformationExtraFieldForLocalHeader();
             var (rawSize, rawPackedSize) = zip64ExtraField.SetValues(size, packedSize);
             extraFields.AddExtraField(zip64ExtraField);
+            if (doNotUseExtraField && extraFields.Count > 0)
+                throw new InvalidOperationException($"ZIP64 extension is required to write this entry, but the extra field in the local header cannot be set because the {nameof(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders)} flag is specified.");
 
             var (dosDate, dosTime) = GetDosDateTime(lastWriteTimeUtc);
 

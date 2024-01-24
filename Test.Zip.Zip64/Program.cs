@@ -28,7 +28,7 @@ namespace Test.ZipUtility.Zip64
 
                 var targetDirectory = baseDirectory.GetSubDirectory($"total volume number=0x{value:x8}");
                 targetDirectory.Create();
-                DoTest1(targetDirectory, $"total volume number=0x{value:x8}.zip", VOLUME_SIZE, ZipWriteFlags.None, 2, ((ulong)value - 1) * VOLUME_SIZE / 2, _ => 0, false);
+                DoTest1(targetDirectory, $"total volume number=0x{value:x8}.zip", VOLUME_SIZE, ZipWriterFlags.None, 2, ((ulong)value - 1) * VOLUME_SIZE / 2, _ => 0, false);
             }
 #endif
 
@@ -40,7 +40,7 @@ namespace Test.ZipUtility.Zip64
 
                 var targetDirectory = baseDirectory.GetSubDirectory($"volume number of first central directory header=0x{value:x8}");
                 targetDirectory.Create();
-                DoTest1(targetDirectory, $"volume number of first central directory header=0x{value:x8}.zip", VOLUME_SIZE, ZipWriteFlags.None, 2, (ulong)value * VOLUME_SIZE / 2, _ => 512, false);
+                DoTest1(targetDirectory, $"volume number of first central directory header=0x{value:x8}.zip", VOLUME_SIZE, ZipWriterFlags.None, 2, (ulong)value * VOLUME_SIZE / 2, _ => 512, false);
             }
 #endif
 
@@ -52,7 +52,7 @@ namespace Test.ZipUtility.Zip64
 
                 var targetDirectory = baseDirectory.GetSubDirectory($"number of central directories on last volume=0x{value:x8}");
                 targetDirectory.Create();
-                DoTest1(targetDirectory, $"number of central directories on last volume=0x{value:x8}.zip", VOLUME_SIZE, ZipWriteFlags.None, ushort.MaxValue + 2, 64, _ => 0, false);
+                DoTest1(targetDirectory, $"number of central directories on last volume=0x{value:x8}.zip", VOLUME_SIZE, ZipWriterFlags.None, ushort.MaxValue + 2, 64, _ => 0, false);
             }
 #endif
 
@@ -64,7 +64,7 @@ namespace Test.ZipUtility.Zip64
 
                 var targetDirectory = baseDirectory.GetSubDirectory($"toatl number of central directories=0x{value:x8}");
                 targetDirectory.Create();
-                DoTest1(targetDirectory, $"toatl number of central directories=0x{value:x8}.zip", VOLUME_SIZE, ZipWriteFlags.None, value, 16, _ => 0, false);
+                DoTest1(targetDirectory, $"toatl number of central directories=0x{value:x8}.zip", VOLUME_SIZE, ZipWriterFlags.None, value, 16, _ => 0, false);
             }
 #endif
 
@@ -78,7 +78,7 @@ namespace Test.ZipUtility.Zip64
                 var targetDirectory = baseDirectory.GetSubDirectory($"total size of all central directories=0x{value:x16}");
                 targetDirectory.Create();
                 var commentLengthOfLastEntry = checked((ushort)(value - 0xffff5aa2 - 0x4a4b));
-                DoTest1(targetDirectory, $"total size of all central directories=0x{value:x16}.zip", VOLUME_SIZE, ZipWriteFlags.None, ENTRIES, 16, index => index < ENTRIES - 1 ? ushort.MaxValue : commentLengthOfLastEntry, false);
+                DoTest1(targetDirectory, $"total size of all central directories=0x{value:x16}.zip", VOLUME_SIZE, ZipWriterFlags.None, ENTRIES, 16, index => index < ENTRIES - 1 ? ushort.MaxValue : commentLengthOfLastEntry, false);
             }
 #endif
 
@@ -90,7 +90,7 @@ namespace Test.ZipUtility.Zip64
 
                 var targetDirectory = baseDirectory.GetSubDirectory($"first central directory offset=0x{value:x16}");
                 targetDirectory.Create();
-                DoTest1(targetDirectory, $"first central directory offset=0x{value:x16}.zip", VOLUME_SIZE, ZipWriteFlags.None, 1, value - 0x40UL, _ => 0, false);
+                DoTest1(targetDirectory, $"first central directory offset=0x{value:x16}.zip", VOLUME_SIZE, ZipWriterFlags.None, 1, value - 0x40UL, _ => 0, false);
             }
 #endif
 
@@ -99,7 +99,7 @@ namespace Test.ZipUtility.Zip64
             _ = Console.ReadLine();
         }
 
-        private static void DoTest1(DirectoryPath baseDirectory, string fileName, ulong volumeSize, ZipWriteFlags flag, ulong numberOfEntries, ulong contentSize, Func<ulong, ushort> commentSizeGetter, bool useDatadescriptor)
+        private static void DoTest1(DirectoryPath baseDirectory, string fileName, ulong volumeSize, ZipWriterFlags flag, ulong numberOfEntries, ulong contentSize, Func<ulong, ushort> commentSizeGetter, bool useDatadescriptor)
         {
             var zipArchive = baseDirectory.GetFile(fileName);
             using (var zipWriter = zipArchive.CreateAsZipFile(volumeSize))
@@ -116,7 +116,8 @@ namespace Test.ZipUtility.Zip64
                     file.LastAccessTimeUtc = DateTime.Now;
                     file.LastWriteTimeUtc = DateTime.Now;
                     file.CompressionMethodId = ZipEntryCompressionMethodId.Stored;
-                    file.UseDataDescriptor = useDatadescriptor;
+                    if (useDatadescriptor)
+                        file.Flags = ZipDestinationEntryFlag.UseDataDescriptor;
                     WriteContentData(file, contentSize);
                 }
 

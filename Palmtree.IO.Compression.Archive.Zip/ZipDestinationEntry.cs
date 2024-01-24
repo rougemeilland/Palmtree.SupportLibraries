@@ -57,7 +57,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private DateTime? _lastAccessTimeUtc;
         private DateTime? _creationTimeUtc;
         private UInt32? _externalAttributes;
-        private Boolean _useDataDescriptor;
+        private ZipDestinationEntryFlag _flags;
         private UInt64 _size;
         private UInt64 _packedSize;
         private UInt32 _crc;
@@ -110,7 +110,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _lastAccessTimeUtc = null;
             _creationTimeUtc = null;
             _externalAttributes = null;
-            _useDataDescriptor = false;
+            _flags = ZipDestinationEntryFlag.None;
             _size = 0;
             _packedSize = 0;
             _crc = 0;
@@ -479,28 +479,21 @@ namespace Palmtree.IO.Compression.Archive.Zip
         }
 
         /// <summary>
-        /// エントリのデータの書き込みの際にデータディスクリプタを使用するかどうかを示す <see cref="Boolean"/> 値を取得または設定します。
+        /// エントリの書き込み際の特殊な動作を指定するフラグを取得または設定します。
         /// </summary>
         /// <value>
-        /// データディスクリプタを使用する場合は true、そうではない場合は falseです。既定値は false です。
+        /// エントリの書き込み際の特殊な動作を意味する <see cref="ZipDestinationEntryFlag"/> 列挙体です。
         /// </value>
-        /// <remarks>
-        /// <list type="bullet">
-        /// <item>
-        /// 特別な理由が無い限り、<see cref="UseDataDescriptor"/> の値は既定値 (false) から変更しないことをお勧めします。
-        /// </item>
-        /// </list>
-        /// </remarks>
-        public Boolean UseDataDescriptor
+        public ZipDestinationEntryFlag Flags
         {
-            get => _useDataDescriptor;
+            get => _flags;
 
             set
             {
                 if (_written)
                     throw new InvalidOperationException();
 
-                _useDataDescriptor = value;
+                _flags = value;
             }
         }
 
@@ -665,7 +658,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new InvalidOperationException($"The value of {nameof(CreationTimeUtc)}.{nameof(CreationTimeUtc.Value.Kind)} property must not be {nameof(DateTimeKind)}.{nameof(DateTimeKind.Unspecified)}.");
 
                 var stream =
-                    _useDataDescriptor
+                    _flags.HasFlag(ZipDestinationEntryFlag.UseDataDescriptor)
                     ? CreateContentStreamWithDataDescriptor(progress)
                     : CreateContentStreamWithoutDataDescriptor(progress);
                 success = true;
@@ -716,6 +709,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 _crc = Array.Empty<Byte>().CalculateCrc32().Crc;
 
                 SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
+                if (_flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders))
+                    ModifyExtraFields(_localHeaderExtraFields);
 
                 var localHeader =
                     ZipEntryLocalHeader.Build(
@@ -728,7 +723,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         _localHeaderExtraFields,
                         FullNameBytes,
                         LastWriteTimeUtc,
-                        IsDirectory);
+                        IsDirectory,
+                        _flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders));
                 var localHeaderPosition = localHeader.WriteTo(_zipWriterStreamAccesser.MainStream);
 
                 var centralDirectoryHeader =
@@ -770,6 +766,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 }
 
                 SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
+                if (_flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders))
+                    ModifyExtraFields(_localHeaderExtraFields);
 
                 var compressionMethod = CompressionMethodId.GetCompressionMethod();
                 var compressionOption = CompressionMethodId.GetEncoderOption(CompressionLevel);
@@ -855,7 +853,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             _localHeaderExtraFields,
                             FullNameBytes,
                             LastWriteTimeUtc,
-                            IsDirectory);
+                            IsDirectory,
+                            _flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders));
                     var localHeaderPosition = localHeader.WriteTo(_zipWriterStreamAccesser.MainStream);
 
                     var centralDirectoryHeader =
@@ -921,6 +920,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
 
             SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
+            if (_flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders))
+                ModifyExtraFields(_localHeaderExtraFields);
 
             var compressionMethod = CompressionMethodId.GetCompressionMethod();
             var compressionOption = CompressionMethodId.GetEncoderOption(CompressionLevel);
@@ -1082,6 +1083,27 @@ namespace Palmtree.IO.Compression.Archive.Zip
             };
             extraFields.AddExtraField(windowsTimestampExtraField);
             extraFields.AddExtraField(unixTimeStampExtraField);
+        }
+
+        private static void ModifyExtraFields(ExtraFields.ExtraFieldCollection localHeaderExtraFields)
+        {
+            if (localHeaderExtraFields.Contains(CodePageExtraField.ExtraFieldId) ||
+                localHeaderExtraFields.Contains(UnicodePathExtraField.ExtraFieldId) ||
+                localHeaderExtraFields.Contains(UnicodeCommentExtraField.ExtraFieldId))
+            {
+                // 上記の拡張フィールドが設定されるのは、エントリのファイル名またはコメントに UNICODE と互換性のない文字が含まれている場合のみ
+
+                throw new InvalidOperationException($"The entry's filename or comment uses a character set that is incompatible with UNICODE, even though the {nameof(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders)} flag was specified.");
+            }
+
+            localHeaderExtraFields.Delete(CodePageExtraField.ExtraFieldId); // エントリのファイル名およびコメントの明示的なコードページ指定の削除
+            localHeaderExtraFields.Delete(UnicodePathExtraField.ExtraFieldId); // エントリのファイル名の UNICODE 表現の指定を削除
+            localHeaderExtraFields.Delete(UnicodeCommentExtraField.ExtraFieldId); // エントリのファイル名の UNICODE 表現の指定を削除
+            localHeaderExtraFields.Delete(NtfsExtraField.ExtraFieldId); // エントリの NTFS タイムスタンプを削除
+            localHeaderExtraFields.Delete(ExtendedTimestampExtraField.ExtraFieldId); // エントリの UNIX タイムスタンプを削除
+
+            if (localHeaderExtraFields.Count > 0)
+                throw new InvalidOperationException($"The extra fields [{String.Join(", ", localHeaderExtraFields.EnumerateExtraFieldIds().Select(id => $"0x{id:x4}"))}] is specified even though the {nameof(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders)} flag is specified.");
         }
     }
 }
