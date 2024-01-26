@@ -39,6 +39,15 @@ namespace Palmtree.IO
             }
         }
 
+        public String NameWithoutExtension
+        {
+            get
+            {
+                _file.Refresh();
+                return Path.GetFileNameWithoutExtension(_file.Name);
+            }
+        }
+
         public UInt64 Length
         {
             get

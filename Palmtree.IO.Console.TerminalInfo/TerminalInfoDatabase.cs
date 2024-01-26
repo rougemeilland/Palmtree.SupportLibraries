@@ -10,7 +10,7 @@ using Palmtree.IO.Console.StringExpansion;
 
 namespace Palmtree.IO.Console
 {
-    internal class TerminalInfoDatabase
+    internal partial class TerminalInfoDatabase
     {
         private const Int16 _legacyMagicNumber = 0x011a;
         private const Int16 _32bitMagicNumber = 0x021e;
@@ -23,8 +23,6 @@ namespace Palmtree.IO.Console
         private const String _pseudoCapabilityNameEraseInLine2 = "__erase_in_line_2";
         private const String _terminalNameWindowsLocalConsole = "windows-terminal";
 
-        private static readonly Regex _resetColorPattern;
-        private static readonly Regex _deviceStatusReportPattern;
         private static readonly String[] _termInfoPathList =
             new[]
             {
@@ -47,12 +45,6 @@ namespace Palmtree.IO.Console
         private readonly IDictionary<String, Int32> _extendedNumberCapabilities;
         private readonly IDictionary<String, String> _extendedStringCapabilities;
         private readonly ICollection<String> _warnings;
-
-        static TerminalInfoDatabase()
-        {
-            _resetColorPattern = new Regex(@"\u001b\[(39:49|49:39)m", RegexOptions.Compiled);
-            _deviceStatusReportPattern = new Regex(@"^\e\[6n$", RegexOptions.Compiled);
-        }
 
         private TerminalInfoDatabase(
             String termInfoFilePath,
@@ -137,11 +129,11 @@ namespace Palmtree.IO.Console
                     {
                         _extendedStringCapabilities.Add(_pseudoCapabilityNameResetColor, "\u001b[39;49m");
                     }
-                    else if (_stringCapabilities.TryGetValue(TermInfoStringCapabilities.OrigPair, out var orig_pair) && _resetColorPattern.IsMatch(orig_pair))
+                    else if (_stringCapabilities.TryGetValue(TermInfoStringCapabilities.OrigPair, out var orig_pair) && GetResetColorPattern().IsMatch(orig_pair))
                     {
                         _extendedStringCapabilities.Add(_pseudoCapabilityNameResetColor, orig_pair);
                     }
-                    else if (_stringCapabilities.TryGetValue(TermInfoStringCapabilities.OrigColors, out var orig_color) && _resetColorPattern.IsMatch(orig_color))
+                    else if (_stringCapabilities.TryGetValue(TermInfoStringCapabilities.OrigColors, out var orig_color) && GetResetColorPattern().IsMatch(orig_color))
                     {
                         _extendedStringCapabilities.Add(_pseudoCapabilityNameResetColor, orig_color);
                     }
@@ -208,7 +200,7 @@ namespace Palmtree.IO.Console
                     //   + windows-local-console: https://learn.microsoft.com/ja-jp/windows/console/console-virtual-terminal-sequences#query-state (search "DECXCPR")
                     // + Since "\u001b[6n" is used as the value of other capabilities, the terminal should be assumed to understand "\u001b[6n".
 
-                    if (_stringCapabilities.TryGetValue(TermInfoStringCapabilities.User7, out var user7) && _deviceStatusReportPattern.IsMatch(user7) ||
+                    if (_stringCapabilities.TryGetValue(TermInfoStringCapabilities.User7, out var user7) && GetDeviceStatusReportPattern().IsMatch(user7) ||
                         terminalNames.Any(name => name == "aixterm") ||
                         terminalNames.Any(name => name == "dtterm") ||
                         terminalNames.Any(name => name.StartsWith("screen", StringComparison.Ordinal)) ||
@@ -1187,5 +1179,13 @@ namespace Palmtree.IO.Console
                 throw new Exception("Bad file format.", ex);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex(@"\u001b\[(39:49|49:39)m", RegexOptions.Compiled)]
+        private static partial Regex GetResetColorPattern();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex(@"^\e\[6n$", RegexOptions.Compiled)]
+        private static partial Regex GetDeviceStatusReportPattern();
     }
 }

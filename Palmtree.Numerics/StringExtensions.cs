@@ -5,15 +5,8 @@ using System.Text.RegularExpressions;
 
 namespace Palmtree.Numerics
 {
-    public static class StringExtensions
+    public static partial class StringExtensions
     {
-        private static readonly Regex _rationalNumberPattern;
-
-        static StringExtensions()
-        {
-            _rationalNumberPattern = new Regex(@"^(?<numerator>-?\d+)/(?<denominator>\d+)$", RegexOptions.Compiled);
-        }
-
         #region ParseAs
 
         /// <summary>
@@ -78,7 +71,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (Int32 numerator, Int32 denominator) ParseAsInt32Fraction(this String s)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
 
@@ -97,7 +90,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (UInt32 numerator, UInt32 denominator) ParseAsUInt32Fraction(this String s)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
 
@@ -116,7 +109,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (Int64 numerator, Int64 denominator) ParseAsInt64Fraction(this String s)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
 
@@ -135,7 +128,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (UInt64 numerator, UInt64 denominator) ParseAsUInt64Fraction(this String s)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
 
@@ -217,7 +210,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out Int32 numerator, out Int32 denominator)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
                 numerator = default;
@@ -241,7 +234,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out UInt32 numerator, out UInt32 denominator)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
                 numerator = default;
@@ -265,7 +258,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out Int64 numerator, out Int64 denominator)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
                 numerator = default;
@@ -289,7 +282,7 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out UInt64 numerator, out UInt64 denominator)
         {
-            var match = _rationalNumberPattern.Match(s);
+            var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
                 numerator = default;
@@ -301,6 +294,10 @@ namespace Palmtree.Numerics
             denominator = UInt64.Parse(match.Groups["denominator"].Value, NumberStyles.None, CultureInfo.InvariantCulture.NumberFormat);
             return true;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex(@"^(?<numerator>-?\d+)/(?<denominator>\d+)$", RegexOptions.Compiled)]
+        private static partial Regex GetRationalNumberPattern();
 
         #endregion
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,17 +12,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// <summary>
     /// <see cref="FilePath"/> オブジェクトが示すファイルを ZIP アーカイブとして扱うための拡張メソッドのクラスです。
     /// </summary>
-    public static class FileExtensions
+    public static partial class FileExtensions
     {
-        private static readonly Regex _sevenZipMultiVolumeZipFileNamePattern;
-        private static readonly Regex _generalMultiVolumeZipFileNamePattern;
-
-        static FileExtensions()
-        {
-            _sevenZipMultiVolumeZipFileNamePattern = new Regex(@"^(?<body>[^\\/]+\.zip)\.[0-9]{3,}$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-            _generalMultiVolumeZipFileNamePattern = new Regex(@"^(?<body>[^\\/]+)\.zip$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        }
-
         /// <summary>
         /// ZIP アーカイブの内容を検証します。
         /// </summary>
@@ -556,7 +548,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private static IZipInputStream GetSourceStreamByFileNamePattern(DirectoryPath baseDirectory, FilePath sourceFile)
         {
-            var match = _sevenZipMultiVolumeZipFileNamePattern.Match(sourceFile.Name);
+            var match = GetSevenZipMultiVolumeZipFileNamePattern().Match(sourceFile.Name);
             if (match.Success)
             {
                 var fileNameWithoutExtension = match.Groups["body"].Value;
@@ -579,7 +571,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             UInt32 lastDiskNumber,
             ValidationStringency stringency)
         {
-            var match = _generalMultiVolumeZipFileNamePattern.Match(sourceFile.Name);
+            var match = GetGeneralMultiVolumeZipFileNamePattern().Match(sourceFile.Name);
             if (!match.Success)
                 throw new NotSupportedSpecificationException("Unknown format as multi-volume ZIP file.");
 
@@ -648,5 +640,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 : diskNumber < lastDiskNumber
                 ? baseDirectory.GetFile($"{fileNameWithoutExtension}.z{diskNumber + 1:D2}")
                 : baseFile;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("^(?<body>[^\\\\/]+\\.zip)\\.[0-9]{3,}$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        private static partial Regex GetSevenZipMultiVolumeZipFileNamePattern();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("^(?<body>[^\\\\/]+)\\.zip$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        private static partial Regex GetGeneralMultiVolumeZipFileNamePattern();
     }
 }

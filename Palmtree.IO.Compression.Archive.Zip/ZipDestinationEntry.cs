@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
@@ -13,7 +14,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// <summary>
     /// 出力先 ZIP ファイルのエントリのクラスです。
     /// </summary>
-    public class ZipDestinationEntry
+    public partial class ZipDestinationEntry
     {
         private class ExtraFieldCollection
             : IWriteOnlyExtraFieldCollection
@@ -42,7 +43,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
         }
 
         private static readonly Encoding _utf8Encoding;
-        private static readonly Regex _dotEntryNamePattern;
 
         private readonly IZipFileWriterParameter _zipWriterParameter;
         private readonly IZipFileWriterOutputStreamAccesser _zipWriterStreamAccesser;
@@ -67,7 +67,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _utf8Encoding = Encoding.UTF8.WithFallback(null, null).WithoutPreamble();
-            _dotEntryNamePattern = new Regex(@"(^|/|\\)\.{1,2}($|/|\\)", RegexOptions.Compiled);
         }
 
         internal ZipDestinationEntry(
@@ -93,7 +92,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 throw new InvalidOperationException($"The value of the {nameof(commentBytes)} is too long.: {commentBytes.Length} bytes");
             if (possibleEntryEncodings is null)
                 throw new ArgumentNullException(nameof(possibleEntryEncodings));
-            if (_dotEntryNamePattern.IsMatch(fullName))
+            if (GetDotEntryNamePattern().IsMatch(fullName))
                 throw new ArgumentException($"Entry names containing directory names \".\" or \"..\" are not allowed.: {fullName}", nameof(fullName));
 
             _zipWriterParameter = zipWriterParameter ?? throw new ArgumentNullException(nameof(zipWriterParameter));
@@ -793,7 +792,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             value => (value.inUncompressedStreamProcessedCount / 2, value.outCompressedStreamProcessedCount / 2)));
 
                 var tempraryFileStream =
-                    (packedOutputStream is null ? (progress is null ? outputStrem : outputStrem.WithProgression(new SimpleProgress<UInt64>(value => progress.Report((value / 2, value / 2))))) : outputStrem.Branch(packedOutputStream))
+                    (packedOutputStream is not null
+                        ? outputStrem.Branch(packedOutputStream)
+                        : progress is null
+                        ? outputStrem
+                        : outputStrem.WithProgression(new SimpleProgress<UInt64>(value => progress.Report((value / 2, value / 2)))))
                     .WithCrc32Calculation(EndOfCopyingToTemporaryFile);
                 success = true;
                 return tempraryFileStream;
@@ -1105,5 +1108,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
             if (localHeaderExtraFields.Count > 0)
                 throw new InvalidOperationException($"The extra fields [{String.Join(", ", localHeaderExtraFields.EnumerateExtraFieldIds().Select(id => $"0x{id:x4}"))}] is specified even though the {nameof(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders)} flag is specified.");
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("(^|/|\\\\)\\.{1,2}($|/|\\\\)", RegexOptions.Compiled)]
+        private static partial Regex GetDotEntryNamePattern();
     }
 }

@@ -1,24 +1,18 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal abstract class ExpansionParameter
+    internal abstract partial class ExpansionParameter
     {
-        private static readonly Regex _formatSpecPattern;
-
-        static ExpansionParameter()
-        {
-            _formatSpecPattern = new Regex(@"^(?<width>\d+)?(\.(?<precision>\d+))?(?<type>[cdosuxX])$", RegexOptions.Compiled);
-        }
-
         public abstract Int32 AsNumber();
         public abstract Boolean AsBool();
         public abstract String AsString();
 
         public String Format(String formatSpec)
         {
-            var match = _formatSpecPattern.Match(formatSpec);
+            var match = GetFormatSpecPattern().Match(formatSpec);
             if (!match.Success)
                 throw new ExpansionStringSyntaxErrorExceptionException($"Invalid format spec. \"{formatSpec}\"");
 
@@ -30,5 +24,9 @@ namespace Palmtree.IO.Console.StringExpansion
         }
 
         protected abstract String Format(String width, String precision, String typeSpec);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex(@"^(?<width>\d+)?(\.(?<precision>\d+))?(?<type>[cdosuxX])$", RegexOptions.Compiled)]
+        private static partial Regex GetFormatSpecPattern();
     }
 }

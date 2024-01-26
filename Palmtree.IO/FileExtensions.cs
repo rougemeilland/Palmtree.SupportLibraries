@@ -8,15 +8,13 @@ using System.Text.RegularExpressions;
 
 namespace Palmtree.IO
 {
-    public static class FileExtensions
+    public static partial class FileExtensions
     {
         private static readonly Object _lockObject;
-        private static readonly Regex _simpleFileNamePattern;
 
         static FileExtensions()
         {
             _lockObject = new Object();
-            _simpleFileNamePattern = new Regex(@"^(?<path>.*?)(\s*\([0-9]+\))+$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -86,6 +84,14 @@ namespace Palmtree.IO
         }
 
         #endregion
+
+        public static String GetNameWithoutExtension(this FileInfo file)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+
+            return Path.GetFileNameWithoutExtension(file.Name);
+        }
 
         #region ReadAllBytes
 
@@ -405,7 +411,7 @@ namespace Palmtree.IO
 
             var sourceFileDirectory = sourceFile.Directory ?? throw new ArgumentException($"{nameof(sourceFile)} is the relative path.", nameof(sourceFile));
             var sourceFileNameWithoutExtension = Path.GetFileNameWithoutExtension(newFileName);
-            var fileNameMatch = _simpleFileNamePattern.Match(sourceFileNameWithoutExtension);
+            var fileNameMatch = GetSimpleFileNamePattern().Match(sourceFileNameWithoutExtension);
             if (fileNameMatch.Success)
                 sourceFileNameWithoutExtension = fileNameMatch.Groups["path"].Value;
             var sourceFileExtension = Path.GetExtension(newFileName);
@@ -563,5 +569,9 @@ namespace Palmtree.IO
                 return null;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex(@"^(?<path>.*?)(\s*\([0-9]+\))+$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        private static partial Regex GetSimpleFileNamePattern();
     }
 }

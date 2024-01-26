@@ -7,16 +7,14 @@ using System.Text.RegularExpressions;
 
 namespace Palmtree
 {
-    public static class StringExtensions
+    public static partial class StringExtensions
     {
-        private static readonly Regex _questionMarksAndExclamationMarksSequencePattern;
         private static readonly Char[] _anyOfTabOrSpaceOrDoubleQuote = new[] { '\t', ' ', '"' };
         private static readonly Char[] _anyOfTabOrSpace = new[] { '\t', ' ' };
 
         static StringExtensions()
         {
-            _questionMarksAndExclamationMarksSequencePattern = new Regex(@"([\?!]*\?[\?!]*)", RegexOptions.Compiled);
-
+#if DEBUG
             Validation.Assert('\u0007' == '\a', "'\u0007' == '\a'");
             Validation.Assert('\u0008' == '\b', "'\u0008' == '\b'");
             Validation.Assert('\u0009' == '\t', "'\u0009' == '\t'");
@@ -25,6 +23,7 @@ namespace Palmtree
             Validation.Assert('\u000c' == '\f', "'\u000c' == '\f'");
             Validation.Assert('\u000c' == '\f', "'\u000c' == '\f'");
             Validation.Assert('\u000d' == '\r', "'\u000d' == '\r'");
+#endif
         }
 
         #region ChunkAsString
@@ -170,7 +169,7 @@ namespace Palmtree
         {
             var pathName =
                 String.Concat(
-                    _questionMarksAndExclamationMarksSequencePattern.Replace(
+                    GetQuestionMarksAndExclamationMarksSequencePattern().Replace(
                         s,
                         m =>
                             String.Concat(
@@ -369,5 +368,9 @@ namespace Palmtree
             => ignoreCase ?
                 Char.ToUpperInvariant(c1) == Char.ToUpperInvariant(c2)
                 : c1 == c2;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("([\\?!]*\\?[\\?!]*)", RegexOptions.Compiled)]
+        private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
     }
 }

@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using Palmtree.Text;
 
 namespace Palmtree.IO.Console
@@ -36,7 +35,6 @@ namespace Palmtree.IO.Console
         private static readonly ConsoleColor _defaultBackgrouongColor = System.Console.BackgroundColor;
         private static readonly ConsoleColor _defaultForegrouongColor = System.Console.ForegroundColor;
         private static readonly TerminalInfo? ___thisTerminalInfo = TerminalInfo.GetTerminalInfo(true);
-        private static readonly Regex _cprResponsePattern = new(@"^\e\[(?<row>\d*)(;(?<column>\d*))?R", RegexOptions.Compiled);
         private static readonly Char[] _alternativeCharacterSetMap;
 
         private static ConsoleColor _currentBackgrouongColor = System.Console.BackgroundColor;
