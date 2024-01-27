@@ -70,10 +70,12 @@ namespace Palmtree
 
         private static String? WhereIsForWindows(String targetCommandName)
         {
-            var commandFileName = $"{targetCommandName}.exe";
-            return EnumerateExecutableDirectoriesForWindows()
-                        .Select(dir => Path.Combine(dir, commandFileName))
-                        .FirstOrDefault(File.Exists);
+            var dotExeCommandFileName = $"{targetCommandName}.exe";
+            var dotComCommandFileName = $"{targetCommandName}.com";
+            return
+                EnumerateExecutableDirectoriesForWindows()
+                .SelectMany(dir => new[] { Path.Combine(dir, dotExeCommandFileName), Path.Combine(dir, dotComCommandFileName) })
+                .FirstOrDefault(File.Exists);
         }
 
         private static IEnumerable<String> EnumerateExecutableDirectoriesForWindows()
