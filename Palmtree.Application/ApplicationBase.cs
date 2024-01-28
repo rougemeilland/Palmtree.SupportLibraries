@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text;
 using Palmtree.IO.Console;
 
 namespace Palmtree.Application
 {
     public abstract class ApplicationBase
-        : IDisposable
     {
         protected enum ResultCode
         {
@@ -19,26 +17,11 @@ namespace Palmtree.Application
 
         private readonly String _thisProgramName;
 
-        private Boolean _isDisposed;
         private Boolean _isPressedBreak;
 
         protected ApplicationBase()
         {
-            _isDisposed = false;
             _thisProgramName = GetType().Assembly.GetAssemblyFileNameWithoutExtension();
-            if (DelayBreak)
-                TinyConsole.CancelKeyPress += TinyConsole_CancelKeyPress;
-            var encoding = InputOutputEncoding;
-            if (encoding is not null)
-            {
-                TinyConsole.InputEncoding = encoding;
-                TinyConsole.OutputEncoding = encoding;
-            }
-        }
-
-        ~ApplicationBase()
-        {
-            Dispose(disposing: false);
         }
 
         public virtual Int32 Run(String[] args)
@@ -48,22 +31,26 @@ namespace Palmtree.Application
             {
                 TinyConsole.CursorVisible = ConsoleCursorVisiblity.Invisible;
                 TinyConsole.Title = ConsoleWindowTitle;
+                if (DelayBreak)
+                    TinyConsole.CancelKeyPress += TinyConsole_CancelKeyPress;
+                var encoding = InputOutputEncoding;
+                if (encoding is not null)
+                {
+                    TinyConsole.InputEncoding = encoding;
+                    TinyConsole.OutputEncoding = encoding;
+                }
+
                 result = Main(args);
             }
             finally
             {
+                TinyConsole.CancelKeyPress -= TinyConsole_CancelKeyPress;
                 TinyConsole.CursorVisible = ConsoleCursorVisiblity.NormalMode;
             }
 
             CleanUp(result);
             Finish(result);
             return (Int32)result;
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual Boolean DelayBreak => true;
@@ -148,20 +135,6 @@ namespace Palmtree.Application
                 {
                     TinyConsole.ResetColor();
                 }
-            }
-        }
-
-        protected virtual void Dispose(Boolean disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                }
-
-                TinyConsole.CancelKeyPress -= TinyConsole_CancelKeyPress;
-
-                _isDisposed = true;
             }
         }
 

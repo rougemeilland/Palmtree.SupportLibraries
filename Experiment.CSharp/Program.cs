@@ -71,8 +71,7 @@ namespace Experiment.CSharp
 
         public static int Launch(string? title, Encoding? encoding, string[] args)
         {
-            using var application = new Application(title, encoding);
-            return application.Run(args);
+            return new Application(title, encoding).Run(args);
         }
 
         private static int Main(string[] args)
