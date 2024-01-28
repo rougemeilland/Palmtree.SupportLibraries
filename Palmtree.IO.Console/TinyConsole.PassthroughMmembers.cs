@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Palmtree.IO.Console
 {
@@ -62,30 +61,6 @@ namespace Palmtree.IO.Console
         }
 
         /// <summary>
-        /// コンソールが入力内容の読み取り時に使用するエンコーディングを取得または設定します。
-        /// </summary>
-        public static Encoding InputEncoding
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => System.Console.InputEncoding;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => System.Console.InputEncoding = value;
-        }
-
-        /// <summary>
-        /// コンソールが出力内容の書き込み時に使用するエンコーディングを取得または設定します。
-        /// </summary>
-        public static Encoding OutputEncoding
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => System.Console.OutputEncoding;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => System.Console.OutputEncoding = value;
-        }
-
-        /// <summary>
         /// 標準入力ストリームを取得します。
         /// </summary>
         /// <returns>
@@ -111,33 +86,6 @@ namespace Palmtree.IO.Console
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ISequentialOutputByteStream OpenStandardError() => System.Console.OpenStandardError().AsOutputByteStream();
-
-        /// <summary>
-        /// 指定した <see cref="TextReader"/> を <see cref="In"/> プロパティに設定します。
-        /// </summary>
-        /// <param name="newIn">
-        /// 新しい標準入力であるストリームです。
-        /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetIn(TextReader newIn) => System.Console.SetIn(newIn);
-
-        /// <summary>
-        /// 指定した <see cref="TextWriter"/> を <see cref="Out"/> プロパティに設定します。
-        /// </summary>
-        /// <param name="newOut">
-        /// 新しい標準出力であるストリームです。
-        /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetOut(TextWriter newOut) => System.Console.SetOut(newOut);
-
-        /// <summary>
-        /// 指定した <see cref="TextWriter"/> を <see cref="Error"/> プロパティに設定します。
-        /// </summary>
-        /// <param name="newError">
-        /// 新しい標準エラー出力であるストリームです。
-        /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetError(TextWriter newError) => System.Console.SetError(newError);
 
         /// <summary>
         /// カーソルの位置を取得します。

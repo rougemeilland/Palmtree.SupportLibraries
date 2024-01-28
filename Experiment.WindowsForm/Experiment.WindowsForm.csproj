@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>False</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

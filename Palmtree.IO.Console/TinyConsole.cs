@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Palmtree.Text;
 
 namespace Palmtree.IO.Console
@@ -28,22 +29,129 @@ namespace Palmtree.IO.Console
         private const Char _alternativeCharacterSetMapMaximumKey = '\u007e';
 
         private static readonly NativeDllNameResolver _dllNameResolver;
-        private static readonly IntPtr _consoleOutputHandle;
-        private static readonly Int32 _consoleOutputFileNo;
-        private static readonly TextWriter _consoleTextWriter;
-        private static readonly TextWriter? _escapeCodeWriter;
-        private static readonly ConsoleColor _defaultBackgrouongColor = System.Console.BackgroundColor;
-        private static readonly ConsoleColor _defaultForegrouongColor = System.Console.ForegroundColor;
-        private static readonly TerminalInfo? ___thisTerminalInfo = TerminalInfo.GetTerminalInfo(true);
-        private static readonly Char[] _alternativeCharacterSetMap;
+        private static readonly Object _lockObject;
+        private static readonly ConsoleColor _defaultBackgrouongColor;
+        private static readonly ConsoleColor _defaultForegrouongColor;
 
-        private static ConsoleColor _currentBackgrouongColor = System.Console.BackgroundColor;
-        private static ConsoleColor _currentForegrouongColor = System.Console.ForegroundColor;
+        private static TerminalInfo? __thisTerminalInfo;
+        private static Boolean __initializedRedirection;
+        private static IntPtr __consoleOutputHandle;
+        private static Int32 __consoleOutputFileNo;
+        private static Char[]? __alternativeCharacterSetMap;
+        private static TextWriter? __consoleTextWriter;
+        private static TextWriter? __escapeCodeWriter;
+        private static ConsoleColor _currentBackgrouongColor;
+        private static ConsoleColor _currentForegrouongColor;
         private static CharacterSet _currentCharSet;
 
-        private static TerminalInfo ThisTerminalInfo
-            => ___thisTerminalInfo
-                ?? throw new InvalidOperationException("Terminal information not found.");
+        #region private properties
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        private static TerminalInfo _thisTerminalInfo
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                lock (_lockObject)
+                {
+                    if (__thisTerminalInfo is not null)
+                        return __thisTerminalInfo;
+                    __thisTerminalInfo = TerminalInfo.GetTerminalInfo(true);
+                    if (__thisTerminalInfo is null)
+                        throw new InvalidOperationException("Terminal information not found.");
+                    return __thisTerminalInfo;
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        private static IntPtr _consoleOutputHandle
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                lock (_lockObject)
+                {
+                    if (!__initializedRedirection)
+                        RefreshRedirectionSettings();
+                    return __consoleOutputHandle;
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        private static Int32 _consoleOutputFileNo
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                lock (_lockObject)
+                {
+                    if (!__initializedRedirection)
+                        RefreshRedirectionSettings();
+                    return __consoleOutputFileNo;
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        private static TextWriter _consoleTextWriter
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                lock (_lockObject)
+                {
+                    if (!__initializedRedirection)
+                        RefreshRedirectionSettings();
+                    Validation.Assert(__consoleTextWriter is not null, "__consoleTextWriter is not null");
+                    return __consoleTextWriter;
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        private static TextWriter? _escapeCodeWriter
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                lock (_lockObject)
+                {
+                    if (!__initializedRedirection)
+                        RefreshRedirectionSettings();
+                    return __escapeCodeWriter;
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        private static Char[] _alternativeCharacterSetMap
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                lock (_lockObject)
+                {
+                    if (__alternativeCharacterSetMap is not null)
+                        return __alternativeCharacterSetMap;
+
+                    __alternativeCharacterSetMap = Array.Empty<Char>();
+                    var acs = _thisTerminalInfo.AcsChars;
+                    if (acs is not null)
+                    {
+                        __alternativeCharacterSetMap = new Char[_alternativeCharacterSetMapMaximumKey - _alternativeCharacterSetMapMinimumKey + 1];
+                        Array.Fill(__alternativeCharacterSetMap, '\u0000');
+                        for (var index = 0; index + 1 < acs.Length; index += 2)
+                            __alternativeCharacterSetMap[acs[index] - _alternativeCharacterSetMapMinimumKey] = acs[index + 1];
+                    }
+
+                    return __alternativeCharacterSetMap;
+                }
+            }
+        }
+
+        #endregion
 
         static TinyConsole()
         {
@@ -51,114 +159,96 @@ namespace Palmtree.IO.Console
             NativeLibrary.SetDllImportResolver(
                 typeof(InterOpUnix).Assembly,
                 (libraryName, assembly, searchPath) => _dllNameResolver.ResolveDllName(libraryName, assembly, searchPath));
+            _lockObject = new Object();
+            _defaultBackgrouongColor = System.Console.BackgroundColor;
+            _defaultForegrouongColor = System.Console.ForegroundColor;
 
-            if (!System.Console.IsOutputRedirected)
-            {
-                _consoleOutputHandle =
-                    OperatingSystem.IsWindows()
-                    ? InterOpWindows.GetStdHandle(InterOpWindows.STD_OUTPUT_HANDLE)
-                    : InterOpWindows.INVALID_HANDLE_VALUE;
-
-                _consoleOutputFileNo =
-                    OperatingSystem.IsWindows()
-                    ? -1
-                    : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_OUT);
-                _consoleTextWriter =
-                    new StreamWriter(
-                        System.Console.OpenStandardOutput(),
-                        System.Console.OutputEncoding.WithoutPreamble(),
-                        256,
-                        true)
-                    { AutoFlush = true };
-                _escapeCodeWriter = _consoleTextWriter;
-            }
-            else if (!System.Console.IsErrorRedirected)
-            {
-                _consoleOutputHandle =
-                    OperatingSystem.IsWindows()
-                    ? InterOpWindows.GetStdHandle(InterOpWindows.STD_ERROR_HANDLE)
-                    : InterOpWindows.INVALID_HANDLE_VALUE;
-                _consoleOutputFileNo =
-                    OperatingSystem.IsWindows()
-                    ? -1
-                    : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_ERR);
-                _consoleTextWriter =
-                    new StreamWriter(
-                        System.Console.OpenStandardError(),
-                        System.Console.OutputEncoding.WithoutPreamble(),
-                        256,
-                        true)
-                    { AutoFlush = true };
-                _escapeCodeWriter = _consoleTextWriter;
-            }
-            else
-            {
-                _consoleOutputHandle = InterOpWindows.INVALID_HANDLE_VALUE;
-                _consoleOutputFileNo = -1;
-                _consoleTextWriter =
-                        new StreamWriter(
-                            System.Console.OpenStandardError(),
-                            System.Console.OutputEncoding.WithoutPreamble(),
-                            256,
-                            true)
-                        { AutoFlush = true };
-                _escapeCodeWriter = null;
-            }
-
-            _alternativeCharacterSetMap = Array.Empty<Char>();
+            __thisTerminalInfo = null;
+            __initializedRedirection = false;
+            __consoleOutputHandle = InterOpWindows.INVALID_HANDLE_VALUE;
+            __consoleOutputFileNo = -1;
+            __consoleTextWriter = null;
+            __escapeCodeWriter = null;
+            __alternativeCharacterSetMap = null;
+            _currentBackgrouongColor = System.Console.BackgroundColor;
+            _currentForegrouongColor = System.Console.ForegroundColor;
             _currentCharSet = CharacterSet.Primary;
+        }
 
-            if (___thisTerminalInfo is not null)
+        #region InputEncoding / OutputEncoding
+
+        /// <summary>
+        /// コンソールが入力内容の読み取り時に使用するエンコーディングを取得または設定します。
+        /// </summary>
+        public static Encoding InputEncoding
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => System.Console.InputEncoding;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => System.Console.InputEncoding = value;
+        }
+
+        /// <summary>
+        /// コンソールが出力内容の書き込み時に使用するエンコーディングを取得または設定します。
+        /// </summary>
+        public static Encoding OutputEncoding
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => System.Console.OutputEncoding;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
             {
-                var acs = ___thisTerminalInfo.AcsChars;
-                if (acs is not null)
-                {
-                    _alternativeCharacterSetMap = new Char[_alternativeCharacterSetMapMaximumKey - _alternativeCharacterSetMapMinimumKey + 1];
-                    Array.Fill(_alternativeCharacterSetMap, '\u0000');
-                    for (var index = 0; index + 1 < acs.Length; index += 2)
-                        _alternativeCharacterSetMap[acs[index] - _alternativeCharacterSetMapMinimumKey] = acs[index + 1];
-                }
-            }
-
-            if (OperatingSystem.IsWindows() && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
-            {
-                // Windows プラットフォームであり、かつ
-                // コンソール出力ハンドルが有効である (つまり標準出力と標準エラー出力のどちらかがリダイレクトされていない) 場合
-
-                // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグ (エスケープコードを解釈可能かどうか) を調べる
-
-                if (!InterOpWindows.GetConsoleMode(_consoleOutputHandle, out var mode))
-                    throw new Exception("Failed to get console mode.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
-
-                if ((mode & InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0)
-                {
-                    // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っていない場合
-
-                    // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグをセットする
-                    if (!InterOpWindows.SetConsoleMode(_consoleOutputHandle, mode | InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING))
-                        throw new Exception("Failed to set console mode.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
-
-                    // 再度、コンソールモードの ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグを調べる
-                    if (!InterOpWindows.GetConsoleMode(_consoleOutputHandle, out mode))
-                        throw new Exception("Failed to get console mode.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
-
-                    if ((mode & InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0)
-                    {
-                        // 一度コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグをセットしたにもかかわらず、ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグがセットされていない場合
-
-                        // ターミナルがエスケープコードをサポートしていないとみなす
-                        _escapeCodeWriter = null;
-                    }
-                }
-            }
-
-            if (!ImplementWithWin32Api && _escapeCodeWriter is not null && ___thisTerminalInfo is not null)
-            {
-                var exitAltCharsetMode = ___thisTerminalInfo.ExitAltCharsetMode;
-                if (exitAltCharsetMode is not null)
-                    _escapeCodeWriter.Write(exitAltCharsetMode);
+                System.Console.OutputEncoding = value;
+                ClearRedirectionSettings();
             }
         }
+
+        #endregion
+
+        #region SetIn / SetOut / SetErr
+
+        /// <summary>
+        /// 指定した <see cref="TextReader"/> を <see cref="In"/> プロパティに設定します。
+        /// </summary>
+        /// <param name="newIn">
+        /// 新しい標準入力であるストリームです。
+        /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetIn(TextReader newIn)
+        {
+            System.Console.SetIn(newIn);
+            ClearRedirectionSettings();
+        }
+
+        /// <summary>
+        /// 指定した <see cref="TextWriter"/> を <see cref="Out"/> プロパティに設定します。
+        /// </summary>
+        /// <param name="newOut">
+        /// 新しい標準出力であるストリームです。
+        /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetOut(TextWriter newOut)
+        {
+            System.Console.SetOut(newOut);
+            ClearRedirectionSettings();
+        }
+
+        /// <summary>
+        /// 指定した <see cref="TextWriter"/> を <see cref="Error"/> プロパティに設定します。
+        /// </summary>
+        /// <param name="newError">
+        /// 新しい標準エラー出力であるストリームです。
+        /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetError(TextWriter newError)
+        {
+            System.Console.SetError(newError);
+            ClearRedirectionSettings();
+        }
+
+        #endregion
 
         #region BackgroundColor / ForegroundColor / ResetColor
 
@@ -259,7 +349,7 @@ namespace Palmtree.IO.Console
             }
             else
             {
-                var resetColorEscapeCode = ThisTerminalInfo.ResetColor;
+                var resetColorEscapeCode = _thisTerminalInfo.ResetColor;
                 if (resetColorEscapeCode is not null)
                 {
                     WriteAnsiEscapeCodeToConsole(
@@ -320,7 +410,7 @@ namespace Palmtree.IO.Console
                 else
                 {
                     WriteAnsiEscapeCodeToConsole(
-                        ThisTerminalInfo.SetTitle(value)
+                        _thisTerminalInfo.SetTitle(value)
                         ?? throw new InvalidOperationException("This terminal does not define the capability to change the window title."),
                         () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to set the title of the cursor."));
                 }
@@ -349,7 +439,7 @@ namespace Palmtree.IO.Console
             else
             {
                 WriteAnsiEscapeCodeToConsole(
-                    ThisTerminalInfo.Bell ?? throw new InvalidOperationException("This terminal does not define the \"bell\" capability."),
+                    _thisTerminalInfo.Bell ?? throw new InvalidOperationException("This terminal does not define the \"bell\" capability."),
                     () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, it cannot beep."));
             }
         }
@@ -384,7 +474,7 @@ namespace Palmtree.IO.Console
                 ClearScreenCore(0, 0, consoleInfo.dwSize.X * consoleInfo.dwSize.Y, consoleInfo.wAttributes);
 
                 // Windows ターミナルなどのターミナルでは Win32 API のみではコンソールバッファが消去されないため、エスケープコードも併用する。
-                var eraseScrollBufferEscapeSequence = ThisTerminalInfo.EraseScrollBuffer;
+                var eraseScrollBufferEscapeSequence = _thisTerminalInfo.EraseScrollBuffer;
                 if (eraseScrollBufferEscapeSequence is not null)
                 {
                     WriteAnsiEscapeCodeToConsole(
@@ -395,8 +485,8 @@ namespace Palmtree.IO.Console
             else
             {
                 WriteAnsiEscapeCodeToConsole(
-                    ThisTerminalInfo.ClearBuffer
-                        ?? ThisTerminalInfo.ClearScreen
+                    _thisTerminalInfo.ClearBuffer
+                        ?? _thisTerminalInfo.ClearScreen
                         ?? throw new InvalidOperationException("This terminal does not define the capability to clear the console buffer."),
                     () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, the console screen cannot be cleared."));
             }
@@ -505,7 +595,7 @@ namespace Palmtree.IO.Console
                         if (eraseMode == ConsoleEraseMode.EntireConsoleBuffer)
                         {
                             // Windows ターミナルなどのターミナルでは Win32 API のみではコンソールバッファが消去されないため、エスケープコードも併用する。
-                            var eraseScrollBufferEscapeSequence = ThisTerminalInfo.EraseScrollBuffer;
+                            var eraseScrollBufferEscapeSequence = _thisTerminalInfo.EraseScrollBuffer;
                             if (eraseScrollBufferEscapeSequence is not null)
                                 WriteAnsiEscapeCodeToConsole(eraseScrollBufferEscapeSequence, () => { });
                         }
@@ -519,13 +609,13 @@ namespace Palmtree.IO.Console
                 WriteAnsiEscapeCodeToConsole(
                     eraseMode switch
                     {
-                        ConsoleEraseMode.FromCursorToEndOfScreen => ThisTerminalInfo.ClrEos ?? throw new InvalidOperationException("This terminal does not support the capability \"clr_eos\"."),
-                        ConsoleEraseMode.FromBeggingOfScreenToCursor => ThisTerminalInfo.EraseInDisplay1 ?? throw new InvalidOperationException("This terminal does not support the capability to erase from the beginning of the screen to the cursor position."),
-                        ConsoleEraseMode.EntireScreen => ThisTerminalInfo.ClearScreen ?? throw new InvalidOperationException("This terminal does not support the capability \"clear_screen\"."),
-                        ConsoleEraseMode.EntireConsoleBuffer => ThisTerminalInfo.ClearBuffer ?? throw new InvalidOperationException("This terminal doesn't support the capability to clear the console buffer."),
-                        ConsoleEraseMode.FromCursorToEndOfLine => ThisTerminalInfo.ClrEol ?? throw new InvalidOperationException("This terminal does not support the capability \"clr_eol\"."),
-                        ConsoleEraseMode.FromBeggingOfLineToCursor => ThisTerminalInfo.ClrBol ?? throw new InvalidOperationException("This terminal does not support the capability \"clr_bol\"."),
-                        ConsoleEraseMode.EntireLine => ThisTerminalInfo.EraseInLine2 ?? throw new InvalidOperationException("This terminal does not support the capability to erase entire lines."),
+                        ConsoleEraseMode.FromCursorToEndOfScreen => _thisTerminalInfo.ClrEos ?? throw new InvalidOperationException("This terminal does not support the capability \"clr_eos\"."),
+                        ConsoleEraseMode.FromBeggingOfScreenToCursor => _thisTerminalInfo.EraseInDisplay1 ?? throw new InvalidOperationException("This terminal does not support the capability to erase from the beginning of the screen to the cursor position."),
+                        ConsoleEraseMode.EntireScreen => _thisTerminalInfo.ClearScreen ?? throw new InvalidOperationException("This terminal does not support the capability \"clear_screen\"."),
+                        ConsoleEraseMode.EntireConsoleBuffer => _thisTerminalInfo.ClearBuffer ?? throw new InvalidOperationException("This terminal doesn't support the capability to clear the console buffer."),
+                        ConsoleEraseMode.FromCursorToEndOfLine => _thisTerminalInfo.ClrEol ?? throw new InvalidOperationException("This terminal does not support the capability \"clr_eol\"."),
+                        ConsoleEraseMode.FromBeggingOfLineToCursor => _thisTerminalInfo.ClrBol ?? throw new InvalidOperationException("This terminal does not support the capability \"clr_bol\"."),
+                        ConsoleEraseMode.EntireLine => _thisTerminalInfo.EraseInLine2 ?? throw new InvalidOperationException("This terminal does not support the capability to erase entire lines."),
                         _ => throw new ArgumentException($"Invalid erase mode.: {eraseMode}", nameof(eraseMode)),
                     },
                     () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to delete console characters."));
@@ -577,9 +667,9 @@ namespace Palmtree.IO.Console
                     WriteAnsiEscapeCodeToConsole(
                         value switch
                         {
-                            ConsoleCursorVisiblity.Invisible => ThisTerminalInfo.CursorInvisible,
-                            ConsoleCursorVisiblity.NormalMode => ThisTerminalInfo.CursorNormal,
-                            ConsoleCursorVisiblity.HighVisibilityMode => ThisTerminalInfo.CursorVisible ?? ThisTerminalInfo.CursorNormal,
+                            ConsoleCursorVisiblity.Invisible => _thisTerminalInfo.CursorInvisible,
+                            ConsoleCursorVisiblity.NormalMode => _thisTerminalInfo.CursorNormal,
+                            ConsoleCursorVisiblity.HighVisibilityMode => _thisTerminalInfo.CursorVisible ?? _thisTerminalInfo.CursorNormal,
                             _ => throw Validation.GetFailErrorException($"Unexpected value \"{value}\""),
                         }
                         ?? throw new ArgumentException($"This terminal does not support {value}."),
@@ -688,7 +778,7 @@ namespace Palmtree.IO.Console
         /// 現在使用中のターミナルの情報を取得します。
         /// </summary>
         public static TerminalInfo Terminal
-            => ThisTerminalInfo
+            => _thisTerminalInfo
                 ?? throw new InvalidOperationException("Information about the terminal currently in use cannot be found.");
 
         #endregion
@@ -721,6 +811,141 @@ namespace Palmtree.IO.Console
 
         #region private methods
 
+        private static void ClearRedirectionSettings()
+        {
+            lock (_lockObject)
+            {
+                __initializedRedirection = false;
+            }
+        }
+
+        private static void RefreshRedirectionSettings()
+        {
+            if (!__initializedRedirection)
+            {
+                if (!System.Console.IsOutputRedirected)
+                {
+                    __consoleOutputHandle =
+                        OperatingSystem.IsWindows()
+                        ? InterOpWindows.GetStdHandle(InterOpWindows.STD_OUTPUT_HANDLE)
+                        : InterOpWindows.INVALID_HANDLE_VALUE;
+
+                    __consoleOutputFileNo =
+                        OperatingSystem.IsWindows()
+                        ? -1
+                        : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_OUT);
+                    __consoleTextWriter =
+                        new StreamWriter(
+                            System.Console.OpenStandardOutput(),
+                            System.Console.OutputEncoding.WithoutPreamble(),
+                            256,
+                            true)
+                        { AutoFlush = true };
+                    __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
+                    OutputExitAltCharsetMode();
+                }
+                else if (!System.Console.IsErrorRedirected)
+                {
+                    __consoleOutputHandle =
+                        OperatingSystem.IsWindows()
+                        ? InterOpWindows.GetStdHandle(InterOpWindows.STD_ERROR_HANDLE)
+                        : InterOpWindows.INVALID_HANDLE_VALUE;
+                    __consoleOutputFileNo =
+                        OperatingSystem.IsWindows()
+                        ? -1
+                        : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_ERR);
+                    __consoleTextWriter =
+                        new StreamWriter(
+                            System.Console.OpenStandardError(),
+                            System.Console.OutputEncoding.WithoutPreamble(),
+                            256,
+                            true)
+                        { AutoFlush = true };
+                    __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
+                    OutputExitAltCharsetMode();
+                }
+                else
+                {
+                    __consoleOutputHandle = InterOpWindows.INVALID_HANDLE_VALUE;
+                    __consoleOutputFileNo = -1;
+                    __consoleTextWriter =
+                            new StreamWriter(
+                                System.Console.OpenStandardError(),
+                                System.Console.OutputEncoding.WithoutPreamble(),
+                                256,
+                                true)
+                            { AutoFlush = true };
+                    __escapeCodeWriter = null;
+                    OutputExitAltCharsetMode();
+                }
+
+                __initializedRedirection = true;
+            }
+
+            static void OutputExitAltCharsetMode()
+            {
+                if (!ImplementWithWin32Api && __escapeCodeWriter is not null && __thisTerminalInfo is not null)
+                {
+                    var exitAltCharsetMode = __thisTerminalInfo.ExitAltCharsetMode;
+                    if (exitAltCharsetMode is not null)
+                        __escapeCodeWriter.Write(exitAltCharsetMode);
+                }
+            }
+        }
+
+        private static Boolean IsSupportedAnsiEscapeSequence(IntPtr consoleOutputHandle)
+        {
+            if (!OperatingSystem.IsWindows())
+            {
+                // Windows プラットフォームではない場合
+
+                // エスケープコードを解釈可能と判断する
+                return true;
+            }
+
+            if (consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
+            {
+                // コンソール出力ハンドルが無効である場合
+
+                // Win32 API によるコンソール操作ができないので、(かなり強引ではあるが) エスケープコードを解釈可能とする。
+                return true;
+            }
+
+            // Windows プラットフォームであり、かつ
+            // コンソール出力ハンドルが有効である (つまり標準出力と標準エラー出力のどちらかがリダイレクトされていない) 場合
+
+            // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグ (エスケープコードを解釈可能かどうか) を調べる
+            if (!InterOpWindows.GetConsoleMode(consoleOutputHandle, out var mode))
+                throw new Exception("Failed to get console mode.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+
+            if ((mode & InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0)
+            {
+                // コンソールモードに既に ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っている (エスケープコードを解釈可能である) 場合
+                return true;
+            }
+
+            // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っていない場合
+
+            // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグをセットする
+            if (!InterOpWindows.SetConsoleMode(consoleOutputHandle, mode | InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+                throw new Exception("Failed to set console mode.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+
+            // 再度、コンソールモードの ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグを調べる
+            if (!InterOpWindows.GetConsoleMode(consoleOutputHandle, out mode))
+                throw new Exception("Failed to get console mode.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+
+            if ((mode & InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0)
+            {
+                // コンソールモードに既に ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っている (エスケープコードを解釈可能である) 場合
+                return true;
+            }
+
+            // 一度コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグをセットしたにもかかわらず、ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグがセットされていない場合
+
+            // ターミナルがエスケープコードをサポートしていないとみなす
+            return false;
+        }
+
         private static void SetBackgroundColorCore(ConsoleColor value)
         {
             if (ImplementWithWin32Api)
@@ -742,8 +967,8 @@ namespace Palmtree.IO.Console
             {
 
                 WriteAnsiEscapeCodeToConsole(
-                    ThisTerminalInfo.SetABackground(value.ToAnsiColor16())
-                    ?? ThisTerminalInfo.SetBackground(value.ToColor8())
+                    _thisTerminalInfo.SetABackground(value.ToAnsiColor16())
+                    ?? _thisTerminalInfo.SetBackground(value.ToColor8())
                     ?? throw new InvalidOperationException("This terminal does not define the capability to change the text background color."),
                     () => throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed."));
 
@@ -773,8 +998,8 @@ namespace Palmtree.IO.Console
             else
             {
                 WriteAnsiEscapeCodeToConsole(
-                    ThisTerminalInfo.SetAForeground(value.ToAnsiColor16())
-                        ?? ThisTerminalInfo.SetForeground(value.ToColor8())
+                    _thisTerminalInfo.SetAForeground(value.ToAnsiColor16())
+                        ?? _thisTerminalInfo.SetForeground(value.ToColor8())
                         ?? throw new InvalidOperationException("This terminal does not define the capability to change the foreground color of characters."),
                     () => throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed."));
             }
@@ -802,7 +1027,7 @@ namespace Palmtree.IO.Console
 
                 if (InterOpUnix.GetWindowSize(_consoleOutputFileNo, out var windowSize, out _) == 0)
                     return (windowSize.Col, windowSize.Row);
-                return (ThisTerminalInfo.Columns ?? throw new InvalidOperationException("The terminal does not have the capability \"columns\" defined."), ThisTerminalInfo.Lines ?? throw new InvalidOperationException("The terminal does not have the capability \"lines\" defined."));
+                return (_thisTerminalInfo.Columns ?? throw new InvalidOperationException("The terminal does not have the capability \"columns\" defined."), _thisTerminalInfo.Lines ?? throw new InvalidOperationException("The terminal does not have the capability \"lines\" defined."));
             }
         }
 
@@ -833,13 +1058,13 @@ namespace Palmtree.IO.Console
                 if (n > 0)
                 {
                     WriteAnsiEscapeCodeToConsole(
-                        ThisTerminalInfo.ParmDownCursor(n) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_down_cursor\"."),
+                        _thisTerminalInfo.ParmDownCursor(n) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_down_cursor\"."),
                         errorHandler);
                 }
                 else if (n < 0)
                 {
                     WriteAnsiEscapeCodeToConsole(
-                        ThisTerminalInfo.ParmUpCursor(checked(-n)) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_up_cursor\"."),
+                        _thisTerminalInfo.ParmUpCursor(checked(-n)) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_up_cursor\"."),
                         errorHandler);
                 }
             }
@@ -872,13 +1097,13 @@ namespace Palmtree.IO.Console
                 if (n > 0)
                 {
                     WriteAnsiEscapeCodeToConsole(
-                        ThisTerminalInfo.ParmRightCursor(n) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_right_cursor\"."),
+                        _thisTerminalInfo.ParmRightCursor(n) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_right_cursor\"."),
                         errorHandler);
                 }
                 else if (n < 0)
                 {
                     WriteAnsiEscapeCodeToConsole(
-                        ThisTerminalInfo.ParmLeftCursor(checked(-n)) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_left_cursor\"."),
+                        _thisTerminalInfo.ParmLeftCursor(checked(-n)) ?? throw new InvalidOperationException("This terminal does not define the capability \"parm_left_cursor\"."),
                         errorHandler);
                 }
             }
@@ -926,7 +1151,7 @@ namespace Palmtree.IO.Console
                     {
                         if (_escapeCodeWriter is null)
                             throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to change the character set.");
-                        var escapeCode = ThisTerminalInfo.ExitAltCharsetMode ?? throw new InvalidOperationException("The terminal does not define the capability \"exit_alt_charset_mode\".");
+                        var escapeCode = _thisTerminalInfo.ExitAltCharsetMode ?? throw new InvalidOperationException("The terminal does not define the capability \"exit_alt_charset_mode\".");
                         _escapeCodeWriter.Write(escapeCode);
                         _currentCharSet = charSet;
                     }
@@ -937,7 +1162,7 @@ namespace Palmtree.IO.Console
                     {
                         if (_escapeCodeWriter is null)
                             throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to change the character set.");
-                        var escapeCode = ThisTerminalInfo.EnterAltCharsetMode ?? throw new InvalidOperationException("The terminal does not define the capability \"enter_alt_charset_mode\".");
+                        var escapeCode = _thisTerminalInfo.EnterAltCharsetMode ?? throw new InvalidOperationException("The terminal does not define the capability \"enter_alt_charset_mode\".");
                         _escapeCodeWriter.Write(escapeCode);
                         _currentCharSet = charSet;
                     }
