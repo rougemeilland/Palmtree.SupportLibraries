@@ -8,7 +8,7 @@ using Palmtree.IO.Console;
 
 namespace Experiment.CSharp
 {
-    public class Program
+    internal class Program
     {
         private class Application
             : BatchApplication
@@ -60,23 +60,25 @@ namespace Experiment.CSharp
                 }
             }
 
-            protected override void Finish(ResultCode result)
+            protected override void Finish(ResultCode result, bool isLaunchedByConsoleApplicationLauncher)
             {
                 if (result == ResultCode.Success)
                     TinyConsole.WriteLine("Completed.");
                 else
                     TinyConsole.WriteLine("Cancelled.");
-            }
-        }
 
-        public static int Launch(string? title, Encoding? encoding, string[] args)
-        {
-            return new Application(title, encoding).Run(args);
+                if (isLaunchedByConsoleApplicationLauncher)
+                {
+                    TinyConsole.Beep();
+                    TinyConsole.WriteLine("Hit ENTER key to exit.");
+                    _ = TinyConsole.ReadLine();
+                }
+            }
         }
 
         private static int Main(string[] args)
         {
-            return Launch(null, null, args);
+            return new Application("experiment", Encoding.UTF8).Run(args);
         }
     }
 }

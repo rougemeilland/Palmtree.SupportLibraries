@@ -49,7 +49,7 @@ namespace Palmtree.Application
             }
 
             CleanUp(result);
-            Finish(result);
+            Finish(result, ConsoleApplicationLauncher.IsLaunchedByThisLauncher);
             return (Int32)result;
         }
 
@@ -63,8 +63,13 @@ namespace Palmtree.Application
         {
         }
 
-        protected virtual void Finish(ResultCode result)
+        protected virtual void Finish(ResultCode result, Boolean isLaunchedByConsoleApplicationLauncher)
         {
+            if (isLaunchedByConsoleApplicationLauncher)
+            {
+                TinyConsole.Beep();
+                _ = TinyConsole.ReadLine();
+            }
         }
 
         protected Boolean IsPressedBreak

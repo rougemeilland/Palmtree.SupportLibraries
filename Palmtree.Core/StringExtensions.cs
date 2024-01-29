@@ -9,7 +9,6 @@ namespace Palmtree
 {
     public static partial class StringExtensions
     {
-        private static readonly Char[] _anyOfTabOrSpaceOrDoubleQuote = new[] { '\t', ' ', '"' };
         private static readonly Char[] _anyOfTabOrSpace = new[] { '\t', ' ' };
 
         static StringExtensions()
@@ -142,22 +141,46 @@ namespace Palmtree
         /// <summary>
         /// 指定された文字列をコマンドラインの引数の形式でエンコードします。
         /// </summary>
-        /// <param name="s">エンコード対象の文字列です。</param>
+        /// <param name="arg">エンコード対象の文字列です。</param>
+        /// <param name="forShell">シェル用のエンコードを行うならば true、そうではないのなら false です。</param>
         /// <returns>エンコードされた文字列です。</returns>
-        /// <remarks>エンコードの方法は実行環境のプラットフォームによって異なります。</remarks>
-        public static String CommandLineArgumentEncode(this String s)
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>エンコードの方法は実行環境のプラットフォームによって異なります。</item>
+        /// <item> Windows 以外のオペレーティングシステムでは <paramref name="forShell"/> を true に指定することはできません。</item>
+        /// </list>
+        /// </remarks>
+        public static String CommandLineArgumentEncode(this String arg, Boolean forShell = false)
         {
             return
                 OperatingSystem.IsWindows()
-                ? s.IndexOfAny(_anyOfTabOrSpaceOrDoubleQuote) >= 0
-                    ? $"\"{EncodeForWindows(s)}\""
-                    : s
-                : s.IndexOfAny(_anyOfTabOrSpace) >= 0
-                    ? $"\"{EncodeForUnix(s)}\""
-                    : EncodeForUnix(s);
+                ? EncodeForWindows(arg, forShell)
+                : EncodeForUnix(arg, forShell);
 
-            static String EncodeForWindows(String arg) => String.Concat(arg.Select(c => c == '"' ? "\"\"" : c.ToString()));
-            static String EncodeForUnix(String arg) => String.Concat(arg.Select(c => c == '\\' ? "\\\\" : c == '"' ? "\\\"" : c.ToString()));
+            static String EncodeForUnix(String arg, Boolean forShell)
+            {
+                if (forShell)
+                    throw new NotSupportedException();
+
+                arg = GetDoubleQuoteOrBackSlashPattern().Replace(arg, "\\$1");
+                if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
+                    return arg;
+                return $"\"{arg}\"";
+            }
+
+            static String EncodeForWindows(String arg, Boolean forShell)
+            {
+                if (forShell)
+                    arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^$1");
+                arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
+                if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
+                    return arg;
+                arg = GetEndsWithBaskSlashPattern().Replace(arg, "$1$1");
+                return
+                    forShell
+                    ? $"\"{arg}\""
+                    : $"^\"{arg}^\"";
+            }
         }
 
         /// <summary>
@@ -372,5 +395,21 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GeneratedRegex("([\\?!]*\\?[\\?!]*)", RegexOptions.Compiled)]
         private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("(&|<|>|\\^|\\|)", RegexOptions.Compiled)]
+        private static partial Regex GetCharacterEscapedAtCaretPattern();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("(\"|\\\\)", RegexOptions.Compiled)]
+        private static partial Regex GetDoubleQuoteOrBackSlashPattern();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("(\\\\*)\"", RegexOptions.Compiled)]
+        private static partial Regex GetBackSlashAndDoubleQuotePattern();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GeneratedRegex("(\\\\+)$", RegexOptions.Compiled)]
+        private static partial Regex GetEndsWithBaskSlashPattern();
     }
 }
