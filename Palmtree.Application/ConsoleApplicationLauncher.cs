@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Text;
 
-namespace Palmtree
+namespace Palmtree.Application
 {
     /// <summary>
     /// コンソールアプリケーションをシェル (コマンドプロンプト) 経由で起動するためのクラスです。
