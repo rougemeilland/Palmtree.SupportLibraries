@@ -29,6 +29,8 @@ namespace Palmtree
 
         public static IEnumerable<String> ChunkAsString(this IEnumerable<Char> source, Int32 count)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
             if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
@@ -60,7 +62,14 @@ namespace Palmtree
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<Char> Slice(this String sourceString, UInt32 offset)
-            => sourceString.Slice(checked((Int32)offset));
+        {
+            if (sourceString is null)
+                throw new ArgumentNullException(nameof(sourceString));
+            if (checked((Int32)offset) > sourceString.Length)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+
+            return sourceString.Slice(checked((Int32)offset));
+        }
 
         public static ReadOnlyMemory<Char> Slice(this String sourceString, Range range)
         {
@@ -97,22 +106,28 @@ namespace Palmtree
         /// <param name="s">エンコード対象の文字列です。</param>
         /// <returns>エンコードされた文字列です。</returns>
         public static String JsonEncode(this String s)
-            => String.Concat(
-                s.Select(c =>
-                    c switch
-                    {
-                        '\u0000' or '\u0001' or '\u0002' or '\u0003' or '\u0004' or '\u0005' or '\u0006' or '\u0007' or '\u000b' or '\u000e' or '\u000f' or '\u0010' or '\u0011' or '\u0012' or '\u0013' or '\u0014' or '\u0015' or '\u0016' or '\u0017' or '\u0018' or '\u0019' or '\u001a' or '\u001b' or '\u001c' or '\u001d' or '\u001e' or '\u001f' or '\u007f'
-                            => $"\\u{(Int32)c:x4}",
-                        '\u0008' => "\\b",
-                        '\u0009' => "\\t",
-                        '\u000a' => "\\n",
-                        '\u000c' => "\\f",
-                        '\u000d' => "\\r",
-                        '\"' => "\\\"",
-                        '\\' => "\\\\",
-                        '/' => "\\/",
-                        _ => c.ToString(),
-                    }));
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return
+                String.Concat(
+                    s.Select(c =>
+                        c switch
+                        {
+                            '\u0000' or '\u0001' or '\u0002' or '\u0003' or '\u0004' or '\u0005' or '\u0006' or '\u0007' or '\u000b' or '\u000e' or '\u000f' or '\u0010' or '\u0011' or '\u0012' or '\u0013' or '\u0014' or '\u0015' or '\u0016' or '\u0017' or '\u0018' or '\u0019' or '\u001a' or '\u001b' or '\u001c' or '\u001d' or '\u001e' or '\u001f' or '\u007f'
+                                => $"\\u{(Int32)c:x4}",
+                            '\u0008' => "\\b",
+                            '\u0009' => "\\t",
+                            '\u000a' => "\\n",
+                            '\u000c' => "\\f",
+                            '\u000d' => "\\r",
+                            '\"' => "\\\"",
+                            '\\' => "\\\\",
+                            '/' => "\\/",
+                            _ => c.ToString(),
+                        }));
+        }
 
         /// <summary>
         /// 指定された文字列を C# の文字列リテラル形式でエンコードします。
@@ -120,23 +135,29 @@ namespace Palmtree
         /// <param name="s">エンコード対象の文字列です。</param>
         /// <returns>エンコードされた文字列です。</returns>
         public static String CSharpEncode(this String s)
-            => String.Concat(
-                s.Select(c =>
-                    c switch
-                    {
-                        '\u0000' or '\u0001' or '\u0002' or '\u0003' or '\u0004' or '\u0005' or '\u0006' or '\u000e' or '\u000f' or '\u0010' or '\u0011' or '\u0012' or '\u0013' or '\u0014' or '\u0015' or '\u0016' or '\u0017' or '\u0018' or '\u0019' or '\u001a' or '\u001b' or '\u001c' or '\u001d' or '\u001e' or '\u001f' or '\u007f'
-                            => $"\\u{(Int32)c:x4}",
-                        '\u0007' => "\\a",
-                        '\u0008' => "\\b",
-                        '\u0009' => "\\t",
-                        '\u000a' => "\\n",
-                        '\u000b' => "\\v",
-                        '\u000c' => "\\f",
-                        '\u000d' => "\\r",
-                        '\"' => "\\\"",
-                        '\\' => "\\\\",
-                        _ => c.ToString(),
-                    }));
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return
+                String.Concat(
+                    s.Select(c =>
+                        c switch
+                        {
+                            '\u0000' or '\u0001' or '\u0002' or '\u0003' or '\u0004' or '\u0005' or '\u0006' or '\u000e' or '\u000f' or '\u0010' or '\u0011' or '\u0012' or '\u0013' or '\u0014' or '\u0015' or '\u0016' or '\u0017' or '\u0018' or '\u0019' or '\u001a' or '\u001b' or '\u001c' or '\u001d' or '\u001e' or '\u001f' or '\u007f'
+                                => $"\\u{(Int32)c:x4}",
+                            '\u0007' => "\\a",
+                            '\u0008' => "\\b",
+                            '\u0009' => "\\t",
+                            '\u000a' => "\\n",
+                            '\u000b' => "\\v",
+                            '\u000c' => "\\f",
+                            '\u000d' => "\\r",
+                            '\"' => "\\\"",
+                            '\\' => "\\\\",
+                            _ => c.ToString(),
+                        }));
+        }
 
         /// <summary>
         /// 指定された文字列をコマンドラインの引数の形式でエンコードします。
@@ -152,6 +173,9 @@ namespace Palmtree
         /// </remarks>
         public static String CommandLineArgumentEncode(this String arg, Boolean forShell = false)
         {
+            if (arg is null)
+                throw new ArgumentNullException(nameof(arg));
+
             return
                 OperatingSystem.IsWindows()
                 ? EncodeForWindows(arg, forShell)
@@ -184,12 +208,78 @@ namespace Palmtree
         }
 
         /// <summary>
+        /// 指定した文字列の英数字記号を半角文字に置換します。
+        /// </summary>
+        /// <param name="s">
+        /// 置換する文字列を示す <see cref="String"/> オブジェクトです。
+        /// </param>
+        /// <returns>
+        /// 置換された文字列を示す <see cref="String"/> オブジェクトです。
+        /// </returns>
+        public static String ToNarrow(this String s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            var sb = new StringBuilder();
+            foreach (var c in s)
+            {
+                _ = sb.Append(
+                    c switch
+                    {
+                        '　' => ' ',
+                        '！' => '!',
+                        '”' => '"',
+                        '＃' => '#',
+                        '＄' => '$',
+                        '％' => '%',
+                        '＆' => '&',
+                        '’' => '\'',
+                        '（' => '(',
+                        '）' => ')',
+                        '＊' => '*',
+                        '＋' => '+',
+                        '，' => ',',
+                        '‐' => '-',
+                        '．' => '.',
+                        '／' => '/',
+                        >= '０' and <= '９' => (Char)(c - '０' + '0'),
+                        '：' => ':',
+                        '；' => ';',
+                        '＜' => '<',
+                        '＝' => '=',
+                        '＞' => '>',
+                        '？' => '?',
+                        '＠' => '@',
+                        >= 'Ａ' and <= 'Ｚ' => (Char)(c - 'Ａ' + 'A'),
+                        '［' => '[',
+                        '＼' => '\\',
+                        '］' => ']',
+                        '＾' => '^',
+                        '＿' => '_',
+                        '‘' => '`',
+                        >= 'ａ' and <= 'ｚ' => (Char)(c - 'ａ' + 'a'),
+                        '｛' => '{',
+                        '｜' => '|',
+                        '｝' => '}',
+                        '～' => '~',
+                        _ => c,
+                    });
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// 指定された文字列を Windows のファイルシステムで使用可能な形式でエンコードします。
         /// </summary>
         /// <param name="s">エンコード対象の文字列です。</param>
         /// <returns>エンコードされた文字列です。</returns>
         public static String WindowsFileNameEncoding(this String s)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             var pathName =
                 String.Concat(
                     GetQuestionMarksAndExclamationMarksSequencePattern().Replace(
