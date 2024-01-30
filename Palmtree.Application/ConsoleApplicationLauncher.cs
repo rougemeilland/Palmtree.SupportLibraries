@@ -48,8 +48,11 @@ namespace Palmtree.Application
         /// <param name="args">
         /// コンソールアプリケーションに渡す引数を示す <see cref="String"/> の配列です。
         /// </param>
+        /// <param name="keepShellRunning">
+        /// コンソールアプリケーションが終了した後もシェル (コマンドプロンプト) を実行中のままにする場合は true、そうではない場合は false です。既定値は false であり、この場合はコンソールアプリケーションが終了するとシェル (コマンドプロンプト) も終了します。
+        /// </param>
         [SupportedOSPlatform("windows")]
-        public void Launch(String[] args)
+        public void Launch(String[] args, Boolean keepShellRunning = false)
         {
             var commandParameters =
                 String.Concat(
@@ -61,7 +64,7 @@ namespace Palmtree.Application
                 new ProcessStartInfo
                 {
                     FileName = _COMMAND_PROMPT_COMMAND_NAME,
-                    Arguments = $"/c {shellCommandLine}",
+                    Arguments = $"/{(keepShellRunning ? "k" : "c")} {shellCommandLine}",
                     UseShellExecute = false,
                     CreateNoWindow = false,
                     WorkingDirectory = Environment.CurrentDirectory,
