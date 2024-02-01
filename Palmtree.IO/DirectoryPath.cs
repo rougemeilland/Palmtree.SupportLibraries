@@ -228,6 +228,12 @@ namespace Palmtree.IO
             }
         }
 
+        public static DirectoryPath UserHomeDirectory
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => new(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator DirectoryInfo(DirectoryPath path)
         {
