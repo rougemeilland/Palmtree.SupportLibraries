@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.3.16</VersionPrefix>
+    <VersionPrefix>1.3.17</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Zip compression plugin (Deflate)</Product>
     <Title>$(AssemblyName)</Title>

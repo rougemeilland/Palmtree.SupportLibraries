@@ -208,6 +208,19 @@ namespace Palmtree.IO
             }
         }
 
+        public IRandomInputByteStream<UInt64> Open(FileMode mode, FileAccess access, FileShare share)
+        {
+            _file.Refresh();
+            try
+            {
+                return _file.Open(mode, access, share).AsInputByteStream().AsRandomAccess<UInt64>();
+            }
+            finally
+            {
+                _file.Refresh();
+            }
+        }
+
         public IRandomInputByteStream<UInt64> OpenRead()
         {
             _file.Refresh();
