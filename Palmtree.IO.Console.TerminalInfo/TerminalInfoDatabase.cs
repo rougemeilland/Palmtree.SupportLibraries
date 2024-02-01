@@ -680,9 +680,9 @@ namespace Palmtree.IO.Console
             var homeEnvironmentValue = Environment.GetEnvironmentVariable("HOME");
             if (homeEnvironmentValue is not null)
                 termInfoDirectories = termInfoDirectories.Append(Path.Combine(homeEnvironmentValue, ".terminfo"));
-            var homeDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            if (!String.IsNullOrEmpty(homeDirectoryPath))
-                termInfoDirectories = termInfoDirectories.Append(Path.Combine(homeDirectoryPath, ".terminfo"));
+            var homeDirectoryPath = DirectoryPath.UserHomeDirectory;
+            if (homeDirectoryPath is not null)
+                termInfoDirectories = termInfoDirectories.Append(homeDirectoryPath.GetSubDirectory(".terminfo").FullName);
             var termInfoDirs = Environment.GetEnvironmentVariable("TERMINFO_DIRS");
             if (termInfoDirs is not null)
                 termInfoDirectories = termInfoDirectories.Concat(termInfoDirs.Split(':'));

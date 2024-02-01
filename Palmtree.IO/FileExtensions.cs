@@ -159,6 +159,50 @@ namespace Palmtree.IO
 
         #endregion
 
+        #region ReadAllText
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static String ReadAllText(this FileInfo file)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+
+            return File.ReadAllText(file.FullName);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static String ReadAllText(this FileInfo file, Encoding encoding)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (encoding is null)
+                throw new ArgumentNullException(nameof(encoding));
+
+            return File.ReadAllText(file.FullName, encoding);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static String ReadAllText(this FilePath file)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+
+            return File.ReadAllText(file.FullName);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static String ReadAllText(this FilePath file, Encoding encoding)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (encoding is null)
+                throw new ArgumentNullException(nameof(encoding));
+
+            return File.ReadAllText(file.FullName, encoding);
+        }
+
+        #endregion
+
         #region WriteAllBytes
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -245,6 +289,98 @@ namespace Palmtree.IO
 
             using var stream = file.OpenWrite();
             stream.WriteBytes(data);
+        }
+
+        #endregion
+
+        #region WriteAllLines
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FileInfo file, IEnumerable<String> lines)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FileInfo file, String[] lines)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FileInfo file, IEnumerable<String> lines, Encoding encoding)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines, encoding);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FileInfo file, String[] lines, Encoding encoding)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines, encoding);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FilePath file, IEnumerable<String> lines)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FilePath file, String[] lines)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FilePath file, IEnumerable<String> lines, Encoding encoding)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines, encoding);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteAllLines(this FilePath file, String[] lines, Encoding encoding)
+        {
+            if (file is null)
+                throw new ArgumentNullException(nameof(file));
+            if (lines is null)
+                throw new ArgumentNullException(nameof(lines));
+
+            File.WriteAllLines(file.FullName, lines, encoding);
         }
 
         #endregion
@@ -411,7 +547,7 @@ namespace Palmtree.IO
 
             var sourceFileDirectory = sourceFile.Directory ?? throw new ArgumentException($"{nameof(sourceFile)} is the relative path.", nameof(sourceFile));
             var sourceFileNameWithoutExtension = Path.GetFileNameWithoutExtension(newFileName);
-            var fileNameMatch = GetSimpleFileNamePattern().Match(sourceFileNameWithoutExtension);
+            var fileNameMatch = GetAlternateFileNamePattern().Match(sourceFileNameWithoutExtension);
             if (fileNameMatch.Success)
                 sourceFileNameWithoutExtension = fileNameMatch.Groups["path"].Value;
             var sourceFileExtension = Path.GetExtension(newFileName);
@@ -572,6 +708,6 @@ namespace Palmtree.IO
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GeneratedRegex(@"^(?<path>.*?)(\s*\([0-9]+\))+$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
-        private static partial Regex GetSimpleFileNamePattern();
+        private static partial Regex GetAlternateFileNamePattern();
     }
 }
