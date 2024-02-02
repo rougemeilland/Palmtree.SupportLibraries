@@ -173,7 +173,7 @@ namespace Palmtree.Application
         private void InternalReportInformationMessage(String message)
         {
             TinyConsole.Erase(ConsoleEraseMode.FromCursorToEndOfScreen);
-            TinyConsole.ForegroundColor = ConsoleColor.Yellow;
+            TinyConsole.ForegroundColor = ConsoleColor.White;
             TinyConsole.BackgroundColor = ConsoleColor.Black;
             TinyConsole.Error.WriteLine($"{ConsoleWindowTitle}:INFORMATION:{message}");
         }
