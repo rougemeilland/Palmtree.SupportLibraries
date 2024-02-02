@@ -16,12 +16,14 @@ namespace Palmtree.Application
         private const Int32 _INDENT_STEP = 2;
 
         private readonly String _thisProgramName;
+        private readonly Boolean _isLaunchedByThisLauncher;
 
         private Boolean _isPressedBreak;
 
         protected ApplicationBase()
         {
             _thisProgramName = GetType().Assembly.GetAssemblyFileNameWithoutExtension();
+            _isLaunchedByThisLauncher = ConsoleApplicationLauncher.IsLaunchedByThisLauncher;
         }
 
         public virtual Int32 Run(String[] args)
@@ -29,8 +31,10 @@ namespace Palmtree.Application
             ResultCode result;
             try
             {
-                TinyConsole.CursorVisible = ConsoleCursorVisiblity.Invisible;
-                TinyConsole.Title = ConsoleWindowTitle;
+                if (!CursorVisible)
+                    TinyConsole.CursorVisible = ConsoleCursorVisiblity.Invisible;
+                if (_isLaunchedByThisLauncher)
+                    TinyConsole.Title = ConsoleWindowTitle;
                 if (DelayBreak)
                     TinyConsole.CancelKeyPress += TinyConsole_CancelKeyPress;
                 var encoding = InputOutputEncoding;
@@ -49,13 +53,14 @@ namespace Palmtree.Application
             }
 
             CleanUp(result);
-            Finish(result, ConsoleApplicationLauncher.IsLaunchedByThisLauncher);
+            Finish(result, _isLaunchedByThisLauncher);
             return (Int32)result;
         }
 
         protected virtual Boolean DelayBreak => true;
         protected virtual Encoding? InputOutputEncoding => null;
         protected virtual String ConsoleWindowTitle => _thisProgramName;
+        protected virtual Boolean CursorVisible => false;
 
         protected abstract ResultCode Main(String[] args);
 
