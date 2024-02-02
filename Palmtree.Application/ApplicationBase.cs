@@ -31,6 +31,7 @@ namespace Palmtree.Application
             ResultCode result;
             try
             {
+                TinyConsole.DefaultTextWriter = ConsoleTextWriterType.StandardError;
                 if (!CursorVisible)
                     TinyConsole.CursorVisible = ConsoleCursorVisiblity.Invisible;
                 if (_isLaunchedByThisLauncher)

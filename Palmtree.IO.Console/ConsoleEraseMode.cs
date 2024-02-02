@@ -11,7 +11,7 @@
         FromCursorToEndOfScreen,
 
         /// <summary>
-        /// コンソールウィンドウの左上端からカーソル位置の1文字前まで消去します。
+        /// コンソールウィンドウの左上端からカーソル位置の 1 文字前まで消去します。
         /// </summary>
         FromBeggingOfScreenToCursor,
 

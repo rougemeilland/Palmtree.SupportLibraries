@@ -43,6 +43,7 @@ namespace Palmtree.IO.Console
         private static ConsoleColor _currentBackgrouongColor;
         private static ConsoleColor _currentForegrouongColor;
         private static CharacterSet _currentCharSet;
+        private static ConsoleTextWriterType _defaultTextWriter;
 
         #region private properties
 
@@ -173,7 +174,34 @@ namespace Palmtree.IO.Console
             _currentBackgrouongColor = System.Console.BackgroundColor;
             _currentForegrouongColor = System.Console.ForegroundColor;
             _currentCharSet = CharacterSet.Primary;
+            _defaultTextWriter = ConsoleTextWriterType.None;
         }
+
+        #region DefaultTextWriter
+
+        /// <summary>
+        /// 標準出力および標準エラー出力がともにリダイレクトされている場合の既定の出力先を取得または設定します。
+        /// </summary>
+        /// <value>
+        /// テキストの出力先を示す <see cref="ConsoleTextWriterType"/> 値です。
+        /// </value>
+        /// <remarks>
+        /// </remarks>
+        public static ConsoleTextWriterType DefaultTextWriter
+        {
+            get => _defaultTextWriter;
+
+            set
+            {
+                if (value != _defaultTextWriter)
+                {
+                    _defaultTextWriter = value;
+                    ClearRedirectionSettings();
+                }
+            }
+        }
+
+        #endregion
 
         #region InputEncoding / OutputEncoding
 
@@ -823,24 +851,19 @@ namespace Palmtree.IO.Console
         {
             if (!__initializedRedirection)
             {
+                __consoleTextWriter?.Dispose();
+                __escapeCodeWriter?.Dispose();
                 if (!System.Console.IsOutputRedirected)
                 {
                     __consoleOutputHandle =
                         OperatingSystem.IsWindows()
                         ? InterOpWindows.GetStdHandle(InterOpWindows.STD_OUTPUT_HANDLE)
                         : InterOpWindows.INVALID_HANDLE_VALUE;
-
                     __consoleOutputFileNo =
                         OperatingSystem.IsWindows()
                         ? -1
                         : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_OUT);
-                    __consoleTextWriter =
-                        new StreamWriter(
-                            System.Console.OpenStandardOutput(),
-                            System.Console.OutputEncoding.WithoutPreamble(),
-                            256,
-                            true)
-                        { AutoFlush = true };
+                    __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardOutput(), System.Console.OutputEncoding);
                     __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
                     OutputExitAltCharsetMode();
                 }
@@ -854,13 +877,7 @@ namespace Palmtree.IO.Console
                         OperatingSystem.IsWindows()
                         ? -1
                         : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_ERR);
-                    __consoleTextWriter =
-                        new StreamWriter(
-                            System.Console.OpenStandardError(),
-                            System.Console.OutputEncoding.WithoutPreamble(),
-                            256,
-                            true)
-                        { AutoFlush = true };
+                    __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardError(), System.Console.OutputEncoding);
                     __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
                     OutputExitAltCharsetMode();
                 }
@@ -868,19 +885,30 @@ namespace Palmtree.IO.Console
                 {
                     __consoleOutputHandle = InterOpWindows.INVALID_HANDLE_VALUE;
                     __consoleOutputFileNo = -1;
-                    __consoleTextWriter =
-                            new StreamWriter(
-                                System.Console.OpenStandardError(),
-                                System.Console.OutputEncoding.WithoutPreamble(),
-                                256,
-                                true)
-                            { AutoFlush = true };
-                    __escapeCodeWriter = null;
+                    switch (_defaultTextWriter)
+                    {
+                        case ConsoleTextWriterType.StandardOutput:
+                            __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardOutput(), System.Console.OutputEncoding);
+                            __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
+                            break;
+                        case ConsoleTextWriterType.StandardError:
+                            __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardError(), System.Console.OutputEncoding);
+                            __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
+                            break;
+                        default:
+                            __consoleTextWriter = TextWriter.Null;
+                            __escapeCodeWriter = null;
+                            break;
+                    }
+
                     OutputExitAltCharsetMode();
                 }
 
                 __initializedRedirection = true;
             }
+
+            static TextWriter CreateTextWriter(Stream outStream, Encoding encoding)
+                => new StreamWriter(outStream, encoding.WithoutPreamble(), 256, true) { AutoFlush = true };
 
             static void OutputExitAltCharsetMode()
             {
@@ -893,6 +921,7 @@ namespace Palmtree.IO.Console
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean IsSupportedAnsiEscapeSequence(IntPtr consoleOutputHandle)
         {
             if (!OperatingSystem.IsWindows())
@@ -920,7 +949,7 @@ namespace Palmtree.IO.Console
 
             if ((mode & InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0)
             {
-                // コンソールモードに既に ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っている (エスケープコードを解釈可能である) 場合
+                // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っている (既にエスケープコードを解釈可能である) 場合
                 return true;
             }
 
@@ -936,7 +965,7 @@ namespace Palmtree.IO.Console
 
             if ((mode & InterOpWindows.ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0)
             {
-                // コンソールモードに既に ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っている (エスケープコードを解釈可能である) 場合
+                // コンソールモードに ENABLE_VIRTUAL_TERMINAL_PROCESSING フラグが立っている (エスケープコードを解釈可能になった) 場合
                 return true;
             }
 
