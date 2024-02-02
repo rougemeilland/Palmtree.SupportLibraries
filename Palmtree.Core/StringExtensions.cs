@@ -202,8 +202,8 @@ namespace Palmtree
                 arg = GetEndsWithBaskSlashPattern().Replace(arg, "$1$1");
                 return
                     forShell
-                    ? $"\"{arg}\""
-                    : $"^\"{arg}^\"";
+                    ? $"^\"{arg}^\""
+                    : $"\"{arg}\"";
             }
         }
 
