@@ -303,9 +303,6 @@ namespace Palmtree.IO.Console
                 }
                 else
                 {
-                    if (_escapeCodeWriter is null)
-                        throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to get console attributes.");
-
                     return _currentBackgrouongColor;
                 }
             }
@@ -336,9 +333,6 @@ namespace Palmtree.IO.Console
                 }
                 else
                 {
-                    if (_escapeCodeWriter is null)
-                        throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to get console attributes.");
-
                     return _currentForegrouongColor;
                 }
             }
@@ -371,9 +365,8 @@ namespace Palmtree.IO.Console
                 var resetColorEscapeCode = _thisTerminalInfo.ResetColor;
                 if (resetColorEscapeCode is not null)
                 {
-                    WriteAnsiEscapeCodeToConsole(
-                        resetColorEscapeCode,
-                        () => throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed."));
+                    // 標準出力及び標準エラー出力が共にリダイレクトされている場合でもエラーとはしない。
+                    WriteAnsiEscapeCodeToConsole(resetColorEscapeCode, () => { });
                 }
                 else
                 {
@@ -451,16 +444,13 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static void Beep()
         {
+            // Windows でのみ "System.Console.Beep()" を呼び出しているのは、UNIX 系の実装ではエスケープコードの出力先が標準出力に固定されているから。
             if (ImplementWithWin32Api)
-            {
                 System.Console.Beep();
-            }
+            else if (_escapeCodeWriter is not null && _thisTerminalInfo.Bell is not null)
+                WriteAnsiEscapeCodeToConsole(_thisTerminalInfo.Bell, () => { });
             else
-            {
-                WriteAnsiEscapeCodeToConsole(
-                    _thisTerminalInfo.Bell ?? throw new InvalidOperationException("This terminal does not define the \"bell\" capability."),
-                    () => throw new InvalidOperationException("Since both standard output and standard error output are redirected, it cannot beep."));
-            }
+                _escapeCodeWriter?.Write('\a');
         }
 
         #endregion
@@ -674,6 +664,7 @@ namespace Palmtree.IO.Console
                 }
                 else
                 {
+                    // 標準出力及び標準エラー出力が共にリダイレクトされている場合でもエラーとはしない。
                     WriteAnsiEscapeCodeToConsole(
                         value switch
                         {
@@ -683,7 +674,7 @@ namespace Palmtree.IO.Console
                             _ => throw Validation.GetFailErrorException($"Unexpected value \"{value}\""),
                         }
                         ?? throw new ArgumentException($"This terminal does not support {value}."),
-                        () => throw new InvalidOperationException("Since both standard output and standard error are redirected, it is not possible to change the visibility of the cursor."));
+                        () => { });
                 }
             }
         }
@@ -973,12 +964,12 @@ namespace Palmtree.IO.Console
             }
             else
             {
-
+                // 標準出力及び標準エラー出力が共にリダイレクトされている場合でもエラーとはしない。
                 WriteAnsiEscapeCodeToConsole(
                     _thisTerminalInfo.SetABackground(value.ToAnsiColor16())
                     ?? _thisTerminalInfo.SetBackground(value.ToColor8())
                     ?? throw new InvalidOperationException("This terminal does not define the capability to change the text background color."),
-                    () => throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed."));
+                    () => { });
 
             }
 
@@ -1002,11 +993,12 @@ namespace Palmtree.IO.Console
             }
             else
             {
+                // 標準出力及び標準エラー出力が共にリダイレクトされている場合でもエラーとはしない。
                 WriteAnsiEscapeCodeToConsole(
                     _thisTerminalInfo.SetAForeground(value.ToAnsiColor16())
                         ?? _thisTerminalInfo.SetForeground(value.ToColor8())
                         ?? throw new InvalidOperationException("This terminal does not define the capability to change the foreground color of characters."),
-                    () => throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed."));
+                    () => { });
             }
 
             _currentForegrouongColor = value;
