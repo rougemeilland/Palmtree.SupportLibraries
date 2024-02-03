@@ -19,6 +19,7 @@ namespace SourceGenerator
         private const byte _EAST_ASIAN_WIDTH_A = 5;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:不要な抑制を削除します", Justification = "<保留中>")]
         static void Main(string[] args)
         {
             var baseDirectoryPath = new FileInfo(typeof(Program).Assembly.Location).Directory?.Parent?.Parent?.Parent?.Parent ?? throw new Exception();

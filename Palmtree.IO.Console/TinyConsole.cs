@@ -881,7 +881,7 @@ namespace Palmtree.IO.Console
             }
 
             static TextWriter CreateTextWriter(Stream outStream, Encoding encoding)
-                => new StreamWriter(outStream, encoding.WithoutPreamble(), 256, true) { AutoFlush = true };
+                => outStream.AsTextWriter(encoding.WithoutPreamble(), 256, true, true);
 
             static void OutputExitAltCharsetMode()
             {
