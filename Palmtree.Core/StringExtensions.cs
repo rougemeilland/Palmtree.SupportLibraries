@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -163,48 +164,83 @@ namespace Palmtree
         /// 指定された文字列をコマンドラインの引数の形式でエンコードします。
         /// </summary>
         /// <param name="arg">エンコード対象の文字列です。</param>
-        /// <param name="forShell">シェル用のエンコードを行うならば true、そうではないのなら false です。</param>
         /// <returns>エンコードされた文字列です。</returns>
         /// <remarks>
-        /// <list type="bullet">
-        /// <item>エンコードの方法は実行環境のプラットフォームによって異なります。</item>
-        /// <item> Windows 以外のオペレーティングシステムでは <paramref name="forShell"/> を true に指定することはできません。</item>
-        /// </list>
+        /// エンコードの方法は実行環境のプラットフォームによって異なります。
         /// </remarks>
-        public static String CommandLineArgumentEncode(this String arg, Boolean forShell = false)
+        public static String CommandLineArgumentEncode(this String arg)
         {
             if (arg is null)
                 throw new ArgumentNullException(nameof(arg));
 
             return
                 OperatingSystem.IsWindows()
-                ? EncodeForWindows(arg, forShell)
-                : EncodeForUnix(arg, forShell);
+                ? EncodeForWindows(arg)
+                : EncodeForUnix(arg);
 
-            static String EncodeForUnix(String arg, Boolean forShell)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static String EncodeForUnix(String arg)
             {
-                if (forShell)
-                    throw new NotSupportedException();
-
                 arg = GetDoubleQuoteOrBackSlashPattern().Replace(arg, "\\$1");
                 if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
                     return arg;
                 return $"\"{arg}\"";
             }
 
-            static String EncodeForWindows(String arg, Boolean forShell)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static String EncodeForWindows(String arg)
             {
-                if (forShell)
-                    arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^$1");
                 arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
                 if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
                     return arg;
-                arg = GetEndsWithBaskSlashPattern().Replace(arg, "$1$1");
-                return
-                    forShell
-                    ? $"^\"{arg}^\""
-                    : $"\"{arg}\"";
+                return $"\"{GetEndsWithBaskSlashPattern().Replace(arg, "$1$1")}\"";
             }
+        }
+
+        /// <summary>
+        /// 指定された文字列をコマンドプロンプトのコマンドラインの引数の形式でエンコードします。
+        /// </summary>
+        /// <param name="arg">エンコード対象の文字列です。</param>
+        /// <returns>エンコードされた文字列です。</returns>
+        /// <remarks>
+        /// <para>
+        /// このメソッドは、コマンドプロンプトの "/c" あるいは "/k" オプションに続くコマンド文字列に適用される特殊なエスケープ規則に従って、文字列をエンコードします。
+        /// </para>
+        /// <para>
+        /// このメソッドは 以下の条件を満たす場合にのみ使用してください。
+        /// </para>
+        /// <list type="number">
+        /// <item>対象オペレーティングシステムが Windows のみであり、かつ</item>
+        /// <item>エンコード対象文字列がコマンドプロンプト (cmd.exe) の "/c" または "/k" オプションに続くコマンド文字列の一部であり、かつ</item>
+        /// <item>エンコード対象文字列に含まれる文字が、コマンドプロンプトの構文上の特殊文字として扱われることが望ましくない場合。</item>
+        /// </list>
+        /// <para>
+        /// 例えば、以下のようなプロセスを実行したい場合にはこのメソッドを利用する必要があります。
+        /// </para>
+        /// <code>
+        ///     cmd.exe /c "chcp 65001&amp;&amp;&lt;command name&gt; &lt;command argument 1&gt; &lt;command argument 2&gt; ... "
+        /// </code>
+        /// <para>
+        /// 上記の例では、コマンドプロンプト上で、コンソールのコードページを UTF-8 に変更した上で、&lt;command name&gt; を実行します。
+        /// この例では、実行したいコマンドの名前 &lt;command name&gt; およびそのパラメタ &lt;command argument 1&gt;,  &lt;command argument 2&gt;, ... の何れかに以下の何れかの文字が含まれている可能性がある場合、それらをこのメソッドでエンコードする必要があります。
+        /// </para>
+        /// <list type="bullet">
+        /// <item>コマンドプロンプトの構文上の特殊文字 ('&amp;', '&lt;', '&gt;', '^', '|') の何れか</item>
+        /// <item>通常のコマンド引数でエスケープされなければならない文字 (空白、TAB、ダブルクォート) の何れか</item> 
+        /// </list>
+        /// </remarks>
+        [SupportedOSPlatform("windows")]
+        public static String CommandPromptCommandLineArgumentEncode(this String arg)
+        {
+            if (arg is null)
+                throw new ArgumentNullException(nameof(arg));
+
+            arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^$1");
+            arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
+            if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
+                return arg;
+            arg = GetEndsWithBaskSlashPattern().Replace(arg, "$1$1");
+            return $"^\"{arg}^\"";
         }
 
         /// <summary>
@@ -282,6 +318,7 @@ namespace Palmtree
 
             var pathName =
                 String.Concat(
+                    // 少なくとも '?' を 1 つを含む連続した '!' または '?' のシーケンスは、すべて全角文字に変換する。
                     GetQuestionMarksAndExclamationMarksSequencePattern().Replace(
                         s,
                         m =>
@@ -294,24 +331,24 @@ namespace Palmtree
                                         '!' => '！',
                                         _ => c,
                                     })))
-                        .Select(c =>
-                            c switch
-                            {
-                                '\\' => '＼',
-                                '/' => '／',
-                                ':' => '：',
-                                '*' => '＊',
-                                '?' => '？',
-                                '"' => '”',
-                                '<' => '＜',
-                                '>' => '＞',
-                                '|' => '｜',
-                                _ => c,
-                            }));
+                    .Select(c =>
+                        c switch
+                        {
+                            '\\' => '＼',
+                            '/' => '／',
+                            ':' => '：',
+                            '*' => '＊',
+                            '?' => '？',
+                            '"' => '”',
+                            '<' => '＜',
+                            '>' => '＞',
+                            '|' => '｜',
+                            _ => c,
+                        }));
 
             if (pathName.EndsWith('.'))
                 pathName = pathName[..^1];
-            return pathName;
+            return pathName.Trim();
         }
 
         public static String? GetLeadingCommonPart(this String? s1, String? s2, Boolean ignoreCase = false)

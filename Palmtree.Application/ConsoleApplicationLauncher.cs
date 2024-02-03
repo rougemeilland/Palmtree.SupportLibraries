@@ -57,7 +57,7 @@ namespace Palmtree.Application
             var commandParameters =
                 String.Concat(
                     args
-                    .Select(arg => $" {arg.CommandLineArgumentEncode(true)}"));
+                    .Select(arg => $" {arg.CommandPromptCommandLineArgumentEncode()}"));
             var commandLine = $"{_commandName}{commandParameters}";
             var shellCommandLine = $"chcp {_encoding.CodePage}>NUL&&{commandLine}";
             var startInfo =
