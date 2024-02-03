@@ -293,11 +293,8 @@ namespace Palmtree.IO.Console
         {
             get
             {
-                if (ImplementWithWin32Api)
+                if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
                 {
-                    if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                        throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to get console attributes.");
-
                     if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                         throw new InvalidOperationException("Failed to get console screen buffer info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
@@ -329,11 +326,8 @@ namespace Palmtree.IO.Console
         {
             get
             {
-                if (ImplementWithWin32Api)
+                if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
                 {
-                    if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                        throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to get console attributes.");
-
                     if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                         throw new InvalidOperationException("Failed to get console screen buffer info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
@@ -363,11 +357,8 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static void ResetColor()
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed.");
-
                 var consoleAtrribute = InterOpWindows.FromConsoleColorsToConsoleAttribute(_defaultBackgrouongColor, _defaultForegrouongColor);
                 if (!InterOpWindows.SetConsoleTextAttribute(_consoleOutputHandle, consoleAtrribute))
                     throw new InvalidOperationException("Failed to set console text attribute.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
@@ -488,11 +479,8 @@ namespace Palmtree.IO.Console
 
         public static void Clear()
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Since both standard output and standard error output are redirected, the console screen cannot be cleared.");
-
                 if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                     throw new InvalidOperationException("Failed to get console screen buffer info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
@@ -542,11 +530,8 @@ namespace Palmtree.IO.Console
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Erase(ConsoleEraseMode eraseMode)
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Since both standard output and standard error output are redirected, it is not possible to delete console characters.");
-
                 if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                     throw new InvalidOperationException("Failed to get console buffer info.", Marshal.GetExceptionForHR(Marshal.GetLastWin32Error()));
 
@@ -671,11 +656,8 @@ namespace Palmtree.IO.Console
                 if (value.IsNoneOf(ConsoleCursorVisiblity.Invisible, ConsoleCursorVisiblity.NormalMode, ConsoleCursorVisiblity.HighVisibilityMode))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
-                if (ImplementWithWin32Api)
+                if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
                 {
-                    if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                        throw new InvalidOperationException("Since both standard output and standard error are redirected, it is not possible to change the visibility of the cursor.");
-
                     if (!InterOpWindows.GetConsoleCursorInfo(_consoleOutputHandle, out var cursorInfo))
                         throw new InvalidOperationException("Failed to get console cursor info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
@@ -977,11 +959,8 @@ namespace Palmtree.IO.Console
 
         private static void SetBackgroundColorCore(ConsoleColor value)
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed.");
-
                 if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                     throw new InvalidOperationException("Failed to get console screen buffer info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
@@ -1008,11 +987,8 @@ namespace Palmtree.IO.Console
 
         private static void SetForegroundColorCore(ConsoleColor value)
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Both standard output and standard error output are redirected, so console attributes cannot be changed.");
-
                 if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                     throw new InvalidOperationException("Failed to get console screen buffer info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
@@ -1063,11 +1039,8 @@ namespace Palmtree.IO.Console
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MoveCursorVertically(Int32 n, Action errorHandler)
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Both standard output and standard error output are redirected, so the cursor position cannot be moved.");
-
                 if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                     throw new InvalidOperationException("Failed to get console buffer info.", Marshal.GetExceptionForHR(Marshal.GetLastWin32Error()));
 
@@ -1102,11 +1075,8 @@ namespace Palmtree.IO.Console
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void MoveCursorHorizontally(Int32 n, Action errorHandler)
         {
-            if (ImplementWithWin32Api)
+            if (ImplementWithWin32Api && _consoleOutputHandle != InterOpWindows.INVALID_HANDLE_VALUE)
             {
-                if (_consoleOutputHandle == InterOpWindows.INVALID_HANDLE_VALUE)
-                    throw new InvalidOperationException("Both standard output and standard error output are redirected, so the cursor position cannot be moved.");
-
                 if (!InterOpWindows.GetConsoleScreenBufferInfo(_consoleOutputHandle, out var consoleInfo))
                     throw new InvalidOperationException("Failed to get console buffer info.", Marshal.GetExceptionForHR(Marshal.GetLastWin32Error()));
 
