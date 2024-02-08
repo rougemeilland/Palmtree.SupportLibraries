@@ -32,6 +32,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 .Maximum(ZipEntryDataDescriptor.FixedHeaderSizeForZip64);
             _minimumAtomicDataSize = checked((UInt64)maximumHeaderSize);
         }
+
         private GenericStyleZipOutputStream(FilePath zipArchiveFile, DirectoryPath baseDirectory, UInt64 maximumVolumeSize, IRandomOutputByteStream<UInt64> firstVolumeStream)
         {
             _baseZipArchiveFile = zipArchiveFile;

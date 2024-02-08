@@ -215,7 +215,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var volumeDiskFile = _volumeDiskFileGetter(volumeDiskNumber);
                 try
                 {
-                    stream = volumeDiskFile.OpenRead().WithCache();
+                    stream = volumeDiskFile.Open(FileMode.Open, FileAccess.Read, FileShare.None).WithCache();
                 }
                 catch (Exception ex)
                 {

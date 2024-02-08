@@ -187,7 +187,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var volumeDiskFile = _internalVolumeDiskFileGetter(internalVolumeDiskNumber);
                 try
                 {
-                    stream = volumeDiskFile.OpenRead().WithCache();
+                    stream = volumeDiskFile.Open(FileMode.Open, FileAccess.Read, FileShare.None).WithCache();
                 }
                 catch (Exception ex)
                 {
