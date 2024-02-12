@@ -463,7 +463,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         var length = inStream.ReadUInt32LE();
                         var headerBytes = inStream.ReadBytes(length);
                         if (checked((UInt32)headerBytes.Length) != length)
-                            throw new UnexpectedEndOfStreamException();
+                            throw new EndOfStreamException();
                         var position = WriteChunkToZipStream(_zipOutputStream, headerBytes);
                         if (position.DiskNumber == currentDiskNumber)
                         {

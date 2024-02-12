@@ -1165,7 +1165,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[1];
             if (await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) <= 0)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer[0];
         }
@@ -1177,7 +1177,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[1];
             if (await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) <= 0)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer[0];
         }
@@ -1441,7 +1441,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16LE();
         }
@@ -1453,7 +1453,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16LE();
         }
@@ -1471,7 +1471,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16LE();
         }
@@ -1483,7 +1483,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16LE();
         }
@@ -1501,7 +1501,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32LE();
         }
@@ -1513,7 +1513,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32LE();
         }
@@ -1531,7 +1531,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32LE();
         }
@@ -1543,7 +1543,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32LE();
         }
@@ -1561,7 +1561,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64LE();
         }
@@ -1573,7 +1573,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64LE();
         }
@@ -1591,7 +1591,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64LE();
         }
@@ -1603,7 +1603,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64LE();
         }
@@ -1621,7 +1621,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Single)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleLE();
         }
@@ -1633,7 +1633,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Single)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleLE();
         }
@@ -1651,7 +1651,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Double)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleLE();
         }
@@ -1663,7 +1663,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Double)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleLE();
         }
@@ -1681,7 +1681,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Decimal)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalLE();
         }
@@ -1693,7 +1693,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Decimal)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalLE();
         }
@@ -1711,7 +1711,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16BE();
         }
@@ -1723,7 +1723,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16BE();
         }
@@ -1741,7 +1741,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16BE();
         }
@@ -1753,7 +1753,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16BE();
         }
@@ -1771,7 +1771,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32BE();
         }
@@ -1783,7 +1783,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32BE();
         }
@@ -1801,7 +1801,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32BE();
         }
@@ -1813,7 +1813,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32BE();
         }
@@ -1831,7 +1831,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64BE();
         }
@@ -1843,7 +1843,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Int64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64BE();
         }
@@ -1861,7 +1861,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64BE();
         }
@@ -1873,7 +1873,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(UInt64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64BE();
         }
@@ -1891,7 +1891,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Single)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleBE();
         }
@@ -1903,7 +1903,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Single)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleBE();
         }
@@ -1921,7 +1921,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Double)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleBE();
         }
@@ -1933,7 +1933,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Double)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleBE();
         }
@@ -1951,7 +1951,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Decimal)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalBE();
         }
@@ -1963,7 +1963,7 @@ namespace Palmtree.IO
 
             var buffer = new Byte[sizeof(Decimal)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalBE();
         }

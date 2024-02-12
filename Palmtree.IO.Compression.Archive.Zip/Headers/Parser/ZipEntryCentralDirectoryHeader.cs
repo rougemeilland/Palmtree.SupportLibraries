@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
@@ -127,7 +128,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                 // ヘッダがボリュームをまたいでいると判断し、ZIP アーカイブの破損とみなす。
                 throw new BadZipFileFormatException($"It is possible that the central directory header is split across multiple disks.: position=\"{centralDirectoryHeaderPosition}\"", ex);
             }
-            catch (UnexpectedEndOfStreamException ex)
+            catch (EndOfStreamException ex)
             {
                 // ヘッダの読み込み中に ZIP アーカイブの終端に達した場合
 
@@ -190,7 +191,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                 // ヘッダがボリュームをまたいでいると判断し、ZIP アーカイブの破損とみなす。
                 throw new BadZipFileFormatException($"It is possible that the central directory header is split across multiple disks.: position=\"{centralDirectoryHeaderPosition}\"", ex);
             }
-            catch (UnexpectedEndOfStreamException ex)
+            catch (EndOfStreamException ex)
             {
                 // ヘッダの読み込み中に ZIP アーカイブの終端に達した場合
 

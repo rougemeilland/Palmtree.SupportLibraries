@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
@@ -63,7 +64,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                         hashAlgorithmId,
                         hashData);
             }
-            catch (UnexpectedEndOfStreamException)
+            catch (EndOfStreamException)
             {
                 return null;
             }

@@ -1601,7 +1601,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[1];
             if (sourceStream.Read(buffer) <= 0)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer[0];
         }
@@ -1883,7 +1883,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16LE();
         }
@@ -1895,7 +1895,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16LE();
         }
@@ -1913,7 +1913,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16LE();
         }
@@ -1925,7 +1925,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16LE();
         }
@@ -1943,7 +1943,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32LE();
         }
@@ -1955,7 +1955,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32LE();
         }
@@ -1973,7 +1973,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return
                 buffer.ToUInt32LE();
@@ -1986,7 +1986,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32LE();
         }
@@ -2004,7 +2004,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64LE();
         }
@@ -2016,7 +2016,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64LE();
         }
@@ -2034,7 +2034,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64LE();
         }
@@ -2046,7 +2046,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64LE();
         }
@@ -2064,7 +2064,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleLE();
         }
@@ -2076,7 +2076,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleLE();
         }
@@ -2094,7 +2094,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleLE();
         }
@@ -2106,7 +2106,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleLE();
         }
@@ -2124,7 +2124,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalLE();
         }
@@ -2136,7 +2136,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalLE();
         }
@@ -2154,7 +2154,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16BE();
         }
@@ -2166,7 +2166,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt16BE();
         }
@@ -2184,7 +2184,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16BE();
         }
@@ -2196,7 +2196,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt16BE();
         }
@@ -2214,7 +2214,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32BE();
         }
@@ -2226,7 +2226,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt32BE();
         }
@@ -2244,7 +2244,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32BE();
         }
@@ -2256,7 +2256,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt32BE();
         }
@@ -2274,7 +2274,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64BE();
         }
@@ -2286,7 +2286,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToInt64BE();
         }
@@ -2304,7 +2304,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64BE();
         }
@@ -2316,7 +2316,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToUInt64BE();
         }
@@ -2334,7 +2334,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleBE();
         }
@@ -2346,7 +2346,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToSingleBE();
         }
@@ -2364,7 +2364,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleBE();
         }
@@ -2376,7 +2376,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDoubleBE();
         }
@@ -2394,7 +2394,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalBE();
         }
@@ -2406,7 +2406,7 @@ namespace Palmtree.IO
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
-                throw new UnexpectedEndOfStreamException();
+                throw new EndOfStreamException();
 
             return buffer.ToDecimalBE();
         }

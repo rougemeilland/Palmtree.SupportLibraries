@@ -162,7 +162,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     {
                         var length = _baseFileStream.ReadBytes(new Span<Byte>((Byte*)&value, sizeof(VolumeInfo)));
                         if (length < sizeof(VolumeInfo))
-                            throw new UnexpectedEndOfStreamException();
+                            throw new EndOfStreamException();
                     }
 
                     return value;
