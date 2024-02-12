@@ -1,84 +1,49 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Palmtree.Application;
+﻿using System.Linq;
 using Palmtree.IO;
 using Palmtree.IO.Console;
+using Palmtree.IO.Serialization;
 
 namespace Experiment.CSharp
 {
     internal class Program
     {
-        private class Application
-            : BatchApplication
+        static void Main(string[] args)
         {
-            private readonly string? _title;
-            private readonly Encoding? _encoding;
 
-            static Application()
+            var rows = CsvSerializer.Deserialize(typeof(Program).Assembly.GetBaseDirectory().GetFile("data.csv").ReadAllText());
+            foreach (var row in rows)
             {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            }
-
-            public Application(string? title, Encoding? encoding)
-            {
-                _title = title;
-                _encoding = encoding;
-            }
-
-            protected override string ConsoleWindowTitle => _title ?? base.ConsoleWindowTitle;
-            protected override Encoding? InputOutputEncoding => _encoding;
-
-            protected override ResultCode Main(string[] args)
-            {
-                try
+                var columns = row.ToArray();
+                if (columns.Length >= 6)
                 {
-                    var baseDirectory = new DirectoryPath(args[0]);
-                    ReportProgress("Searching files...");
-                    var zipFiles =
-                        baseDirectory.EnumerateFiles(true)
-                        .Where(file => string.Equals(file.Extension, ".zip", StringComparison.OrdinalIgnoreCase));
-                    var totalCount = zipFiles.Aggregate(0UL, (total, file) => total + file.Length);
-                    var currentCount = 0UL;
-                    ReportProgress((double)currentCount / totalCount);
-                    foreach (var zipFile in zipFiles)
-                    {
-                        if (IsPressedBreak)
-                            return ResultCode.Cancelled;
-                        Thread.Sleep(100);
-                        currentCount += zipFile.Length;
-                        ReportProgress((double)currentCount / totalCount, zipFile.FullName, (percentage, content) => $"{percentage}: processed \"{content}\"");
-                    }
-
-                    return ResultCode.Success;
-                }
-                catch (Exception ex)
-                {
-                    ReportException(ex);
-                    return ResultCode.Failed;
+                    TinyConsole.WriteLine(columns[0]);
+                    TinyConsole.WriteLine(columns[1]);
+                    TinyConsole.WriteLine(columns[2]);
+                    TinyConsole.WriteLine(columns[3]);
+                    TinyConsole.WriteLine($"発売日:{columns[4]}, {columns[5]}");
+                    TinyConsole.WriteLine();
                 }
             }
 
-            protected override void Finish(ResultCode result, bool isLaunchedByConsoleApplicationLauncher)
-            {
-                if (result == ResultCode.Success)
-                    TinyConsole.WriteLine("Completed.");
-                else
-                    TinyConsole.WriteLine("Cancelled.");
+            TinyConsole.WriteLine();
 
-                if (isLaunchedByConsoleApplicationLauncher)
+            foreach (var row in rows)
+            {
+                var columns = row.ToArray();
+                if (columns.Length >= 6)
                 {
-                    TinyConsole.Beep();
-                    TinyConsole.WriteLine("Hit ENTER key to exit.");
-                    _ = TinyConsole.ReadLine();
+                    TinyConsole.WriteLine($"タイトル: {columns[0]}");
+                    TinyConsole.WriteLine($"著者: {columns[1]}");
+                    TinyConsole.WriteLine($"出版社: {columns[2]}");
+                    TinyConsole.WriteLine($"レーベル: {columns[3]}");
+                    TinyConsole.WriteLine($"発売日: {columns[4]}");
+                    TinyConsole.WriteLine($"その他: {columns[5]}");
+                    TinyConsole.WriteLine();
                 }
             }
-        }
 
-        private static int Main(string[] args)
-        {
-            return new Application("experiment", Encoding.UTF8).Run(args);
+            TinyConsole.Beep();
+            _ = TinyConsole.ReadLine();
         }
     }
 }

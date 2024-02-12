@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Palmtree.Application\Palmtree.Application.csproj" />
     <ProjectReference Include="..\Palmtree.Core\Palmtree.Core.csproj" />
     <ProjectReference Include="..\Palmtree.IO.Console\Palmtree.IO.Console.csproj" />
     <ProjectReference Include="..\Palmtree.IO\Palmtree.IO.csproj" />

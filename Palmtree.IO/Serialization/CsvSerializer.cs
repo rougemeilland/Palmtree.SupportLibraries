@@ -114,7 +114,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(String csvText)
-            => Deserialize(csvText, new CsvSerializerOption { });
+            => Deserialize(csvText, new CsvSerializerOption { }).ToArray();
 
         /// <summary>
         /// 文字列からCSVデータへデシリアライズします。
@@ -129,7 +129,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(String csvText, CsvSerializerOption option)
-            => Deserialize(new StringReader(csvText), option);
+            => Deserialize(new StringReader(csvText), option).ToArray();
 
         /// <summary>
         /// ストリームからテキストを読み込んでCSVデータへデシリアライズします。
@@ -141,7 +141,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(TextReader reader)
-            => Deserialize(reader, new CsvSerializerOption { });
+            => Deserialize(reader, new CsvSerializerOption { }).ToArray();
 
         /// <summary>
         /// ストリームからテキストを読み込んでCSVデータへデシリアライズします。
@@ -156,14 +156,18 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(TextReader reader, CsvSerializerOption option)
-            => DeserializeRows(new BuffetredTextReader(reader, 2), option);
+            => DeserializeRows(new BuffetredTextReader(reader, 2), option).ToArray();
 
         private static IEnumerable<IEnumerable<String>> DeserializeRows(BuffetredTextReader reader, CsvSerializerOption option)
         {
             try
             {
                 while (!reader.IsEndOfReader)
-                    yield return DeserializeRow(reader, option);
+                {
+                    var row = DeserializeRow(reader, option).ToArray();
+                    if (row.Length > 0)
+                        yield return row;
+                }
             }
             finally
             {
@@ -173,7 +177,7 @@ namespace Palmtree.IO.Serialization
 
         private static IEnumerable<String> DeserializeRow(BuffetredTextReader reader, CsvSerializerOption option)
         {
-            while (true)
+            while (!reader.IsEndOfReader)
             {
                 if (reader.StartsWith(_carriageReturnAndLineFeedChars))
                 {
@@ -233,8 +237,12 @@ namespace Palmtree.IO.Serialization
                     {
                         // 先頭がダブルクォートではない場合
 
+                        // 1文字を読み込む
+                        var c =
+                            reader.Read()
+                            ?? throw new EndOfStreamException(); // ダブルクォートで閉じられずに EOF に達したため、エラーとする
+
                         // 先頭の1文字をカラム文字列に追加する
-                        var c = reader.Read() ?? throw Validation.GetFailErrorException("ループの続行条件によりEOFではないことは保証されているにもかかわらず reader.Read() is null である");
                         _ = columnString.Append(c);
                     }
                 }
@@ -262,9 +270,18 @@ namespace Palmtree.IO.Serialization
                     {
                         // 先頭がカラムの区切り文字でも改行でもない場合
 
+                        // 1文字を読み込む
+                        var c = reader.Read();
+                        if (c is null)
+                        {
+                            // EOF を検出した場合
+
+                            // カラムの終わりとみなす。
+                            break;
+                        }
+
                         // 先頭の1文字をカラム文字列に追加する
-                        var c = reader.Read() ?? throw Validation.GetFailErrorException("ループの続行条件によりEOFではないことは保証されているにもかかわらず reader.Read() is null である");
-                        _ = columnString.Append(c);
+                        _ = columnString.Append(c.Value);
                     }
                 }
             }
@@ -298,9 +315,18 @@ namespace Palmtree.IO.Serialization
                 {
                     // 先頭がカラムの区切り文字でも改行でもない場合
 
+                    // 1文字を読み込む
+                    var c = reader.Read();
+                    if (c is null)
+                    {
+                        // EOF を検出した場合
+
+                        // カラムの終わりとみなす。
+                        break;
+                    }
+
                     // 先頭の1文字をカラム文字列に追加する
-                    var c = reader.Read() ?? throw Validation.GetFailErrorException("ループの続行条件によりEOFではないことは保証されているにもかかわらず reader.Read() is null である");
-                    _ = columnString.Append(c);
+                    _ = columnString.Append(c.Value);
                 }
             }
 
