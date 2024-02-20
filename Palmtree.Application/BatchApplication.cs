@@ -62,6 +62,12 @@ namespace Palmtree.Application
             }
         }
 
+        protected override void ResetConsoleTextStatus()
+        {
+            _currentProgressMessage = "";
+            base.ResetConsoleTextStatus();
+        }
+
         private static void WriteMessage(String message, Int32 messageWidth, Int32 consoleWidth)
         {
             if (messageWidth < consoleWidth)

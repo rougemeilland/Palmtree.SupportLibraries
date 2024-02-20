@@ -99,7 +99,7 @@ namespace Palmtree.Application
                 }
                 finally
                 {
-                    TinyConsole.ResetColor();
+                    ResetConsoleTextStatus();
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace Palmtree.Application
                 }
                 finally
                 {
-                    TinyConsole.ResetColor();
+                    ResetConsoleTextStatus();
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Palmtree.Application
                 }
                 finally
                 {
-                    TinyConsole.ResetColor();
+                    ResetConsoleTextStatus();
                 }
             }
         }
@@ -144,10 +144,13 @@ namespace Palmtree.Application
                 }
                 finally
                 {
-                    TinyConsole.ResetColor();
+                    ResetConsoleTextStatus();
                 }
             }
         }
+
+        protected virtual void ResetConsoleTextStatus()
+            => TinyConsole.ResetColor();
 
         private void TinyConsole_CancelKeyPress(Object? sender, ConsoleCancelEventArgs e)
         {
