@@ -1704,7 +1704,8 @@ namespace Palmtree
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Single value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
-            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true, "success == true");
             if (!BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1713,7 +1714,8 @@ namespace Palmtree
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Double value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
-            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true, "success == true");
             if (!BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1791,7 +1793,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, Single value)
         {
-            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true, "success == true");
             if (!BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Single)].ReverseArray();
         }
@@ -1799,7 +1802,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, Double value)
         {
-            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true, "success == true");
             if (!BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Double)].ReverseArray();
         }
@@ -1882,7 +1886,8 @@ namespace Palmtree
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Single value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
-            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true, "success == true");
             if (BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1891,7 +1896,8 @@ namespace Palmtree
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Double value)
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
-            Validation.Assert(BitConverter.TryWriteBytes(bufferSpan, value), "BitConverter.TryWriteBytes(bufferSpan, value)");
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true, "success == true");
             if (BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1990,7 +1996,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, Single value)
         {
-            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true, "success == true");
             if (BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Single)].ReverseArray();
         }
@@ -1998,7 +2005,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, Double value)
         {
-            Validation.Assert(BitConverter.TryWriteBytes(buffer, value), "BitConverter.TryWriteBytes(buffer, value)");
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true, "success == true");
             if (BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Double)].ReverseArray();
         }

@@ -8,7 +8,7 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <RootNamespace>Palmtree</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.11.0</VersionPrefix>
+    <VersionPrefix>1.12.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Description>This is a supplementary library that collects commonly used code in .NET. This package contains the most basic functionality. (Example: array operations, bit arrays, Linq extensions, CRC calculations, BASE64 encoding/decoding, etc.)</Description>

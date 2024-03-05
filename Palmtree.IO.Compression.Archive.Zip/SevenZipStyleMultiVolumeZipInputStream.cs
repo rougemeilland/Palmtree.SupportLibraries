@@ -77,8 +77,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                var condition = _internalVolumeDisks.TryGetOffsetFromStart(_currentInternalVolmeDiskNumber, GetCurrentVolumeDiskStream().Position, out var offset);
-                Validation.Assert(condition, "_internalVolumeDisks.TryGetOffsetFromStart(_currentInternalVolmeDiskNumber, GetCurrentVolumeDiskStream().Position, out var offset)");
+                var ok = _internalVolumeDisks.TryGetOffsetFromStart(_currentInternalVolmeDiskNumber, GetCurrentVolumeDiskStream().Position, out var offset);
+                Validation.Assert(ok == true, "ok == true");
                 return new(0, offset, this);
             }
         }
@@ -88,8 +88,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             Validation.Assert(diskNumber == 0, "diskNumber == 0");
             if (offsetOnTheDisk > _internalVolumeDisks.TotalVolumeDiskSize)
                 throw new ArgumentOutOfRangeException($"An attempt was made to access a position outside the bounds of the volume disk in a 7-zip style multi-volume ZIP file.: {nameof(offsetOnTheDisk)}=0x{offsetOnTheDisk:x16}", nameof(offsetOnTheDisk));
-            var condition = _internalVolumeDisks.TryGetVolumeDiskPosition(offsetOnTheDisk, out var internalDiskNumber, out var internalOffsetOnTheDisk);
-            Validation.Assert(condition, "_internalVolumeDisks.TryGetVolumeDiskPosition(offsetOnTheDisk, out var internalDiskNumber, out var internalOffsetOnTheDisk)");
+            var ok = _internalVolumeDisks.TryGetVolumeDiskPosition(offsetOnTheDisk, out var internalDiskNumber, out var internalOffsetOnTheDisk);
+            Validation.Assert(ok == true, "ok == true");
 
             _currentInternalVolmeDiskNumber = internalDiskNumber;
             GetCurrentVolumeDiskStream().Seek(internalOffsetOnTheDisk);
@@ -182,8 +182,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var success = false;
             try
             {
-                var condition = _internalVolumeDisks.TryGetVolumeDiskSize(internalVolumeDiskNumber, out var volumeDiskSize);
-                Validation.Assert(condition, "_internalVolumeDisks.TryGetVolumeDiskSize(internalVolumeDiskNumber, out var volumeDiskSize)");
+                var ok = _internalVolumeDisks.TryGetVolumeDiskSize(internalVolumeDiskNumber, out var volumeDiskSize);
+                Validation.Assert(ok == true, "ok == true");
                 var volumeDiskFile = _internalVolumeDiskFileGetter(internalVolumeDiskNumber);
                 try
                 {
@@ -210,8 +210,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
-            var condition = _internalVolumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
-            Validation.Assert(condition, "_internalVolumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize)");
+            var ok = _internalVolumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
+            Validation.Assert(ok == true, "ok == true");
             return volumeDiskSize;
         }
 

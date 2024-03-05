@@ -210,8 +210,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var success = false;
             try
             {
-                var condition = _volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize);
-                Validation.Assert(condition, "_volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize)");
+                var ok = _volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize);
+                Validation.Assert(ok == true, "ok == true");
                 var volumeDiskFile = _volumeDiskFileGetter(volumeDiskNumber);
                 try
                 {
@@ -245,8 +245,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
-            var condition = _volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
-            Validation.Assert(condition, "_volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize)");
+            var ok = _volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
+            Validation.Assert(ok == true, "ok == true");
             return volumeDiskSize;
         }
 

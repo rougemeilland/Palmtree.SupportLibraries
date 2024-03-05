@@ -55,7 +55,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             // ヘッダのありそうな位置に Seek し、それ以降のデータをすべて読み込む。
             zipInputStream.Seek(possibleFirstHeaderPosition);
             var buffer = new Byte[checked((Int32)(zipInputStream.LastDiskSize - possibleFirstHeaderOffsetOnLastDisk))];
-            Validation.Assert(zipInputStream.ReadBytes(buffer) == buffer.Length, "zipInputStream.ReadBytes(buffer) == buffer.Length");
+            var length = zipInputStream.ReadBytes(buffer);
+            Validation.Assert(length == buffer.Length, "length == buffer.Length");
 
             var foundHeaders =
                 EnumerateLastDiskHeaders(

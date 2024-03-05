@@ -26,6 +26,8 @@ namespace Palmtree
         /// 検証条件が満たされませんでした。
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Conditional("DEBUG")]
+        [Conditional("TRACE")]
         public static void Assert([DoesNotReturnIf(false)] Boolean condition, String conditionText)
         {
             if (!condition)
