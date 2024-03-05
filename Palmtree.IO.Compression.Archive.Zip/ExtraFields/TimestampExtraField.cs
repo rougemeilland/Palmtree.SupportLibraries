@@ -8,9 +8,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
     public abstract class TimestampExtraField
         : ExtraField, ITimestampExtraField
     {
-        private DateTime? _lastWriteTimeUtc;
-        private DateTime? _lastAccessTimeUtc;
-        private DateTime? _creationTimeUtc;
+        private DateTimeOffset? _lastWriteTimeUtc;
+        private DateTimeOffset? _lastAccessTimeUtc;
+        private DateTimeOffset? _creationTimeUtc;
 
         /// <summary>
         /// コンストラクタです。
@@ -27,41 +27,35 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         }
 
         /// <inheritdoc/>
-        public virtual DateTime? LastWriteTimeUtc
+        public virtual DateTimeOffset? LastWriteTimeOffsetUtc
         {
             get => _lastWriteTimeUtc;
             set
             {
-                if (value is not null && value.Value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException($"Unexpected {nameof(DateTime.Kind)} value", nameof(value));
-
                 _lastWriteTimeUtc = value?.ToUniversalTime();
+                Validation.Assert(_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero, "_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero");
             }
         }
 
         /// <inheritdoc/>
-        public virtual DateTime? LastAccessTimeUtc
+        public virtual DateTimeOffset? LastAccessTimeOffsetUtc
         {
             get => _lastAccessTimeUtc;
             set
             {
-                if (value is not null && value.Value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException($"Unexpected {nameof(DateTime.Kind)} value", nameof(value));
-
                 _lastAccessTimeUtc = value?.ToUniversalTime();
+                Validation.Assert(_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero, "_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero");
             }
         }
 
         /// <inheritdoc/>
-        public virtual DateTime? CreationTimeUtc
+        public virtual DateTimeOffset? CreationTimeOffsetUtc
         {
             get => _creationTimeUtc;
             set
             {
-                if (value is not null && value.Value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException($"Unexpected {nameof(DateTime.Kind)} value", nameof(value));
-
                 _creationTimeUtc = value?.ToUniversalTime();
+                Validation.Assert(_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero, "_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero");
             }
         }
 

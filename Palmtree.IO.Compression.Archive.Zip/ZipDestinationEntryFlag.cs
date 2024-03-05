@@ -40,10 +40,42 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </para>
         /// <list type="bullet">
         /// <item>ZIP64 拡張仕様を使用できません。つまり、このフラグを指定した場合、エントリのデータの長さは <see cref="UInt32.MaxValue"/> (4,294,967,295) バイト未満である必要があります。</item>
-        /// <item>エントリのプロパティのうち、<see cref="ZipDestinationEntry.LastAccessTimeUtc"/> および <see cref="ZipDestinationEntry.CreationTimeUtc"/> の値は無視されます。また、実際に書き込まれる <see cref="ZipDestinationEntry.LastWriteTimeUtc"/> の値の最大誤差が 2 秒になります。</item>
+        /// <item>
+        /// エントリの以下のタイムスタンプが実際には ZIP アーカイブに書き込まれなくなります。
+        /// <list type="bullet">
+        /// <item>作成日時 (<see cref="ZipDestinationEntry.CreationTimeUtc"/> / <see cref="ZipDestinationEntry.CreationTimeOffsetUtc"/>)</item>
+        /// <item>最終アクセス日時 (<see cref="ZipDestinationEntry.LastAccessTimeUtc"/> / <see cref="ZipDestinationEntry.LastAccessTimeOffsetUtc"/>)</item>
+        /// </list>
+        /// また、実際に ZIP アーカイブに書き込まれる以下のタイムスタンプの精度が大きく低下します。(最大誤差 2秒)
+        /// <list type="bullet">
+        /// <item>最終更新日時 (<see cref="ZipDestinationEntry.LastWriteTimeUtc"/> / <see cref="ZipDestinationEntry.LastWriteTimeOffsetUtc"/>)</item>
+        /// </list>
+        /// </item>
         /// <item>UNICODE で表現できない文字 (例: 一部の SHIFT-JIS 文字) がエントリのファイル名およびコメントに使用できません。</item>
         /// </list>
         /// </remarks>
         DoNotUseExtraFieldsInLocalHeaders = 1 << 1,
+
+        /// <summary>
+        /// 拡張フィールド「PKWARE Win95/WinNT Extra Field」(0x000a) を付加しません。
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// 既定では、ZIP アーカイブのエントリの高精度のタイムスタンプを保持するために拡張フィールド「PKWARE Win95/WinNT Extra Field」が付加されます。
+        /// しかし、このフラグを指定することにより拡張フィールド「PKWARE Win95/WinNT Extra Field」は付加されなくなります。
+        /// </para>
+        /// </remarks>
+        DisableNtfsHighPrecisionTimestamp = 1 << 2,
+
+        /// <summary>
+        /// 拡張フィールド「Extended Timestamp Extra Field」(0x5455) を付加しません。
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// 既定では、ZIP アーカイブのエントリの高精度のタイムスタンプを保持するために拡張フィールド「Extended Timestamp Extra Field」が付加されます。
+        /// しかし、このフラグを指定することにより拡張フィールド「Extended Timestamp Extra Field」は付加されなくなります。
+        /// </para>
+        /// </remarks>
+        DisableUnixHighPrecisionTimestamp = 1 << 3,
     }
 }

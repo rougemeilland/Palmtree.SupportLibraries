@@ -104,7 +104,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             UInt32 crc,
             ExtraFieldCollection extraFields,
             ReadOnlyMemory<Byte> entryFullNameBytes,
-            DateTime? lastWriteTimeUtc,
+            DateTimeOffset lastWriteTimeUtc,
             Boolean isDirectory,
             Boolean doNotUseExtraField)
         {
@@ -114,7 +114,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             if (doNotUseExtraField && extraFields.Count > 0)
                 throw new InvalidOperationException($"ZIP64 extension is required to write this entry, but the extra field in the local header cannot be set because the {nameof(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders)} flag is specified.");
 
-            var (dosDate, dosTime) = GetDosDateTime(lastWriteTimeUtc);
+            var (dosDate, dosTime) = lastWriteTimeUtc.TryToDosDateTime();
 
             return
                 new ZipEntryLocalHeader(
@@ -136,12 +136,12 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             ZipEntryCompressionMethodId compressionMethodId,
             ExtraFieldCollection extraFields,
             ReadOnlyMemory<Byte> entryFullNameBytes,
-            DateTime? lastWriteTimeUtc,
+            DateTimeOffset lastWriteTimeUtc,
             Boolean isDirectory)
         {
             generalPurposeBitFlag |= ZipEntryGeneralPurposeBitFlag.HasDataDescriptor;
 
-            var (dosDate, dosTime) = GetDosDateTime(lastWriteTimeUtc);
+            var (dosDate, dosTime) = lastWriteTimeUtc.TryToDosDateTime();
 
             return
                 new ZipEntryLocalHeader(
@@ -155,18 +155,6 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
                     0,
                     entryFullNameBytes,
                     extraFields.ToByteArray());
-        }
-
-        private static (UInt16 dosDate, UInt16 dosTime) GetDosDateTime(DateTime? lastWriteTimeUtc)
-        {
-            try
-            {
-                return (lastWriteTimeUtc ?? DateTime.UtcNow).FromDateTimeToDosDateTime(DateTimeKind.Local);
-            }
-            catch (Exception)
-            {
-                return (0, 0);
-            }
         }
     }
 }

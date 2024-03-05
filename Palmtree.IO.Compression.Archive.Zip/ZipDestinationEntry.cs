@@ -53,9 +53,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private ZipEntryGeneralPurposeBitFlag _generalPurposeBitFlag;
         private ZipEntryCompressionMethodId _compressionMethodId;
         private ZipEntryCompressionLevel _compressionLevel;
-        private DateTime? _lastWriteTimeUtc;
-        private DateTime? _lastAccessTimeUtc;
-        private DateTime? _creationTimeUtc;
+        private DateTimeOffset? _lastWriteTimeOffsetUtc;
+        private DateTimeOffset? _lastAccessTimeOffsetUtc;
+        private DateTimeOffset? _creationTimeOffsetUtc;
         private UInt32? _externalAttributes;
         private ZipDestinationEntryFlag _flags;
         private UInt64 _size;
@@ -105,9 +105,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _isFile = true;
             _compressionMethodId = ZipEntryCompressionMethodId.Stored;
             _compressionLevel = ZipEntryCompressionLevel.Normal;
-            _lastWriteTimeUtc = null;
-            _lastAccessTimeUtc = null;
-            _creationTimeUtc = null;
+            _lastWriteTimeOffsetUtc = null;
+            _lastAccessTimeOffsetUtc = null;
+            _creationTimeOffsetUtc = null;
             _externalAttributes = null;
             _flags = ZipDestinationEntryFlag.None;
             _size = 0;
@@ -366,7 +366,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </remarks>
         public DateTime? LastWriteTimeUtc
         {
-            get => _lastWriteTimeUtc;
+            get
+            {
+                var value = _lastWriteTimeOffsetUtc?.ToDateTime();
+                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc, "value is null || value.Value.Kind == DateTimeKind.Utc");
+                return value;
+            }
 
             set
             {
@@ -375,7 +380,39 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 if (value is not null && value.Value.Kind == DateTimeKind.Unspecified)
                     throw new ArgumentException($"Setting a value where the {nameof(value.Value.Kind)} property is {nameof(DateTimeKind.Unspecified)} is prohibited.", nameof(value));
 
-                _lastWriteTimeUtc = value?.ToUniversalTime();
+                var v = value?.ToUniversalTime().ToDateTimeOffset();
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                _lastWriteTimeOffsetUtc = v;
+            }
+        }
+
+        /// <summary>
+        /// 書き込むエントリの最終更新日時(UTC)を取得または設定します。
+        /// </summary>
+        /// <value>
+        /// 最終更新日時(UTC)を示す <see cref="DateTimeOffset"/> オブジェクトです。 既定値は null です。
+        /// </value>
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>このプロパティの値が null である場合、エントリの最終更新日時として代わりに現在日時が付加されます。</item>
+        /// </list>
+        /// </remarks>
+        public DateTimeOffset? LastWriteTimeOffsetUtc
+        {
+            get
+            {
+                Validation.Assert(_lastWriteTimeOffsetUtc is null || _lastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero");
+                return _lastWriteTimeOffsetUtc;
+            }
+
+            set
+            {
+                if (_written)
+                    throw new InvalidOperationException();
+
+                var v = value?.ToUniversalTime();
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                _lastWriteTimeOffsetUtc = v;
             }
         }
 
@@ -392,7 +429,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </remarks>
         public DateTime? LastAccessTimeUtc
         {
-            get => _lastAccessTimeUtc;
+            get
+            {
+                var value = _lastAccessTimeOffsetUtc?.ToDateTime();
+                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc, "value is null || value.Value.Kind == DateTimeKind.Utc");
+                return value;
+            }
 
             set
             {
@@ -401,7 +443,39 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 if (value is not null && value.Value.Kind == DateTimeKind.Unspecified)
                     throw new ArgumentException($"Setting a value where the {nameof(value.Value.Kind)} property is {nameof(DateTimeKind.Unspecified)} is prohibited.", nameof(value));
 
-                _lastAccessTimeUtc = value?.ToUniversalTime();
+                var v = value?.ToUniversalTime().ToDateTimeOffset();
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                _lastAccessTimeOffsetUtc = v;
+            }
+        }
+
+        /// <summary>
+        /// 書き込むエントリの最終アクセス日時(UTC)を取得または設定します。
+        /// </summary>
+        /// <value>
+        /// 最終アクセス日時(UTC)を示す <see cref="DateTime"/> オブジェクトです。 既定値は null です。
+        /// </value>
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>このプロパティの値が null である場合、エントリの最終アクセス日時は付加されません</item>
+        /// </list>
+        /// </remarks>
+        public DateTimeOffset? LastAccessTimeOffsetUtc
+        {
+            get
+            {
+                Validation.Assert(_lastAccessTimeOffsetUtc is null || _lastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero");
+                return _lastAccessTimeOffsetUtc;
+            }
+
+            set
+            {
+                if (_written)
+                    throw new InvalidOperationException();
+
+                var v = value?.ToUniversalTime();
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                _lastAccessTimeOffsetUtc = v;
             }
         }
 
@@ -418,7 +492,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </remarks>
         public DateTime? CreationTimeUtc
         {
-            get => _creationTimeUtc;
+            get
+            {
+                var value = _creationTimeOffsetUtc?.ToDateTime();
+                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc, "value is null || value.Value.Kind == DateTimeKind.Utc");
+                return value;
+            }
 
             set
             {
@@ -427,7 +506,39 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 if (value is not null && value.Value.Kind == DateTimeKind.Unspecified)
                     throw new ArgumentException($"Setting a value where the {nameof(value.Value.Kind)} property is {nameof(DateTimeKind.Unspecified)} is prohibited.", nameof(value));
 
-                _creationTimeUtc = value?.ToUniversalTime();
+                var v = value?.ToUniversalTime().ToDateTimeOffset();
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                _creationTimeOffsetUtc = v;
+            }
+        }
+
+        /// <summary>
+        /// 書き込むエントリの作成日時(UTC)を取得または設定します。
+        /// </summary>
+        /// <value>
+        /// 作成日時(UTC)を示す <see cref="DateTime"/> オブジェクトです。 既定値は null です。
+        /// </value>
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>このプロパティの値が null である場合、エントリの作成日時は付加されません</item>
+        /// </list>
+        /// </remarks>
+        public DateTimeOffset? CreationTimeOffsetUtc
+        {
+            get
+            {
+                Validation.Assert(_creationTimeOffsetUtc is null || _creationTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero");
+                return _creationTimeOffsetUtc;
+            }
+
+            set
+            {
+                if (_written)
+                    throw new InvalidOperationException();
+
+                var v = value?.ToUniversalTime();
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                _creationTimeOffsetUtc = v;
             }
         }
 
@@ -649,12 +760,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new InvalidOperationException();
                 if (!_isFile)
                     throw new InvalidOperationException();
-                if (LastWriteTimeUtc is not null && LastWriteTimeUtc.Value.Kind == DateTimeKind.Unspecified)
-                    throw new InvalidOperationException($"The value of {nameof(LastWriteTimeUtc)}.{nameof(LastWriteTimeUtc.Value.Kind)} property must not be {nameof(DateTimeKind)}.{nameof(DateTimeKind.Unspecified)}.");
-                if (LastAccessTimeUtc is not null && LastAccessTimeUtc.Value.Kind == DateTimeKind.Unspecified)
-                    throw new InvalidOperationException($"The value of {nameof(LastAccessTimeUtc)}.{nameof(LastAccessTimeUtc.Value.Kind)} property must not be {nameof(DateTimeKind)}.{nameof(DateTimeKind.Unspecified)}.");
-                if (CreationTimeUtc is not null && CreationTimeUtc.Value.Kind == DateTimeKind.Unspecified)
-                    throw new InvalidOperationException($"The value of {nameof(CreationTimeUtc)}.{nameof(CreationTimeUtc.Value.Kind)} property must not be {nameof(DateTimeKind)}.{nameof(DateTimeKind.Unspecified)}.");
 
                 var stream =
                     _flags.HasFlag(ZipDestinationEntryFlag.UseDataDescriptor)
@@ -703,11 +808,19 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 // GetContentStream() が呼ばれないまま Flush() または Dispose() が呼び出された場合
 
+                var modifiedDateTime = _lastWriteTimeOffsetUtc ?? DateTimeOffset.UtcNow;
                 _size = 0;
                 _packedSize = 0;
                 _crc = Array.Empty<Byte>().CalculateCrc32().Crc;
 
-                SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
+                SetupExtraFields(
+                    _extraFields,
+                    _lastWriteTimeOffsetUtc,
+                    _lastAccessTimeOffsetUtc,
+                    _creationTimeOffsetUtc,
+                    !_flags.HasFlag(ZipDestinationEntryFlag.DisableNtfsHighPrecisionTimestamp),
+                    !_flags.HasFlag(ZipDestinationEntryFlag.DisableUnixHighPrecisionTimestamp));
+
                 if (_flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders))
                     ModifyExtraFields(_localHeaderExtraFields);
 
@@ -721,7 +834,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         _crc,
                         _localHeaderExtraFields,
                         FullNameBytes,
-                        LastWriteTimeUtc,
+                        modifiedDateTime,
                         IsDirectory,
                         _flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders));
                 var localHeaderPosition = localHeader.WriteTo(_zipWriterStreamAccesser.MainStream);
@@ -739,7 +852,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                         _centralDirectoryHeaderExtraFields,
                         FullNameBytes,
                         CommentBytes,
-                        LastWriteTimeUtc,
+                        modifiedDateTime,
                         IsDirectory,
                         false);
                 _zipWriterStreamAccesser.StreamForCentralDirectoryHeaders.WriteUInt32LE(centralDirectoryHeader.Length);
@@ -754,6 +867,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var temporaryFile = (FilePath?)null;
             var packedTemporaryFile = (FilePath?)null;
             var success = false;
+            var modifiedDateTime = _lastWriteTimeOffsetUtc ?? DateTimeOffset.UtcNow;
             try
             {
                 try
@@ -764,7 +878,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 {
                 }
 
-                SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
+                SetupExtraFields(
+                    _extraFields,
+                    _lastWriteTimeOffsetUtc,
+                    _lastAccessTimeOffsetUtc,
+                    _creationTimeOffsetUtc,
+                    !_flags.HasFlag(ZipDestinationEntryFlag.DisableNtfsHighPrecisionTimestamp),
+                    !_flags.HasFlag(ZipDestinationEntryFlag.DisableUnixHighPrecisionTimestamp));
+
                 if (_flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders))
                     ModifyExtraFields(_localHeaderExtraFields);
 
@@ -855,7 +976,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             crc,
                             _localHeaderExtraFields,
                             FullNameBytes,
-                            LastWriteTimeUtc,
+                            modifiedDateTime,
                             IsDirectory,
                             _flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders));
                     var localHeaderPosition = localHeader.WriteTo(_zipWriterStreamAccesser.MainStream);
@@ -873,7 +994,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             _centralDirectoryHeaderExtraFields,
                             FullNameBytes,
                             CommentBytes,
-                            LastWriteTimeUtc,
+                            modifiedDateTime,
                             IsDirectory,
                             false);
                     _zipWriterStreamAccesser.StreamForCentralDirectoryHeaders.WriteUInt32LE(centralDirectoryHeader.Length);
@@ -914,6 +1035,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             var packedSizeHolder = new ValueHolder<UInt64>();
             var localHeaderPosition = (ZipStreamPosition?)null;
+            var modifiedDateTime = _lastWriteTimeOffsetUtc ?? DateTimeOffset.UtcNow;
+
             try
             {
                 progress?.Report((0, 0));
@@ -922,7 +1045,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
             }
 
-            SetupExtraFields(_extraFields, LastWriteTimeUtc, LastAccessTimeUtc, CreationTimeUtc);
+            SetupExtraFields(
+                _extraFields,
+                _lastWriteTimeOffsetUtc,
+                _lastAccessTimeOffsetUtc,
+                _creationTimeOffsetUtc,
+                !_flags.HasFlag(ZipDestinationEntryFlag.DisableNtfsHighPrecisionTimestamp),
+                !_flags.HasFlag(ZipDestinationEntryFlag.DisableUnixHighPrecisionTimestamp));
+
             if (_flags.HasFlag(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders))
                 ModifyExtraFields(_localHeaderExtraFields);
 
@@ -937,7 +1067,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     CompressionMethodId,
                     _localHeaderExtraFields,
                     FullNameBytes,
-                    LastWriteTimeUtc,
+                    modifiedDateTime,
                     IsDirectory);
             localHeaderPosition = localHeaderInfo.WriteTo(_zipWriterStreamAccesser.MainStream);
 
@@ -971,7 +1101,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             _centralDirectoryHeaderExtraFields,
                             FullNameBytes,
                             CommentBytes,
-                            LastWriteTimeUtc,
+                            modifiedDateTime,
                             IsDirectory,
                             true);
                     _zipWriterStreamAccesser.StreamForCentralDirectoryHeaders.WriteUInt32LE(centralDirectoryHeader.Length);
@@ -1062,7 +1192,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private static void SetupExtraFields(ExtraFieldCollection extraFields, DateTime? lastWriteTimeUtc, DateTime? lastAccessTimeUtc, DateTime? creationTimeUtc)
+        private static void SetupExtraFields(
+            ExtraFieldCollection extraFields,
+            DateTimeOffset? lastWriteTimeOffsetUtc,
+            DateTimeOffset? lastAccessTimeOffsetUtc,
+            DateTimeOffset? creationTimeOffsetUtc,
+            Boolean enableNtfsTimeStamp,
+            Boolean enableUnixTimeStamp)
         {
             //
             // 高精度日時の何れかが指定されている場合は、拡張フィールドに設定する
@@ -1071,21 +1207,27 @@ namespace Palmtree.IO.Compression.Archive.Zip
             extraFields.Delete(NtfsExtraField.ExtraFieldId);
             extraFields.Delete(ExtendedTimestampExtraField.ExtraFieldId);
 
-            var windowsTimestampExtraField = new NtfsExtraField()
+            if (enableNtfsTimeStamp)
             {
-                LastWriteTimeUtc = lastWriteTimeUtc,
-                LastAccessTimeUtc = lastAccessTimeUtc,
-                CreationTimeUtc = creationTimeUtc,
-            };
-            var unixTimeStampExtraField = new ExtendedTimestampExtraField()
-            {
+                var ntfsTimestampExtraField = new NtfsExtraField
+                {
+                    LastWriteTimeOffsetUtc = lastWriteTimeOffsetUtc,
+                    LastAccessTimeOffsetUtc = lastAccessTimeOffsetUtc,
+                    CreationTimeOffsetUtc = creationTimeOffsetUtc,
+                };
+                extraFields.AddExtraField(ntfsTimestampExtraField);
+            }
 
-                LastWriteTimeUtc = lastWriteTimeUtc,
-                LastAccessTimeUtc = lastAccessTimeUtc,
-                CreationTimeUtc = creationTimeUtc,
-            };
-            extraFields.AddExtraField(windowsTimestampExtraField);
-            extraFields.AddExtraField(unixTimeStampExtraField);
+            if (enableUnixTimeStamp)
+            {
+                var unixTimeStampExtraField = new ExtendedTimestampExtraField
+                {
+                    LastWriteTimeOffsetUtc = lastWriteTimeOffsetUtc,
+                    LastAccessTimeOffsetUtc = lastAccessTimeOffsetUtc,
+                    CreationTimeOffsetUtc = creationTimeOffsetUtc,
+                };
+                extraFields.AddExtraField(unixTimeStampExtraField);
+            }
         }
 
         private static void ModifyExtraFields(ExtraFields.ExtraFieldCollection localHeaderExtraFields)

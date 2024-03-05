@@ -47,38 +47,44 @@ namespace Palmtree.IO.Compression.Archive.Zip
             CentralDirectoryHeaderExtraFields = new ExtraFieldCollection(internalHeader.CentralDirectoryHeader.ExtraFields);
 
             // セントラルディレクトリヘッダおよびローカルヘッダの複数の拡張ヘッダから、最も精度の高い (つまり precision が最も小さい) タイムスタンプを取得する。
-            LastWriteTimeUtc =
+            LastWriteTimeOffsetUtc =
                 new[]
                 {
-                    internalHeader.LocalHeader.DosDateTime,
-                    internalHeader.LocalHeader.LastWriteTimeUtc,
-                    internalHeader.CentralDirectoryHeader.DosDateTime,
-                    internalHeader.CentralDirectoryHeader.LastWriteTimeUtc,
+                    internalHeader.LocalHeader.DosDateTimeOffset,
+                    internalHeader.LocalHeader.LastWriteTimeOffsetUtc,
+                    internalHeader.CentralDirectoryHeader.DosDateTimeOffset,
+                    internalHeader.CentralDirectoryHeader.LastWriteTimeOffsetUtc,
                 }
                 .WhereNotNull()
                 .OrderBy(item => item.precition)
-                .Select(item => (DateTime?)item.dateTime)
+                .Select(item => (DateTimeOffset?)item.dateTimeOffset)
                 .FirstOrDefault();
-            LastAccessTimeUtc =
+            Validation.Assert(LastWriteTimeUtc is null || LastWriteTimeUtc.Value.Kind == DateTimeKind.Utc, "LastWriteTimeUtc is null || LastWriteTimeUtc.Value.Kind == DateTimeKind.Utc");
+            Validation.Assert(LastWriteTimeOffsetUtc is null || LastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "LastWriteTimeOffsetUtc is null || LastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero");
+            LastAccessTimeOffsetUtc =
                 new[]
                 {
-                    internalHeader.LocalHeader.LastAccessTimeUtc,
-                    internalHeader.CentralDirectoryHeader.LastAccessTimeUtc,
+                    internalHeader.LocalHeader.LastAccessTimeOffsetUtc,
+                    internalHeader.CentralDirectoryHeader.LastAccessTimeOffsetUtc,
                 }
                 .WhereNotNull()
                 .OrderBy(item => item.precition)
-                .Select(item => (DateTime?)item.dateTime)
+                .Select(item => (DateTimeOffset?)item.dateTimeOffset)
                 .FirstOrDefault();
-            CreationTimeUtc =
+            Validation.Assert(LastAccessTimeUtc is null || LastAccessTimeUtc.Value.Kind == DateTimeKind.Utc, "LastAccessTimeUtc is null || LastAccessTimeUtc.Value.Kind == DateTimeKind.Utc");
+            Validation.Assert(LastAccessTimeOffsetUtc is null || LastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "LastAccessTimeOffsetUtc is null || LastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero");
+            CreationTimeOffsetUtc =
                 new[]
                 {
-                    internalHeader.LocalHeader.CreationTimeUtc,
-                    internalHeader.CentralDirectoryHeader.CreationTimeUtc,
+                    internalHeader.LocalHeader.CreationTimeOffsetUtc,
+                    internalHeader.CentralDirectoryHeader.CreationTimeOffsetUtc,
                 }
                 .WhereNotNull()
                 .OrderBy(item => item.precition)
-                .Select(item => (DateTime?)item.dateTime)
+                .Select(item => (DateTimeOffset?)item.dateTimeOffset)
                 .FirstOrDefault();
+            Validation.Assert(CreationTimeUtc is null || CreationTimeUtc.Value.Kind == DateTimeKind.Utc, "CreationTimeUtc is null || CreationTimeUtc.Value.Kind == DateTimeKind.Utc");
+            Validation.Assert(CreationTimeOffsetUtc is null || CreationTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "CreationTimeOffsetUtc is null || CreationTimeOffsetUtc.Value.Offset == TimeSpan.Zero");
 
             FullName = internalHeader.LocalHeader.FullName;
             FullNameBytes = internalHeader.LocalHeader.FullNameBytes;
@@ -267,7 +273,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <value>
         /// エントリに最終更新日時が設定されている場合はその日時を示す <see cref="DateTime"/> 構造体、そうではない場合は null が返ります。
         /// </value>
-        public DateTime? LastWriteTimeUtc { get; }
+        public DateTime? LastWriteTimeUtc => LastWriteTimeOffsetUtc?.ToDateTime();
+
+        /// <summary>
+        /// エントリの最終更新日時(UTC)を取得します。
+        /// </summary>
+        /// <value>
+        /// エントリに最終更新日時が設定されている場合はその日時を示す <see cref="DateTimeOffset"/> 構造体、そうではない場合は null が返ります。
+        /// </value>
+        public DateTimeOffset? LastWriteTimeOffsetUtc { get; }
 
         /// <summary>
         /// エントリの最終アクセス日時(UTC)を取得します。
@@ -275,7 +289,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <value>
         /// エントリに最終アクセス日時が設定されている場合はその日時を示す <see cref="DateTime"/> 構造体、そうではない場合は null が返ります。
         /// </value>
-        public DateTime? LastAccessTimeUtc { get; }
+        public DateTime? LastAccessTimeUtc => LastAccessTimeOffsetUtc?.ToDateTime();
+
+        /// <summary>
+        /// エントリの最終アクセス日時(UTC)を取得します。
+        /// </summary>
+        /// <value>
+        /// エントリに最終アクセス日時が設定されている場合はその日時を示す <see cref="DateTimeOffset"/> 構造体、そうではない場合は null が返ります。
+        /// </value>
+        public DateTimeOffset? LastAccessTimeOffsetUtc { get; }
 
         /// <summary>
         /// エントリの作成日時(UTC)を取得します。
@@ -283,7 +305,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <value>
         /// エントリに作成日時が設定されている場合はその日時を示す <see cref="DateTime"/> 構造体、そうではない場合は null が返ります。
         /// </value>
-        public DateTime? CreationTimeUtc { get; }
+        public DateTime? CreationTimeUtc => CreationTimeOffsetUtc?.ToDateTime();
+
+        /// <summary>
+        /// エントリの作成日時(UTC)を取得します。
+        /// </summary>
+        /// <value>
+        /// エントリに作成日時が設定されている場合はその日時を示す <see cref="DateTime"/> 構造体、そうではない場合は null が返ります。
+        /// </value>
+        public DateTimeOffset? CreationTimeOffsetUtc { get; }
 
         /// <summary>
         /// エントリのエントリ名の生のバイト列です。

@@ -25,7 +25,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             UInt16 versionNeededToExtract,
             ZipEntryGeneralPurposeBitFlag generalPurposeBitFlag,
             ZipEntryCompressionMethodId compressionMethodId,
-            DateTime? dosDateTime,
+            DateTimeOffset? dosDateTimeOffset,
             UInt32 rawCrc,
             UInt32 rawPackedSize,
             UInt32 rawSize,
@@ -45,7 +45,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                   versionNeededToExtract,
                   generalPurposeBitFlag,
                   compressionMethodId,
-                  dosDateTime,
+                  dosDateTimeOffset,
                   rawCrc,
                   rawPackedSize,
                   rawSize,
@@ -199,10 +199,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             // minimumHeaderBytes.Slice(26, 2) の fullNameLength は ReadHeader() で取得済み
             // minimumHeaderBytes.Slice(28, 2) の extraFieldsLength は ReadHeader() で取得済み
 
-            var dosDateTime =
-                dosDate == 0 && dosTime == 0
-                    ? (DateTime?)null
-                    : (dosDate, dosTime).FromDosDateTimeToDateTime(DateTimeKind.Local);
+            var dosDateTimeOffset = (dosDate, dosTime).TryToDateTimeOffset();
 
             var extraFields = new ExtraFieldCollection(ZipEntryHeaderType.LocalHeader, extraFieldsBytes);
             var zip64ExtraFieldValue = extraFields.GetExtraField<Zip64ExtendedInformationExtraFieldForLocalHeader>(stringency);
@@ -215,7 +212,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                         versionNeededToExtract,
                         generalPurposeBitFlag,
                         compressionMethodId,
-                        dosDateTime,
+                        dosDateTimeOffset,
                         rawCrc,
                         rawPackedSize,
                         rawSize,
@@ -240,7 +237,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                         versionNeededToExtract,
                         generalPurposeBitFlag,
                         compressionMethodId,
-                        dosDateTime,
+                        dosDateTimeOffset,
                         rawCrc,
                         rawPackedSize,
                         rawSize,

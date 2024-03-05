@@ -110,7 +110,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             ExtraFieldCollection extraFields,
             ReadOnlyMemory<Byte> entryFullNameBytes,
             ReadOnlyMemory<Byte> entryCommentBytes,
-            DateTime? lastWriteTimeUtc,
+            DateTimeOffset lastWriteTimeUtc,
             Boolean isDirectory,
             Boolean useDataDescriptor)
         {
@@ -126,7 +126,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
                     localHeaderPosition.DiskNumber);
             extraFields.AddExtraField(zip64ExtraField);
 
-            var (dosDate, dosTime) = GetDosDateTime(lastWriteTimeUtc);
+            var (dosDate, dosTime) = lastWriteTimeUtc.TryToDosDateTime();
 
             return
                 new ZipEntryCentralDirectoryHeader(
@@ -145,18 +145,6 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
                     externalAttributes,
                     rawDiskNumber,
                     rawLocalHeaderOffset);
-        }
-
-        private static (UInt16 dosDate, UInt16 dosTime) GetDosDateTime(DateTime? lastWriteTimeUtc)
-        {
-            try
-            {
-                return (lastWriteTimeUtc ?? DateTime.UtcNow).FromDateTimeToDosDateTime(DateTimeKind.Local);
-            }
-            catch (Exception)
-            {
-                return (0, 0);
-            }
         }
     }
 }

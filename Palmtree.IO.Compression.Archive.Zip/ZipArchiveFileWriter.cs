@@ -272,10 +272,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         public void Close()
         {
             if (!_isDisposed)
-            {
                 InternalFlush();
-                Dispose();
-            }
         }
 
         /// <summary>
@@ -447,65 +444,69 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var success = false;
             try
             {
-                if (_writerState is not WriterState.Initial and not WriterState.EntryCreated)
-                    throw new InvalidOperationException();
-
-                // セントラルディレクトリヘッダの書き込み
-                _outStreamForCentoralDirectories.Dispose();
-                var currentDiskNumber = 0U;
-                var numberOfCentralDirectoryHeadersOnCurrenetDisk = 0U;
-                var startOfCentralDirectories = (ZipStreamPosition?)null;
-                try
+                if (_writerState != WriterState.Completed)
                 {
-                    using var inStream = _temporaryFileForCentoralDirectories.OpenRead().WithCache();
-                    for (var count = 0UL; count < _currentEntryCount; ++count)
+                    if (_writerState is not WriterState.Initial and not WriterState.EntryCreated)
+                        throw new InvalidOperationException();
+
+                    // セントラルディレクトリヘッダの書き込み
+                    _outStreamForCentoralDirectories.Dispose();
+                    var currentDiskNumber = 0U;
+                    var numberOfCentralDirectoryHeadersOnCurrenetDisk = 0U;
+                    var startOfCentralDirectories = (ZipStreamPosition?)null;
+                    try
                     {
-                        var length = inStream.ReadUInt32LE();
-                        var headerBytes = inStream.ReadBytes(length);
-                        if (checked((UInt32)headerBytes.Length) != length)
-                            throw new EndOfStreamException();
-                        var position = WriteChunkToZipStream(_zipOutputStream, headerBytes);
-                        if (position.DiskNumber == currentDiskNumber)
+                        using var inStream = _temporaryFileForCentoralDirectories.OpenRead().WithCache();
+                        for (var count = 0UL; count < _currentEntryCount; ++count)
                         {
-                            checked
+                            var length = inStream.ReadUInt32LE();
+                            var headerBytes = inStream.ReadBytes(length);
+                            if (checked((UInt32)headerBytes.Length) != length)
+                                throw new EndOfStreamException();
+                            var position = WriteChunkToZipStream(_zipOutputStream, headerBytes);
+                            if (position.DiskNumber == currentDiskNumber)
                             {
-                                ++numberOfCentralDirectoryHeadersOnCurrenetDisk;
+                                checked
+                                {
+                                    ++numberOfCentralDirectoryHeadersOnCurrenetDisk;
+                                }
                             }
-                        }
-                        else
-                        {
-                            currentDiskNumber = position.DiskNumber;
-                            numberOfCentralDirectoryHeadersOnCurrenetDisk = 1;
-                        }
+                            else
+                            {
+                                currentDiskNumber = position.DiskNumber;
+                                numberOfCentralDirectoryHeadersOnCurrenetDisk = 1;
+                            }
 
-                        startOfCentralDirectories ??= position;
+                            startOfCentralDirectories ??= position;
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        _writerState = WriterState.Error;
+                        throw Validation.GetFailErrorException("Failed to write to central directories.", ex);
+                    }
+
+                    var endOfCentralDirectories = _zipOutputStream.Position;
+
+                    // ZIP64 EOCDR, ZIP64 EOCDL, EOCDL の書き込み
+                    var lastHeaders =
+                        ZipFileLastDiskHeader.Build(
+                            this,
+                            startOfCentralDirectories ?? endOfCentralDirectories,
+                            endOfCentralDirectories,
+                            _currentEntryCount,
+                            currentDiskNumber,
+                            numberOfCentralDirectoryHeadersOnCurrenetDisk,
+                            _commentBytes,
+                            (Flags & ZipWriterFlags.AlwaysWriteZip64EOCDR) != ZipWriterFlags.None);
+                    lastHeaders.WriteTo(_zipOutputStream);
+
+                    // ZIP アーカイブの出力が完了したことの宣言
+                    _zipOutputStream.CompletedSuccessfully();
+
+                    _writerState = WriterState.Completed;
                 }
-                catch (Exception ex)
-                {
-                    _writerState = WriterState.Error;
-                    throw Validation.GetFailErrorException("Failed to write to central directories.", ex);
-                }
 
-                var endOfCentralDirectories = _zipOutputStream.Position;
-
-                // ZIP64 EOCDR, ZIP64 EOCDL, EOCDL の書き込み
-                var lastHeaders =
-                    ZipFileLastDiskHeader.Build(
-                        this,
-                        startOfCentralDirectories ?? endOfCentralDirectories,
-                        endOfCentralDirectories,
-                        _currentEntryCount,
-                        currentDiskNumber,
-                        numberOfCentralDirectoryHeadersOnCurrenetDisk,
-                        _commentBytes,
-                        (Flags & ZipWriterFlags.AlwaysWriteZip64EOCDR) != ZipWriterFlags.None);
-                lastHeaders.WriteTo(_zipOutputStream);
-
-                // ZIP アーカイブの出力が完了したことの宣言
-                _zipOutputStream.CompletedSuccessfully();
-
-                _writerState = WriterState.Completed;
                 success = true;
             }
             finally

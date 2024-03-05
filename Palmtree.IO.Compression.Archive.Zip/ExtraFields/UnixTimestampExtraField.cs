@@ -8,11 +8,11 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
     public abstract class UnixTimestampExtraField
         : TimestampExtraField
     {
-        private static readonly DateTime _baseTime;
+        private static readonly DateTimeOffset _baseTime;
 
         static UnixTimestampExtraField()
         {
-            _baseTime = DateTime.UnixEpoch;
+            _baseTime = DateTimeOffset.UnixEpoch;
         }
 
         /// <summary>
@@ -30,15 +30,15 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         public override TimeSpan DateTimePrecision => TimeSpan.FromSeconds(1);
 
         /// <summary>
-        /// UNIX エポック (1970年1月1日0時0分0秒) からの経過秒数を <see cref="DateTime"/> 構造体に変換します。 
+        /// UNIX エポック (1970年1月1日0時0分0秒) からの経過秒数を <see cref="DateTimeOffset"/> 構造体に変換します。 
         /// </summary>
         /// <param name="timestamp">
         /// 変換対象である、UNIX エポックからの経過秒数である整数です。
         /// </param>
         /// <returns>
-        /// <paramref name="timestamp"/> に対応する <see cref="DateTime"/> 構造体が返ります。
+        /// <paramref name="timestamp"/> に対応する <see cref="DateTimeOffset"/> 構造体が返ります。
         /// </returns>
-        protected static DateTime FromUnixTimeStamp(Int32 timestamp)
+        protected static DateTimeOffset FromUnixTimeStamp(Int32 timestamp)
         {
 #if DEBUG // 無効な値として 0 が使用されていないか検証
             if (timestamp == 0)
@@ -48,23 +48,17 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         }
 
         /// <summary>
-        /// <see cref="DateTime"/> 構造体を UNIX エポック (1970年1月1日0時0分0秒) からの経過秒数に変換します。 
+        /// <see cref="DateTimeOffset"/> 構造体を UNIX エポック (1970年1月1日0時0分0秒) からの経過秒数に変換します。 
         /// </summary>
         /// <param name="dateTime">
-        /// 変換対象である <see cref="DateTime"/> 構造体です。
+        /// 変換対象である <see cref="DateTimeOffset"/> 構造体です。
         /// </param>
         /// <returns>
         /// <paramref name="dateTime"/> に対応する、UNIX エポック からの経過秒数が返ります。
         /// もし、UNIX エポックからの経過秒数が <see cref="Int32"/> で表現できない場合は null が返ります。
         /// </returns>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="dateTime"/> の <see cref="DateTime.Kind"/> プロパティの値が <see cref="DateTimeKind.Unspecified"/> です。
-        /// </exception>
-        protected static Int32? ToUnixTimeStamp(DateTime dateTime)
+        protected static Int32? ToUnixTimeStamp(DateTimeOffset dateTime)
         {
-            if (dateTime.Kind == DateTimeKind.Unspecified)
-                throw new ArgumentException($"{nameof(DateTime)} structure whose {nameof(dateTime.Kind)} property value is {nameof(DateTimeKind.Unspecified)} was specified.", nameof(dateTime));
-
             try
             {
                 var timestamp = (dateTime.ToUniversalTime() - _baseTime).TotalSeconds;

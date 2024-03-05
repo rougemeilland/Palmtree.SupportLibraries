@@ -12,8 +12,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                 throw new BadZipFileFormatException($"The value of {nameof(centralDirectoryHeader.FullNameBytes)} does not match between the central directory header and local directory header.: centralDirectory={centralDirectoryHeader.CentralDirectoryHeaderPosition}");
             if (centralDirectoryHeader.CompressionMethodId != localHeader.CompressionMethodId)
                 throw new BadZipFileFormatException($"The value of {nameof(centralDirectoryHeader.CompressionMethodId)} does not match between the central directory header and local directory header.: centralDirectory={centralDirectoryHeader.CentralDirectoryHeaderPosition}");
-            if (centralDirectoryHeader.DosDateTime != localHeader.DosDateTime)
-                throw new BadZipFileFormatException($"The value of {nameof(centralDirectoryHeader.DosDateTime)} does not match between the central directory header and local directory header.: centralDirectory={centralDirectoryHeader.CentralDirectoryHeaderPosition}");
+            if (centralDirectoryHeader.DosDateTimeOffset != localHeader.DosDateTimeOffset)
+                throw new BadZipFileFormatException($"The value of {nameof(centralDirectoryHeader.DosDateTimeOffset)} does not match between the central directory header and local directory header.: centralDirectory={centralDirectoryHeader.CentralDirectoryHeaderPosition}");
 
             if (centralDirectoryHeader.GeneralPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor)
                 != localHeader.GeneralPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor))

@@ -28,7 +28,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             UInt16 versionNeededToExtract,
             ZipEntryGeneralPurposeBitFlag generalPurposeBitFlag,
             ZipEntryCompressionMethodId compressionMethodId,
-            DateTime? dosDateTime,
+            DateTimeOffset? dosDateTimeOffset,
             UInt32 rawCrc,
             UInt32 rawPackedSize,
             UInt32 rawSize,
@@ -49,7 +49,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                   versionNeededToExtract,
                   generalPurposeBitFlag,
                   compressionMethodId,
-                  dosDateTime,
+                  dosDateTimeOffset,
                   rawCrc,
                   rawPackedSize,
                   rawSize,
@@ -254,10 +254,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             var externalFileAttribute = headerBytes.Slice(38, 4).ToUInt32LE();
             var rawRelativeLocalHeaderOffset = headerBytes.Slice(42, 4).ToUInt32LE();
 
-            var dosDateTime =
-                dosDate == 0 && dosTime == 0
-                    ? (DateTime?)null
-                    : (dosDate, dosTime).FromDosDateTimeToDateTime(DateTimeKind.Local);
+            var dosDateTime = (dosDate, dosTime).TryToDateTimeOffset();
             var extraFields = new ExtraFieldCollection(ZipEntryHeaderType.CentralDirectoryHeader, extraFieldsBytes);
             var zip64ExtraFieldValue = extraFields.GetExtraField<Zip64ExtendedInformationExtraFieldForCentraHeader>(stringency);
             if (zip64ExtraFieldValue is null)

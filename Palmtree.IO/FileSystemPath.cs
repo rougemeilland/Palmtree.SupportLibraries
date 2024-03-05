@@ -15,26 +15,21 @@ namespace Palmtree.IO
 
         public DateTime CreationTimeUtc
         {
-            get
-            {
-                _path.Refresh();
-                return _path.CreationTimeUtc;
-            }
+            get => InternalCreationTimeUtc;
 
             set
             {
                 if (value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is DateTimeKind.Unspecified.", nameof(value));
+                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is 'DateTimeKind.Unspecified'.", nameof(value));
 
-                try
-                {
-                    _path.CreationTimeUtc = value.ToUniversalTime();
-                }
-                finally
-                {
-                    _path.Refresh();
-                }
+                InternalCreationTimeUtc = value;
             }
+        }
+
+        public DateTimeOffset CreationTimeOffsetUtc
+        {
+            get => InternalCreationTimeUtc.ToDateTimeOffset();
+            set => InternalCreationTimeUtc = value.ToDateTime(DateTimeKind.Utc);
         }
 
         public Boolean Exists
@@ -66,52 +61,42 @@ namespace Palmtree.IO
             }
         }
 
-        public DateTime LastWriteTimeUtc
+        public DateTime LastAccessTimeUtc
         {
-            get
-            {
-                _path.Refresh();
-                return _path.LastWriteTimeUtc;
-            }
+            get => InternalLastAccessTimeUtc;
 
             set
             {
                 if (value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is DateTimeKind.Unspecified.", nameof(value));
+                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is 'DateTimeKind.Unspecified'.", nameof(value));
 
-                try
-                {
-                    _path.LastWriteTimeUtc = value.ToUniversalTime();
-                }
-                finally
-                {
-                    _path.Refresh();
-                }
+                InternalLastAccessTimeUtc = value;
             }
         }
 
-        public DateTime LastAccessTimeUtc
+        public DateTimeOffset LastAccessTimeOffsetUtc
         {
-            get
-            {
-                _path.Refresh();
-                return _path.LastAccessTimeUtc;
-            }
+            get => InternalLastAccessTimeUtc.ToDateTimeOffset();
+            set => InternalLastAccessTimeUtc = value.ToDateTime(DateTimeKind.Utc);
+        }
+
+        public DateTime LastWriteTimeUtc
+        {
+            get => InternalLastWriteTimeUtc;
 
             set
             {
                 if (value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is DateTimeKind.Unspecified.", nameof(value));
+                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is 'DateTimeKind.Unspecified'.", nameof(value));
 
-                try
-                {
-                    _path.LastAccessTimeUtc = value.ToUniversalTime();
-                }
-                finally
-                {
-                    _path.Refresh();
-                }
+                InternalLastWriteTimeUtc = value;
             }
+        }
+
+        public DateTimeOffset LastWriteTimeOffsetUtc
+        {
+            get => InternalLastWriteTimeUtc.ToDateTimeOffset();
+            set => InternalLastWriteTimeUtc = value.ToDateTime(DateTimeKind.Utc);
         }
 
         public String Name
@@ -146,5 +131,77 @@ namespace Palmtree.IO
         }
 
         internal void Refresh() => _path.Refresh();
+
+        private DateTime InternalCreationTimeUtc
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                _path.Refresh();
+                return _path.CreationTimeUtc;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
+                try
+                {
+                    _path.CreationTimeUtc = value.ToUniversalTime();
+                }
+                finally
+                {
+                    _path.Refresh();
+                }
+            }
+        }
+
+        private DateTime InternalLastAccessTimeUtc
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                _path.Refresh();
+                return _path.LastAccessTimeUtc;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
+                try
+                {
+                    _path.LastAccessTimeUtc = value.ToUniversalTime();
+                }
+                finally
+                {
+                    _path.Refresh();
+                }
+            }
+        }
+
+        private DateTime InternalLastWriteTimeUtc
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                _path.Refresh();
+                return _path.LastWriteTimeUtc;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
+                try
+                {
+                    _path.LastWriteTimeUtc = value.ToUniversalTime();
+                }
+                finally
+                {
+                    _path.Refresh();
+                }
+            }
+        }
     }
 }

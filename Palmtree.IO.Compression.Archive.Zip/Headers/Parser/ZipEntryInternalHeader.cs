@@ -24,7 +24,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             UInt16 versionNeededToExtract,
             ZipEntryGeneralPurposeBitFlag generalPurposeBitFlag,
             ZipEntryCompressionMethodId compressionMethodId,
-            DateTime? dosDateTime,
+            DateTimeOffset? dosDateTimeOffset,
             UInt32 rawCrc,
             UInt32 rawPackedSize,
             UInt32 rawSize,
@@ -41,7 +41,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             VersionNeededToExtract = versionNeededToExtract;
             GeneralPurposeBitFlag = generalPurposeBitFlag;
             CompressionMethodId = compressionMethodId;
-            DosDateTime = dosDateTime is not null ? (dosDateTime.Value, TimeSpan.FromSeconds(2)) : null;
+            DosDateTimeOffset = dosDateTimeOffset is not null ? (dosDateTimeOffset.Value, TimeSpan.FromSeconds(2)) : null;
             RawCrc = rawCrc;
             RawPackedSize = rawPackedSize;
             RawSize = rawSize;
@@ -54,9 +54,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             ExtraFields = extraFields;
             HeaderSize = headerSize;
             RequiredZip64 = requiredZip64;
-            LastWriteTimeUtc = null;
-            LastAccessTimeUtc = null;
-            CreationTimeUtc = null;
+            LastWriteTimeOffsetUtc = null;
+            LastAccessTimeOffsetUtc = null;
+            CreationTimeOffsetUtc = null;
             ExactEntryEncoding = null;
             PossibleEntryEncodings = Array.Empty<Encoding>();
 
@@ -80,14 +80,14 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             {
                 if (timeStampExtraField is not null)
                 {
-                    if (timeStampExtraField.LastWriteTimeUtc is not null && (LastWriteTimeUtc is null || LastWriteTimeUtc.Value.precition > timeStampExtraField.DateTimePrecision))
-                        LastWriteTimeUtc = (timeStampExtraField.LastWriteTimeUtc.Value, timeStampExtraField.DateTimePrecision);
+                    if (timeStampExtraField.LastWriteTimeOffsetUtc is not null && (LastWriteTimeOffsetUtc is null || LastWriteTimeOffsetUtc.Value.precition > timeStampExtraField.DateTimePrecision))
+                        LastWriteTimeOffsetUtc = (timeStampExtraField.LastWriteTimeOffsetUtc.Value, timeStampExtraField.DateTimePrecision);
 
-                    if (timeStampExtraField.LastAccessTimeUtc is not null && (LastAccessTimeUtc is null || LastAccessTimeUtc.Value.precition > timeStampExtraField.DateTimePrecision))
-                        LastAccessTimeUtc = (timeStampExtraField.LastAccessTimeUtc.Value, timeStampExtraField.DateTimePrecision);
+                    if (timeStampExtraField.LastAccessTimeOffsetUtc is not null && (LastAccessTimeOffsetUtc is null || LastAccessTimeOffsetUtc.Value.precition > timeStampExtraField.DateTimePrecision))
+                        LastAccessTimeOffsetUtc = (timeStampExtraField.LastAccessTimeOffsetUtc.Value, timeStampExtraField.DateTimePrecision);
 
-                    if (timeStampExtraField.CreationTimeUtc is not null && (CreationTimeUtc is null || CreationTimeUtc.Value.precition > timeStampExtraField.DateTimePrecision))
-                        CreationTimeUtc = (timeStampExtraField.CreationTimeUtc.Value, timeStampExtraField.DateTimePrecision);
+                    if (timeStampExtraField.CreationTimeOffsetUtc is not null && (CreationTimeOffsetUtc is null || CreationTimeOffsetUtc.Value.precition > timeStampExtraField.DateTimePrecision))
+                        CreationTimeOffsetUtc = (timeStampExtraField.CreationTimeOffsetUtc.Value, timeStampExtraField.DateTimePrecision);
                 }
             }
 
@@ -181,7 +181,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
         public UInt16 VersionNeededToExtract { get; }
         public ZipEntryGeneralPurposeBitFlag GeneralPurposeBitFlag { get; }
         public ZipEntryCompressionMethodId CompressionMethodId { get; }
-        public (DateTime dateTime, TimeSpan precition)? DosDateTime { get; }
+        public (DateTimeOffset dateTimeOffset, TimeSpan precition)? DosDateTimeOffset { get; }
         public UInt32 RawCrc { get; }
         public abstract UInt32 Crc { get; }
         public UInt32 RawPackedSize { get; }
@@ -197,9 +197,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
         public Boolean RequiredZip64 { get; }
         public Encoding? ExactEntryEncoding { get; }
         public IEnumerable<Encoding> PossibleEntryEncodings { get; }
-        public (DateTime dateTime, TimeSpan precition)? LastWriteTimeUtc { get; }
-        public (DateTime dateTime, TimeSpan precition)? LastAccessTimeUtc { get; }
-        public (DateTime dateTime, TimeSpan precition)? CreationTimeUtc { get; }
+        public (DateTimeOffset dateTimeOffset, TimeSpan precition)? LastWriteTimeOffsetUtc { get; }
+        public (DateTimeOffset dateTimeOffset, TimeSpan precition)? LastAccessTimeOffsetUtc { get; }
+        public (DateTimeOffset dateTimeOffset, TimeSpan precition)? CreationTimeOffsetUtc { get; }
 
         private static Boolean TryResolveEncodingByCodePadeExtraField(ExtraFieldCollection extraFields, IZipEntryNameEncodingProvider zipEntryNameEncodingProvider, ReadOnlyMemory<Byte> fullNameBytes, ReadOnlyMemory<Byte> commentBytes, ValidationStringency stringency, [MaybeNullWhen(false)] out String fullName, [MaybeNullWhen(false)] out String comment, [MaybeNullWhen(false)] out Encoding originalEncoding)
         {

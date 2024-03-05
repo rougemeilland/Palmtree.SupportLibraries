@@ -35,8 +35,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         public UnixExtraFieldType1()
             : base(ExtraFieldId)
         {
-            LastAccessTimeUtc = null;
-            LastWriteTimeUtc = null;
+            LastAccessTimeOffsetUtc = null;
+            LastWriteTimeOffsetUtc = null;
             _userId = null;
             _groupId = null;
         }
@@ -54,12 +54,12 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                 case ZipEntryHeaderType.LocalHeader:
                 {
                     var lastAccessTimestamp =
-                        LastAccessTimeUtc is not null
-                        ? ToUnixTimeStamp(LastAccessTimeUtc.Value)
+                        LastAccessTimeOffsetUtc is not null
+                        ? ToUnixTimeStamp(LastAccessTimeOffsetUtc.Value)
                         : null;
                     var lastWriteTimestamp =
-                        LastWriteTimeUtc is not null
-                        ? ToUnixTimeStamp(LastWriteTimeUtc.Value)
+                        LastWriteTimeOffsetUtc is not null
+                        ? ToUnixTimeStamp(LastWriteTimeOffsetUtc.Value)
                         : null;
                     if (lastAccessTimestamp is null
                         || lastWriteTimestamp is null
@@ -80,12 +80,12 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                 case ZipEntryHeaderType.CentralDirectoryHeader:
                 {
                     var lastAccessTimestamp =
-                        LastAccessTimeUtc is not null
-                        ? ToUnixTimeStamp(LastAccessTimeUtc.Value)
+                        LastAccessTimeOffsetUtc is not null
+                        ? ToUnixTimeStamp(LastAccessTimeOffsetUtc.Value)
                         : null;
                     var lastWriteTimestamp =
-                        LastWriteTimeUtc is not null
-                        ? ToUnixTimeStamp(LastWriteTimeUtc.Value)
+                        LastWriteTimeOffsetUtc is not null
+                        ? ToUnixTimeStamp(LastWriteTimeOffsetUtc.Value)
                         : null;
                     if (lastAccessTimestamp is null || lastWriteTimestamp is null)
                         return null;
@@ -104,8 +104,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         /// <inheritdoc/>
         public override void SetData(ZipEntryHeaderType headerType, ReadOnlyMemory<Byte> data, IExtraFieldDecodingParameter parameter)
         {
-            LastAccessTimeUtc = null;
-            LastWriteTimeUtc = null;
+            LastAccessTimeOffsetUtc = null;
+            LastWriteTimeOffsetUtc = null;
             _userId = null;
             _groupId = null;
             var reader = new ByteArrayReader(data);
@@ -116,8 +116,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                 {
                     case ZipEntryHeaderType.LocalHeader:
                     {
-                        LastAccessTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
-                        LastWriteTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                        LastAccessTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                        LastWriteTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
                         _userId = reader.ReadUInt16LE();
                         _groupId = reader.ReadUInt16LE();
 
@@ -125,8 +125,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     }
                     case ZipEntryHeaderType.CentralDirectoryHeader:
                     {
-                        LastAccessTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
-                        LastWriteTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                        LastAccessTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                        LastWriteTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
                         _userId = null;
                         _groupId = null;
 
@@ -148,8 +148,8 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             {
                 if (!success)
                 {
-                    LastAccessTimeUtc = null;
-                    LastWriteTimeUtc = null;
+                    LastAccessTimeOffsetUtc = null;
+                    LastWriteTimeOffsetUtc = null;
                     _userId = null;
                     _groupId = null;
                 }
@@ -157,7 +157,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         }
 
         /// <inheritdoc/>
-        public override DateTime? CreationTimeUtc
+        public override DateTimeOffset? CreationTimeOffsetUtc
         {
             get => null;
             set => throw new NotSupportedException();

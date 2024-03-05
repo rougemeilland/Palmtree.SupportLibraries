@@ -36,16 +36,16 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         {
             var flag = Flag.None;
             var lastWriteTimestamp =
-                LastWriteTimeUtc is not null
-                ? ToUnixTimeStamp(LastWriteTimeUtc.Value)
+                LastWriteTimeOffsetUtc is not null
+                ? ToUnixTimeStamp(LastWriteTimeOffsetUtc.Value)
                 : null;
             var lastAccessTimestamp =
-                LastAccessTimeUtc is not null
-                ? ToUnixTimeStamp(LastAccessTimeUtc.Value)
+                LastAccessTimeOffsetUtc is not null
+                ? ToUnixTimeStamp(LastAccessTimeOffsetUtc.Value)
                 : null;
             var creationTimestamp =
-                CreationTimeUtc is not null
-                ? ToUnixTimeStamp(CreationTimeUtc.Value)
+                CreationTimeOffsetUtc is not null
+                ? ToUnixTimeStamp(CreationTimeOffsetUtc.Value)
                 : null;
             if (lastWriteTimestamp is not null)
                 flag |= Flag.LastWriteTime;
@@ -102,9 +102,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         /// <inheritdoc/>
         public override void SetData(ZipEntryHeaderType headerType, ReadOnlyMemory<Byte> data, IExtraFieldDecodingParameter parameter)
         {
-            LastWriteTimeUtc = null;
-            LastAccessTimeUtc = null;
-            CreationTimeUtc = null;
+            LastWriteTimeOffsetUtc = null;
+            LastAccessTimeOffsetUtc = null;
+            CreationTimeOffsetUtc = null;
             var reader = new ByteArrayReader(data);
             var success = false;
             try
@@ -115,11 +115,11 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     {
                         var flag = (Flag)reader.ReadByte();
                         if (flag.HasFlag(Flag.LastWriteTime))
-                            LastWriteTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                            LastWriteTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
                         if (flag.HasFlag(Flag.LastAccessTime))
-                            LastAccessTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                            LastAccessTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
                         if (flag.HasFlag(Flag.CreationTime))
-                            CreationTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                            CreationTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
 
                         break;
                     }
@@ -127,7 +127,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     {
                         var flag = (Flag)reader.ReadByte();
                         if (flag.HasFlag(Flag.LastWriteTime))
-                            LastWriteTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                            LastWriteTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
 
                         if (!parameter.Stringency.HasFlag(ValidationStringency.StrictlyCheckExtraFieldValues))
                         {
@@ -135,9 +135,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                             // それに反して LastAccessTime および CreationTime も付加してしまう実装も存在する模様。
                             // そのような ZIP アーカイブファイル であった場合、LastAccessTime および CreationTime も読み込むこととする。
                             if (!reader.IsEmpty && flag.HasFlag(Flag.LastAccessTime))
-                                LastAccessTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                                LastAccessTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
                             if (!reader.IsEmpty && flag.HasFlag(Flag.CreationTime))
-                                CreationTimeUtc = FromUnixTimeStamp(reader.ReadInt32LE());
+                                CreationTimeOffsetUtc = FromUnixTimeStamp(reader.ReadInt32LE());
                         }
 
                         break;
@@ -158,9 +158,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             {
                 if (!success)
                 {
-                    LastWriteTimeUtc = null;
-                    LastAccessTimeUtc = null;
-                    CreationTimeUtc = null;
+                    LastWriteTimeOffsetUtc = null;
+                    LastAccessTimeOffsetUtc = null;
+                    CreationTimeOffsetUtc = null;
                 }
             }
         }

@@ -68,9 +68,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         public NtfsExtraField()
             : base(ExtraFieldId)
         {
-            LastWriteTimeUtc = null;
-            LastAccessTimeUtc = null;
-            CreationTimeUtc = null;
+            LastWriteTimeOffsetUtc = null;
+            LastAccessTimeOffsetUtc = null;
+            CreationTimeOffsetUtc = null;
         }
 
         /// <summary>
@@ -110,9 +110,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         /// <inheritdoc/>
         public override void SetData(ZipEntryHeaderType headerType, ReadOnlyMemory<Byte> data, IExtraFieldDecodingParameter parameter)
         {
-            LastWriteTimeUtc = null;
-            LastAccessTimeUtc = null;
-            CreationTimeUtc = null;
+            LastWriteTimeOffsetUtc = null;
+            LastAccessTimeOffsetUtc = null;
+            CreationTimeOffsetUtc = null;
             var reader = new ByteArrayReader(data);
             var success = false;
             try
@@ -161,9 +161,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             {
                 if (!success)
                 {
-                    LastWriteTimeUtc = null;
-                    LastAccessTimeUtc = null;
-                    CreationTimeUtc = null;
+                    LastWriteTimeOffsetUtc = null;
+                    LastAccessTimeOffsetUtc = null;
+                    CreationTimeOffsetUtc = null;
                 }
             }
         }
@@ -174,26 +174,26 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         private ReadOnlyMemory<Byte>? GetDataForSubTag0001()
         {
             // 最終更新日時/最終アクセス日時/作成日時のいずれかが未設定の場合は、この拡張フィールドは無効とする。
-            if (LastWriteTimeUtc is null ||
-                LastAccessTimeUtc is null ||
-                CreationTimeUtc is null)
+            if (LastWriteTimeOffsetUtc is null ||
+                LastAccessTimeOffsetUtc is null ||
+                CreationTimeOffsetUtc is null)
             {
                 return null;
             }
 
             var builder = new ByteArrayBuilder(sizeof(UInt64) + sizeof(UInt64) + sizeof(UInt64));
-            builder.AppendUInt64LE((UInt64)LastWriteTimeUtc.Value.ToFileTimeUtc());
-            builder.AppendUInt64LE((UInt64)LastAccessTimeUtc.Value.ToFileTimeUtc());
-            builder.AppendUInt64LE((UInt64)CreationTimeUtc.Value.ToFileTimeUtc());
+            builder.AppendUInt64LE((UInt64)LastWriteTimeOffsetUtc.Value.ToFileTime());
+            builder.AppendUInt64LE((UInt64)LastAccessTimeOffsetUtc.Value.ToFileTime());
+            builder.AppendUInt64LE((UInt64)CreationTimeOffsetUtc.Value.ToFileTime());
             return builder.ToByteArray();
         }
 
         private void SetDataForSubTag0001(ReadOnlyMemory<Byte> data)
         {
             var reader = new ByteArrayReader(data);
-            LastWriteTimeUtc = DateTime.FromFileTimeUtc((Int64)reader.ReadUInt64LE());
-            LastAccessTimeUtc = DateTime.FromFileTimeUtc((Int64)reader.ReadUInt64LE());
-            CreationTimeUtc = DateTime.FromFileTimeUtc((Int64)reader.ReadUInt64LE());
+            LastWriteTimeOffsetUtc = DateTimeOffset.FromFileTime((Int64)reader.ReadUInt64LE());
+            LastAccessTimeOffsetUtc = DateTimeOffset.FromFileTime((Int64)reader.ReadUInt64LE());
+            CreationTimeOffsetUtc = DateTimeOffset.FromFileTime((Int64)reader.ReadUInt64LE());
         }
     }
 }
