@@ -230,7 +230,6 @@ namespace Palmtree.Linq
         }
 
         public static ReadOnlyMemory<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
-            where ELEMENT_T : IComparable<ELEMENT_T>
         {
             if (source is null)
                 throw new ArgumentNullException(nameof(source));

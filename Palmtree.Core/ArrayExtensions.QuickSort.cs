@@ -1096,7 +1096,6 @@ namespace Palmtree
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
         private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
-
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
