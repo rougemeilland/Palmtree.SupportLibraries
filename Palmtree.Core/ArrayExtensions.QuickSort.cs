@@ -16,7 +16,7 @@ namespace Palmtree
             if (sourceArray is null)
                 throw new ArgumentNullException(nameof(sourceArray));
 
-            InternalQuickSort(sourceArray.AsSpan());
+            sourceArray.AsSpan().InternalQuickSort();
             return sourceArray;
         }
 
@@ -28,7 +28,7 @@ namespace Palmtree
             if (keySekecter is null)
                 throw new ArgumentNullException(nameof(keySekecter));
 
-            InternalQuickSort(sourceArray.AsSpan(), keySekecter);
+            sourceArray.AsSpan().InternalQuickSort(keySekecter);
             return sourceArray;
         }
 
@@ -39,7 +39,7 @@ namespace Palmtree
             if (comparer is null)
                 throw new ArgumentNullException(nameof(comparer));
 
-            InternalQuickSort(sourceArray.AsSpan(), comparer);
+            sourceArray.AsSpan().InternalQuickSort(comparer);
             return sourceArray;
         }
 
@@ -52,7 +52,7 @@ namespace Palmtree
             if (keyComparer is null)
                 throw new ArgumentNullException(nameof(keyComparer));
 
-            InternalQuickSort(sourceArray.AsSpan(), keySekecter, keyComparer);
+            sourceArray.AsSpan().InternalQuickSort(keySekecter, keyComparer);
             return sourceArray;
         }
 
@@ -64,7 +64,7 @@ namespace Palmtree
                 throw new ArgumentNullException(nameof(sourceArray));
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
-            InternalQuickSort(sourceArray.AsSpan(offset, count));
+            sourceArray.AsSpan(offset, count).InternalQuickSort();
             return sourceArray;
         }
 
@@ -77,7 +77,7 @@ namespace Palmtree
                 throw new ArgumentNullException(nameof(keySekecter));
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
-            InternalQuickSort(sourceArray.AsSpan(offset, count), keySekecter);
+            sourceArray.AsSpan(offset, count).InternalQuickSort(keySekecter);
             return sourceArray;
         }
 
@@ -89,7 +89,7 @@ namespace Palmtree
                 throw new ArgumentNullException(nameof(comparer));
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
-            InternalQuickSort(sourceArray.AsSpan(offset, count), comparer);
+            sourceArray.AsSpan(offset, count).InternalQuickSort(comparer);
             return sourceArray;
         }
 
@@ -103,7 +103,7 @@ namespace Palmtree
                 throw new ArgumentNullException(nameof(keyComparer));
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
-            InternalQuickSort(sourceArray.AsSpan(offset, count), keySekecter, keyComparer);
+            sourceArray.AsSpan(offset, count).InternalQuickSort(keySekecter, keyComparer);
             return sourceArray;
         }
 
@@ -120,7 +120,7 @@ namespace Palmtree
             if (checked(offset + count) > sourceArray.Length)
                 throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
 
-            InternalQuickSort(sourceArray.AsSpan(offset, count));
+            sourceArray.AsSpan(offset, count).InternalQuickSort();
             return sourceArray;
         }
 
@@ -138,7 +138,7 @@ namespace Palmtree
             if (keySekecter is null)
                 throw new ArgumentNullException(nameof(keySekecter));
 
-            InternalQuickSort(sourceArray.AsSpan(offset, count), keySekecter);
+            sourceArray.AsSpan(offset, count).InternalQuickSort(keySekecter);
             return sourceArray;
         }
 
@@ -155,7 +155,7 @@ namespace Palmtree
             if (comparer is null)
                 throw new ArgumentNullException(nameof(comparer));
 
-            InternalQuickSort(sourceArray.AsSpan(offset, count), comparer);
+            sourceArray.AsSpan(offset, count).InternalQuickSort(comparer);
             return sourceArray;
         }
 
@@ -174,7 +174,7 @@ namespace Palmtree
             if (keyComparer is null)
                 throw new ArgumentNullException(nameof(keyComparer));
 
-            InternalQuickSort(sourceArray.AsSpan(offset, count), keySekecter, keyComparer);
+            sourceArray.AsSpan(offset, count).InternalQuickSort(keySekecter, keyComparer);
             return sourceArray;
         }
 
@@ -187,7 +187,7 @@ namespace Palmtree
             if (checked(offset + count) > (UInt32)sourceArray.Length)
                 throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
 
-            InternalQuickSort(sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)));
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort();
             return sourceArray;
         }
 
@@ -201,7 +201,7 @@ namespace Palmtree
             if (keySekecter is null)
                 throw new ArgumentNullException(nameof(keySekecter));
 
-            InternalQuickSort(sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)), keySekecter);
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(keySekecter);
             return sourceArray;
         }
 
@@ -214,7 +214,7 @@ namespace Palmtree
             if (comparer is null)
                 throw new ArgumentNullException(nameof(comparer));
 
-            InternalQuickSort(sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)), comparer);
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(comparer);
             return sourceArray;
         }
 
@@ -229,7 +229,7 @@ namespace Palmtree
             if (keyComparer is null)
                 throw new ArgumentNullException(nameof(keyComparer));
 
-            InternalQuickSort(sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)), keySekecter, keyComparer);
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(keySekecter, keyComparer);
             return sourceArray;
         }
 
@@ -237,7 +237,7 @@ namespace Palmtree
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T>(this Span<ELEMENT_T> sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            InternalQuickSort(sourceArray);
+            sourceArray.InternalQuickSort();
             return sourceArray;
         }
 
@@ -247,7 +247,7 @@ namespace Palmtree
             if (keySekecter is null)
                 throw new ArgumentNullException(nameof(keySekecter));
 
-            InternalQuickSort(sourceArray, keySekecter);
+            sourceArray.InternalQuickSort(keySekecter);
             return sourceArray;
         }
 
@@ -256,7 +256,7 @@ namespace Palmtree
             if (comparer is null)
                 throw new ArgumentNullException(nameof(comparer));
 
-            InternalQuickSort(sourceArray, comparer);
+            sourceArray.InternalQuickSort(comparer);
             return sourceArray;
         }
 
@@ -267,7 +267,7 @@ namespace Palmtree
             if (keyComparer is null)
                 throw new ArgumentNullException(nameof(keyComparer));
 
-            InternalQuickSort(sourceArray, keySekecter, keyComparer);
+            sourceArray.InternalQuickSort(keySekecter, keyComparer);
             return sourceArray;
         }
 
@@ -276,16 +276,16 @@ namespace Palmtree
         #region InternalQuickSort
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void InternalQuickSort<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector)
+        internal static void InternalQuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
             => InternalQuickSortManaged(source, keySelector);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void InternalQuickSort<ELEMENT_T>(Span<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
+        internal static void InternalQuickSort<ELEMENT_T>(this Span<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
             => InternalQuickSortManaged(source, keyComparer);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void InternalQuickSort<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+        internal static void InternalQuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
             => InternalQuickSortManaged(source, keySelector, keyComparer);
 
         #endregion

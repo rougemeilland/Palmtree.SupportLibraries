@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Palmtree;
 
 namespace Palmtree.Linq
 {
@@ -220,26 +221,30 @@ namespace Palmtree.Linq
 
         #region QuickSort
 
-        public static ReadOnlyMemory<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
+        public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             if (source is null)
                 throw new ArgumentNullException(nameof(source));
 
-            return source.ToArray().QuickSort();
+            var sourceArray = source.ToArray();
+            sourceArray.AsSpan().InternalQuickSort();
+            return sourceArray;
         }
 
-        public static ReadOnlyMemory<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
+        public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
         {
             if (source is null)
                 throw new ArgumentNullException(nameof(source));
             if (keyComparer is null)
                 throw new ArgumentNullException(nameof(keyComparer));
 
-            return source.ToArray().QuickSort(keyComparer);
+            var sourceArray = source.ToArray();
+            sourceArray.AsSpan().InternalQuickSort(keyComparer);
+            return sourceArray;
         }
 
-        public static ReadOnlyMemory<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter)
+        public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter)
             where KEY_T : IComparable<KEY_T>
         {
             if (source is null)
@@ -247,10 +252,12 @@ namespace Palmtree.Linq
             if (keySekecter is null)
                 throw new ArgumentNullException(nameof(keySekecter));
 
-            return source.ToArray().QuickSort(keySekecter);
+            var sourceArray = source.ToArray();
+            sourceArray.AsSpan().InternalQuickSort(keySekecter);
+            return sourceArray;
         }
 
-        public static ReadOnlyMemory<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter, IComparer<KEY_T> keyComparer)
+        public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter, IComparer<KEY_T> keyComparer)
         {
             if (source is null)
                 throw new ArgumentNullException(nameof(source));
@@ -259,7 +266,9 @@ namespace Palmtree.Linq
             if (keyComparer is null)
                 throw new ArgumentNullException(nameof(keyComparer));
 
-            return source.ToArray().QuickSort(keySekecter, keyComparer);
+            var sourceArray = source.ToArray();
+            sourceArray.AsSpan().InternalQuickSort(keySekecter, keyComparer);
+            return sourceArray;
         }
 
         #endregion

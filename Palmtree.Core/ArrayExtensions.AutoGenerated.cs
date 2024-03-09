@@ -8,7 +8,7 @@ namespace Palmtree
     {
         #region InternalQuickSort
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void InternalQuickSort<ELEMENT_T>(Span<ELEMENT_T> source)
+        internal static void InternalQuickSort<ELEMENT_T>(this Span<ELEMENT_T> source)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             if (source.Length < 2)

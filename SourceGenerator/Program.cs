@@ -78,7 +78,7 @@ namespace SourceGenerator
                 sourceWriter.WriteLine("        #region InternalQuickSort");
                 #region void InternalQuickSort<ELEMENT_T>(Span<ELEMENT_T> source)
                 sourceWriter.WriteLine("        [MethodImpl(MethodImplOptions.AggressiveInlining)]");
-                sourceWriter.WriteLine("        private static void InternalQuickSort<ELEMENT_T>(Span<ELEMENT_T> source)");
+                sourceWriter.WriteLine("        internal static void InternalQuickSort<ELEMENT_T>(this Span<ELEMENT_T> source)");
                 sourceWriter.WriteLine("            where ELEMENT_T : IComparable<ELEMENT_T>");
                 sourceWriter.WriteLine("        {");
                 sourceWriter.WriteLine("            if (source.Length < 2)");
