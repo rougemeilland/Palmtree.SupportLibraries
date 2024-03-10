@@ -20,14 +20,20 @@ namespace Palmtree.IO
         private FilePath(FileInfo file)
             : base(file)
         {
-            var directory =
-                file.Directory
-                ?? throw new ArgumentException($"File path name format is invalid.: \"{file.FullName}\"");
             _file = file;
-            Directory = DirectoryPath.CreateInstance(directory);
         }
 
-        public DirectoryPath Directory { get; }
+        public DirectoryPath Directory
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                _file.Refresh();
+                var directory = _file.Directory;
+                Validation.Assert(directory is not null, $" _file.Directory is not null (_file == \"{_file.FullName}\")");
+                return DirectoryPath.CreateInstance(directory);
+            }
+        }
 
         public UInt64 Length
         {
@@ -315,15 +321,6 @@ namespace Palmtree.IO
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static FilePath CreateInstance(FileInfo file) => new(file);
-
-#if DEBUG
-        protected override void ValidationPath()
-        {
-            base.ValidationPath();
-            Validation.Assert(String.Equals(_file.Directory?.FullName, Directory.FullName, StringComparison.OrdinalIgnoreCase), "");
-            Validation.Assert(String.Equals(_file.GetNameWithoutExtension(), NameWithoutExtension, StringComparison.OrdinalIgnoreCase), "");
-        }
-#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FileInfo GetFineInfo(String path)

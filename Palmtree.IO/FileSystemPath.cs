@@ -115,9 +115,10 @@ namespace Palmtree.IO
 #if DEBUG
         protected virtual void ValidationPath()
         {
-            Validation.Assert(String.Equals(_path.FullName, FullName, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.FullName, FullName, StringComparison.OrdinalIgnoreCase)");
             Validation.Assert(String.Equals(_path.Extension, Extension, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.Extension, Extension, StringComparison.OrdinalIgnoreCase)");
+            Validation.Assert(String.Equals(_path.FullName, FullName, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.FullName, FullName, StringComparison.OrdinalIgnoreCase)");
             Validation.Assert(String.Equals(_path.Name, Name, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.Name, Name, StringComparison.OrdinalIgnoreCase)");
+            Validation.Assert(String.Equals(_path.GetNameWithoutExtension(), NameWithoutExtension, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.GetNameWithoutExtension(), NameWithoutExtension, StringComparison.OrdinalIgnoreCase)");
         }
 #endif
 
