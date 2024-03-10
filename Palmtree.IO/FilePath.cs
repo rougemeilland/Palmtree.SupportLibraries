@@ -24,7 +24,7 @@ namespace Palmtree.IO
                 file.Directory
                 ?? throw new ArgumentException($"File path name format is invalid.: \"{file.FullName}\"");
             _file = file;
-            Directory = directory;
+            Directory = DirectoryPath.CreateInstance(directory);
         }
 
         public DirectoryPath Directory { get; }
