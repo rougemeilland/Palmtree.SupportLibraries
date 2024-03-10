@@ -85,12 +85,12 @@ namespace Palmtree.IO
 
         #endregion
 
-        public static String GetNameWithoutExtension(this FileInfo file)
+        public static String GetNameWithoutExtension(this FileSystemInfo info)
         {
-            if (file is null)
-                throw new ArgumentNullException(nameof(file));
+            if (info is null)
+                throw new ArgumentNullException(nameof(info));
 
-            return Path.GetFileNameWithoutExtension(file.Name);
+            return Path.GetFileNameWithoutExtension(info.Name);
         }
 
         #region ReadAllBytes

@@ -20,33 +20,14 @@ namespace Palmtree.IO
         private FilePath(FileInfo file)
             : base(file)
         {
-            if (file.Directory is null)
-                throw new ArgumentException($"File path name format is invalid.: \"{file.FullName}\"");
-
+            var directory =
+                file.Directory
+                ?? throw new ArgumentException($"File path name format is invalid.: \"{file.FullName}\"");
             _file = file;
-
+            Directory = directory;
         }
 
-        public DirectoryPath Directory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _file.Refresh();
-                var directory = _file.Directory;
-                Validation.Assert(directory is not null, $" _file.Directory is not null (_file == \"{_file.FullName}\")");
-                return DirectoryPath.CreateInstance(directory);
-            }
-        }
-
-        public String NameWithoutExtension
-        {
-            get
-            {
-                _file.Refresh();
-                return Path.GetFileNameWithoutExtension(_file.Name);
-            }
-        }
+        public DirectoryPath Directory { get; }
 
         public UInt64 Length
         {
@@ -103,6 +84,10 @@ namespace Palmtree.IO
             {
                 _file.Refresh();
                 destinationFile.Refresh();
+#if DEBUG
+                ValidationPath();
+                destinationFile.ValidationPath();
+#endif
             }
         }
 
@@ -205,6 +190,10 @@ namespace Palmtree.IO
             {
                 _file.Refresh();
                 destinationFile.Refresh();
+#if DEBUG
+                ValidationPath();
+                destinationFile.ValidationPath();
+#endif
             }
         }
 
@@ -295,6 +284,11 @@ namespace Palmtree.IO
                 _file.Refresh();
                 destination.Refresh();
                 destinatonBackupFile.Refresh();
+#if DEBUG
+                ValidationPath();
+                destination.ValidationPath();
+                destinatonBackupFile.ValidationPath();
+#endif
             }
         }
 
@@ -321,6 +315,15 @@ namespace Palmtree.IO
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static FilePath CreateInstance(FileInfo file) => new(file);
+
+#if DEBUG
+        protected override void ValidationPath()
+        {
+            base.ValidationPath();
+            Validation.Assert(String.Equals(_file.Directory?.FullName, Directory.FullName, StringComparison.OrdinalIgnoreCase), "");
+            Validation.Assert(String.Equals(_file.GetNameWithoutExtension(), NameWithoutExtension, StringComparison.OrdinalIgnoreCase), "");
+        }
+#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FileInfo GetFineInfo(String path)

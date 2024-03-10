@@ -21,31 +21,14 @@ namespace Palmtree.IO
             : base(directory)
         {
             _directory = directory;
+            var parent = _directory.Parent;
+            Parent = parent is null ? null : new DirectoryPath(parent);
+            Root = new DirectoryPath(directory.Root);
         }
 
-        public DirectoryPath? Parent
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _directory.Refresh();
-                var parent = _directory.Parent;
-                return
-                    parent is null
-                    ? null
-                    : new DirectoryPath(parent);
-            }
-        }
+        public DirectoryPath? Parent { get; }
 
-        public DirectoryPath Root
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _directory.Refresh();
-                return new DirectoryPath(_directory.Root);
-            }
-        }
+        public DirectoryPath Root { get; }
 
         public DirectoryPath Create()
         {
@@ -59,6 +42,9 @@ namespace Palmtree.IO
             finally
             {
                 _directory.Refresh();
+#if DEBUG
+                ValidationPath();
+#endif
             }
         }
 
@@ -72,6 +58,9 @@ namespace Palmtree.IO
             finally
             {
                 _directory.Refresh();
+#if DEBUG
+                ValidationPath();
+#endif
             }
         }
 
@@ -225,6 +214,10 @@ namespace Palmtree.IO
             {
                 _directory.Refresh();
                 destinationDirectory.Refresh();
+#if DEBUG
+                ValidationPath();
+                destinationDirectory.ValidationPath();
+#endif
             }
         }
 
@@ -261,6 +254,15 @@ namespace Palmtree.IO
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static DirectoryPath CreateInstance(DirectoryInfo directory) => new(directory);
+
+#if DEBUG
+        protected override void ValidationPath()
+        {
+            base.ValidationPath();
+            Validation.Assert(String.Equals(_directory.Parent?.FullName, Parent?.FullName, StringComparison.OrdinalIgnoreCase), "");
+            Validation.Assert(String.Equals(_directory.Root.FullName, Root.FullName, StringComparison.OrdinalIgnoreCase), "");
+        }
+#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DirectoryInfo GetDirectoryInfo(String path)
