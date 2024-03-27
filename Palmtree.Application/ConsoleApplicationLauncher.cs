@@ -73,8 +73,8 @@ namespace Palmtree.Application
                     UseShellExecute = false,
                     CreateNoWindow = false,
                 };
-            startInfo.EnvironmentVariables.Add(_ENVIRONMENT_VARIABLE_LAUNCHED_BY_THIS_LAUNCHER, _ENVIRONMENT_VALUE_LAUNCHED_BY_THIS_LAUNCHER);
-            startInfo.EnvironmentVariables.Add(_PATH_ENVIRONMENT_VARIABLE_NAME, BuildPathEnvironmentValue(baseDirectory));
+            startInfo.EnvironmentVariables[_ENVIRONMENT_VARIABLE_LAUNCHED_BY_THIS_LAUNCHER] = _ENVIRONMENT_VALUE_LAUNCHED_BY_THIS_LAUNCHER;
+            startInfo.EnvironmentVariables[_PATH_ENVIRONMENT_VARIABLE_NAME] = BuildPathEnvironmentValue(baseDirectory);
             _ = Process.Start(startInfo);
         }
 
