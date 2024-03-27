@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Text;
+using Palmtree.IO;
 
 namespace Palmtree.Application
 {
@@ -14,7 +16,7 @@ namespace Palmtree.Application
         private const String _COMMAND_PROMPT_COMMAND_NAME = "cmd";
         private const String _ENVIRONMENT_VARIABLE_LAUNCHED_BY_THIS_LAUNCHER = "__LAUNCHED_BY_PALMTREE_APPLICATION_CONSOLE_APPLICATION_LAUNCHER";
         private const String _ENVIRONMENT_VALUE_LAUNCHED_BY_THIS_LAUNCHER = "1";
-
+        private const String _PATH_ENVIRONMENT_VARIABLE_NAME = "PATH";
         private readonly String _commandName;
         private readonly Encoding _encoding;
 
@@ -51,8 +53,11 @@ namespace Palmtree.Application
         /// <param name="keepShellRunning">
         /// コンソールアプリケーションが終了した後もシェル (コマンドプロンプト) を実行中のままにする場合は true、そうではない場合は false です。既定値は false であり、この場合はコンソールアプリケーションが終了するとシェル (コマンドプロンプト) も終了します。
         /// </param>
+        /// <param name="baseDirectory">
+        /// コンソールアプリケーションの実行可能ファイルがあるディレクトリです。null を指定した場合にはカレントディレクトリとみなされます。
+        /// </param>
         [SupportedOSPlatform("windows")]
-        public void Launch(String[] args, Boolean keepShellRunning = false)
+        public void Launch(String[] args, Boolean keepShellRunning = false, DirectoryPath? baseDirectory = null)
         {
             var commandParameters =
                 String.Concat(
@@ -67,14 +72,22 @@ namespace Palmtree.Application
                     Arguments = $"/{(keepShellRunning ? "k" : "c")} {shellCommandLine}",
                     UseShellExecute = false,
                     CreateNoWindow = false,
-                    WorkingDirectory = Environment.CurrentDirectory,
                 };
             startInfo.EnvironmentVariables.Add(_ENVIRONMENT_VARIABLE_LAUNCHED_BY_THIS_LAUNCHER, _ENVIRONMENT_VALUE_LAUNCHED_BY_THIS_LAUNCHER);
-            _ = Process.Start(
-                startInfo);
+            startInfo.EnvironmentVariables.Add(_PATH_ENVIRONMENT_VARIABLE_NAME, BuildPathEnvironmentValue(baseDirectory));
+            _ = Process.Start(startInfo);
         }
 
         public static Boolean IsLaunchedByThisLauncher
             => Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_LAUNCHED_BY_THIS_LAUNCHER) == _ENVIRONMENT_VALUE_LAUNCHED_BY_THIS_LAUNCHER;
+
+        private static String BuildPathEnvironmentValue(DirectoryPath? baseDirectory)
+        {
+            var path = Environment.GetEnvironmentVariable(_PATH_ENVIRONMENT_VARIABLE_NAME) ?? "";
+            if (path != "" && !path.EndsWith(Path.PathSeparator))
+                path += Path.PathSeparator;
+            path += baseDirectory?.FullName ?? Environment.CurrentDirectory;
+            return path;
+        }
     }
 }

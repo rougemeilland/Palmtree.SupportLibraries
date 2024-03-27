@@ -10,9 +10,9 @@ namespace Experiment.WindowsForm
         [STAThread]
         static void Main(string[] args)
         {
-            Environment.CurrentDirectory = typeof(Program).Assembly.GetBaseDirectory().FullName;
+            //Environment.CurrentDirectory = typeof(Program).Assembly.GetBaseDirectory().FullName;
             var launcher = new ConsoleApplicationLauncher("experiment", Encoding.UTF8);
-            launcher.Launch(args);
+            launcher.Launch(args, true);
         }
     }
 }
