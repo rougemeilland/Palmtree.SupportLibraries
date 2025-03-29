@@ -61,7 +61,7 @@ namespace Palmtree.IO.StreamFilters
                     _baseStream.WriteBytes(b.Span);
                     return _baseStream.Position;
                 },
-                p => _baseStream.Seek(p));
+                _baseStream.Seek);
 
         protected override Int32 WriteCore(ReadOnlySpan<Byte> buffer)
             => _cache.Write(

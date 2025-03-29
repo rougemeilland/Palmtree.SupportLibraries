@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>$(AssemblyName)</Title>
-    <VersionPrefix>1.11.2</VersionPrefix>
+    <VersionPrefix>1.12.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Authors>Palmtree Software</Authors>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>

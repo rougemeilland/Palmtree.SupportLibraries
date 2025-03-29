@@ -67,7 +67,7 @@ namespace Palmtree.Threading
 
             public void Lock() => _ = _semaphore.WaitOne();
 
-            public Task LockAsync() => Task.Run(() => _semaphore.WaitOne());
+            public Task LockAsync() => Task.Run(_semaphore.WaitOne);
 
             public void Dispose()
             {
@@ -109,7 +109,7 @@ namespace Palmtree.Threading
 
             public void Lock() => _ = _mutex.WaitOne();
 
-            public Task LockAsync() => Task.Run(() => _mutex.WaitOne());
+            public Task LockAsync() => Task.Run(_mutex.WaitOne);
 
             public void Dispose()
             {

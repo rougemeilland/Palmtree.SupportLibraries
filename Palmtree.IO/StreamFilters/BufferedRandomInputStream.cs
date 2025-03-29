@@ -42,7 +42,7 @@ namespace Palmtree.IO.StreamFilters
             => _cache.Position;
 
         protected override void SeekCore(POSITION_T position)
-            => _cache.Seek(position, p => _baseStream.Seek(p));
+            => _cache.Seek(position, _baseStream.Seek);
 
         protected override Int32 ReadCore(Span<Byte> buffer)
             => _cache.Read(
