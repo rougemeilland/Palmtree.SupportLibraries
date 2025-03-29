@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <VersionPrefix>1.2.1</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Title>$(AssemblyName)</Title>

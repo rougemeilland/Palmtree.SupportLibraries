@@ -315,26 +315,28 @@ namespace Palmtree
                 if (source.Length == 2)
                 {
                     if (source[0].CompareTo(source[^1]) > 0)
+                    {
+#if DEBUG
+                        System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={0}, index2={source.Length - 1}");
+#endif
                         (source[0], source[^1]) = (source[^1], source[0]);
+                    }
+
                     return;
                 }
 
-                // もしキー値が重複していないと仮定すれば、 3 点のキー値の中間値を pivotKey として採用することによりよりよい分割が望めるが、
-                // この QuickSort メソッドでは重複キーを許容するので、source[startIndex] のキー値を pivotKey とする。
-
-                // 配列の最初の要素のキー値が pivotKey なので、後述の配列レイアウトに従って、lowerBoundary および endOfPivotKeys を +1 しておく。
-                var pivotKey = source[0];
-                var lowerBoundary = 1;
+                var pivotKey = source[source.Length / 2];
+                var lowerBoundary = 0;
                 var upperBoundary = source.Length - 1;
-                var endOfPivotKeys = 1;
+                var startOfPivotKeys = 0;
 
                 // この時点での配列のレイアウトは以下の通り
                 // region-w を如何に縮小するかがこのループの目的である
                 //
-                // region-a) [startIndex, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 1)
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-w) [lowerBoundary, upperBoundary] : pivotKey との大小関係が不明なキー値を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-w) [lowerBoundary, upperBoundary]    : pivotKey との大小関係が不明なキー値を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
                 while (lowerBoundary <= upperBoundary)
                 {
                     // source[lowerBoundary] に pivotKey より大きいキーが見つかるまで lowerBoundary を増やし続ける。
@@ -346,7 +348,7 @@ namespace Palmtree
                             // source[lowerBoundary] > pivotKey である場合
 #if DEBUG
                             Assert(source[lowerBoundary].CompareTo(pivotKey) > 0);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                             // pivotKey より大きいキー値を持つ要素が見つかったので、ループを終える
                             break;
@@ -356,19 +358,22 @@ namespace Palmtree
 #if DEBUG
                         Assert(source[lowerBoundary].CompareTo(pivotKey) <= 0);
 #endif
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[lowerBoundary] == pivotKey である場合
+                            // source[lowerBoundary] < pivotKey である場合
 #if DEBUG
-                            Assert(source[lowerBoundary].CompareTo(pivotKey) == 0);
+                            Assert(source[lowerBoundary].CompareTo(pivotKey) < 0);
 #endif
                             // region-a に lowerBoundary にある要素を追加する
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
-                                // region-b は空ではない、つまり source[endOfPivotKeys] < pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
-                                (source[endOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[endOfPivotKeys]);
+                                // region-b は空ではない、つまり source[startOfPivotKeys] == pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
+#if DEBUG
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={lowerBoundary}");
+#endif
+                                (source[startOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[startOfPivotKeys]);
                             }
                             else
                             {
@@ -376,49 +381,50 @@ namespace Palmtree
 
                                 // endOfPivotKeys == lowerBoundary であるはずなので、要素の交換は不要。
 #if DEBUG
-                                Assert(endOfPivotKeys == lowerBoundary);
+                                Assert(startOfPivotKeys == lowerBoundary);
 #endif
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
                         }
 
                         // region-b の終端位置をインクリメントする
                         ++lowerBoundary;
 #if DEBUG
-                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                     }
 
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
 
-                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey && source[endOfPivotKeys] != pivotKey
-                    Assert(lowerBoundary > upperBoundary || source[lowerBoundary].CompareTo(pivotKey) > 0 && source[endOfPivotKeys].CompareTo(pivotKey) != 0);
+                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey
+                    Assert(lowerBoundary > upperBoundary || source[lowerBoundary].CompareTo(pivotKey) > 0);
 
                     // source[upperBoundary] に pivotKey より小さいまたは等しいキー値を持つ要素が見つかるまで upperBoundary を減らし続ける。
                     while (lowerBoundary <= upperBoundary)
                     {
                         var c = source[upperBoundary].CompareTo(pivotKey);
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[upperBoundary] == pivotKey である場合
+                            // source[upperBoundary] < pivotKey である場合
 
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
                                 // 以下の 3 つの事実が判明しているので、3 つの要素をそれぞれ入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) source[endOfPivotKeys] < pivotKey (regon-b が空ではないことより)
+                                // 3) source[startOfPivotKeys] == pivotKey (regon-b が空ではないことより)
 #if DEBUG
-                                Assert(source[upperBoundary].CompareTo(pivotKey) == 0 && source[lowerBoundary].CompareTo(pivotKey) > 0 && source[endOfPivotKeys].CompareTo(pivotKey) < 0);
+                                Assert(source[upperBoundary].CompareTo(pivotKey) < 0 && source[lowerBoundary].CompareTo(pivotKey) > 0 && source[startOfPivotKeys].CompareTo(pivotKey) == 0);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}, index3={lowerBoundary}");
 #endif
-                                var t = source[endOfPivotKeys];
-                                source[endOfPivotKeys] = source[upperBoundary];
+                                var t = source[startOfPivotKeys];
+                                source[startOfPivotKeys] = source[upperBoundary];
                                 source[upperBoundary] = source[lowerBoundary];
                                 source[lowerBoundary] = t;
                             }
@@ -427,17 +433,18 @@ namespace Palmtree
                                 // region-b が空である場合
 
                                 // 以下の 3 つの事実が判明しているので、2 つの要素を入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) endOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
+                                // 3) startOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
 #if DEBUG
-                                Assert(source[upperBoundary].CompareTo(pivotKey) == 0 && source[lowerBoundary].CompareTo(pivotKey) > 0 && endOfPivotKeys == lowerBoundary);
+                                Assert(source[upperBoundary].CompareTo(pivotKey) < 0 && source[lowerBoundary].CompareTo(pivotKey) > 0 && startOfPivotKeys == lowerBoundary);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}");
 #endif
-                                (source[endOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[endOfPivotKeys]);
+                                (source[startOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[startOfPivotKeys]);
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
 
                             // region -b の終端位置をインクリメントする
                             ++lowerBoundary;
@@ -445,18 +452,21 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
-                            Assert(endOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
+                            Assert(startOfPivotKeys <= lowerBoundary);
 #endif
-                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
-                        else if (c < 0)
+                        else if (c == 0)
                         {
-                            // source[upperBoundary] < pivotKey である場合
+                            // source[upperBoundary] == pivotKey である場合
 
-                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より小さい (source[lowerBoundary] > pivotKey) ことが判明しているので、
+                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より大きい (source[lowerBoundary] > pivotKey) ことが判明しているので、
                             // region-b の終端と要素を入れ替える
+#if DEBUG
+                            System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={upperBoundary}, index2={lowerBoundary}");
+#endif
                             (source[upperBoundary], source[lowerBoundary]) = (source[lowerBoundary], source[upperBoundary]);
 
                             // region-b の終端位置をインクリメントする
@@ -465,10 +475,10 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            Assert(endOfPivotKeys <= lowerBoundary);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                            Assert(startOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
-                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
                         else
@@ -478,12 +488,12 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                         }
                     }
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                 }
 
@@ -494,54 +504,17 @@ namespace Palmtree
 
                 // この時点での配列のレイアウトは以下の通り。
                 //
-                // region-a) [startIndex, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合
                 // ※ただし lowerBoundary == upperBoundary + 1
 
 #if DEBUG
-                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
 
-                // 配列を [region-b] [region-a] [region-c] の順に並び替えるために、region-b の終端の一部または全部を region-a と入れ替える。
-
-                // 入れ替える長さを求める (region-a の長さと region-b の長さの最小値)
-                var lengthToExchange = (endOfPivotKeys - 0).Minimum(lowerBoundary - endOfPivotKeys);
-
-                // 入れ替える片方の開始位置 (region-a の先端位置)
-                var exStartIndex = 0;
-
-                // 入れ替えるもう片方の開始位置 (region-b の終端位置)
-                var exEndIndex = upperBoundary;
-
-                // 入れ替える値がなくなるまで繰り返す
-                while (exStartIndex < exEndIndex)
-                {
-                    // 値を入れ替える
-                    (source[exStartIndex], source[exEndIndex]) = (source[exEndIndex], source[exStartIndex]);
-
-                    // 入れ替える値の位置を変更する
-                    ++exStartIndex;
-                    --exEndIndex;
-                }
-
-                // この時点で、配列の並びは以下の通り
-                // region-b) [startIndex, startIndex + upperBoundary - endOfPivotKeys] : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-a) [startIndex + lowerBoundary - endOfPivotKeys, upperBoundary] : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-c) [lowerBoundary, source.Length): x > pivotKey であるキー値 x を持つ要素の集合
-                // ※ただし lowerBoundary == upperBoundary + 1
-
-#if DEBUG
-                for (var index = 0; index <= 0 + upperBoundary - endOfPivotKeys; ++index)
-                    Assert(source[index].CompareTo(pivotKey) < 0);
-                for (var index = 0 + lowerBoundary - endOfPivotKeys; index <= upperBoundary; ++index)
-                    Assert(source[index].CompareTo(pivotKey) == 0);
-                for (var index = lowerBoundary; index <= source.Length - 1; ++index)
-                    Assert(source[index].CompareTo(pivotKey) > 0);
-#endif
-
-                // region-b の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..(lowerBoundary - endOfPivotKeys)]);
+                // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
+                InternalQuickSortManaged(source[..startOfPivotKeys]);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
                 InternalQuickSortManaged(source[lowerBoundary..]);
@@ -581,26 +554,28 @@ namespace Palmtree
                 if (source.Length == 2)
                 {
                     if (keySelector(source[0]).CompareTo(keySelector(source[^1])) > 0)
+                    {
+#if DEBUG
+                        System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={0}, index2={source.Length - 1}");
+#endif
                         (source[0], source[^1]) = (source[^1], source[0]);
+                    }
+
                     return;
                 }
 
-                // もしキー値が重複していないと仮定すれば、 3 点のキー値の中間値を pivotKey として採用することによりよりよい分割が望めるが、
-                // この QuickSort メソッドでは重複キーを許容するので、source[0] のキー値を pivotKey とする。
-
-                // 配列の最初の要素のキー値が pivotKey なので、後述の配列レイアウトに従って、lowerBoundary および endOfPivotKeys を +1 しておく。
-                var pivotKey = keySelector(source[0]);
-                var lowerBoundary = 1;
+                var pivotKey = keySelector(source[source.Length / 2]);
+                var lowerBoundary = 0;
                 var upperBoundary = source.Length - 1;
-                var endOfPivotKeys = 1;
+                var startOfPivotKeys = 0;
 
                 // この時点での配列のレイアウトは以下の通り
                 // region-w を如何に縮小するかがこのループの目的である
                 //
-                // region-a) [0, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 1)
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-w) [lowerBoundary, upperBoundary] : pivotKey との大小関係が不明なキー値を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-w) [lowerBoundary, upperBoundary]    : pivotKey との大小関係が不明なキー値を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
                 while (lowerBoundary <= upperBoundary)
                 {
                     // source[lowerBoundary] に pivotKey より大きいキーが見つかるまで lowerBoundary を増やし続ける。
@@ -612,7 +587,7 @@ namespace Palmtree
                             // source[lowerBoundary] > pivotKey である場合
 #if DEBUG
                             Assert(keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
                             // pivotKey より大きいキー値を持つ要素が見つかったので、ループを終える
                             break;
@@ -622,19 +597,22 @@ namespace Palmtree
 #if DEBUG
                         Assert(keySelector(source[lowerBoundary]).CompareTo(pivotKey) <= 0);
 #endif
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[lowerBoundary] == pivotKey である場合
+                            // source[lowerBoundary] < pivotKey である場合
 #if DEBUG
-                            Assert(keySelector(source[lowerBoundary]).CompareTo(pivotKey) == 0);
+                            Assert(keySelector(source[lowerBoundary]).CompareTo(pivotKey) < 0);
 #endif
                             // region-a に lowerBoundary にある要素を追加する
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
-                                // region-b は空ではない、つまり source[endOfPivotKeys] < pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
-                                (source[endOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[endOfPivotKeys]);
+                                // region-b は空ではない、つまり source[startOfPivotKeys] == pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
+#if DEBUG
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={lowerBoundary}");
+#endif
+                                (source[startOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[startOfPivotKeys]);
                             }
                             else
                             {
@@ -642,49 +620,50 @@ namespace Palmtree
 
                                 // endOfPivotKeys == lowerBoundary であるはずなので、要素の交換は不要。
 #if DEBUG
-                                Assert(endOfPivotKeys == lowerBoundary);
+                                Assert(startOfPivotKeys == lowerBoundary);
 #endif
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
                         }
 
                         // region-b の終端位置をインクリメントする
                         ++lowerBoundary;
 #if DEBUG
-                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
                     }
 
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
 
-                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey && source[endOfPivotKeys] != pivotKey
-                    Assert(lowerBoundary > upperBoundary || keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0 && keySelector(source[endOfPivotKeys]).CompareTo(pivotKey) != 0);
+                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey
+                    Assert(lowerBoundary > upperBoundary || keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0);
 
                     // source[upperBoundary] に pivotKey より小さいまたは等しいキー値を持つ要素が見つかるまで upperBoundary を減らし続ける。
                     while (lowerBoundary <= upperBoundary)
                     {
                         var c = keySelector(source[upperBoundary]).CompareTo(pivotKey);
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[upperBoundary] == pivotKey である場合
+                            // source[upperBoundary] < pivotKey である場合
 
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
                                 // 以下の 3 つの事実が判明しているので、3 つの要素をそれぞれ入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) source[endOfPivotKeys] < pivotKey (regon-b が空ではないことより)
+                                // 3) source[startOfPivotKeys] == pivotKey (regon-b が空ではないことより)
 #if DEBUG
-                                Assert(keySelector(source[upperBoundary]).CompareTo(pivotKey) == 0 && keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0 && keySelector(source[endOfPivotKeys]).CompareTo(pivotKey) < 0);
+                                Assert(keySelector(source[upperBoundary]).CompareTo(pivotKey) < 0 && keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0 && keySelector(source[startOfPivotKeys]).CompareTo(pivotKey) == 0);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}, index3={lowerBoundary}");
 #endif
-                                var t = source[endOfPivotKeys];
-                                source[endOfPivotKeys] = source[upperBoundary];
+                                var t = source[startOfPivotKeys];
+                                source[startOfPivotKeys] = source[upperBoundary];
                                 source[upperBoundary] = source[lowerBoundary];
                                 source[lowerBoundary] = t;
                             }
@@ -693,17 +672,18 @@ namespace Palmtree
                                 // region-b が空である場合
 
                                 // 以下の 3 つの事実が判明しているので、2 つの要素を入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) endOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
+                                // 3) startOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
 #if DEBUG
-                                Assert(keySelector(source[upperBoundary]).CompareTo(pivotKey) == 0 && keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0 && endOfPivotKeys == lowerBoundary);
+                                Assert(keySelector(source[upperBoundary]).CompareTo(pivotKey) < 0 && keySelector(source[lowerBoundary]).CompareTo(pivotKey) > 0 && startOfPivotKeys == lowerBoundary);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}");
 #endif
-                                (source[endOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[endOfPivotKeys]);
+                                (source[startOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[startOfPivotKeys]);
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
 
                             // region -b の終端位置をインクリメントする
                             ++lowerBoundary;
@@ -711,18 +691,21 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
-                            Assert(endOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
+                            Assert(startOfPivotKeys <= lowerBoundary);
 #endif
-                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
-                        else if (c < 0)
+                        else if (c == 0)
                         {
-                            // source[upperBoundary] < pivotKey である場合
+                            // source[upperBoundary] == pivotKey である場合
 
-                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より小さい (source[lowerBoundary] > pivotKey) ことが判明しているので、
+                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より大きい (source[lowerBoundary] > pivotKey) ことが判明しているので、
                             // region-b の終端と要素を入れ替える
+#if DEBUG
+                            System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={upperBoundary}, index2={lowerBoundary}");
+#endif
                             (source[upperBoundary], source[lowerBoundary]) = (source[lowerBoundary], source[upperBoundary]);
 
                             // region-b の終端位置をインクリメントする
@@ -731,10 +714,10 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            Assert(endOfPivotKeys <= lowerBoundary);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                            Assert(startOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
-                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
                         else
@@ -744,12 +727,12 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
                         }
                     }
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
                 }
 
@@ -760,54 +743,17 @@ namespace Palmtree
 
                 // この時点での配列のレイアウトは以下の通り。
                 //
-                // region-a) [0, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合
                 // ※ただし lowerBoundary == upperBoundary + 1
 
 #if DEBUG
-                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector);
+                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector);
 #endif
 
-                // 配列を [region-b] [region-a] [region-c] の順に並び替えるために、region-b の終端の一部または全部を region-a と入れ替える。
-
-                // 入れ替える長さを求める (region-a の長さと region-b の長さの最小値)
-                var lengthToExchange = (endOfPivotKeys - 0).Minimum(lowerBoundary - endOfPivotKeys);
-
-                // 入れ替える片方の開始位置 (region-a の先端位置)
-                var exStartIndex = 0;
-
-                // 入れ替えるもう片方の開始位置 (region-b の終端位置)
-                var exEndIndex = upperBoundary;
-
-                // 入れ替える値がなくなるまで繰り返す
-                while (exStartIndex < exEndIndex)
-                {
-                    // 値を入れ替える
-                    (source[exStartIndex], source[exEndIndex]) = (source[exEndIndex], source[exStartIndex]);
-
-                    // 入れ替える値の位置を変更する
-                    ++exStartIndex;
-                    --exEndIndex;
-                }
-
-                // この時点で、配列の並びは以下の通り
-                // region-b) [0, upperBoundary - endOfPivotKeys] : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-a) [lowerBoundary - endOfPivotKeys, upperBoundary] : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-c) [lowerBoundary, source.Length): x > pivotKey であるキー値 x を持つ要素の集合
-                // ※ただし lowerBoundary == upperBoundary + 1
-
-#if DEBUG
-                for (var index = 0; index <= 0 + upperBoundary - endOfPivotKeys; ++index)
-                    Assert(keySelector(source[index]).CompareTo(pivotKey) < 0);
-                for (var index = 0 + lowerBoundary - endOfPivotKeys; index <= upperBoundary; ++index)
-                    Assert(keySelector(source[index]).CompareTo(pivotKey) == 0);
-                for (var index = lowerBoundary; index <= source.Length - 1; ++index)
-                    Assert(keySelector(source[index]).CompareTo(pivotKey) > 0);
-#endif
-
-                // region-b の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..(lowerBoundary - endOfPivotKeys)], keySelector);
+                // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
+                InternalQuickSortManaged(source[..startOfPivotKeys], keySelector);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
                 InternalQuickSortManaged(source[lowerBoundary..], keySelector);
@@ -830,7 +776,7 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(Span<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
+        private static void InternalQuickSortManaged<ELEMENT_T>(Span<ELEMENT_T> source, IComparer<ELEMENT_T> comparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -845,39 +791,41 @@ namespace Palmtree
                     return;
                 if (source.Length == 2)
                 {
-                    if (keyComparer.Compare(source[0], source[^1]) > 0)
+                    if (comparer.Compare(source[0], source[^1]) > 0)
+                    {
+#if DEBUG
+                        System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={0}, index2={source.Length - 1}");
+#endif
                         (source[0], source[^1]) = (source[^1], source[0]);
+                    }
+
                     return;
                 }
 
-                // もしキー値が重複していないと仮定すれば、 3 点のキー値の中間値を pivotKey として採用することによりよりよい分割が望めるが、
-                // この QuickSort メソッドでは重複キーを許容するので、source[0] のキー値を pivotKey とする。
-
-                // 配列の最初の要素のキー値が pivotKey なので、後述の配列レイアウトに従って、lowerBoundary および endOfPivotKeys を +1 しておく。
-                var pivotKey = source[0];
-                var lowerBoundary = 1;
+                var pivotKey = source[source.Length / 2];
+                var lowerBoundary = 0;
                 var upperBoundary = source.Length - 1;
-                var endOfPivotKeys = 1;
+                var startOfPivotKeys = 0;
 
                 // この時点での配列のレイアウトは以下の通り
                 // region-w を如何に縮小するかがこのループの目的である
                 //
-                // region-a) [0, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 1)
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-w) [lowerBoundary, upperBoundary] : pivotKey との大小関係が不明なキー値を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-w) [lowerBoundary, upperBoundary]    : pivotKey との大小関係が不明なキー値を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
                 while (lowerBoundary <= upperBoundary)
                 {
                     // source[lowerBoundary] に pivotKey より大きいキーが見つかるまで lowerBoundary を増やし続ける。
                     while (lowerBoundary <= upperBoundary)
                     {
-                        var c = keyComparer.Compare(source[lowerBoundary], pivotKey);
+                        var c = comparer.Compare(source[lowerBoundary], pivotKey);
                         if (c > 0)
                         {
                             // source[lowerBoundary] > pivotKey である場合
 #if DEBUG
-                            Assert(keyComparer.Compare(source[lowerBoundary], pivotKey) > 0);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                            Assert(comparer.Compare(source[lowerBoundary], pivotKey) > 0);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
                             // pivotKey より大きいキー値を持つ要素が見つかったので、ループを終える
                             break;
@@ -885,21 +833,24 @@ namespace Palmtree
 
                         // source[lowerBoundary] <= pivotKey である場合
 #if DEBUG
-                        Assert(keyComparer.Compare(source[lowerBoundary], pivotKey) <= 0);
+                        Assert(comparer.Compare(source[lowerBoundary], pivotKey) <= 0);
 #endif
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[lowerBoundary] == pivotKey である場合
+                            // source[lowerBoundary] < pivotKey である場合
 #if DEBUG
-                            Assert(keyComparer.Compare(source[lowerBoundary], pivotKey) == 0);
+                            Assert(comparer.Compare(source[lowerBoundary], pivotKey) < 0);
 #endif
                             // region-a に lowerBoundary にある要素を追加する
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
-                                // region-b は空ではない、つまり source[endOfPivotKeys] < pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
-                                (source[endOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[endOfPivotKeys]);
+                                // region-b は空ではない、つまり source[startOfPivotKeys] == pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
+#if DEBUG
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={lowerBoundary}");
+#endif
+                                (source[startOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[startOfPivotKeys]);
                             }
                             else
                             {
@@ -907,49 +858,50 @@ namespace Palmtree
 
                                 // endOfPivotKeys == lowerBoundary であるはずなので、要素の交換は不要。
 #if DEBUG
-                                Assert(endOfPivotKeys == lowerBoundary);
+                                Assert(startOfPivotKeys == lowerBoundary);
 #endif
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
                         }
 
                         // region-b の終端位置をインクリメントする
                         ++lowerBoundary;
 #if DEBUG
-                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
                     }
 
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
 
-                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey && source[endOfPivotKeys] != pivotKey
-                    Assert(lowerBoundary > upperBoundary || keyComparer.Compare(source[lowerBoundary], pivotKey) > 0 && keyComparer.Compare(source[endOfPivotKeys], pivotKey) != 0);
+                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey
+                    Assert(lowerBoundary > upperBoundary || comparer.Compare(source[lowerBoundary], pivotKey) > 0);
 
                     // source[upperBoundary] に pivotKey より小さいまたは等しいキー値を持つ要素が見つかるまで upperBoundary を減らし続ける。
                     while (lowerBoundary <= upperBoundary)
                     {
-                        var c = keyComparer.Compare(source[upperBoundary], pivotKey);
-                        if (c == 0)
+                        var c = comparer.Compare(source[upperBoundary], pivotKey);
+                        if (c < 0)
                         {
-                            // source[upperBoundary] == pivotKey である場合
+                            // source[upperBoundary] < pivotKey である場合
 
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
                                 // 以下の 3 つの事実が判明しているので、3 つの要素をそれぞれ入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) source[endOfPivotKeys] < pivotKey (regon-b が空ではないことより)
+                                // 3) source[startOfPivotKeys] == pivotKey (regon-b が空ではないことより)
 #if DEBUG
-                                Assert(keyComparer.Compare(source[upperBoundary], pivotKey) == 0 && keyComparer.Compare(source[lowerBoundary], pivotKey) > 0 && keyComparer.Compare(source[endOfPivotKeys], pivotKey) < 0);
+                                Assert(comparer.Compare(source[upperBoundary], pivotKey) < 0 && comparer.Compare(source[lowerBoundary], pivotKey) > 0 && comparer.Compare(source[startOfPivotKeys], pivotKey) == 0);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}, index3={lowerBoundary}");
 #endif
-                                var t = source[endOfPivotKeys];
-                                source[endOfPivotKeys] = source[upperBoundary];
+                                var t = source[startOfPivotKeys];
+                                source[startOfPivotKeys] = source[upperBoundary];
                                 source[upperBoundary] = source[lowerBoundary];
                                 source[lowerBoundary] = t;
                             }
@@ -958,17 +910,18 @@ namespace Palmtree
                                 // region-b が空である場合
 
                                 // 以下の 3 つの事実が判明しているので、2 つの要素を入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) endOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
+                                // 3) startOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
 #if DEBUG
-                                Assert(keyComparer.Compare(source[upperBoundary], pivotKey) == 0 && keyComparer.Compare(source[lowerBoundary], pivotKey) > 0 && endOfPivotKeys == lowerBoundary);
+                                Assert(comparer.Compare(source[upperBoundary], pivotKey) < 0 && comparer.Compare(source[lowerBoundary], pivotKey) > 0 && startOfPivotKeys == lowerBoundary);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}");
 #endif
-                                (source[endOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[endOfPivotKeys]);
+                                (source[startOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[startOfPivotKeys]);
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
 
                             // region -b の終端位置をインクリメントする
                             ++lowerBoundary;
@@ -976,18 +929,21 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
-                            Assert(endOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
+                            Assert(startOfPivotKeys <= lowerBoundary);
 #endif
-                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
-                        else if (c < 0)
+                        else if (c == 0)
                         {
-                            // source[upperBoundary] < pivotKey である場合
+                            // source[upperBoundary] == pivotKey である場合
 
-                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より小さい (source[lowerBoundary] > pivotKey) ことが判明しているので、
+                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より大きい (source[lowerBoundary] > pivotKey) ことが判明しているので、
                             // region-b の終端と要素を入れ替える
+#if DEBUG
+                            System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={upperBoundary}, index2={lowerBoundary}");
+#endif
                             (source[upperBoundary], source[lowerBoundary]) = (source[lowerBoundary], source[upperBoundary]);
 
                             // region-b の終端位置をインクリメントする
@@ -996,10 +952,10 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            Assert(endOfPivotKeys <= lowerBoundary);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                            Assert(startOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
-                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
                         else
@@ -1009,12 +965,12 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
                         }
                     }
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
                 }
 
@@ -1025,62 +981,25 @@ namespace Palmtree
 
                 // この時点での配列のレイアウトは以下の通り。
                 //
-                // region-a) [0, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合
                 // ※ただし lowerBoundary == upperBoundary + 1
 
 #if DEBUG
-                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keyComparer);
+                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, comparer);
 #endif
 
-                // 配列を [region-b] [region-a] [region-c] の順に並び替えるために、region-b の終端の一部または全部を region-a と入れ替える。
-
-                // 入れ替える長さを求める (region-a の長さと region-b の長さの最小値)
-                var lengthToExchange = (endOfPivotKeys - 0).Minimum(lowerBoundary - endOfPivotKeys);
-
-                // 入れ替える片方の開始位置 (region-a の先端位置)
-                var exStartIndex = 0;
-
-                // 入れ替えるもう片方の開始位置 (region-b の終端位置)
-                var exEndIndex = upperBoundary;
-
-                // 入れ替える値がなくなるまで繰り返す
-                while (exStartIndex < exEndIndex)
-                {
-                    // 値を入れ替える
-                    (source[exStartIndex], source[exEndIndex]) = (source[exEndIndex], source[exStartIndex]);
-
-                    // 入れ替える値の位置を変更する
-                    ++exStartIndex;
-                    --exEndIndex;
-                }
-
-                // この時点で、配列の並びは以下の通り
-                // region-b) [0, upperBoundary - endOfPivotKeys] : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-a) [lowerBoundary - endOfPivotKeys, upperBoundary] : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-c) [lowerBoundary, source.Length): x > pivotKey であるキー値 x を持つ要素の集合
-                // ※ただし lowerBoundary == upperBoundary + 1
-
-#if DEBUG
-                for (var index = 0; index <= 0 + upperBoundary - endOfPivotKeys; ++index)
-                    Assert(keyComparer.Compare(source[index], pivotKey) < 0);
-                for (var index = 0 + lowerBoundary - endOfPivotKeys; index <= upperBoundary; ++index)
-                    Assert(keyComparer.Compare(source[index], pivotKey) == 0);
-                for (var index = lowerBoundary; index <= source.Length - 1; ++index)
-                    Assert(keyComparer.Compare(source[index], pivotKey) > 0);
-#endif
-
-                // region-b の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..(lowerBoundary - endOfPivotKeys)], keyComparer);
+                // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
+                InternalQuickSortManaged(source[..startOfPivotKeys], comparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[lowerBoundary..], keyComparer);
+                InternalQuickSortManaged(source[lowerBoundary..], comparer);
 #if DEBUG
             }
             finally
             {
-                AssertSortResult(source, 0, source.Length - 1, keyComparer);
+                AssertSortResult(source, 0, source.Length - 1, comparer);
 #if DEBUG_QUICKSORT
                 System.Diagnostics.Debug.Unindent();
                 System.Diagnostics.Debug.WriteLine($"Leave QuickSort({0}, {source.Length - 1}) {source.Length - 1 - 0 + 1} bytes");
@@ -1111,26 +1030,28 @@ namespace Palmtree
                 if (source.Length == 2)
                 {
                     if (keyComparer.Compare(keySelector(source[0]), keySelector(source[^1])) > 0)
+                    {
+#if DEBUG
+                        System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={0}, index2={source.Length - 1}");
+#endif
                         (source[0], source[^1]) = (source[^1], source[0]);
+                    }
+
                     return;
                 }
 
-                // もしキー値が重複していないと仮定すれば、 3 点のキー値の中間値を pivotKey として採用することによりよりよい分割が望めるが、
-                // この QuickSort メソッドでは重複キーを許容するので、source[0] のキー値を pivotKey とする。
-
-                // 配列の最初の要素のキー値が pivotKey なので、後述の配列レイアウトに従って、lowerBoundary および endOfPivotKeys を +1 しておく。
-                var pivotKey = keySelector(source[0]);
-                var lowerBoundary = 1;
+                var pivotKey = keySelector(source[source.Length / 2]);
+                var lowerBoundary = 0;
                 var upperBoundary = source.Length - 1;
-                var endOfPivotKeys = 1;
+                var startOfPivotKeys = 0;
 
                 // この時点での配列のレイアウトは以下の通り
                 // region-w を如何に縮小するかがこのループの目的である
                 //
-                // region-a) [0, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 1)
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-w) [lowerBoundary, upperBoundary] : pivotKey との大小関係が不明なキー値を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-w) [lowerBoundary, upperBoundary]    : pivotKey との大小関係が不明なキー値を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
                 while (lowerBoundary <= upperBoundary)
                 {
                     // source[lowerBoundary] に pivotKey より大きいキーが見つかるまで lowerBoundary を増やし続ける。
@@ -1142,7 +1063,7 @@ namespace Palmtree
                             // source[lowerBoundary] > pivotKey である場合
 #if DEBUG
                             Assert(keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
                             // pivotKey より大きいキー値を持つ要素が見つかったので、ループを終える
                             break;
@@ -1152,19 +1073,22 @@ namespace Palmtree
 #if DEBUG
                         Assert(keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) <= 0);
 #endif
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[lowerBoundary] == pivotKey である場合
+                            // source[lowerBoundary] < pivotKey である場合
 #if DEBUG
-                            Assert(keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) == 0);
+                            Assert(keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) < 0);
 #endif
                             // region-a に lowerBoundary にある要素を追加する
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
-                                // region-b は空ではない、つまり source[endOfPivotKeys] < pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
-                                (source[endOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[endOfPivotKeys]);
+                                // region-b は空ではない、つまり source[startOfPivotKeys] == pivotKey であるはずなので、source[lowerBoundary] と要素を交換する。
+#if DEBUG
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={lowerBoundary}");
+#endif
+                                (source[startOfPivotKeys], source[lowerBoundary]) = (source[lowerBoundary], source[startOfPivotKeys]);
                             }
                             else
                             {
@@ -1172,49 +1096,50 @@ namespace Palmtree
 
                                 // endOfPivotKeys == lowerBoundary であるはずなので、要素の交換は不要。
 #if DEBUG
-                                Assert(endOfPivotKeys == lowerBoundary);
+                                Assert(startOfPivotKeys == lowerBoundary);
 #endif
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
                         }
 
                         // region-b の終端位置をインクリメントする
                         ++lowerBoundary;
 #if DEBUG
-                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                        AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
                     }
 
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
 
-                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey && source[endOfPivotKeys] != pivotKey
-                    Assert(lowerBoundary > upperBoundary || keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0 && keyComparer.Compare(keySelector(source[endOfPivotKeys]), pivotKey) != 0);
+                    // この時点で lowerBoundary > upperBoundary || source[lowerBoundary] > pivotKey
+                    Assert(lowerBoundary > upperBoundary || keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0);
 
                     // source[upperBoundary] に pivotKey より小さいまたは等しいキー値を持つ要素が見つかるまで upperBoundary を減らし続ける。
                     while (lowerBoundary <= upperBoundary)
                     {
                         var c = keyComparer.Compare(keySelector(source[upperBoundary]), pivotKey);
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // source[upperBoundary] == pivotKey である場合
+                            // source[upperBoundary] < pivotKey である場合
 
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
                                 // 以下の 3 つの事実が判明しているので、3 つの要素をそれぞれ入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) source[endOfPivotKeys] < pivotKey (regon-b が空ではないことより)
+                                // 3) source[startOfPivotKeys] == pivotKey (regon-b が空ではないことより)
 #if DEBUG
-                                Assert(keyComparer.Compare(keySelector(source[upperBoundary]), pivotKey) == 0 && keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0 && keyComparer.Compare(keySelector(source[endOfPivotKeys]), pivotKey) < 0);
+                                Assert(keyComparer.Compare(keySelector(source[upperBoundary]), pivotKey) < 0 && keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0 && keyComparer.Compare(keySelector(source[startOfPivotKeys]), pivotKey) == 0);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}, index3={lowerBoundary}");
 #endif
-                                var t = source[endOfPivotKeys];
-                                source[endOfPivotKeys] = source[upperBoundary];
+                                var t = source[startOfPivotKeys];
+                                source[startOfPivotKeys] = source[upperBoundary];
                                 source[upperBoundary] = source[lowerBoundary];
                                 source[lowerBoundary] = t;
                             }
@@ -1223,17 +1148,18 @@ namespace Palmtree
                                 // region-b が空である場合
 
                                 // 以下の 3 つの事実が判明しているので、2 つの要素を入れ替える。
-                                // 1) source[upperBoundary] == pivotKey
+                                // 1) source[upperBoundary] < pivotKey
                                 // 2) source[lowerBoundary] > pivotKey (前の while ループの結果より)
-                                // 3) endOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
+                                // 3) startOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
 #if DEBUG
-                                Assert(keyComparer.Compare(keySelector(source[upperBoundary]), pivotKey) == 0 && keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0 && endOfPivotKeys == lowerBoundary);
+                                Assert(keyComparer.Compare(keySelector(source[upperBoundary]), pivotKey) < 0 && keyComparer.Compare(keySelector(source[lowerBoundary]), pivotKey) > 0 && startOfPivotKeys == lowerBoundary);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={startOfPivotKeys}, index2={upperBoundary}");
 #endif
-                                (source[endOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[endOfPivotKeys]);
+                                (source[startOfPivotKeys], source[upperBoundary]) = (source[upperBoundary], source[startOfPivotKeys]);
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
 
                             // region -b の終端位置をインクリメントする
                             ++lowerBoundary;
@@ -1241,18 +1167,21 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
-                            Assert(endOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
+                            Assert(startOfPivotKeys <= lowerBoundary);
 #endif
-                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
-                        else if (c < 0)
+                        else if (c == 0)
                         {
-                            // source[upperBoundary] < pivotKey である場合
+                            // source[upperBoundary] == pivotKey である場合
 
-                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より小さい (source[lowerBoundary] > pivotKey) ことが判明しているので、
+                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より大きい (source[lowerBoundary] > pivotKey) ことが判明しているので、
                             // region-b の終端と要素を入れ替える
+#if DEBUG
+                            System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1={upperBoundary}, index2={lowerBoundary}");
+#endif
                             (source[upperBoundary], source[lowerBoundary]) = (source[lowerBoundary], source[upperBoundary]);
 
                             // region-b の終端位置をインクリメントする
@@ -1261,10 +1190,10 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            Assert(endOfPivotKeys <= lowerBoundary);
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                            Assert(startOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
-                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
                         else
@@ -1274,12 +1203,12 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                            AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
                         }
                     }
 #if DEBUG
-                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                    AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
                 }
 
@@ -1290,54 +1219,17 @@ namespace Palmtree
 
                 // この時点での配列のレイアウトは以下の通り。
                 //
-                // region-a) [0, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-c) (upperBoundary, source.Length) : x > pivotKey であるキー値 x を持つ要素の集合
+                // region-a) [startIndex, startOfPivotKeys)    : x < pivotKey であるキー値 x を持つ要素の集合
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合
+                // region-c) (upperBoundary, source.Length)    : x > pivotKey であるキー値 x を持つ要素の集合
                 // ※ただし lowerBoundary == upperBoundary + 1
 
 #if DEBUG
-                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys, keySelector, keyComparer);
+                AssertQuickSortState(source, 0, source.Length - 1, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys, keySelector, keyComparer);
 #endif
 
-                // 配列を [region-b] [region-a] [region-c] の順に並び替えるために、region-b の終端の一部または全部を region-a と入れ替える。
-
-                // 入れ替える長さを求める (region-a の長さと region-b の長さの最小値)
-                var lengthToExchange = (endOfPivotKeys - 0).Minimum(lowerBoundary - endOfPivotKeys);
-
-                // 入れ替える片方の開始位置 (region-a の先端位置)
-                var exStartIndex = 0;
-
-                // 入れ替えるもう片方の開始位置 (region-b の終端位置)
-                var exEndIndex = upperBoundary;
-
-                // 入れ替える値がなくなるまで繰り返す
-                while (exStartIndex < exEndIndex)
-                {
-                    // 値を入れ替える
-                    (source[exStartIndex], source[exEndIndex]) = (source[exEndIndex], source[exStartIndex]);
-
-                    // 入れ替える値の位置を変更する
-                    ++exStartIndex;
-                    --exEndIndex;
-                }
-
-                // この時点で、配列の並びは以下の通り
-                // region-b) [0, upperBoundary - endOfPivotKeys] : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-a) [lowerBoundary - endOfPivotKeys, upperBoundary] : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-c) [lowerBoundary, source.Length): x > pivotKey であるキー値 x を持つ要素の集合
-                // ※ただし lowerBoundary == upperBoundary + 1
-
-#if DEBUG
-                for (var index = 0; index <= 0 + upperBoundary - endOfPivotKeys; ++index)
-                    Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) < 0);
-                for (var index = lowerBoundary - endOfPivotKeys; index <= upperBoundary; ++index)
-                    Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) == 0);
-                for (var index = lowerBoundary; index <= source.Length - 1; ++index)
-                    Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) > 0);
-#endif
-
-                // region-b の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..(lowerBoundary - endOfPivotKeys)], keySelector, keyComparer);
+                // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
+                InternalQuickSortManaged(source[..startOfPivotKeys], keySelector, keyComparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
                 InternalQuickSortManaged(source[lowerBoundary..], keySelector, keyComparer);
@@ -1381,84 +1273,85 @@ namespace Palmtree
                 Assert(keyComparer.Compare(keySelector(source[index]), keySelector(source[index + 1])) <= 0);
         }
 
-        private static void AssertQuickSortState<ELEMENT_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys)
+        private static void AssertQuickSortState<ELEMENT_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(source[index].CompareTo(pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(source[index].CompareTo(pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(source[index].CompareTo(pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(source[index].CompareTo(pivotKey) > 0);
         }
 
-        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
+        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(keySelector(source[index]).CompareTo(pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(keySelector(source[index]).CompareTo(pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(keySelector(source[index]).CompareTo(pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(keySelector(source[index]).CompareTo(pivotKey) > 0);
         }
 
-        private static void AssertQuickSortState<ELEMENT_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys, IComparer<ELEMENT_T> comparer)
+        private static void AssertQuickSortState<ELEMENT_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys, IComparer<ELEMENT_T> comparer)
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(comparer.Compare(source[index], pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(comparer.Compare(source[index], pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(comparer.Compare(source[index], pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(comparer.Compare(source[index], pivotKey) > 0);
         }
-        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T[] source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startfPivotKeys; ++index)
                 Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) < 0);
+            for (var index = startfPivotKeys; index < lowerBoundary; ++index)
+                Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) > 0);
         }
 
-        private static void AssertQuickSortState<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys)
+        private static void AssertQuickSortState<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(source[index].CompareTo(pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(source[index].CompareTo(pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(source[index].CompareTo(pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(source[index].CompareTo(pivotKey) > 0);
         }
 
-        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
+        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(keySelector(source[index]).CompareTo(pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(keySelector(source[index]).CompareTo(pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(keySelector(source[index]).CompareTo(pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(keySelector(source[index]).CompareTo(pivotKey) > 0);
         }
 
-        private static void AssertQuickSortState<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys, IComparer<ELEMENT_T> comparer)
+        private static void AssertQuickSortState<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, ELEMENT_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys, IComparer<ELEMENT_T> comparer)
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(comparer.Compare(source[index], pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(comparer.Compare(source[index], pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(comparer.Compare(source[index], pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(comparer.Compare(source[index], pivotKey) > 0);
         }
-        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 endOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+
+        private static void AssertQuickSortState<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, KEY_T pivotKey, Int32 lowerBoundary, Int32 upperBoundary, Int32 startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
         {
-            for (var index = startIndex; index < endOfPivotKeys; ++index)
-                Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) == 0);
-            for (var index = endOfPivotKeys; index < lowerBoundary; ++index)
+            for (var index = startIndex; index < startOfPivotKeys; ++index)
                 Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) < 0);
+            for (var index = startOfPivotKeys; index < lowerBoundary; ++index)
+                Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) == 0);
             for (var index = upperBoundary + 1; index <= endIndex; ++index)
                 Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) > 0);
         }
@@ -1500,26 +1393,28 @@ namespace Palmtree
                 if (endPointer - startPointer == 1)
                 {
                     if (startPointer->CompareTo(*endPointer) > 0)
+                    {
+#if DEBUG
+                        System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startPointer).ToUInt64():x8}, index2=0x{new UIntPtr(endPointer).ToUInt64():x8}");
+#endif
                         (*startPointer, *endPointer) = (*endPointer, *startPointer);
+                    }
+
                     return;
                 }
 
-                // もしキー値が重複していないと仮定すれば、 3 点のキー値の中間値を pivotKey として採用することによりよりよい分割が望めるが、
-                // この QuickSort メソッドでは重複キーを許容するので、*startPointer のキー値を pivotKey とする。
-
-                // 配列の最初の要素のキー値が pivotKey なので、後述の配列レイアウトに従って、lowerBoundary および endOfPivotKeys を +1 しておく。
-                var pivotKey = *startPointer;
-                var lowerBoundary = startPointer + 1;
+                var pivotKey = startPointer[(endPointer - startPointer) >> 1];
+                var lowerBoundary = startPointer;
                 var upperBoundary = endPointer;
-                var endOfPivotKeys = startPointer + 1;
+                var startOfPivotKeys = startPointer;
 
                 // この時点での配列のレイアウトは以下の通り
                 // region-w を如何に縮小するかがこのループの目的である
                 //
-                // region-a) [startPointer, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 1)
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-w) [lowerBoundary, upperBoundary] : pivotKey との大小関係が不明なキー値を持つ要素の集合
-                // region-c) (upperBoundary, endIndex] : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-a) [startPointer, startOfPivotKeys)  : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
+                // region-w) [lowerBoundary, upperBoundary]    : pivotKey との大小関係が不明なキー値を持つ要素の集合
+                // region-c) (upperBoundary, endPointer]       : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
                 while (lowerBoundary <= upperBoundary)
                 {
                     // *lowerBoundary に pivotKey より大きいキーが見つかるまで lowerBoundary を増やし続ける。
@@ -1531,7 +1426,7 @@ namespace Palmtree
                             // *lowerBoundary > pivotKey である場合
 #if DEBUG
                             Assert(lowerBoundary->CompareTo(pivotKey) > 0);
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                             // pivotKey より大きいキー値を持つ要素が見つかったので、ループを終える
                             break;
@@ -1541,19 +1436,22 @@ namespace Palmtree
 #if DEBUG
                         Assert(lowerBoundary->CompareTo(pivotKey) <= 0);
 #endif
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // *lowerBoundary == pivotKey である場合
+                            // *lowerBoundary < pivotKey である場合
 #if DEBUG
-                            Assert(lowerBoundary->CompareTo(pivotKey) == 0);
+                            Assert(lowerBoundary->CompareTo(pivotKey) < 0);
 #endif
                             // region-a に lowerBoundary にある要素を追加する
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
-                                // region-b は空ではない、つまり *endOfPivotKeys < pivotKey であるはずなので、*lowerBoundary と要素を交換する。
-                                (*endOfPivotKeys, *lowerBoundary) = (*lowerBoundary, *endOfPivotKeys);
+                                // region-b は空ではない、つまり *startOfPivotKeys == pivotKey であるはずなので、lowerBoundary と要素を交換する。
+#if DEBUG
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startOfPivotKeys).ToUInt64():x8}, index2=0x{new UIntPtr(lowerBoundary).ToUInt64():x8}");
+#endif
+                                (*startOfPivotKeys, *lowerBoundary) = (*lowerBoundary, *startOfPivotKeys);
                             }
                             else
                             {
@@ -1561,49 +1459,50 @@ namespace Palmtree
 
                                 // endOfPivotKeys == lowerBoundary であるはずなので、要素の交換は不要。
 #if DEBUG
-                                Assert(endOfPivotKeys == lowerBoundary);
+                                Assert(startOfPivotKeys == lowerBoundary);
 #endif
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
                         }
 
                         // region-b の終端位置をインクリメントする
                         ++lowerBoundary;
 #if DEBUG
-                        AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                        AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                     }
 
 #if DEBUG
-                    AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                    AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
 
-                    // この時点で lowerBoundary > upperBoundary || *lowerBoundary > pivotKey && *endOfPivotKeys != pivotKey
-                    Assert(lowerBoundary > upperBoundary || lowerBoundary->CompareTo(pivotKey) > 0 && endOfPivotKeys->CompareTo(pivotKey) != 0);
+                    // この時点で lowerBoundary > upperBoundary || *lowerBoundary > pivotKey
+                    Assert(lowerBoundary > upperBoundary || lowerBoundary->CompareTo(pivotKey) > 0);
 
                     // *upperBoundary に pivotKey より小さいまたは等しいキー値を持つ要素が見つかるまで upperBoundary を減らし続ける。
                     while (lowerBoundary <= upperBoundary)
                     {
                         var c = upperBoundary->CompareTo(pivotKey);
-                        if (c == 0)
+                        if (c < 0)
                         {
-                            // *upperBoundary == pivotKey である場合
+                            // *upperBoundary < pivotKey である場合
 
-                            if (endOfPivotKeys < lowerBoundary)
+                            if (startOfPivotKeys < lowerBoundary)
                             {
                                 // region-b が空ではない場合
 
                                 // 以下の 3 つの事実が判明しているので、3 つの要素をそれぞれ入れ替える。
-                                // 1) *upperBoundary == pivotKey
+                                // 1) *upperBoundary < pivotKey
                                 // 2) *lowerBoundary > pivotKey (前の while ループの結果より)
-                                // 3) *endOfPivotKeys < pivotKey (regon-b が空ではないことより)
+                                // 3) *startOfPivotKeys == pivotKey (regon-b が空ではないことより)
 #if DEBUG
-                                Assert(upperBoundary->CompareTo(pivotKey) == 0 && lowerBoundary->CompareTo(pivotKey) > 0 && endOfPivotKeys->CompareTo(pivotKey) < 0);
+                                Assert(upperBoundary->CompareTo(pivotKey) < 0 && lowerBoundary->CompareTo(pivotKey) > 0 && startOfPivotKeys->CompareTo(pivotKey) == 0);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startOfPivotKeys).ToUInt64():x8}, index2=0x{new UIntPtr(upperBoundary).ToUInt64():x8}, index3=0x{new UIntPtr(lowerBoundary).ToUInt64():x8}");
 #endif
-                                var t = *endOfPivotKeys;
-                                *endOfPivotKeys = *upperBoundary;
+                                var t = *startOfPivotKeys;
+                                *startOfPivotKeys = *upperBoundary;
                                 *upperBoundary = *lowerBoundary;
                                 *lowerBoundary = t;
                             }
@@ -1612,17 +1511,18 @@ namespace Palmtree
                                 // region-b が空である場合
 
                                 // 以下の 3 つの事実が判明しているので、2 つの要素を入れ替える。
-                                // 1) *upperBoundary == pivotKey
+                                // 1) *upperBoundary < pivotKey
                                 // 2) *lowerBoundary > pivotKey (前の while ループの結果より)
-                                // 3) endOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
+                                // 3) startOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
 #if DEBUG
-                                Assert(upperBoundary->CompareTo(pivotKey) == 0 && lowerBoundary->CompareTo(pivotKey) > 0 && endOfPivotKeys == lowerBoundary);
+                                Assert(upperBoundary->CompareTo(pivotKey) < 0 && lowerBoundary->CompareTo(pivotKey) > 0 && startOfPivotKeys == lowerBoundary);
+                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startOfPivotKeys).ToUInt64():x8}, index2=0x{new UIntPtr(upperBoundary).ToUInt64():x8}");
 #endif
-                                (*endOfPivotKeys, *upperBoundary) = (*upperBoundary, *endOfPivotKeys);
+                                (*startOfPivotKeys, *upperBoundary) = (*upperBoundary, *startOfPivotKeys);
                             }
 
                             // region-a の終端位置をインクリメントする
-                            ++endOfPivotKeys;
+                            ++startOfPivotKeys;
 
                             // region -b の終端位置をインクリメントする
                             ++lowerBoundary;
@@ -1630,18 +1530,21 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
-                            Assert(endOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
+                            Assert(startOfPivotKeys <= lowerBoundary);
 #endif
-                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
-                        else if (c < 0)
+                        else if (c == 0)
                         {
-                            // *upperBoundary < pivotKey である場合
+                            // *upperBoundary == pivotKey である場合
 
-                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より小さい (*lowerBoundary > pivotKey) ことが判明しているので、
+                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より大きい (*lowerBoundary > pivotKey) ことが判明しているので、
                             // region-b の終端と要素を入れ替える
+#if DEBUG
+                            System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(upperBoundary).ToUInt64():x8}, index2=0x{new UIntPtr(lowerBoundary).ToUInt64():x8}");
+#endif
                             (*upperBoundary, *lowerBoundary) = (*lowerBoundary, *upperBoundary);
 
                             // region-b の終端位置をインクリメントする
@@ -1650,10 +1553,10 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            Assert(endOfPivotKeys <= lowerBoundary);
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                            Assert(startOfPivotKeys <= lowerBoundary);
+                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
-                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
+                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
                             break;
                         }
                         else
@@ -1663,12 +1566,12 @@ namespace Palmtree
                             // region-c の先端位置をデクリメントする
                             --upperBoundary;
 #if DEBUG
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                         }
                     }
 #if DEBUG
-                    AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                    AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
                 }
 
@@ -1679,54 +1582,17 @@ namespace Palmtree
 
                 // この時点での配列のレイアウトは以下の通り。
                 //
-                // region-a) [startPointer, endOfPivotKeys) : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-b) [endOfPivotKeys, lowerBoundary) : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-c) (upperBoundary, endIndex] : x > pivotKey であるキー値 x を持つ要素の集合
+                // region-a) [startPointer, startOfPivotKeys)  : x < pivotKey であるキー値 x を持つ要素の集合
+                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合
+                // region-c) (upperBoundary, endPointer]       : x > pivotKey であるキー値 x を持つ要素の集合
                 // ※ただし lowerBoundary == upperBoundary + 1
 
 #if DEBUG
-                AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, endOfPivotKeys);
+                AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
 #endif
 
-                // 配列を [region-b] [region-a] [region-c] の順に並び替えるために、region-b の終端の一部または全部を region-a と入れ替える。
-
-                // 入れ替える長さを求める (region-a の長さと region-b の長さの最小値)
-                var lengthToExchange = (endOfPivotKeys - startPointer).Minimum(lowerBoundary - endOfPivotKeys);
-
-                // 入れ替える片方の開始位置 (region-a の先端位置)
-                var exStartIndex = startPointer;
-
-                // 入れ替えるもう片方の開始位置 (region-b の終端位置)
-                var exEndIndex = upperBoundary;
-
-                // 入れ替える値がなくなるまで繰り返す
-                while (exStartIndex < exEndIndex)
-                {
-                    // 値を入れ替える
-                    (*exStartIndex, *exEndIndex) = (*exEndIndex, *exStartIndex);
-
-                    // 入れ替える値の位置を変更する
-                    ++exStartIndex;
-                    --exEndIndex;
-                }
-
-                // この時点で、配列の並びは以下の通り
-                // region-b) [startPointer, startPointer + upperBoundary - endOfPivotKeys] : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-a) [startPointer + lowerBoundary - endOfPivotKeys, upperBoundary] : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-c) [lowerBoundary, endIndex]: x > pivotKey であるキー値 x を持つ要素の集合
-                // ※ただし lowerBoundary == upperBoundary + 1
-
-#if DEBUG
-                for (var p = startPointer; p <= startPointer + (upperBoundary - endOfPivotKeys); ++p)
-                    Assert(p->CompareTo(pivotKey) < 0);
-                for (var p = startPointer + (lowerBoundary - endOfPivotKeys); p <= upperBoundary; ++p)
-                    Assert(p->CompareTo(pivotKey) == 0);
-                for (var p = lowerBoundary; p <= endPointer; ++p)
-                    Assert(p->CompareTo(pivotKey) > 0);
-#endif
-
-                // region-b の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortUnmanaged(startPointer, upperBoundary - endOfPivotKeys + startPointer);
+                // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
+                InternalQuickSortUnmanaged(startPointer, startOfPivotKeys);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
                 InternalQuickSortUnmanaged(lowerBoundary, endPointer);
@@ -1773,46 +1639,46 @@ namespace Palmtree
                 Assert(keyComparer.Compare(keySelector(*p), keySelector(p[1])) <= 0);
         }
 
-        private static unsafe void AssertQuickSortState<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, ELEMENT_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* endOfPivotKeys)
+        private static unsafe void AssertQuickSortState<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, ELEMENT_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys)
             where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
         {
-            for (var p = startPointer; p < endOfPivotKeys; ++p)
-                Assert(p->CompareTo(pivotKey) == 0);
-            for (var p = endOfPivotKeys; p < lowerBoundary; ++p)
+            for (var p = startPointer; p < startOfPivotKeys; ++p)
                 Assert(p->CompareTo(pivotKey) < 0);
+            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
+                Assert(p->CompareTo(pivotKey) == 0);
             for (var p = upperBoundary + 1; p <= endPointer; ++p)
                 Assert(p->CompareTo(pivotKey) > 0);
         }
 
-        private static unsafe void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, KEY_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* endOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
+        private static unsafe void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, KEY_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
             where ELEMENT_T : unmanaged
             where KEY_T : IComparable<KEY_T>
         {
-            for (var p = startPointer; p < endOfPivotKeys; ++p)
-                Assert(keySelector(*p).CompareTo(pivotKey) == 0);
-            for (var p = endOfPivotKeys; p < lowerBoundary; ++p)
+            for (var p = startPointer; p < startOfPivotKeys; ++p)
                 Assert(keySelector(*p).CompareTo(pivotKey) < 0);
+            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
+                Assert(keySelector(*p).CompareTo(pivotKey) == 0);
             for (var p = upperBoundary + 1; p <= endPointer; ++p)
                 Assert(keySelector(*p).CompareTo(pivotKey) > 0);
         }
 
-        private static unsafe void AssertQuickSortState<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, ELEMENT_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* endOfPivotKeys, IComparer<ELEMENT_T> comparer)
+        private static unsafe void AssertQuickSortState<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, ELEMENT_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys, IComparer<ELEMENT_T> comparer)
             where ELEMENT_T : unmanaged
         {
-            for (var p = startPointer; p < endOfPivotKeys; ++p)
-                Assert(comparer.Compare(*p, pivotKey) == 0);
-            for (var p = endOfPivotKeys; p < lowerBoundary; ++p)
+            for (var p = startPointer; p < startOfPivotKeys; ++p)
                 Assert(comparer.Compare(*p, pivotKey) < 0);
+            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
+                Assert(comparer.Compare(*p, pivotKey) == 0);
             for (var p = upperBoundary + 1; p <= endPointer; ++p)
                 Assert(comparer.Compare(*p, pivotKey) > 0);
         }
-        private static unsafe void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, KEY_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* endOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+        private static unsafe void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, KEY_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
             where ELEMENT_T : unmanaged
         {
-            for (var p = startPointer; p < endOfPivotKeys; ++p)
-                Assert(keyComparer.Compare(keySelector(*p), pivotKey) == 0);
-            for (var p = endOfPivotKeys; p < lowerBoundary; ++p)
+            for (var p = startPointer; p < startOfPivotKeys; ++p)
                 Assert(keyComparer.Compare(keySelector(*p), pivotKey) < 0);
+            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
+                Assert(keyComparer.Compare(keySelector(*p), pivotKey) == 0);
             for (var p = upperBoundary + 1; p <= endPointer; ++p)
                 Assert(keyComparer.Compare(keySelector(*p), pivotKey) > 0);
         }
