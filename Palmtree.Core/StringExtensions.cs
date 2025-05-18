@@ -524,7 +524,7 @@ namespace Palmtree
         private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(&|<|>|\\^|\\||\\')", RegexOptions.Compiled)]
+        [GeneratedRegex("(&|<|>|\\^|\\|)", RegexOptions.Compiled)]
         private static partial Regex GetCharacterEscapedAtCaretPattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
