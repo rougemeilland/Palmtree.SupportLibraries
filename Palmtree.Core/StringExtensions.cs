@@ -193,7 +193,7 @@ namespace Palmtree
                 arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
                 if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
                     return arg;
-                return $"\"{GetEndsWithBaskSlashPattern().Replace(arg, "$1$1")}\"";
+                return $"\"{GetEndsWithBackSlashPattern().Replace(arg, "$1$1")}\"";
             }
         }
 
@@ -239,7 +239,7 @@ namespace Palmtree
             arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
             if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
                 return arg;
-            arg = GetEndsWithBaskSlashPattern().Replace(arg, "$1$1");
+            arg = GetEndsWithBackSlashPattern().Replace(arg, "$1$1");
             return $"^\"{arg}^\"";
         }
 
@@ -524,7 +524,7 @@ namespace Palmtree
         private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(&|<|>|\\^|\\|)", RegexOptions.Compiled)]
+        [GeneratedRegex("(&|<|>|\\^|\\||\\')", RegexOptions.Compiled)]
         private static partial Regex GetCharacterEscapedAtCaretPattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -537,6 +537,6 @@ namespace Palmtree
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GeneratedRegex("(\\\\+)$", RegexOptions.Compiled)]
-        private static partial Regex GetEndsWithBaskSlashPattern();
+        private static partial Regex GetEndsWithBackSlashPattern();
     }
 }

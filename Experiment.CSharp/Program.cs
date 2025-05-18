@@ -31,6 +31,11 @@ namespace Experiment.CSharp
 
         static void Main(string[] args)
         {
+            if (OperatingSystem.IsWindows())
+            {
+                var s = "\"A's\"".CommandPromptCommandLineArgumentEncode();
+            }
+
             var x = new ObservableCollection<int>();
 #if true
             var array = new[] { 6, 7, 7, 7, 1, 7, 0, 0, 5, 7, 2, 7, 4, 4, 2, 6, 6, 6, 1, 5, 5, 4, 2, 4, 4, 5, 5, 6, 4, 2, 6, 4 }.ToList();
