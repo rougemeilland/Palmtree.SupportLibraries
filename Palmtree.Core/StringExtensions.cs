@@ -26,6 +26,37 @@ namespace Palmtree
 #endif
         }
 
+        /// <summary>
+        /// 指定した文字列から、指定した文字に一致しない文字を検索します。
+        /// </summary>
+        /// <param name="s">検索対象の文字列です。</param>
+        /// <param name="c">検索時に一致しない文字です。</param>
+        /// <param name="startIndex">検索の開始位置です。</param>
+        /// <returns>
+        /// 以下の条件を満たす文字の、文字列の先頭からの位置を返します。もしそのような文字が見つからなかった場合は負の整数を返します。
+        /// <list type="bullet">
+        /// <item>文字列 <paramref name="s"/> の位置 <paramref name="startIndex"/> 以降の文字であり、かつ</item>
+        /// <item>文字が <paramref name="c"/> と一致せず、かつ</item>
+        /// <item>文字列 <paramref name="s"/> の先頭から最初に見つかった文字</item>
+        /// </list>
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="startIndex"/> の値が負かまたは文字列 <paramref name="s"/> の長さを超えています。
+        /// </exception>
+        public static Int32 IndexOfNot(this String s, Char c, Int32 startIndex = 0)
+        {
+            if (startIndex < 0 || startIndex > s.Length)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            for (var index = startIndex; index < s.Length; ++index)
+            {
+                if (s[index] != c)
+                    return index;
+            }
+
+            return -1;
+        }
+
         #region ChunkAsString
 
         public static IEnumerable<String> ChunkAsString(this IEnumerable<Char> source, Int32 count)
@@ -194,6 +225,224 @@ namespace Palmtree
                 if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
                     return arg;
                 return $"\"{GetEndsWithBackSlashPattern().Replace(arg, "$1$1")}\"";
+            }
+        }
+
+        /// <summary>
+        /// 指定された文字列をコマンドラインの引数の形式でデコードします。
+        /// </summary>
+        /// <param name="arg">デコード対象の文字列です。</param>
+        /// <returns>デコードされた文字列です。</returns>
+        /// <remarks>
+        /// デコードの方法は実行環境のプラットフォームによって異なります。
+        /// </remarks>
+        public static String CommandLineArgumentDecode(this String arg)
+        {
+            if (arg is null)
+                throw new ArgumentNullException(nameof(arg));
+
+            return
+                OperatingSystem.IsWindows()
+                ? DecodeForWindows(arg)
+                : DecodeForUnix(arg);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static String DecodeForUnix(String arg)
+            {
+                var index = 0;
+                var isDoubleQuoted = false;
+                var result = new StringBuilder();
+                while (index < arg.Length)
+                {
+                    var c = arg[index];
+                    if (c == '"')
+                    {
+                        isDoubleQuoted = !isDoubleQuoted;
+                        ++index;
+                    }
+                    else if (c == '\\')
+                    {
+                        if (index + 1 >= arg.Length)
+                            throw new ArgumentException("The specified string ends with '\'.", nameof(arg));
+                        var c2 = arg[index + 1];
+                        if (c2 is not '\\' and not '"')
+                            throw new ArgumentException($"Decoding of string \"{c}{c2}\" is not supported.", nameof(arg));
+                        _ = result.Append(c2);
+                        index += 2;
+                    }
+                    else if (_anyOfTabOrSpace.Contains(c))
+                    {
+                        if (!isDoubleQuoted)
+                            throw new ArgumentException("Space character is not double quoted.", nameof(arg));
+                        _ = result.Append(c);
+                        ++index;
+                    }
+                    else
+                    {
+                        _ = result.Append(c);
+                        ++index;
+                    }
+                }
+
+                if (isDoubleQuoted)
+                    throw new ArgumentException("The double quote is not closed.", nameof(arg));
+
+                return result.ToString();
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static String DecodeForWindows(String arg)
+            {
+                try
+                {
+                    return ProcessPass2(ProcessPass1(arg));
+                }
+                catch (FormatException ex)
+                {
+                    throw new ArgumentException($"The specified string cannot be decoded.: \"{arg}\"", nameof(arg), ex);
+                }
+
+                // ダブルクォート区間の中で、2個以上の偶数個の'\'とダブルクォートの並びがあれば、半分の個数の'\'に変換し、ダブルクォート区間を終了する
+                // ダブルクォート区間外で空白またはTABがあればエラーとする
+                static String ProcessPass1(String s)
+                {
+                    var index = 0;
+                    var isDoubleQuoted = false;
+                    var result = new StringBuilder();
+                    while (index < s.Length)
+                    {
+                        var c = s[index];
+                        if (c == '"')
+                        {
+                            // ダブルクォートで始まっている場合
+                            isDoubleQuoted = !isDoubleQuoted;
+                            ++index;
+                        }
+                        else if (c == '\\')
+                        {
+                            // バックスラッシュで始まっている場合
+                            var endOfBackSlashSequence = s.IndexOfNot('\\', index);
+                            if (endOfBackSlashSequence < 0)
+                            {
+                                // 残りの文字がすべてバックスラッシュである場合
+                                var length = s.Length - index;
+                                _ = result.Append(s, index, length);
+                                index += length;
+                            }
+                            else if (s[endOfBackSlashSequence] != '"')
+                            {
+                                // バックスラッシュの並びの後の文字がダブルクォートではない場合
+                                var length = endOfBackSlashSequence - index;
+                                _ = result.Append(s, index, length);
+                                index += length;
+                            }
+                            else
+                            {
+                                // 連続するバックスラッシュの後にダブルクォートが見つかった場合
+                                var lengthOfBackslashSequence = endOfBackSlashSequence - index;
+                                if (!isDoubleQuoted)
+                                {
+                                    // ダブルクォート区間外である場合
+                                    _ = result.Append(s, index, lengthOfBackslashSequence + 1);
+                                    index += lengthOfBackslashSequence + 1;
+                                }
+                                else if ((lengthOfBackslashSequence & 1u) == 0)
+                                {
+                                    // ダブルクォート区間内であり、かつ連続するバックスラッシュの個数が2以上の偶数である場合
+                                    _ = result.Append(s, index, lengthOfBackslashSequence >> 1);
+                                    index += lengthOfBackslashSequence + 1;
+                                    isDoubleQuoted = false;
+                                }
+                                else
+                                {
+                                    // ダブルクォート区間内であり、かつ連続するバックスラッシュの個数が奇数である場合
+                                    _ = result.Append(s, index, lengthOfBackslashSequence + 1);
+                                    index += lengthOfBackslashSequence + 1;
+                                }
+                            }
+                        }
+                        else if (_anyOfTabOrSpace.Contains(c))
+                        {
+                            // 空白またはTABで始まっている場合
+                            if (!isDoubleQuoted)
+                                throw new FormatException("Space character is not double quoted.");
+                            _ = result.Append(c);
+                            ++index;
+                        }
+                        else
+                        {
+                            // 上記以外の文字で始まっている場合
+                            _ = result.Append(c);
+                            ++index;
+                        }
+                    }
+
+                    if (isDoubleQuoted)
+                        throw new FormatException("The double quote is not closed.");
+
+                    return result.ToString();
+                }
+
+                // 1個以上の奇数個の'\'とダブルクォートの並びがあれば、('\'の個数 - 1)/2個の'\'とダブルクォートに変換するに変換する。
+                static String ProcessPass2(String s)
+                {
+                    var index = 0;
+                    var result = new StringBuilder();
+                    while (index < s.Length)
+                    {
+                        var c = s[index];
+                        if (c == '"')
+                        {
+                            // ダブルクォートで始まっている場合
+                            throw new FormatException("The double quotes are not encoded.");
+                        }
+                        else if (c == '\\')
+                        {
+                            // バックスラッシュで始まっている場合
+                            var endOfBackSlashSequence = s.IndexOfNot('\\', index);
+                            if (endOfBackSlashSequence < 0)
+                            {
+                                // 残りの文字がすべてバックスラッシュであるか、バックスラッシュの並びの後の文字がダブルクォートではない場合
+                                var length = s.Length - index;
+                                _ = result.Append(s, index, length);
+                                index += length;
+                            }
+                            else if (s[endOfBackSlashSequence] != '"')
+                            {
+                                // 残りの文字がすべてバックスラッシュであるか、バックスラッシュの並びの後の文字がダブルクォートではない場合
+                                var length = endOfBackSlashSequence - index;
+                                _ = result.Append(s, index, length);
+                                index += length;
+                            }
+                            else
+                            {
+                                // 連続するバックスラッシュの後にダブルクォートが見つかった場合
+                                var lengthOfBackslashSequence = endOfBackSlashSequence - index;
+                                if ((lengthOfBackslashSequence & 1u) != 0)
+                                {
+                                    // 連続するバックスラッシュの個数が1以上の奇数である場合
+                                    if (lengthOfBackslashSequence > 1)
+                                        _ = result.Append(s, index, (lengthOfBackslashSequence - 1) >> 1);
+                                    _ = result.Append('"');
+                                    index += lengthOfBackslashSequence + 1;
+                                }
+                                else
+                                {
+                                    // 連続するバックスラッシュの個数が2以上の偶数である場合
+                                    throw new FormatException("Invalid encoding of backslash and double quote.");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // 上記以外の文字で始まっている場合
+                            _ = result.Append(c);
+                            ++index;
+                        }
+                    }
+
+                    return result.ToString();
+                }
             }
         }
 
@@ -520,23 +769,23 @@ namespace Palmtree
                 : c1 == c2;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("([\\?!]*\\?[\\?!]*)", RegexOptions.Compiled)]
+        [GeneratedRegex(@"([\?!]*\?[\?!]*)", RegexOptions.Compiled)]
         private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(&|<|>|\\^|\\|)", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(&|<|>|\^|\|)", RegexOptions.Compiled)]
         private static partial Regex GetCharacterEscapedAtCaretPattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(\"|\\\\)", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(""|\\)", RegexOptions.Compiled)]
         private static partial Regex GetDoubleQuoteOrBackSlashPattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(\\\\*)\"", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(\\*)""", RegexOptions.Compiled)]
         private static partial Regex GetBackSlashAndDoubleQuotePattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(\\\\+)$", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(\\+)$", RegexOptions.Compiled)]
         private static partial Regex GetEndsWithBackSlashPattern();
     }
 }
