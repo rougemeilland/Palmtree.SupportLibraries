@@ -892,11 +892,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var compressionMethod = CompressionMethodId.GetCompressionMethod();
                 var compressionOption = CompressionMethodId.GetEncoderOption(CompressionLevel);
 
-                temporaryFile = new FilePath(Path.GetTempFileName());
+                temporaryFile = FilePath.CreateTemporaryFile();
                 packedTemporaryFile =
                     CompressionMethodId == ZipEntryCompressionMethodId.Stored
                     ? null
-                    : new FilePath(Path.GetTempFileName());
+                    : FilePath.CreateTemporaryFile();
 
                 var outputStrem =
                     temporaryFile.Create()

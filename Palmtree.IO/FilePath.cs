@@ -316,6 +316,9 @@ namespace Palmtree.IO
             return new(new FileInfo(directory.FullName));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static FilePath CreateTemporaryFile() => new(Path.GetTempFileName());
+
         /// <remarks>
         /// The same instance as the object indicated by parameter <paramref name="file"/> must not be used elsewhere.
         /// </remarks>

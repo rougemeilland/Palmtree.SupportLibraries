@@ -35,7 +35,7 @@ namespace Test.Compression
 
         private static void DoTest1(int numberOfEntries, ulong contentSize, ZipEntryCompressionMethodId compressMethodId)
         {
-            var zipArchive = new FilePath(Path.GetTempFileName());
+            var zipArchive = FilePath.CreateTemporaryFile();
             try
             {
                 using (var zipWriter = zipArchive.CreateAsZipFile())
@@ -96,8 +96,7 @@ namespace Test.Compression
         {
             const int BUFFER_LENGTH = 1024 * 1024;
 
-            if (contentLength < sizeof(uint) + sizeof(ulong))
-                throw new ArgumentOutOfRangeException(nameof(contentLength));
+            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (ulong)sizeof(uint) + sizeof(ulong));
 
             var crcHolder = new ValueHolder<(uint crc, ulong length)>();
             using var outStream1 = fileEntry.CreateContentStream(new SimpleProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));

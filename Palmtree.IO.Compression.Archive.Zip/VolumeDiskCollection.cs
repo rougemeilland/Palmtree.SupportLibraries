@@ -89,7 +89,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 if (_isDisposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                return _volumeDisks.ToArray();
+                return [.. _volumeDisks];
             }
 
             public void Dispose()
@@ -122,7 +122,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             public ArrayOfVolumeDisksOnSharedMemory(VolumeInfo[] sourceArray)
             {
-                _baseFile = new FilePath(Path.GetTempFileName());
+                _baseFile = FilePath.CreateTemporaryFile();
                 _baseFileStream = new FileStream(_baseFile.FullName, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
                 _isDisposed = false;
                 _length = checked((UInt32)sourceArray.Length);

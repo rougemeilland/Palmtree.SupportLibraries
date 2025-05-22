@@ -52,7 +52,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _zipOutputStream = zipStream ?? throw new ArgumentNullException(nameof(zipStream));
             _entryNameEncodingProvider = entryNameEncodingProvider;
             _zipArchiveFile = zipArchiveFile;
-            _temporaryFileForCentoralDirectories = new FilePath(Path.GetTempFileName());
+            _temporaryFileForCentoralDirectories = FilePath.CreateTemporaryFile();
             _outStreamForCentoralDirectories = _temporaryFileForCentoralDirectories.Create().WithCache();
             _isDisposed = false;
             _isLocked = false;
@@ -169,7 +169,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     entryComment,
                     entryCommentBytes,
                     _standardUnicodeEncoding,
-                    new[] { _standardUnicodeEncoding });
+                    [_standardUnicodeEncoding]);
         }
 
         /// <summary>
