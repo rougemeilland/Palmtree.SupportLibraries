@@ -13,7 +13,7 @@ namespace Palmtree
     /// </summary>
     public class ProcessUtility
     {
-        private static readonly String[] _commonExecutablePathOnUnix = new[] { "/usr/bin", "/bin" };
+        private static readonly String[] _commonExecutablePathOnLinux = new[] { "/usr/bin", "/bin" };
         private static readonly Char[] _anyOfSemicolonOrDoubleQuote = new Char[] { ';', '"' };
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Palmtree
         /// </returns>
         /// <exception cref="FileNotFoundException">
         /// コマンドを探すためのコマンドが見つかりませんでした。
-        /// これは Windows の場合は "where.exe" であり、UNIX の場合は "which" です。
+        /// これは Windows の場合は "where.exe" であり、Linux の場合は "which" です。
         /// </exception>
         /// <remarks>
         /// <list type="bullet">
@@ -64,7 +64,7 @@ namespace Palmtree
             }
             else
             {
-                return WhereIsForUnix(targetCommandName);
+                return WhereIsForLinux(targetCommandName);
             }
         }
 
@@ -142,13 +142,13 @@ namespace Palmtree
             }
         }
 
-        private static String? WhereIsForUnix(String targetCommandName)
+        private static String? WhereIsForLinux(String targetCommandName)
         {
             var whichCommandName = "which";
 
             // コマンドのパス名を解決するコマンドのフルパスを求める
             var whichCommandPath =
-                _commonExecutablePathOnUnix
+                _commonExecutablePathOnLinux
                 .Select(dir => Path.Combine(dir, whichCommandName))
                 .Where(File.Exists)
                 .FirstOrDefault()
@@ -157,7 +157,7 @@ namespace Palmtree
             // コマンドのパス名を解決するコマンドを起動する
             var startInfo = new ProcessStartInfo
             {
-                Arguments = String.Join(" ", new[] { "-a", targetCommandName }.Select(option => option.CommandLineArgumentEncode())),
+                Arguments = String.Join(" ", new[] { "-a", targetCommandName }.Select(option => option.EncodeCommandLineArgument())),
                 CreateNoWindow = false,
                 FileName = whichCommandPath,
                 UseShellExecute = false,
@@ -199,9 +199,9 @@ namespace Palmtree
             Validation.Assert(result is null || File.Exists(result), "result is null || File.Exists(result)");
 
             // プロセスの終了コードを判別して復帰する
-            //   0: 指定されたコマンドが見つかった場合 (Windows/UNIX 共通)
-            //   1: 指定されたコマンドが見つからなかった場合 (Windows/UNIX 共通)
-            //   2: その他の異常が発生した場合 (Windows/UNIX 共通)
+            //   0: 指定されたコマンドが見つかった場合 (Windows/Linux 共通)
+            //   1: 指定されたコマンドが見つからなかった場合 (Windows/Linux 共通)
+            //   2: その他の異常が発生した場合 (Windows/Linux 共通)
             return
                 process.ExitCode switch
                 {

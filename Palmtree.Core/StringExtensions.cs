@@ -10,7 +10,7 @@ namespace Palmtree
 {
     public static partial class StringExtensions
     {
-        private static readonly Char[] _anyOfTabOrSpace = new[] { '\t', ' ' };
+        private static readonly Char[] _delimiterOfCommandParameters = new[] { ' ', '\t' };
 
         static StringExtensions()
         {
@@ -37,7 +37,7 @@ namespace Palmtree
         /// <list type="bullet">
         /// <item>文字列 <paramref name="s"/> の位置 <paramref name="startIndex"/> 以降の文字であり、かつ</item>
         /// <item>文字が <paramref name="c"/> と一致せず、かつ</item>
-        /// <item>文字列 <paramref name="s"/> の先頭から最初に見つかった文字</item>
+        /// <item>文字列 <paramref name="s"/> の先頭方向から最初に見つかった文字</item>
         /// </list>
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -56,6 +56,58 @@ namespace Palmtree
 
             return -1;
         }
+
+        #region IndexOfNotAny
+
+        /// <summary>
+        /// 指定した文字列から、指定した文字の何れにも一致しない文字を検索します。
+        /// </summary>
+        /// <param name="s">検索対象の文字列です。</param>
+        /// <param name="characters">検索時に一致しない文字です。</param>
+        /// <returns>
+        /// 以下の条件を満たす文字の、文字列の先頭からの位置を返します。もしそのような文字が見つからなかった場合は負の整数を返します。
+        /// <list type="bullet">
+        /// <item>文字が文字配列 <paramref name="characters"/> の要素の何れとも一致せず、かつ</item>
+        /// <item>文字列 <paramref name="s"/> の先頭から最初に見つかった文字</item>
+        /// </list>
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="startIndex"/> の値が負かまたは文字列 <paramref name="s"/> の長さを超えています。
+        /// </exception>
+        public static Int32 IndexOfNotAny(this String s, params Char[] characters) => s.IndexOfNotAny(characters, 0);
+
+        /// <summary>
+        /// 指定した文字列から、指定した文字の何れにも一致しない文字を検索します。
+        /// </summary>
+        /// <param name="s">検索対象の文字列です。</param>
+        /// <param name="characters">検索時に一致しない文字です。</param>
+        /// <param name="startIndex">検索の開始位置です。</param>
+        /// <returns>
+        /// 以下の条件を満たす文字の、文字列の先頭からの位置を返します。もしそのような文字が見つからなかった場合は負の整数を返します。
+        /// <list type="bullet">
+        /// <item>文字列 <paramref name="s"/> の位置 <paramref name="startIndex"/> 以降の文字であり、かつ</item>
+        /// <item>文字が文字配列 <paramref name="characters"/> の要素の何れとも一致せず、かつ</item>
+        /// <item>文字列 <paramref name="s"/> の先頭方向から最初に見つかった文字</item>
+        /// </list>
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="startIndex"/> の値が負かまたは文字列 <paramref name="s"/> の長さを超えています。
+        /// </exception>
+        public static Int32 IndexOfNotAny(this String s, Char[] characters, Int32 startIndex = 0)
+        {
+            if (startIndex < 0 || startIndex > s.Length)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            for (var index = startIndex; index < s.Length; ++index)
+            {
+                if (!characters.Contains(s[index]))
+                    return index;
+            }
+
+            return -1;
+        }
+
+        #endregion
 
         #region ChunkAsString
 
@@ -197,35 +249,30 @@ namespace Palmtree
         /// <param name="arg">エンコード対象の文字列です。</param>
         /// <returns>エンコードされた文字列です。</returns>
         /// <remarks>
-        /// エンコードの方法は実行環境のプラットフォームによって異なります。
+        /// <list type="bullet">
+        /// <item>
+        /// <term>注意事項</term>
+        /// <description>
+        /// <para>
+        /// このメソッドは、以下のメカニズムで行われるコマンドラインのエンコーディングの実装に準拠しており、コマンドプロンプトやPowerShellを含めたシェル固有のエンコーディングには対応していません。
+        /// <list type="bullet">
+        /// <item><see cref="System.Diagnostics.Process.Start()"/></item>
+        /// <item><see cref="Environment.GetCommandLineArgs()"/></item>
+        /// </list>
+        /// </para>
+        /// </description>
+        /// </item>
+        /// </list>
         /// </remarks>
-        public static String CommandLineArgumentEncode(this String arg)
+        public static String EncodeCommandLineArgument(this String arg)
         {
             if (arg is null)
                 throw new ArgumentNullException(nameof(arg));
 
-            return
-                OperatingSystem.IsWindows()
-                ? EncodeForWindows(arg)
-                : EncodeForUnix(arg);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static String EncodeForUnix(String arg)
-            {
-                arg = GetDoubleQuoteOrBackSlashPattern().Replace(arg, "\\$1");
-                if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
-                    return arg;
-                return $"\"{arg}\"";
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static String EncodeForWindows(String arg)
-            {
-                arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
-                if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
-                    return arg;
-                return $"\"{GetEndsWithBackSlashPattern().Replace(arg, "$1$1")}\"";
-            }
+            arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
+            if (arg.Length > 0 && arg.IndexOfAny(_delimiterOfCommandParameters) < 0)
+                return arg;
+            return $"\"{GetEndsWithBackSlashPattern().Replace(arg, "$1$1")}\"";
         }
 
         /// <summary>
@@ -234,215 +281,111 @@ namespace Palmtree
         /// <param name="arg">デコード対象の文字列です。</param>
         /// <returns>デコードされた文字列です。</returns>
         /// <remarks>
-        /// デコードの方法は実行環境のプラットフォームによって異なります。
+        /// <list type="bullet">
+        /// <item>
+        /// <term>注意事項</term>
+        /// <description>
+        /// <para>
+        /// このメソッドは、以下のメカニズムで行われるコマンドラインのエンコーディングの実装に準拠しており、コマンドプロンプトやPowerShellを含めたシェル固有のエンコーディングには対応していません。
+        /// <list type="bullet">
+        /// <item><see cref="System.Diagnostics.Process.Start()"/></item>
+        /// <item><see cref="Environment.GetCommandLineArgs()"/></item>
+        /// </list>
+        /// </para>
+        /// </description>
+        /// </item>
+        /// </list>
         /// </remarks>
-        public static String CommandLineArgumentDecode(this String arg)
+        public static String DecodeCommandLineArgument(this String arg)
         {
             if (arg is null)
                 throw new ArgumentNullException(nameof(arg));
 
-            return
-                OperatingSystem.IsWindows()
-                ? DecodeForWindows(arg)
-                : DecodeForUnix(arg);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static String DecodeForUnix(String arg)
+            try
             {
-                var index = 0;
-                var isDoubleQuoted = false;
-                var result = new StringBuilder();
-                while (index < arg.Length)
+                var nextPos = ParseCommandLine(arg, 0, out var decodedArg);
+                if (nextPos != arg.Length)
+                    throw new ArgumentException("Command parameter delimiters (spaces, tabs, newlines, etc.) are not quoted.", nameof(arg));
+                return decodedArg;
+            }
+            catch (FormatException ex)
+            {
+                throw new ArgumentException($"The command line syntax is incorrect.: \"{arg}\"", nameof(arg), ex);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to parse command line.: \"{arg}\"", ex);
+            }
+        }
+
+        /// <summary>
+        /// コマンドラインの文字列をコマンドとパラメタに切り分けます。
+        /// </summary>
+        /// <param name="commandLine">コマンドラインの文字列です。</param>
+        /// <returns>
+        /// 切り分けられたコマンドラインの列挙子です。
+        /// 最初の要素はコマンドのパス名を表し、2番目以降の要素は各コマンドパラメタを表します。
+        /// </returns>
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>
+        /// <term>注意事項</term>
+        /// <description>
+        /// <para>
+        /// このメソッドは、以下のメカニズムで行われるコマンドラインのエンコーディングの実装に準拠しており、コマンドプロンプトやPowerShellを含めたシェル固有のエンコーディングには対応していません。
+        /// <list type="bullet">
+        /// <item><see cref="System.Diagnostics.Process.Start()"/></item>
+        /// <item><see cref="Environment.GetCommandLineArgs()"/></item>
+        /// </list>
+        /// </para>
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </remarks>
+        public static IEnumerable<String> SplitCommandLineArguments(this String commandLine)
+        {
+            if (commandLine is null)
+                throw new ArgumentNullException(nameof(commandLine));
+
+            var first = true;
+            for (var index = 0; index < commandLine.Length;)
+            {
+                if (first)
                 {
-                    var c = arg[index];
-                    if (c == '"')
-                    {
-                        isDoubleQuoted = !isDoubleQuoted;
-                        ++index;
-                    }
-                    else if (c == '\\')
-                    {
-                        if (index + 1 >= arg.Length)
-                            throw new ArgumentException("The specified string ends with '\'.", nameof(arg));
-                        var c2 = arg[index + 1];
-                        if (c2 is not '\\' and not '"')
-                            throw new ArgumentException($"Decoding of string \"{c}{c2}\" is not supported.", nameof(arg));
-                        _ = result.Append(c2);
-                        index += 2;
-                    }
-                    else if (_anyOfTabOrSpace.Contains(c))
-                    {
-                        if (!isDoubleQuoted)
-                            throw new ArgumentException("Space character is not double quoted.", nameof(arg));
-                        _ = result.Append(c);
-                        ++index;
-                    }
-                    else
-                    {
-                        _ = result.Append(c);
-                        ++index;
-                    }
+                    first = false;
+                }
+                else
+                {
+                    index = commandLine.SkipCommandLineDelimiter(index);
+                    if (index >= commandLine.Length)
+                        break;
                 }
 
-                if (isDoubleQuoted)
-                    throw new ArgumentException("The double quote is not closed.", nameof(arg));
-
-                return result.ToString();
+                yield return GetToken(commandLine, ref index);
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static String DecodeForWindows(String arg)
+            static String GetToken(String commandLine, ref Int32 index)
             {
+                String decodedArg;
+
                 try
                 {
-                    return ProcessPass2(ProcessPass1(arg));
+                    index = commandLine.ParseCommandLine(index, out decodedArg);
                 }
                 catch (FormatException ex)
                 {
-                    throw new ArgumentException($"The specified string cannot be decoded.: \"{arg}\"", nameof(arg), ex);
+                    throw new ArgumentException($"The command line syntax is incorrect.: \"{commandLine}\"", nameof(commandLine), ex);
                 }
-
-                // ダブルクォート区間の中で、2個以上の偶数個の'\'とダブルクォートの並びがあれば、半分の個数の'\'に変換し、ダブルクォート区間を終了する
-                // ダブルクォート区間外で空白またはTABがあればエラーとする
-                static String ProcessPass1(String s)
+                catch (Exception ex)
                 {
-                    var index = 0;
-                    var isDoubleQuoted = false;
-                    var result = new StringBuilder();
-                    while (index < s.Length)
-                    {
-                        var c = s[index];
-                        if (c == '"')
-                        {
-                            // ダブルクォートで始まっている場合
-                            isDoubleQuoted = !isDoubleQuoted;
-                            ++index;
-                        }
-                        else if (c == '\\')
-                        {
-                            // バックスラッシュで始まっている場合
-                            var endOfBackSlashSequence = s.IndexOfNot('\\', index);
-                            if (endOfBackSlashSequence < 0)
-                            {
-                                // 残りの文字がすべてバックスラッシュである場合
-                                var length = s.Length - index;
-                                _ = result.Append(s, index, length);
-                                index += length;
-                            }
-                            else if (s[endOfBackSlashSequence] != '"')
-                            {
-                                // バックスラッシュの並びの後の文字がダブルクォートではない場合
-                                var length = endOfBackSlashSequence - index;
-                                _ = result.Append(s, index, length);
-                                index += length;
-                            }
-                            else
-                            {
-                                // 連続するバックスラッシュの後にダブルクォートが見つかった場合
-                                var lengthOfBackslashSequence = endOfBackSlashSequence - index;
-                                if (!isDoubleQuoted)
-                                {
-                                    // ダブルクォート区間外である場合
-                                    _ = result.Append(s, index, lengthOfBackslashSequence + 1);
-                                    index += lengthOfBackslashSequence + 1;
-                                }
-                                else if ((lengthOfBackslashSequence & 1u) == 0)
-                                {
-                                    // ダブルクォート区間内であり、かつ連続するバックスラッシュの個数が2以上の偶数である場合
-                                    _ = result.Append(s, index, lengthOfBackslashSequence >> 1);
-                                    index += lengthOfBackslashSequence + 1;
-                                    isDoubleQuoted = false;
-                                }
-                                else
-                                {
-                                    // ダブルクォート区間内であり、かつ連続するバックスラッシュの個数が奇数である場合
-                                    _ = result.Append(s, index, lengthOfBackslashSequence + 1);
-                                    index += lengthOfBackslashSequence + 1;
-                                }
-                            }
-                        }
-                        else if (_anyOfTabOrSpace.Contains(c))
-                        {
-                            // 空白またはTABで始まっている場合
-                            if (!isDoubleQuoted)
-                                throw new FormatException("Space character is not double quoted.");
-                            _ = result.Append(c);
-                            ++index;
-                        }
-                        else
-                        {
-                            // 上記以外の文字で始まっている場合
-                            _ = result.Append(c);
-                            ++index;
-                        }
-                    }
-
-                    if (isDoubleQuoted)
-                        throw new FormatException("The double quote is not closed.");
-
-                    return result.ToString();
+                    throw new Exception($"Failed to parse command line.: \"{commandLine}\"", ex);
                 }
 
-                // 1個以上の奇数個の'\'とダブルクォートの並びがあれば、('\'の個数 - 1)/2個の'\'とダブルクォートに変換するに変換する。
-                static String ProcessPass2(String s)
-                {
-                    var index = 0;
-                    var result = new StringBuilder();
-                    while (index < s.Length)
-                    {
-                        var c = s[index];
-                        if (c == '"')
-                        {
-                            // ダブルクォートで始まっている場合
-                            throw new FormatException("The double quotes are not encoded.");
-                        }
-                        else if (c == '\\')
-                        {
-                            // バックスラッシュで始まっている場合
-                            var endOfBackSlashSequence = s.IndexOfNot('\\', index);
-                            if (endOfBackSlashSequence < 0)
-                            {
-                                // 残りの文字がすべてバックスラッシュであるか、バックスラッシュの並びの後の文字がダブルクォートではない場合
-                                var length = s.Length - index;
-                                _ = result.Append(s, index, length);
-                                index += length;
-                            }
-                            else if (s[endOfBackSlashSequence] != '"')
-                            {
-                                // 残りの文字がすべてバックスラッシュであるか、バックスラッシュの並びの後の文字がダブルクォートではない場合
-                                var length = endOfBackSlashSequence - index;
-                                _ = result.Append(s, index, length);
-                                index += length;
-                            }
-                            else
-                            {
-                                // 連続するバックスラッシュの後にダブルクォートが見つかった場合
-                                var lengthOfBackslashSequence = endOfBackSlashSequence - index;
-                                if ((lengthOfBackslashSequence & 1u) != 0)
-                                {
-                                    // 連続するバックスラッシュの個数が1以上の奇数である場合
-                                    if (lengthOfBackslashSequence > 1)
-                                        _ = result.Append(s, index, (lengthOfBackslashSequence - 1) >> 1);
-                                    _ = result.Append('"');
-                                    index += lengthOfBackslashSequence + 1;
-                                }
-                                else
-                                {
-                                    // 連続するバックスラッシュの個数が2以上の偶数である場合
-                                    throw new FormatException("Invalid encoding of backslash and double quote.");
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // 上記以外の文字で始まっている場合
-                            _ = result.Append(c);
-                            ++index;
-                        }
-                    }
-
-                    return result.ToString();
-                }
+                return decodedArg;
             }
         }
 
@@ -486,7 +429,7 @@ namespace Palmtree
 
             arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^$1");
             arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
-            if (arg.IndexOfAny(_anyOfTabOrSpace) < 0)
+            if (arg.Length > 0 && arg.IndexOfAny(_delimiterOfCommandParameters) < 0)
                 return arg;
             arg = GetEndsWithBackSlashPattern().Replace(arg, "$1$1");
             return $"^\"{arg}^\"";
@@ -763,6 +706,163 @@ namespace Palmtree
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Int32 SkipCommandLineDelimiter(this String commandLine, Int32 startAt)
+        {
+            var nextPos = commandLine.IndexOfNotAny(_delimiterOfCommandParameters, startAt);
+            return nextPos >= 0 ? nextPos : commandLine.Length;
+        }
+
+        /// <summary>
+        /// コマンドラインを表す単一文字列からコマンドまたはパラメタをひとつだけ切り出します。
+        /// </summary>
+        /// <param name="commandLine">
+        /// コマンドライン文字列を表す <see cref="String"/> オブジェクトです。
+        /// </param>
+        /// <param name="startAt">
+        /// <paramref name="commandLine"/> 上の解析開始位置を表す <see cref="Int32"/> 値です。
+        /// </param>
+        /// <param name="decodedToken">
+        /// 切り出されたコマンドまたはパラメタを表す <see cref="String"/> オブジェクトです。
+        /// </param>
+        /// <returns>
+        /// <para>
+        /// 0 以上ならばそれは <paramref name="commandLine"/> 上のコマンドまたはパラメタの解析終了位置です。この値が指し示す位置は以下の何れかです。
+        /// <list type="bullet">
+        /// <item><paramref name="commandLine"/>上の空白またはTAB文字の位置</item>
+        /// <item><paramref name="commandLine"/> の終端</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// 負数ならばそれはコマンドまたはパラメタの何れもそれ以上ないことを意味します。
+        /// </para>
+        /// </returns>
+        /// <exception cref="FormatException">
+        /// 引用符 (ダブルクォート) が閉じられていません。
+        /// </exception>
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>
+        /// このメソッドは、 <see cref="System.Diagnostics.Process.Start()"/> および Main(string[]) メソッドで実装されているコマンドラインのデコード方法の実装を模倣しています。
+        /// 詳細については以下のソースコードを参照してください。
+        /// <list type="bullet">
+        /// <item>GetNextArgument() in https://github.com/dotnet/runtime/blob/main/src/libraries/System.Diagnostics.Process/src/System/Diagnostics/Process.Unix.cs for Linux</item>
+        /// <item>SegmentCommandLine() in https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Environment.Windows.cs for Windows</item>
+        /// </list>
+        /// </item>
+        /// <item>このメソッドでは、必要最低限のデコードのみをサポートしています。各種シェル (コマンドプロンプトやPowerShellを含む) 固有のデコードが必要な場合には別途行ってください。</item>
+        /// </list>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Int32 ParseCommandLine(this String commandLine, Int32 startAt, out String decodedToken)
+        {
+            if (startAt < 0 || startAt > commandLine.Length)
+                throw new ArgumentOutOfRangeException(nameof(startAt));
+            if (startAt < commandLine.Length && (commandLine[startAt] == ' ' || commandLine[startAt] == '\t'))
+                throw new InvalidOperationException("The character at the start of parsing is a space or a TAB.");
+            var index = startAt;
+            var quoted = false;
+            var token = new StringBuilder();
+            var tokenIsValid = false;
+            while (index < commandLine.Length)
+            {
+                var c = commandLine[index];
+                switch (c)
+                {
+                    case '"':
+                    {
+                        if (quoted && index + 1 < commandLine.Length && commandLine[index + 1] == '"')
+                        {
+                            // 2個の連続したダブルクォートの場合
+                            // 1個のダブルクォートを出力する
+                            _ = token.Append('"');
+                            index += 2;
+                        }
+                        else
+                        {
+                            // 1個のダブルクォートである場合
+                            quoted = !quoted;
+                            ++index;
+                        }
+
+                        tokenIsValid = true;
+                        break;
+                    }
+                    case '\\':
+                    {
+                        // 連続するバックスラッシュの数を数える
+                        var countOfBackslashes = CountSequentialBackslash(commandLine, index + 1) + 1;
+                        if (index + countOfBackslashes >= commandLine.Length || commandLine[index + countOfBackslashes] != '"')
+                        {
+                            // 連続するバックスラッシュの後が文字列の終端あるいはダブルクォート以外の文字である場合
+                            // 連続するバックスラッシュをそのまま出力する
+                            _ = token.Append('\\', countOfBackslashes);
+                            index += countOfBackslashes;
+                        }
+                        else if ((countOfBackslashes & 1) == 0)
+                        {
+                            // 偶数個のバックスラッシュの後がダブルクォートである場合
+                            _ = token.Append('\\', countOfBackslashes >> 1);
+                            index += countOfBackslashes;
+                        }
+                        else
+                        {
+                            // 奇数個のバックスラッシュの後がダブルクォートである場合
+                            _ = token.Append('\\', countOfBackslashes >> 1);
+                            _ = token.Append('\"');
+                            index += countOfBackslashes + 1;
+                        }
+
+                        tokenIsValid = true;
+                        break;
+                    }
+                    case ' ':
+                    case '\t':
+                    {
+                        if (quoted)
+                        {
+                            // ダブルクォート区間内である場合
+                            _ = token.Append(c);
+                            ++index;
+                        }
+                        else
+                        {
+                            // ダブルクォート区間外である場合
+                            decodedToken = token.ToString();
+                            return tokenIsValid ? index : -1;
+                        }
+
+                        tokenIsValid = true;
+                        break;
+                    }
+                    default:
+                    {
+                        _ = token.Append(c);
+                        ++index;
+                        tokenIsValid = true;
+                        break;
+                    }
+                }
+            }
+
+            if (quoted)
+                throw new FormatException("The double quote section of the string is not closed.");
+
+            decodedToken = token.ToString();
+            return tokenIsValid ? index : -1;
+
+            static Int32 CountSequentialBackslash(String s, Int32 offset)
+            {
+                for (var index = offset; index < s.Length; ++index)
+                {
+                    if (s[index] != '\\')
+                        return index - offset;
+                }
+
+                return s.Length - offset;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean CharacterEqual(Char c1, Char c2, Boolean ignoreCase)
             => ignoreCase ?
                 Char.ToUpperInvariant(c1) == Char.ToUpperInvariant(c2)
@@ -775,10 +875,6 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GeneratedRegex(@"(&|<|>|\^|\|)", RegexOptions.Compiled)]
         private static partial Regex GetCharacterEscapedAtCaretPattern();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"(""|\\)", RegexOptions.Compiled)]
-        private static partial Regex GetDoubleQuoteOrBackSlashPattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GeneratedRegex(@"(\\*)""", RegexOptions.Compiled)]

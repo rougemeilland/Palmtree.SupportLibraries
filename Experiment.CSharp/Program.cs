@@ -12,16 +12,18 @@ namespace Experiment.CSharp
     {
         static void Main(string[] args)
         {
-            var x = "\"     \\ \\\"\"".CommandLineArgumentDecode();
+            //for (var index = 0; index < args.Length; ++index)
+            //    Console.WriteLine($"args[{index}]: {args[index].EncodeCommandLineArgument()}");
 
             Test1();
+            Test2();
 
             Console.Beep();
-            Console.WriteLine("\aComplete");
+            Console.WriteLine("Complete");
             _ = Console.ReadLine();
         }
 
-        static void Test1()
+        private static void Test1()
         {
             var testCharacter= new[] {' ', 'a', '\\', '"', '\0' };
             foreach (var c0 in testCharacter)
@@ -58,8 +60,8 @@ namespace Experiment.CSharp
                                             if (c7 != '\0')
                                                 _ = sb.Append(c7);
                                             var s0 = sb.ToString();
-                                            var s1 = s0.CommandLineArgumentEncode();
-                                            var s2 = s1.CommandLineArgumentDecode();
+                                            var s1 = s0.EncodeCommandLineArgument();
+                                            var s2 = s1.DecodeCommandLineArgument();
                                             if (s2 != s0)
                                                 throw new Exception();
                                         }
@@ -70,6 +72,13 @@ namespace Experiment.CSharp
                     }
                 }
             }
+        }
+
+        private static void Test2()
+        {
+            var s = "a\\b\\c xxx 'yy yy' \"zzz  \"";
+            foreach (var item in s.SplitCommandLineArguments())
+                Console.WriteLine(item);
         }
     }
 }
