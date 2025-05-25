@@ -327,8 +327,27 @@ namespace Palmtree
         /// </summary>
         /// <param name="commandLine">コマンドラインの文字列です。</param>
         /// <returns>
-        /// 切り分けられたコマンドラインの列挙子です。
+        /// <para>
+        /// 切り分けられたコマンドラインの要素を表す構造体の列挙子です。
         /// 最初の要素はコマンドのパス名を表し、2番目以降の要素は各コマンドパラメタを表します。
+        /// </para>
+        /// <para>
+        /// 列挙子の要素である構造体の各メンバーは以下の意味を持ちます。
+        /// <list type="bullet">
+        /// <item>
+        /// <term>element</term>
+        /// <description>切り分けられた <paramref name="commandLine"/> の一部です。</description>
+        /// </item>
+        /// <item>
+        /// <term>start</term>
+        /// <description> element に対応する <paramref name="commandLine"/> 上の開始位置です。 </description>
+        /// </item>
+        /// <item>
+        /// <term>end</term>
+        /// <description> element の次の文字に対応する <paramref name="commandLine"/> 上の位置です。 </description>
+        /// </item>
+        /// </list>
+        /// </para>
         /// </returns>
         /// <remarks>
         /// <list type="bullet">
@@ -346,7 +365,7 @@ namespace Palmtree
         /// </item>
         /// </list>
         /// </remarks>
-        public static IEnumerable<String> SplitCommandLineArguments(this String commandLine)
+        public static IEnumerable<(String element, Int32 start, Int32 end)> SplitCommandLineArguments(this String commandLine)
         {
             if (commandLine is null)
                 throw new ArgumentNullException(nameof(commandLine));
@@ -365,16 +384,18 @@ namespace Palmtree
                         break;
                 }
 
-                yield return GetToken(commandLine, ref index);
+                var start = index;
+                index = GetToken(commandLine, index, out var element);
+                if (index < 0)
+                    break;
+                yield return (element, start, index);
             }
 
-            static String GetToken(String commandLine, ref Int32 index)
+            static int GetToken(String commandLine, int startAt, out string token)
             {
-                String decodedArg;
-
                 try
                 {
-                    index = commandLine.ParseCommandLine(index, out decodedArg);
+                    return commandLine.ParseCommandLine(startAt, out token);
                 }
                 catch (FormatException ex)
                 {
@@ -384,8 +405,6 @@ namespace Palmtree
                 {
                     throw new Exception($"Failed to parse command line.: \"{commandLine}\"", ex);
                 }
-
-                return decodedArg;
             }
         }
 
