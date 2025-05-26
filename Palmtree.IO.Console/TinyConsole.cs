@@ -329,7 +329,7 @@ namespace Palmtree.IO.Console
                         throw new InvalidOperationException("Failed to get console screen buffer info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
                     (_, _currentForegrouongColor) = InterOpWindows.FromConsoleAttributeToConsoleColors(consoleInfo.wAttributes);
-                    return _currentBackgrouongColor;
+                    return _currentForegrouongColor;
                 }
                 else
                 {
