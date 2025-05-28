@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -179,6 +180,27 @@ namespace Palmtree.IO
             {
                 _file.Refresh();
             }
+        }
+
+        public FilePath GetCasePreservedPath()
+        {
+            var casePreservedPath = Directory.GetCasePreservedPath();
+            if (!casePreservedPath.Exists)
+                return casePreservedPath.GetFile(Name);
+            var found = casePreservedPath.EnumerateFiles(Name).Take(2).ToArray();
+            if (found.Length != 1)
+                return casePreservedPath.GetFile(Name);
+            return found[0];
+        }
+
+        public String? GetRelativePath(DirectoryPath baseDirectory)
+        {
+            var dir = Directory.GetRelativePath(baseDirectory);
+            return dir is null
+                ? null
+                : dir.Equals(".", StringComparison.Ordinal)
+                ? Name
+                : Path.Combine(dir, Name);
         }
 
         public void MoveTo(FilePath destinationFile, Boolean overwrite = false)

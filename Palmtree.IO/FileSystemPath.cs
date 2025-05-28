@@ -134,7 +134,7 @@ namespace Palmtree.IO
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                Palmtree.Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
+                Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
                 try
                 {
                     _path.CreationTimeUtc = value.ToUniversalTime();
