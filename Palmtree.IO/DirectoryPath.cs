@@ -88,6 +88,9 @@ namespace Palmtree.IO
             }
         }
 
+        public static DirectoryPath CreateTemporaryDirectory()
+            => new(Directory.CreateTempSubdirectory());
+
         public void Delete(Boolean recursive = false)
         {
             _directory.Refresh();
