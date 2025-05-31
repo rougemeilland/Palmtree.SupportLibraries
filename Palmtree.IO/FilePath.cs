@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Palmtree.IO
@@ -9,7 +11,26 @@ namespace Palmtree.IO
     public class FilePath
         : FileSystemPath
     {
+        private static readonly Random _randomNumberGeneratorForTemporaryFileName;
+        private static readonly Char[] _temporaryFileNameMap;
+
         private readonly FileInfo _file;
+
+        static FilePath()
+        {
+            _randomNumberGeneratorForTemporaryFileName = new Random(Environment.TickCount);
+            _temporaryFileNameMap = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v' };
+#if DEBUG
+            // _temporaryFileNameMap の要素が数字あるいは英小文字のみであることの確認
+            Validation.Assert(_temporaryFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z'), "_temporaryFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z')");
+
+            // _temporaryFileNameMap の配列の長さが 32 であることの確認
+            Validation.Assert(_temporaryFileNameMap.Length == 32, "_temporaryFileNameMap.Length == 32");
+
+            // _temporaryFileNameMap の要素が重複していないことの確認
+            Validation.Assert(_temporaryFileNameMap.Distinct().Count() == 32, "_temporaryFileNameMap.Distinct().Count() == 32");
+#endif
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FilePath(String path)
@@ -150,6 +171,124 @@ namespace Palmtree.IO
             finally
             {
                 _file.Refresh();
+            }
+        }
+
+        public static FilePath CreateTemporaryFile(String prefix = "tmp", String suffix = ".tmp")
+        {
+            ArgumentNullException.ThrowIfNull(prefix);
+            ArgumentNullException.ThrowIfNull(suffix);
+
+            var tempFileNameBuilder = new StringBuilder(prefix.Length + 6 + suffix.Length);
+            var getTempDir = Path.GetTempPath();
+            var retryCount = 0;
+            while (true)
+            {
+#if false
+                var randomNumber = 0x12345678;
+#else
+                var randomNumber = _randomNumberGeneratorForTemporaryFileName.Next();
+#endif
+                _ = tempFileNameBuilder.Clear();
+                _ = tempFileNameBuilder.Append(prefix);
+                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 25) & 0x1f]);
+                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 20) & 0x1f]);
+                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 15) & 0x1f]);
+                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 10) & 0x1f]);
+                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 5) & 0x1f]);
+                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 0) & 0x1f]);
+                _ = tempFileNameBuilder.Append(suffix);
+
+                var path = Path.Combine(getTempDir, tempFileNameBuilder.ToString());
+                var tempFilePath =
+                    CreateFilePathInstance(path)
+                    ?? throw new ArgumentException($"Can't create temporary file. Probably parameter 'prefix' or parameter 'suffix' contains invalid characters.: {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"");
+                if (CheckTemporaryFile(tempFilePath.FullName, retryCount))
+                    return tempFilePath;
+                ++retryCount;
+            }
+
+            static Boolean CheckTemporaryFile(String tempFilePath, Int32 retryCount)
+            {
+                if (retryCount < 100)
+                    return TryToCreateTemporaryFile(tempFilePath);
+                var stream = (Stream?)null;
+                try
+                {
+                    stream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+                    return true;
+                }
+                finally
+                {
+                    stream?.Dispose();
+                }
+
+                static Boolean TryToCreateTemporaryFile(String tempFilePath)
+                {
+                    if (OperatingSystem.IsWindows())
+                    {
+                        var normalizedPath = InterOpForWindows.NormalizePath(tempFilePath);
+                        var handle =
+                            InterOpForWindows.CreateFile(
+                                normalizedPath,
+                                InterOpForWindows.AccessMode.GENERIC_WRITE,
+                                InterOpForWindows.FileShare.FILE_SHARE_NONE,
+                                IntPtr.Zero,
+                                InterOpForWindows.CreationMode.CREATE_NEW,
+                                InterOpForWindows.FileAttribute.FILE_ATTRIBUTE_NORMAL,
+                                IntPtr.Zero);
+                        try
+                        {
+                            var errorCode = Marshal.GetLastWin32Error();
+                            if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
+                                return true;
+                            else if (errorCode == InterOpForWindows.ERROR_FILE_EXISTS)
+                                return false;
+                            else
+                                throw new Win32Exception(errorCode);
+                        }
+                        finally
+                        {
+                            if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
+                                _ = InterOpForWindows.CloseHandle(handle);
+                        }
+                    }
+                    else
+                    {
+                        var handle =
+                            InterOpForLinux.Open(
+                                tempFilePath,
+                                InterOpForLinux.OpenMode.O_CREAT | InterOpForLinux.OpenMode.O_EXCL,
+                                InterOpForLinux.Permission.S_IRWXU);
+                        try
+                        {
+                            var errno = Marshal.GetLastSystemError();
+                            if (handle >= 0)
+                                return true;
+                            else if (errno == InterOpForLinux.ERROR_CODE_EEXIST)
+                                return false;
+                            else
+                                throw new IOException(InterOpForLinux.StrError(errno));
+                        }
+                        finally
+                        {
+                            if (handle >= 0)
+                                _ = InterOpForLinux.Close(handle);
+                        }
+                    }
+                }
+            }
+
+            static FilePath? CreateFilePathInstance(String path)
+            {
+                try
+                {
+                    return new FilePath(path);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             }
         }
 
@@ -337,9 +476,6 @@ namespace Palmtree.IO
 
             return new(new FileInfo(directory.FullName));
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static FilePath CreateTemporaryFile() => new(Path.GetTempFileName());
 
         /// <remarks>
         /// The same instance as the object indicated by parameter <paramref name="file"/> must not be used elsewhere.
