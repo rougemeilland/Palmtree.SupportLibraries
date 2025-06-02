@@ -66,12 +66,12 @@ namespace Palmtree.IO
             }
         }
 
-        public TextWriter AppendText()
+        public ISequentialOutputByteStream Append(FileShare share = FileShare.None)
         {
+            _file.Refresh();
             try
             {
-                _file.Refresh();
-                return _file.AppendText();
+                return Append(_file.FullName, share);
             }
             finally
             {
@@ -79,28 +79,32 @@ namespace Palmtree.IO
             }
         }
 
-        public TextWriter AppendText(Encoding encoding)
-        {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+        #region AppendText
 
+        public TextWriter AppendText(FileShare share = FileShare.None) => AppendText(share, Encoding.UTF8);
+
+        public TextWriter AppendText(Encoding encoding) => AppendText(FileShare.None, encoding);
+
+        public TextWriter AppendText(FileShare share, Encoding encoding)
+        {
+            ArgumentNullException.ThrowIfNull(encoding);
+
+            _file.Refresh();
             try
             {
-                _file.Refresh();
-                var outStream = _file.OpenWrite();
-                _ = outStream.Seek(0, SeekOrigin.End);
-                return outStream.AsTextWriter(encoding);
+                return Append(_file.FullName, share).AsTextWriter(encoding);
             }
             finally
             {
                 _file.Refresh();
             }
         }
+
+        #endregion
 
         public void CopyTo(FilePath destinationFile, Boolean overwrite = false)
         {
-            if (destinationFile is null)
-                throw new ArgumentNullException(nameof(destinationFile));
+            ArgumentNullException.ThrowIfNull(destinationFile);
 
             _file.Refresh();
             destinationFile.Refresh();
@@ -119,12 +123,12 @@ namespace Palmtree.IO
             }
         }
 
-        public IRandomOutputByteStream<UInt64> Create()
+        public IRandomOutputByteStream<UInt64> Create(FileShare share = FileShare.None)
         {
             _file.Refresh();
             try
             {
-                return _file.Create().AsOutputByteStream().AsRandomAccess<UInt64>();
+                return OpenWrite(_file.FullName, FileMode.Create, share);
             }
             finally
             {
@@ -132,12 +136,12 @@ namespace Palmtree.IO
             }
         }
 
-        public IRandomOutputByteStream<UInt64> CreateNew()
+        public IRandomOutputByteStream<UInt64> CreateNew(FileShare share = FileShare.None)
         {
             _file.Refresh();
             try
             {
-                return new FileStream(_file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None).AsOutputByteStream().AsRandomAccess<UInt64>();
+                return OpenWrite(_file.FullName, FileMode.CreateNew, share);
             }
             finally
             {
@@ -145,12 +149,20 @@ namespace Palmtree.IO
             }
         }
 
-        public TextWriter CreateNewText()
+        #region CreateNewText
+
+        public TextWriter CreateNewText(FileShare share = FileShare.None) => CreateNewText(share, Encoding.UTF8);
+
+        public TextWriter CreateNewText(Encoding encoding) => CreateNewText(FileShare.None, encoding);
+
+        public TextWriter CreateNewText(FileShare share, Encoding encoding)
         {
+            ArgumentNullException.ThrowIfNull(encoding);
+
             _file.Refresh();
             try
             {
-                return new StreamWriter(new FileStream(_file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None));
+                return OpenWrite(_file.FullName, FileMode.CreateNew, share).AsTextWriter(encoding);
             }
             finally
             {
@@ -158,21 +170,7 @@ namespace Palmtree.IO
             }
         }
 
-        public TextWriter CreateNewText(Encoding encoding)
-        {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-
-            _file.Refresh();
-            try
-            {
-                return new StreamWriter(new FileStream(_file.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None), encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
+        #endregion
 
         public static FilePath CreateTemporaryFile(String prefix = "tmp", String suffix = ".tmp")
         {
@@ -292,12 +290,20 @@ namespace Palmtree.IO
             }
         }
 
-        public TextWriter CreateText()
+        #region CreateText
+
+        public TextWriter CreateText(FileShare share = FileShare.None) => CreateText(share, Encoding.UTF8);
+
+        public TextWriter CreateText(Encoding encoding) => CreateText(FileShare.None, encoding);
+
+        public TextWriter CreateText(FileShare share, Encoding encoding)
         {
+            ArgumentNullException.ThrowIfNull(encoding);
+
             _file.Refresh();
             try
             {
-                return _file.CreateText();
+                return OpenWrite(_file.FullName, FileMode.Create, share).AsTextWriter(encoding);
             }
             finally
             {
@@ -305,21 +311,7 @@ namespace Palmtree.IO
             }
         }
 
-        public TextWriter CreateText(Encoding encoding)
-        {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-
-            _file.Refresh();
-            try
-            {
-                return _file.Create().AsTextWriter(encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
+        #endregion
 
         public FilePath GetCasePreservedPath()
         {
@@ -334,6 +326,8 @@ namespace Palmtree.IO
 
         public String? GetRelativePath(DirectoryPath baseDirectory)
         {
+            ArgumentNullException.ThrowIfNull(baseDirectory);
+
             var dir = Directory.GetRelativePath(baseDirectory);
             return dir is null
                 ? null
@@ -344,8 +338,7 @@ namespace Palmtree.IO
 
         public void MoveTo(FilePath destinationFile, Boolean overwrite = false)
         {
-            if (destinationFile is null)
-                throw new ArgumentNullException(nameof(destinationFile));
+            ArgumentNullException.ThrowIfNull(destinationFile);
 
             _file.Refresh();
             destinationFile.Refresh();
@@ -364,12 +357,12 @@ namespace Palmtree.IO
             }
         }
 
-        public IRandomInputByteStream<UInt64> Open(FileMode mode, FileAccess access, FileShare share)
+        public IRandomInputByteStream<UInt64> OpenRead(FileShare share = FileShare.None)
         {
             _file.Refresh();
             try
             {
-                return _file.Open(mode, access, share).AsInputByteStream().AsRandomAccess<UInt64>();
+                return OpenRead(_file.FullName, share);
             }
             finally
             {
@@ -377,12 +370,20 @@ namespace Palmtree.IO
             }
         }
 
-        public IRandomInputByteStream<UInt64> OpenRead()
+        #region OpenText
+
+        public TextReader OpenText(FileShare share = FileShare.None) => OpenText(share, Encoding.UTF8);
+
+        public TextReader OpenText(Encoding encoding) => OpenText(FileShare.None, encoding);
+
+        public TextReader OpenText(FileShare share, Encoding encoding)
         {
+            ArgumentNullException.ThrowIfNull(encoding);
+
             _file.Refresh();
             try
             {
-                return _file.OpenRead().AsInputByteStream().AsRandomAccess<UInt64>();
+                return OpenRead(_file.FullName, share).AsTextReader(encoding);
             }
             finally
             {
@@ -390,41 +391,14 @@ namespace Palmtree.IO
             }
         }
 
-        public TextReader OpenText()
+        #endregion
+
+        public IRandomOutputByteStream<UInt64> OpenWrite(FileShare share = FileShare.None)
         {
             _file.Refresh();
             try
             {
-                return _file.OpenText();
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
-
-        public TextReader OpenText(Encoding encoding)
-        {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-
-            _file.Refresh();
-            try
-            {
-                return _file.OpenRead().AsTextReader(encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
-
-        public IRandomOutputByteStream<UInt64> OpenWrite()
-        {
-            _file.Refresh();
-            try
-            {
-                return _file.OpenWrite().AsOutputByteStream().AsRandomAccess<UInt64>();
+                return OpenWrite(_file.FullName, FileMode.OpenOrCreate, share);
             }
             finally
             {
@@ -496,6 +470,79 @@ namespace Palmtree.IO
             catch (Exception ex)
             {
                 throw new ArgumentException($"A character string that cannot be used as a file path name was specified. : \"{path}\"", nameof(path), ex);
+            }
+        }
+
+        private static ISequentialOutputByteStream Append(String fullPath, FileShare share)
+        {
+            var outStream = (Stream?)null;
+            var sequentialOutStream = (ISequentialOutputByteStream?)null;
+            var success = false;
+            try
+            {
+                outStream = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.Write, share);
+                _ = outStream.Seek(0, SeekOrigin.End);
+                sequentialOutStream = outStream.AsOutputByteStream();
+                success = true;
+                return sequentialOutStream;
+            }
+            finally
+            {
+                if (!success)
+                {
+                    sequentialOutStream?.Dispose();
+                    outStream?.Dispose();
+                }
+            }
+        }
+
+        private static IRandomInputByteStream<UInt64> OpenRead(String fullPath, FileShare share)
+        {
+            var inStream = (Stream?)null;
+            var sequentialInStream = (ISequentialInputByteStream?)null;
+            var randomInStream = (IRandomInputByteStream<UInt64>?)null;
+            var success = false;
+            try
+            {
+                inStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, share);
+                sequentialInStream = inStream.AsInputByteStream();
+                randomInStream = sequentialInStream.AsRandomAccess<UInt64>();
+                success = true;
+                return randomInStream;
+            }
+            finally
+            {
+                if (!success)
+                {
+                    randomInStream?.Dispose();
+                    sequentialInStream?.Dispose();
+                    inStream?.Dispose();
+                }
+            }
+        }
+
+        private static IRandomOutputByteStream<UInt64> OpenWrite(String fullPath, FileMode mode, FileShare share)
+        {
+            var outStream = (Stream?)null;
+            var sequentialOutStream = (ISequentialOutputByteStream?)null;
+            var randomOutStream = (IRandomOutputByteStream<UInt64>?)null;
+            var success = false;
+            try
+            {
+                outStream = new FileStream(fullPath, mode, FileAccess.Write, share);
+                sequentialOutStream = outStream.AsOutputByteStream();
+                randomOutStream = sequentialOutStream.AsRandomAccess<UInt64>();
+                success = true;
+                return randomOutStream;
+            }
+            finally
+            {
+                if (!success)
+                {
+                    randomOutStream?.Dispose();
+                    sequentialOutStream?.Dispose();
+                    outStream?.Dispose();
+                }
             }
         }
     }

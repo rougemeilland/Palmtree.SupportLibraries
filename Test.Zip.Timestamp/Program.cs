@@ -9,7 +9,6 @@ namespace Test.Zip.Timestamp
     {
         static void Main(string[] args)
         {
-            // TODO: エントリのタイムスタンプのテストコードを書く。
             // 組み合わせ
             // ・LastWrite/LastAccess/Creation
             // ・Utc/Local

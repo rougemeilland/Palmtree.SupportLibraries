@@ -28,7 +28,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var success = false;
             try
             {
-                stream = zipArchiveFile.Open(FileMode.Open, FileAccess.Read, FileShare.None).WithCache();
+                stream = zipArchiveFile.OpenRead(FileShare.None).WithCache();
                 var zipStream =
                     new SingleVolumeZipInputStream(
                         stream.Length,
