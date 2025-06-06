@@ -194,10 +194,8 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "change_scroll_region". If null, this terminal information does not support the capability "change_scroll_region".</returns>
         public String? ChangeScrollRegion(Int32 lineTop, Int32 lineBottom)
         {
-            if (lineTop < 0)
-                throw new ArgumentOutOfRangeException(nameof(lineTop));
-            if (lineBottom < 0)
-                throw new ArgumentOutOfRangeException(nameof(lineBottom));
+            ArgumentOutOfRangeException.ThrowIfNegative(lineTop);
+            ArgumentOutOfRangeException.ThrowIfNegative(lineBottom);
             if (lineTop > lineBottom)
                 throw new ArgumentException($"Must be {nameof(lineTop)} <= {lineBottom}");
 
@@ -213,8 +211,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "char_set_names". If null, this terminal information does not support the capability "char_set_names".</returns>
         public String? CharSetNames(Int32 charSetNumber)
         {
-            if (charSetNumber < 0)
-                throw new ArgumentOutOfRangeException(nameof(charSetNumber));
+            ArgumentOutOfRangeException.ThrowIfNegative(charSetNumber);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.CharSetNames, charSetNumber);
         }
@@ -337,8 +334,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "column_address". If null, this terminal information does not support the capability "column_address".</returns>
         public String? ColumnAddress(Int32 column)
         {
-            if (column < 0)
-                throw new ArgumentOutOfRangeException(nameof(column));
+            ArgumentOutOfRangeException.ThrowIfNegative(column);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ColumnAddress, column);
         }
@@ -427,10 +423,8 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "cursor_address". If null, this terminal information does not support the capability "cursor_address".</returns>
         public String? CursorAddress(Int32 line, Int32 column)
         {
-            if (line < 0)
-                throw new ArgumentOutOfRangeException(nameof(line));
-            if (column < 0)
-                throw new ArgumentOutOfRangeException(nameof(column));
+            ArgumentOutOfRangeException.ThrowIfNegative(line);
+            ArgumentOutOfRangeException.ThrowIfNegative(column);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.CursorAddress, line, column);
         }
@@ -910,8 +904,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "erase_chars". If null, this terminal information does not support the capability "erase_chars".</returns>
         public String? EraseChars(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.EraseChars, n);
         }
@@ -4263,8 +4256,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_dch". If null, this terminal information does not support the capability "parm_dch".</returns>
         public String? ParmDch(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmDch, n);
         }
@@ -4283,8 +4275,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_delete_line". If null, this terminal information does not support the capability "parm_delete_line".</returns>
         public String? ParmDeleteLine(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmDeleteLine, n);
         }
@@ -4300,8 +4291,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_down_cursor". If null, this terminal information does not support the capability "parm_down_cursor".</returns>
         public String? ParmDownCursor(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmDownCursor, n);
         }
@@ -4321,8 +4311,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_ich". If null, this terminal information does not support the capability "parm_ich".</returns>
         public String? ParmIch(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmIch, n);
         }
@@ -4337,8 +4326,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_index". If null, this terminal information does not support the capability "parm_index".</returns>
         public String? ParmIndex(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmIndex, n);
         }
@@ -4357,8 +4345,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_insert_line". If null, this terminal information does not support the capability "parm_insert_line".</returns>
         public String? ParmInsertLine(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmInsertLine, n);
         }
@@ -4374,8 +4361,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_left_cursor". If null, this terminal information does not support the capability "parm_left_cursor".</returns>
         public String? ParmLeftCursor(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmLeftCursor, n);
         }
@@ -4391,8 +4377,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_right_cursor". If null, this terminal information does not support the capability "parm_right_cursor".</returns>
         public String? ParmRightCursor(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmRightCursor, n);
         }
@@ -4406,8 +4391,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_rindex". If null, this terminal information does not support the capability "parm_rindex".</returns>
         public String? ParmRindex(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmRindex, n);
         }
@@ -4423,8 +4407,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "parm_up_cursor". If null, this terminal information does not support the capability "parm_up_cursor".</returns>
         public String? ParmUpCursor(Int32 n)
         {
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ParmUpCursor, n);
         }
@@ -4439,8 +4422,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "pkey_local". If null, this terminal information does not support the capability "pkey_local".</returns>
         public String? PkeyLocal(Int32 pKey, String executeString)
         {
-            if (pKey < 0)
-                throw new ArgumentOutOfRangeException(nameof(pKey));
+            ArgumentOutOfRangeException.ThrowIfNegative(pKey);
             if (String.IsNullOrEmpty(executeString))
                 throw new ArgumentException($"'{nameof(executeString)}' must not be null or empty.", nameof(executeString));
 
@@ -4458,8 +4440,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "pkey_xmit". If null, this terminal information does not support the capability "pkey_xmit".</returns>
         public String? PkeyXmit(Int32 pKey, String transmitString)
         {
-            if (pKey < 0)
-                throw new ArgumentOutOfRangeException(nameof(pKey));
+            ArgumentOutOfRangeException.ThrowIfNegative(pKey);
             if (String.IsNullOrEmpty(transmitString))
                 throw new ArgumentException($"'{nameof(transmitString)}' must not be null or empty.", nameof(transmitString));
 
@@ -4476,8 +4457,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "plab_norm". If null, this terminal information does not support the capability "plab_norm".</returns>
         public String? PlabNorm(Int32 labelNumber, String labelString)
         {
-            if (labelNumber < 0)
-                throw new ArgumentOutOfRangeException(nameof(labelNumber));
+            ArgumentOutOfRangeException.ThrowIfNegative(labelNumber);
             if (String.IsNullOrEmpty(labelString))
                 throw new ArgumentException($"'{nameof(labelString)}' must not be null or empty.", nameof(labelString));
 
@@ -4551,8 +4531,7 @@ namespace Palmtree.IO.Console
         {
             if (!c.IsBetween('\0', '\u007f'))
                 throw new ArgumentOutOfRangeException(nameof(c));
-            if (n < 0)
-                throw new ArgumentOutOfRangeException(nameof(n));
+            ArgumentOutOfRangeException.ThrowIfNegative(n);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.RepeatChar, c, n);
         }
@@ -4701,8 +4680,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "row_address". If null, this terminal information does not support the capability "row_address".</returns>
         public String? RowAddress(Int32 row)
         {
-            if (row < 0)
-                throw new ArgumentOutOfRangeException(nameof(row));
+            ArgumentOutOfRangeException.ThrowIfNegative(row);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.RowAddress, row);
         }
@@ -4793,8 +4771,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "select_char_set". If null, this terminal information does not support the capability "select_char_set".</returns>
         public String? SelectCharSet(Int32 charSet)
         {
-            if (charSet < 0)
-                throw new ArgumentOutOfRangeException(nameof(charSet));
+            ArgumentOutOfRangeException.ThrowIfNegative(charSet);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.SelectCharSet, charSet);
         }
@@ -5045,10 +5022,8 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "set_lr_margin". If null, this terminal information does not support the capability "set_lr_margin".</returns>
         public String? SetLrMargin(Int32 leftMargin, Int32 rightMargin)
         {
-            if (leftMargin < 0)
-                throw new ArgumentOutOfRangeException(nameof(leftMargin));
-            if (rightMargin < 0)
-                throw new ArgumentOutOfRangeException(nameof(rightMargin));
+            ArgumentOutOfRangeException.ThrowIfNegative(leftMargin);
+            ArgumentOutOfRangeException.ThrowIfNegative(rightMargin);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.SetLrMargin, leftMargin, rightMargin);
         }
@@ -5230,8 +5205,7 @@ namespace Palmtree.IO.Console
         /// <returns>If not null it is the value of the capability "to_status_line". If null, this terminal information does not support the capability "to_status_line".</returns>
         public String? ToStatusLine(Int32 column)
         {
-            if (column < 0)
-                throw new ArgumentOutOfRangeException(nameof(column));
+            ArgumentOutOfRangeException.ThrowIfNegative(column);
 
             return _database.GetStringCapabilityValue(TermInfoStringCapabilities.ToStatusLine, column);
         }
@@ -5462,8 +5436,7 @@ namespace Palmtree.IO.Console
         /// </remarks>
         public String? SetTitle(String title)
         {
-            if (title is null)
-                throw new ArgumentNullException(nameof(title));
+            ArgumentNullException.ThrowIfNull(title);
             if (title.Any(c => c is < '\u0020' or '\u007f'))
                 throw new ArgumentException($"{nameof(title)} contains characters that cannot be displayed.");
 
@@ -5533,10 +5506,8 @@ namespace Palmtree.IO.Console
         /// </param>
         public void WriteTerminalInfo(TextWriter writer, Int32 indent = 0)
         {
-            if (writer is null)
-                throw new ArgumentNullException(nameof(writer));
-            if (indent < 0)
-                throw new ArgumentOutOfRangeException(nameof(indent));
+            ArgumentNullException.ThrowIfNull(writer);
+            ArgumentOutOfRangeException.ThrowIfNegative(indent);
 
             _database.WriteTerminalnfo(writer, indent);
         }
@@ -5552,8 +5523,7 @@ namespace Palmtree.IO.Console
         /// </returns>
         public String GetTerminalnfo(Int32 indent = 0)
         {
-            if (indent < 0)
-                throw new ArgumentOutOfRangeException(nameof(indent));
+            ArgumentOutOfRangeException.ThrowIfNegative(indent);
 
             var buffer = new StringBuilder();
             using var writer = new StringWriter(buffer);
@@ -5572,8 +5542,7 @@ namespace Palmtree.IO.Console
         /// </returns>
         public TextReader GetTerminalInfoReader(Int32 indent = 0)
         {
-            if (indent < 0)
-                throw new ArgumentOutOfRangeException(nameof(indent));
+            ArgumentOutOfRangeException.ThrowIfNegative(indent);
 
             var pipe = new InProcessPipe();
             _ = Task.Run(() =>
@@ -5600,10 +5569,8 @@ namespace Palmtree.IO.Console
         /// </param>
         public static void WriteAllTerminalInfos(TextWriter writer, Int32 indent = 0, Boolean includeUniqueCapabilities = false)
         {
-            if (writer is null)
-                throw new ArgumentNullException(nameof(writer));
-            if (indent < 0)
-                throw new ArgumentOutOfRangeException(nameof(indent));
+            ArgumentNullException.ThrowIfNull(writer);
+            ArgumentOutOfRangeException.ThrowIfNegative(indent);
 
             TerminalInfoDatabase.WriteAllTerminalInfos(writer, indent, includeUniqueCapabilities);
         }
@@ -5623,8 +5590,7 @@ namespace Palmtree.IO.Console
         /// </returns>
         public static String GetAllTerminalnfos(Int32 indent = 0, Boolean includeUniqueCapabilities = false)
         {
-            if (indent < 0)
-                throw new ArgumentOutOfRangeException(nameof(indent));
+            ArgumentOutOfRangeException.ThrowIfNegative(indent);
 
             var buffer = new StringBuilder();
             using var writer = new StringWriter(buffer);
@@ -5647,8 +5613,7 @@ namespace Palmtree.IO.Console
         /// </returns>
         public static TextReader GetAllTerminalInfosReader(Int32 indent = 0, Boolean includeUniqueCapabilities = false)
         {
-            if (indent < 0)
-                throw new ArgumentOutOfRangeException(nameof(indent));
+            ArgumentOutOfRangeException.ThrowIfNegative(indent);
 
             var pipe = new InProcessPipe();
             _ = Task.Run(() =>
@@ -5723,8 +5688,7 @@ namespace Palmtree.IO.Console
         /// </returns>
         public static TerminalInfo ReadTerminalInfo(FileInfo termInfoFile, Boolean includeUniqueCapabilities = false)
         {
-            if (termInfoFile is null)
-                throw new ArgumentNullException(nameof(termInfoFile));
+            ArgumentNullException.ThrowIfNull(termInfoFile);
 
             return new(TerminalInfoDatabase.ReadTerminalDatabale(termInfoFile, includeUniqueCapabilities));
         }
@@ -5744,8 +5708,7 @@ namespace Palmtree.IO.Console
         /// </returns>
         public static TerminalInfo ReadTerminalInfo(FilePath termInfoFile, Boolean includeUniqueCapabilities = false)
         {
-            if (termInfoFile is null)
-                throw new ArgumentNullException(nameof(termInfoFile));
+            ArgumentNullException.ThrowIfNull(termInfoFile);
 
             return new(TerminalInfoDatabase.ReadTerminalDatabale(termInfoFile, includeUniqueCapabilities));
         }

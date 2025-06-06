@@ -39,7 +39,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt32 rawSize, UInt32 rawPackedSize) InternalSetValues(UInt64 size, UInt64 packedSize)
         {
-            Validation.Assert(_headerType == ZipEntryHeaderType.LocalHeader, "_headerType == ZipEntryHeaderType.LocalHeader");
+            Validation.Assert(_headerType == ZipEntryHeaderType.LocalHeader);
 
             // 4.5.3 -Zip64 Extended Information Extra Field (0x0001) in APPNOTE:
             //   This entry in the Local header MUST include BOTH original and compressed file size fields.
@@ -64,7 +64,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt32 rawSize, UInt32 rawPackedSize, UInt32 rawRelatiiveHeaderOffset, UInt16 rawDiskStartNumber) InternalSetValues(UInt64 size, UInt64 packedSize, UInt64 relatiiveHeaderOffset, UInt32 diskStartNumber)
         {
-            Validation.Assert(_headerType == ZipEntryHeaderType.CentralDirectoryHeader, "_headerType == ZipEntryHeaderType.CentralDirectoryHeader");
+            Validation.Assert(_headerType == ZipEntryHeaderType.CentralDirectoryHeader);
             var builder = new ByteArrayBuilder(sizeof(UInt64) + sizeof(UInt64) + sizeof(UInt64) + sizeof(UInt32));
             var rawSize = SetUInt64Value(size, value => builder.AppendUInt64LE(size));
             var rawPackedSize = SetUInt64Value(packedSize, value => builder.AppendUInt64LE(packedSize));
@@ -76,7 +76,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt64 size, UInt64 packedSize) InternalGetValues(UInt32 rawSize, UInt32 rawPackedSize)
         {
-            Validation.Assert(_headerType == ZipEntryHeaderType.LocalHeader, "_headerType == ZipEntryHeaderType.LocalHeader");
+            Validation.Assert(_headerType == ZipEntryHeaderType.LocalHeader);
             try
             {
                 var reader = new ByteArrayReader(_buffer);
@@ -94,7 +94,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         protected (UInt64 size, UInt64 packedSize, UInt64 relatiiveHeaderOffset, UInt32 diskStartNumber) InternalGetValues(UInt32 rawSize, UInt32 rawPackedSize, UInt32 rawRelatiiveHeaderOffset, UInt16 rawDiskStartNumber)
         {
-            Validation.Assert(_headerType == ZipEntryHeaderType.CentralDirectoryHeader, "_headerType == ZipEntryHeaderType.CentralDirectoryHeader");
+            Validation.Assert(_headerType == ZipEntryHeaderType.CentralDirectoryHeader);
             try
             {
                 var reader = new ByteArrayReader(_buffer);

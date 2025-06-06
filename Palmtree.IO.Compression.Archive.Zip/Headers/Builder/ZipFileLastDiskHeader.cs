@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
-    internal class ZipFileLastDiskHeader
+    internal sealed class ZipFileLastDiskHeader
     {
         private readonly IZipFileWriterParameter _zipWriterParameter;
         private readonly ZipStreamPosition _startOfCentralDirectoryHeaders;

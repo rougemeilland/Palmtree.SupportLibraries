@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using System.Text;
 using Palmtree.Numerics;
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class ExpansionNumberParameter
+    internal sealed class ExpansionNumberParameter
         : ExpansionParameter
     {
         private readonly Int32 _value;
@@ -85,13 +84,6 @@ namespace Palmtree.IO.Console.StringExpansion
                             width.Length > 0 && width[0] == '0'),
                     _ => throw new ExpansionBadArgumentExceptionException($"Not supported type spec.: \"{typeSpec}\""),
                 };
-        }
-
-        private static String FromByteToString(Byte data)
-        {
-            Span<Byte> buffer = stackalloc Byte[1];
-            buffer[0] = data;
-            return Encoding.ASCII.GetString(buffer);
         }
 
         private static String Format(String sign, String valueText, Int32 width, Int32 precision, Boolean zeroPadding)

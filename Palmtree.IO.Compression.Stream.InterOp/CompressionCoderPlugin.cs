@@ -13,7 +13,7 @@ namespace Palmtree.IO.Compression.Stream
             Encoder
         }
 
-        private class PluginsCollection
+        private sealed class PluginsCollection
             : IEnumerable<ICompressionCoder>
         {
             private readonly IEnumerable<ICompressionCoder> _plugins;
@@ -28,7 +28,7 @@ namespace Palmtree.IO.Compression.Stream
 
         public static event EventHandler<EventArgs>? PluginsUpdated;
 
-        private static readonly IDictionary<(CompressionMethodId, CoderType), ICompressionCoder> _indexedCoders;
+        private static readonly Dictionary<(CompressionMethodId, CoderType), ICompressionCoder> _indexedCoders;
         private static readonly List<ICompressionCoder> _coders;
 
         static CompressionCoderPlugin()

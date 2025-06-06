@@ -8,8 +8,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTimeOffset ToDateTimeOffset(this DateTime dateTime)
         {
-            if (dateTime.Kind.IsNoneOf(DateTimeKind.Utc, DateTimeKind.Local))
-                throw new ArgumentException($"The value of the {nameof(dateTime.Kind)} property of {nameof(dateTime)} must not be 'DateTimeKind.Unspecified'.");
+            if (dateTime.Kind is not DateTimeKind.Utc and not DateTimeKind.Local)
+                throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(dateTime)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(dateTime)}.{nameof(DateTime.Kind)}={dateTime.Kind}", nameof(dateTime));
 
             return new DateTimeOffset(dateTime).ToUniversalTime();
         }
@@ -20,7 +20,7 @@ namespace Palmtree
             {
                 DateTimeKind.Utc => dateTimeOffset.UtcDateTime,
                 DateTimeKind.Local => new DateTime(dateTimeOffset.ToLocalTime().Ticks, DateTimeKind.Local),
-                _ => throw new ArgumentException($"The value of the {nameof(kind)} must not be 'DateTimeKind.Unspecified'."),
+                _ => throw new ArgumentException($"The value of the '{nameof(kind)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(kind)}={kind}", nameof(kind)),
             };
 
         public static DateTime? TryToDateTime(this (UInt16 dosDate, UInt16 dosTime) dosDateTimeValue)
@@ -147,7 +147,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static (UInt16 dosDate, UInt16 dosTime) FromDateTimeToDosDateTime(this DateTime dateTime, String nameOfParameter)
         {
-            Validation.Assert(dateTime.Kind == DateTimeKind.Local, "dateTime.Kind == DateTimeKind.Local");
+            Validation.Assert(dateTime.Kind == DateTimeKind.Local);
 
             // 1980年から2107年までの間ではない場合はエラー
             if (!dateTime.Year.IsBetween(1980, 1980 + (Int32)unchecked(((UInt32)(-1) << 25) >> 25)))

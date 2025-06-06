@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class ExpansionStringSyntaxErrorExceptionException
+    internal sealed class ExpansionStringSyntaxErrorExceptionException
         : Exception
     {
         public ExpansionStringSyntaxErrorExceptionException(String message)

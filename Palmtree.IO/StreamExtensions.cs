@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -26,8 +27,7 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream AsInputByteStream(this Stream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new ArgumentException($"The stream specified by parameter {nameof(sourceStream)} is not readable.", nameof(sourceStream));
 
@@ -43,8 +43,7 @@ namespace Palmtree.IO
 
         public static ISequentialOutputByteStream AsOutputByteStream(this Stream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new ArgumentException($"The stream specified by parameter {nameof(destinationStream)} is not writable.", nameof(destinationStream));
 
@@ -59,16 +58,14 @@ namespace Palmtree.IO
 
         public static Stream AsDotNetStream(this ISequentialInputByteStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new DotNetStreamBySequentialInputByteStream(sourceStream, leaveOpen);
         }
 
         public static Stream AsDotNetStream(this ISequentialOutputByteStream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new DotNetStreamBySequentialOutputByteStream(destinationStream, leaveOpen);
         }
@@ -79,40 +76,35 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream AsByteStream(this IEnumerable<Byte> baseSequence)
         {
-            if (baseSequence is null)
-                throw new ArgumentNullException(nameof(baseSequence));
+            ArgumentNullException.ThrowIfNull(baseSequence);
 
             return new SequentialInputByteStreamBySequence(baseSequence);
         }
 
         public static ISequentialInputByteStream AsByteStream(this IInputBitStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new SequentialInputByteStreamByBitStream(sourceStream, BitPackingDirection.MsbToLsb, leaveOpen);
         }
 
         public static ISequentialInputByteStream AsByteStream(this IInputBitStream sourceStream, BitPackingDirection bitPackingDirection, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new SequentialInputByteStreamByBitStream(sourceStream, bitPackingDirection, leaveOpen);
         }
 
         public static ISequentialOutputByteStream AsByteStream(this IOutputBitStream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new SequentialOutputByteStreamByBitStream(destinationStream, BitPackingDirection.MsbToLsb, leaveOpen);
         }
 
         public static ISequentialOutputByteStream AsByteStream(this IOutputBitStream destinationStream, BitPackingDirection bitPackingDirection, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new SequentialOutputByteStreamByBitStream(destinationStream, bitPackingDirection, leaveOpen);
         }
@@ -123,40 +115,35 @@ namespace Palmtree.IO
 
         public static IInputBitStream AsBitStream(this ISequentialInputByteStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new SequentialInputBitStreamByByteStream(sourceStream, BitPackingDirection.Default, leaveOpen);
         }
 
         public static IInputBitStream AsBitStream(this ISequentialInputByteStream sourceStream, BitPackingDirection bitPackingDirection, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new SequentialInputBitStreamByByteStream(sourceStream, bitPackingDirection, leaveOpen);
         }
 
         public static IInputBitStream AsBitStream(this IEnumerable<Byte> baseSequence, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (baseSequence is null)
-                throw new ArgumentNullException(nameof(baseSequence));
+            ArgumentNullException.ThrowIfNull(baseSequence);
 
             return new SequentialInputBitStreamBySequence(baseSequence, bitPackingDirection);
         }
 
         public static IOutputBitStream AsBitStream(this ISequentialOutputByteStream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new SequentialOutputBitStreamByByteStream(destinationStream, BitPackingDirection.Default, leaveOpen);
         }
 
         public static IOutputBitStream AsBitStream(this ISequentialOutputByteStream destinationStream, BitPackingDirection bitPackingDirection, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new SequentialOutputBitStreamByByteStream(destinationStream, bitPackingDirection, leaveOpen);
         }
@@ -167,16 +154,14 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream AsSequentialAccess<POSITION_T>(this IRandomInputByteStream<POSITION_T> sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream;
         }
 
         public static ISequentialOutputByteStream AsSequentialAccess<POSITION_T>(this IRandomOutputByteStream<POSITION_T> destinationStream)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return destinationStream;
         }
@@ -209,8 +194,7 @@ namespace Palmtree.IO
 
         public static TextReader AsTextReader(this Stream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -219,20 +203,17 @@ namespace Palmtree.IO
 
         public static TextReader AsTextReader(this Stream sourceStream, Encoding encoding, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamReader(sourceStream, encoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this Stream sourceStream, Boolean detectEncodingFromByteOrderMarks, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -241,144 +222,116 @@ namespace Palmtree.IO
 
         public static TextReader AsTextReader(this Stream sourceStream, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamReader(sourceStream, encoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this Stream sourceStream, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream, _defaultTextStreamEncoding, true, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this Stream sourceStream, Encoding encoding, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream, encoding, false, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this Stream sourceStream, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream, _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this Stream sourceStream, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream, encoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamReader(sourceStream.AsDotNetStream(), encoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Boolean detectEncodingFromByteOrderMarks, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamReader(sourceStream.AsDotNetStream(), encoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, true, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream.AsDotNetStream(), encoding, true, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamReader(sourceStream.AsDotNetStream(), encoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
         }
@@ -389,8 +342,7 @@ namespace Palmtree.IO
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -399,46 +351,38 @@ namespace Palmtree.IO
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Encoding encoding, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamWriter(destinationStream, encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream, _defaultTextStreamEncoding, bufferSize, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Encoding encoding, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream, encoding, bufferSize, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -447,130 +391,114 @@ namespace Palmtree.IO
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Encoding encoding, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamWriter(destinationStream, encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Int32 bufferSize, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream, _defaultTextStreamEncoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this Stream destinationStream, Encoding encoding, Int32 bufferSize, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream, encoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, bufferSize, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Int32 bufferSize, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), encoding, bufferSize, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Int32 bufferSize, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Int32 bufferSize, Boolean autoFlush, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
             return new StreamWriter(destinationStream.AsDotNetStream(), encoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
         }
 
         #endregion
 
+        public static IValidationLogger AsValidationListener(this TextWriter writer, Int32 indentSize = 4, Boolean leaveOpen = false)
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+            ArgumentOutOfRangeException.ThrowIfNegative(indentSize);
+
+            return new TextWriterValidationLogger(writer, indentSize, leaveOpen);
+        }
+
         #region WithPartial
 
         public static ISequentialInputByteStream WithPartial(this ISequentialInputByteStream sourceStream, UInt64 size, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return
                 sourceStream switch
@@ -584,8 +512,7 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream WithPartial(this ISequentialInputByteStream sourceStream, UInt64 offset, UInt64? size, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return
                 sourceStream switch
@@ -600,8 +527,7 @@ namespace Palmtree.IO
         public static IRandomInputByteStream<UInt64> WithPartial<BASE_POSITION_T>(this IRandomInputByteStream<BASE_POSITION_T> sourceStream, UInt64? size, Boolean leaveOpen = false)
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new PartialRandomInputStream<UInt64, BASE_POSITION_T>(sourceStream, size, 0UL, leaveOpen);
         }
@@ -609,8 +535,7 @@ namespace Palmtree.IO
         public static IRandomInputByteStream<UInt64> WithPartial<BASE_POSITION_T>(this IRandomInputByteStream<BASE_POSITION_T> sourceStream, BASE_POSITION_T offset, UInt64? size, Boolean leaveOpen = false)
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new PartialRandomInputStream<UInt64, BASE_POSITION_T>(sourceStream, offset, size, 0UL, leaveOpen);
         }
@@ -619,8 +544,7 @@ namespace Palmtree.IO
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new PartialRandomInputStream<POSITION_T, BASE_POSITION_T>(sourceStream, size, zeroPositionValue, leaveOpen);
         }
@@ -629,16 +553,14 @@ namespace Palmtree.IO
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new PartialRandomInputStream<POSITION_T, BASE_POSITION_T>(sourceStream, offset, size, zeroPositionValue, leaveOpen);
         }
 
         public static ISequentialOutputByteStream WithPartial(this ISequentialOutputByteStream destinationStream, UInt64 size, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return
                 destinationStream switch
@@ -652,8 +574,7 @@ namespace Palmtree.IO
 
         public static ISequentialOutputByteStream WithPartial(this ISequentialOutputByteStream destinationStream, UInt64 offset, UInt64? size, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return
                 destinationStream switch
@@ -668,8 +589,7 @@ namespace Palmtree.IO
         public static IRandomOutputByteStream<UInt64> WithPartial<BASE_POSITION_T>(this IRandomOutputByteStream<BASE_POSITION_T> destinationStream, UInt64 size, Boolean leaveOpen = false)
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new PartialRandomOutputStream<UInt64, BASE_POSITION_T>(destinationStream, size, 0UL, leaveOpen);
         }
@@ -677,8 +597,7 @@ namespace Palmtree.IO
         public static IRandomOutputByteStream<UInt64> WithPartial<BASE_POSITION_T>(this IRandomOutputByteStream<BASE_POSITION_T> destinationStream, BASE_POSITION_T offset, UInt64? size, Boolean leaveOpen = false)
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new PartialRandomOutputStream<UInt64, BASE_POSITION_T>(destinationStream, offset, size, 0UL, leaveOpen);
         }
@@ -687,8 +606,7 @@ namespace Palmtree.IO
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new PartialRandomOutputStream<POSITION_T, BASE_POSITION_T>(destinationStream, size, zeroPositionValue, leaveOpen);
         }
@@ -697,8 +615,7 @@ namespace Palmtree.IO
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
             where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new PartialRandomOutputStream<POSITION_T, BASE_POSITION_T>(destinationStream, offset, size, zeroPositionValue, leaveOpen);
         }
@@ -709,8 +626,7 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream WithCache(this ISequentialInputByteStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return
                 sourceStream switch
@@ -724,10 +640,8 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream WithCache(this ISequentialInputByteStream sourceStream, Int32 cacheSize, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (cacheSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(cacheSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize);
 
             return
                 sourceStream switch
@@ -742,8 +656,7 @@ namespace Palmtree.IO
         public static IRandomInputByteStream<POSITION_T> WithCache<POSITION_T>(this IRandomInputByteStream<POSITION_T> sourceStream, Boolean leaveOpen = false)
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return new BufferedRandomInputStream<POSITION_T>(sourceStream, leaveOpen);
         }
@@ -751,18 +664,15 @@ namespace Palmtree.IO
         public static IRandomInputByteStream<POSITION_T> WithCache<POSITION_T>(this IRandomInputByteStream<POSITION_T> sourceStream, Int32 cacheSize, Boolean leaveOpen = false)
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (cacheSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(cacheSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize);
 
             return new BufferedRandomInputStream<POSITION_T>(sourceStream, cacheSize, leaveOpen);
         }
 
         public static ISequentialOutputByteStream WithCache(this ISequentialOutputByteStream destinationStream, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return
                 destinationStream switch
@@ -776,10 +686,8 @@ namespace Palmtree.IO
 
         public static ISequentialOutputByteStream WithCache(this ISequentialOutputByteStream destinationStream, Int32 cacheSize, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (cacheSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(cacheSize));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize);
 
             return
                 destinationStream switch
@@ -794,8 +702,7 @@ namespace Palmtree.IO
         public static IRandomOutputByteStream<POSITION_T> WithCache<POSITION_T>(this IRandomOutputByteStream<POSITION_T> destinationStream, Boolean leaveOpen = false)
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return new BufferedRandomOutputStream<POSITION_T>(destinationStream, leaveOpen);
         }
@@ -803,10 +710,8 @@ namespace Palmtree.IO
         public static IRandomOutputByteStream<POSITION_T> WithCache<POSITION_T>(this IRandomOutputByteStream<POSITION_T> destinationStream, Int32 cacheSize, Boolean leaveOpen = false)
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (cacheSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(cacheSize));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize);
 
             return new BufferedRandomOutputStream<POSITION_T>(destinationStream, cacheSize, leaveOpen);
         }
@@ -817,20 +722,16 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream WithProgression(this ISequentialInputByteStream sourceStream, IProgress<UInt64> progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (progress is null)
-                throw new ArgumentNullException(nameof(progress));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(progress);
 
             return new SequentialInputByteStreamWithProgression(sourceStream, progress, leaveOpen);
         }
 
         public static ISequentialOutputByteStream WithProgression(this ISequentialOutputByteStream destinationStream, IProgress<UInt64> progress, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (progress is null)
-                throw new ArgumentNullException(nameof(progress));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(progress);
 
             return new SequentialOutputByteStreamWithProgression(destinationStream, progress, leaveOpen);
         }
@@ -841,44 +742,51 @@ namespace Palmtree.IO
 
         public static ISequentialInputByteStream WithEndAction(this ISequentialInputByteStream sourceStream, Action<UInt64> endAction, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (endAction is null)
-                throw new ArgumentNullException(nameof(endAction));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(endAction);
 
             return new SequentialInputByteStreamWithEndAction(sourceStream, endAction, leaveOpen);
         }
 
         public static ISequentialOutputByteStream WithEndAction(this ISequentialOutputByteStream destinationStream, Action<UInt64> endAction, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (endAction is null)
-                throw new ArgumentNullException(nameof(endAction));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(endAction);
 
             return new SequentialOutputByteStreamWithEndAction(destinationStream, endAction, leaveOpen);
         }
 
+        public static Stream WithEndAction(this Stream baseStream, Action endAction, Boolean leaveOpen = false)
+        {
+            ArgumentNullException.ThrowIfNull(baseStream);
+            ArgumentNullException.ThrowIfNull(endAction);
+
+            return new DotNetStreamWithEndAction(baseStream, endAction, leaveOpen);
+        }
+
         #endregion
+
+        public static Stream WithLogger(this Stream baseStream, IValidationLogger? validationLogger = null)
+        {
+            ArgumentNullException.ThrowIfNull(baseStream);
+
+            return new DotNetStreamWithLogger(baseStream, validationLogger);
+        }
 
         #region WithCrc32Calculation
 
         public static ISequentialInputByteStream WithCrc32Calculation(this ISequentialInputByteStream sourceStream, ValueHolder<(UInt32 Crc, UInt64 Length)> resultValueHolder, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (resultValueHolder is null)
-                throw new ArgumentNullException(nameof(resultValueHolder));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(resultValueHolder);
 
             return new SequentialInputByteStreamWithCrc32Calculation(sourceStream, Crc32.CreateCalculationState(), resultValue => resultValueHolder.Value = resultValue, leaveOpen);
         }
 
         public static ISequentialInputByteStream WithCrc32Calculation(this ISequentialInputByteStream sourceStream, Action<UInt32, UInt64> onCompleted, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (onCompleted is null)
-                throw new ArgumentNullException(nameof(onCompleted));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(onCompleted);
 
             return
                 new SequentialInputByteStreamWithCrc32Calculation(
@@ -899,20 +807,16 @@ namespace Palmtree.IO
 
         public static ISequentialOutputByteStream WithCrc32Calculation(this ISequentialOutputByteStream destinationStream, ValueHolder<(UInt32 Crc, UInt64 Length)> resultValueHolder, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (resultValueHolder is null)
-                throw new ArgumentNullException(nameof(resultValueHolder));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(resultValueHolder);
 
             return new SequentialOutputByteStreamWithCrc32Calculation(destinationStream, Crc32.CreateCalculationState(), resultValue => resultValueHolder.Value = resultValue, leaveOpen);
         }
 
         public static ISequentialOutputByteStream WithCrc32Calculation(this ISequentialOutputByteStream destinationStream, Action<UInt32, UInt64> onCompleted, Boolean leaveOpen = false)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (onCompleted is null)
-                throw new ArgumentNullException(nameof(onCompleted));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(onCompleted);
 
             return
                 new SequentialOutputByteStreamWithCrc32Calculation(
@@ -937,10 +841,8 @@ namespace Palmtree.IO
 
         public static ISequentialOutputByteStream Branch(this ISequentialOutputByteStream baseStream1, ISequentialOutputByteStream baseStream2, Boolean leaveOpen = false)
         {
-            if (baseStream1 is null)
-                throw new ArgumentNullException(nameof(baseStream1));
-            if (baseStream2 is null)
-                throw new ArgumentNullException(nameof(baseStream2));
+            ArgumentNullException.ThrowIfNull(baseStream1);
+            ArgumentNullException.ThrowIfNull(baseStream2);
 
             return new BranchOutputStream(baseStream1, baseStream2, leaveOpen);
         }
@@ -951,8 +853,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this Stream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -961,8 +862,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this Stream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -971,8 +871,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this Stream sourceStream, UInt64 offset, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -983,8 +882,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this Stream sourceStream, UInt64 offset, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -995,8 +893,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this Stream sourceStream, UInt64 offset, UInt64 count, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1007,8 +904,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this Stream sourceStream, UInt64 offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1019,64 +915,56 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetByteSequence(this ISequentialInputByteStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalGetByteSequence(null, null, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetByteSequence(this ISequentialInputByteStream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalGetByteSequence(null, progress, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> ramdomAccessStream)
                 throw new NotSupportedException();
-            if (offset > ramdomAccessStream.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, ramdomAccessStream.Length);
 
             return ramdomAccessStream.InternalGetByteSequence(offset, checked(ramdomAccessStream.Length - offset), null, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> ramdomAccessStream)
                 throw new NotSupportedException();
-            if (offset > ramdomAccessStream.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, ramdomAccessStream.Length);
 
             return ramdomAccessStream.InternalGetByteSequence(offset, checked(ramdomAccessStream.Length - offset), progress, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, UInt64 count, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> ramdomAccessStream)
                 throw new NotSupportedException();
-            if (checked(offset + count) > ramdomAccessStream.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, ramdomAccessStream.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, ramdomAccessStream.Length - offset);
 
             return ramdomAccessStream.InternalGetByteSequence(offset, count, null, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> ramdomAccessStream)
                 throw new NotSupportedException();
-            if (checked(offset + count) > ramdomAccessStream.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, ramdomAccessStream.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, ramdomAccessStream.Length - offset);
 
             return ramdomAccessStream.InternalGetByteSequence(offset, count, progress, leaveOpen);
         }
@@ -1087,8 +975,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this Stream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1099,8 +986,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this Stream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1111,8 +997,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this Stream sourceStream, UInt64 offset, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1123,8 +1008,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this Stream sourceStream, UInt64 offset, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1135,8 +1019,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this Stream sourceStream, UInt64 offset, UInt64 count, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1147,8 +1030,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this Stream sourceStream, UInt64 offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanSeek)
                 throw new NotSupportedException();
             if (!sourceStream.CanRead)
@@ -1159,8 +1041,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this ISequentialInputByteStream sourceStream, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> baseRamdomAccessStream)
                 throw new ArgumentException($"The stream specified by parameter {nameof(sourceStream)} must be a random access stream.", nameof(sourceStream));
 
@@ -1169,8 +1050,7 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this ISequentialInputByteStream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> baseRamdomAccessStream)
                 throw new NotSupportedException();
 
@@ -1179,56 +1059,46 @@ namespace Palmtree.IO
 
         public static IEnumerable<Byte> GetReverseByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> baseRamdomAccessStream)
                 throw new NotSupportedException();
-            if (offset > baseRamdomAccessStream.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, baseRamdomAccessStream.Length);
 
             return baseRamdomAccessStream.InternalGetReverseByteSequence(offset, baseRamdomAccessStream.Length - offset, null, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetReverseByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> baseRamdomAccessStream)
                 throw new NotSupportedException();
-            if (offset > baseRamdomAccessStream.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, baseRamdomAccessStream.Length);
 
             return baseRamdomAccessStream.InternalGetReverseByteSequence(offset, baseRamdomAccessStream.Length - offset, progress, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetReverseByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, UInt64 count, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> baseRamdomAccessStream)
                 throw new NotSupportedException();
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > baseRamdomAccessStream.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, baseRamdomAccessStream.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, baseRamdomAccessStream.Length - offset);
 
             return baseRamdomAccessStream.InternalGetReverseByteSequence(offset, count, null, leaveOpen);
         }
 
         public static IEnumerable<Byte> GetReverseByteSequence(this ISequentialInputByteStream sourceStream, UInt64 offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (sourceStream is not IRandomInputByteStream<UInt64> baseRamdomAccessStream)
                 throw new NotSupportedException();
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > baseRamdomAccessStream.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, baseRamdomAccessStream.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, baseRamdomAccessStream.Length - offset);
 
             return baseRamdomAccessStream.InternalGetReverseByteSequence(offset, count, progress, leaveOpen);
         }
@@ -1239,12 +1109,10 @@ namespace Palmtree.IO
 
         public static Boolean StreamBytesEqual(this Stream stream1, Stream stream2, Boolean leaveOpen = false)
         {
-            if (stream1 is null)
-                throw new ArgumentNullException(nameof(stream1));
+            ArgumentNullException.ThrowIfNull(stream1);
             if (!stream1.CanRead)
                 throw new NotSupportedException();
-            if (stream2 is null)
-                throw new ArgumentNullException(nameof(stream2));
+            ArgumentNullException.ThrowIfNull(stream2);
             if (!stream2.CanRead)
                 throw new NotSupportedException();
 
@@ -1264,12 +1132,10 @@ namespace Palmtree.IO
 
         public static Boolean StreamBytesEqual(this Stream stream1, Stream stream2, IProgress<UInt64>? progress, Boolean leaveOpen = false)
         {
-            if (stream1 is null)
-                throw new ArgumentNullException(nameof(stream1));
+            ArgumentNullException.ThrowIfNull(stream1);
             if (!stream1.CanRead)
                 throw new NotSupportedException();
-            if (stream2 is null)
-                throw new ArgumentNullException(nameof(stream2));
+            ArgumentNullException.ThrowIfNull(stream2);
             if (!stream2.CanRead)
                 throw new NotSupportedException();
 
@@ -1291,10 +1157,8 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream1);
+                ArgumentNullException.ThrowIfNull(stream2);
 
                 return InternalStreamBytesEqual(stream1, stream2, null);
             }
@@ -1312,10 +1176,8 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream1);
+                ArgumentNullException.ThrowIfNull(stream2);
 
                 return InternalStreamBytesEqual(stream1, stream2, progress);
             }
@@ -1335,12 +1197,10 @@ namespace Palmtree.IO
 
         public static void CopyTo(this Stream sourceStream, Stream destinationStream, IProgress<UInt64>? progress = null)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -1349,22 +1209,18 @@ namespace Palmtree.IO
 
         public static void CopyTo(this ISequentialInputByteStream sourceStream, ISequentialOutputByteStream destinationStream, IProgress<UInt64>? progress = null)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             sourceStream.InternalCopyTo(destinationStream, _COPY_TO_DEFAULT_BUFFER_SIZE, progress);
         }
 
         public static void CopyTo(this Stream sourceStream, Stream destinationStream, Int32 bufferSize, IProgress<UInt64>? progress = null)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -1373,12 +1229,9 @@ namespace Palmtree.IO
 
         public static void CopyTo(this ISequentialInputByteStream sourceStream, ISequentialOutputByteStream destinationStream, Int32 bufferSize, IProgress<UInt64>? progress = null)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (bufferSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             sourceStream.InternalCopyTo(destinationStream, bufferSize, progress);
         }
@@ -1389,40 +1242,33 @@ namespace Palmtree.IO
 
         public static Int32 Read(this Stream sourceStream, Byte[] buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return sourceStream.Read(buffer.AsSpan());
         }
 
         public static Int32 Read(this Stream sourceStream, Byte[] buffer, Int32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.Read(buffer.AsSpan(offset));
         }
 
         public static UInt32 Read(this Stream sourceStream, Byte[] buffer, UInt32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -1434,14 +1280,12 @@ namespace Palmtree.IO
 
         public static Int32 Read(this Stream sourceStream, Byte[] buffer, Range range)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.Read(buffer.AsSpan(offset, count));
         }
 
@@ -1454,14 +1298,12 @@ namespace Palmtree.IO
 
         public static UInt32 Read(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > (UInt32)buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             var length = sourceStream.Read(buffer.AsSpan(offset, count));
             return checked((UInt32)length);
@@ -1469,8 +1311,7 @@ namespace Palmtree.IO
 
         public static Int32 Read(this Stream sourceStream, Memory<Byte> buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1479,34 +1320,27 @@ namespace Palmtree.IO
 
         public static Int32 Read(this ISequentialInputByteStream sourceStream, Byte[] buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return sourceStream.Read(buffer.AsSpan());
         }
 
         public static Int32 Read(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.Read(buffer.AsSpan(offset));
         }
 
         public static UInt32 Read(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = sourceStream.Read(buffer.AsSpan(offset));
             return checked((UInt32)length);
@@ -1514,39 +1348,31 @@ namespace Palmtree.IO
 
         public static Int32 Read(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.Read(buffer.AsSpan(offset, count));
         }
 
         public static Int32 Read(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return sourceStream.Read(buffer.AsSpan(offset, count));
         }
 
         public static UInt32 Read(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             var length = sourceStream.Read(buffer.AsSpan(offset, count));
             return checked((UInt32)length);
@@ -1554,8 +1380,7 @@ namespace Palmtree.IO
 
         public static Int32 Read(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.Read(buffer.Span);
         }
@@ -1566,8 +1391,7 @@ namespace Palmtree.IO
 
         public static Byte? ReadByteOrNull(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1580,8 +1404,7 @@ namespace Palmtree.IO
 
         public static Byte? ReadByteOrNull(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[1];
             return
@@ -1596,8 +1419,7 @@ namespace Palmtree.IO
 
         public static Byte ReadByte(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[1];
             if (sourceStream.Read(buffer) <= 0)
@@ -1612,20 +1434,17 @@ namespace Palmtree.IO
 
         public static ReadOnlyMemory<Byte> ReadBytes(this Stream sourceStream, Int32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return sourceStream.InternalReadBytes(checked((Int32)count));
         }
 
         public static ReadOnlyMemory<Byte> ReadBytes(this Stream sourceStream, UInt32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1634,40 +1453,33 @@ namespace Palmtree.IO
 
         public static Int32 ReadBytes(this Stream sourceStream, Byte[] buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return sourceStream.InternalReadBytes(buffer);
         }
 
         public static Int32 ReadBytes(this Stream sourceStream, Byte[] buffer, Int32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.InternalReadBytes(buffer.AsSpan(offset));
         }
 
         public static UInt32 ReadBytes(this Stream sourceStream, Byte[] buffer, UInt32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = sourceStream.InternalReadBytes(buffer.AsSpan(offset));
             return checked((UInt32)length);
@@ -1675,43 +1487,35 @@ namespace Palmtree.IO
 
         public static Int32 ReadBytes(this Stream sourceStream, Byte[] buffer, Range range)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.InternalReadBytes(buffer.AsSpan(offset, count));
         }
 
         public static Int32 ReadBytes(this Stream sourceStream, Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return sourceStream.InternalReadBytes(buffer.AsSpan(offset, count));
         }
 
         public static UInt32 ReadBytes(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
             if (checked(offset) + count > buffer.Length)
                 throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
 
@@ -1721,8 +1525,7 @@ namespace Palmtree.IO
 
         public static Int32 ReadBytes(this Stream sourceStream, Memory<Byte> buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1731,8 +1534,7 @@ namespace Palmtree.IO
 
         public static Int32 ReadBytes(this Stream sourceStream, Span<Byte> buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1741,52 +1543,42 @@ namespace Palmtree.IO
 
         public static ReadOnlyMemory<Byte> ReadBytes(this ISequentialInputByteStream sourceStream, Int32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return sourceStream.InternalReadBytes(count);
         }
 
         public static ReadOnlyMemory<Byte> ReadBytes(this ISequentialInputByteStream sourceStream, UInt32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadBytes(checked((Int32)count));
         }
 
         public static Int32 ReadBytes(this ISequentialInputByteStream sourceStream, Byte[] buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return sourceStream.InternalReadBytes(buffer);
         }
 
         public static Int32 ReadBytes(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.InternalReadBytes(buffer.AsSpan(offset));
         }
 
         public static UInt32 ReadBytes(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = sourceStream.InternalReadBytes(buffer.AsSpan(offset));
             return checked((UInt32)length);
@@ -1794,39 +1586,31 @@ namespace Palmtree.IO
 
         public static Int32 ReadBytes(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.InternalReadBytes(buffer.AsSpan(offset, count));
         }
 
         public static Int32 ReadBytes(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return sourceStream.InternalReadBytes(buffer.AsSpan(offset, count));
         }
 
         public static UInt32 ReadBytes(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             var length = sourceStream.InternalReadBytes(buffer.AsSpan(offset, count));
             return checked((UInt32)length);
@@ -1834,16 +1618,14 @@ namespace Palmtree.IO
 
         public static Int32 ReadBytes(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadBytes(buffer.Span);
         }
 
         public static Int32 ReadBytes(this ISequentialInputByteStream sourceStream, Span<Byte> buffer)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadBytes(buffer);
         }
@@ -1854,8 +1636,7 @@ namespace Palmtree.IO
 
         public static ReadOnlyMemory<Byte> ReadAllBytes(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1864,8 +1645,7 @@ namespace Palmtree.IO
 
         public static ReadOnlyMemory<Byte> ReadAllBytes(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadAllBytes();
         }
@@ -1876,8 +1656,7 @@ namespace Palmtree.IO
 
         public static Int16 ReadInt16LE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1890,8 +1669,7 @@ namespace Palmtree.IO
 
         public static Int16 ReadInt16LE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -1906,8 +1684,7 @@ namespace Palmtree.IO
 
         public static UInt16 ReadUInt16LE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1920,8 +1697,7 @@ namespace Palmtree.IO
 
         public static UInt16 ReadUInt16LE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -1936,8 +1712,7 @@ namespace Palmtree.IO
 
         public static Int32 ReadInt32LE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1950,8 +1725,7 @@ namespace Palmtree.IO
 
         public static Int32 ReadInt32LE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -1966,8 +1740,7 @@ namespace Palmtree.IO
 
         public static UInt32 ReadUInt32LE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1981,8 +1754,7 @@ namespace Palmtree.IO
 
         public static UInt32 ReadUInt32LE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -1997,8 +1769,7 @@ namespace Palmtree.IO
 
         public static Int64 ReadInt64LE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2011,8 +1782,7 @@ namespace Palmtree.IO
 
         public static Int64 ReadInt64LE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2027,8 +1797,7 @@ namespace Palmtree.IO
 
         public static UInt64 ReadUInt64LE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2041,8 +1810,7 @@ namespace Palmtree.IO
 
         public static UInt64 ReadUInt64LE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2057,8 +1825,7 @@ namespace Palmtree.IO
 
         public static Single ReadSingleLE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2071,8 +1838,7 @@ namespace Palmtree.IO
 
         public static Single ReadSingleLE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2087,8 +1853,7 @@ namespace Palmtree.IO
 
         public static Double ReadDoubleLE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2101,8 +1866,7 @@ namespace Palmtree.IO
 
         public static Double ReadDoubleLE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2117,8 +1881,7 @@ namespace Palmtree.IO
 
         public static Decimal ReadDecimalLE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2131,8 +1894,7 @@ namespace Palmtree.IO
 
         public static Decimal ReadDecimalLE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2147,8 +1909,7 @@ namespace Palmtree.IO
 
         public static Int16 ReadInt16BE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2161,8 +1922,7 @@ namespace Palmtree.IO
 
         public static Int16 ReadInt16BE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2177,8 +1937,7 @@ namespace Palmtree.IO
 
         public static UInt16 ReadUInt16BE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2191,8 +1950,7 @@ namespace Palmtree.IO
 
         public static UInt16 ReadUInt16BE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2207,8 +1965,7 @@ namespace Palmtree.IO
 
         public static Int32 ReadInt32BE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2221,8 +1978,7 @@ namespace Palmtree.IO
 
         public static Int32 ReadInt32BE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2237,8 +1993,7 @@ namespace Palmtree.IO
 
         public static UInt32 ReadUInt32BE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2251,8 +2006,7 @@ namespace Palmtree.IO
 
         public static UInt32 ReadUInt32BE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2267,8 +2021,7 @@ namespace Palmtree.IO
 
         public static Int64 ReadInt64BE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2281,8 +2034,7 @@ namespace Palmtree.IO
 
         public static Int64 ReadInt64BE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2297,8 +2049,7 @@ namespace Palmtree.IO
 
         public static UInt64 ReadUInt64BE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2311,8 +2062,7 @@ namespace Palmtree.IO
 
         public static UInt64 ReadUInt64BE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2327,8 +2077,7 @@ namespace Palmtree.IO
 
         public static Single ReadSingleBE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2341,8 +2090,7 @@ namespace Palmtree.IO
 
         public static Single ReadSingleBE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2357,8 +2105,7 @@ namespace Palmtree.IO
 
         public static Double ReadDoubleBE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2371,8 +2118,7 @@ namespace Palmtree.IO
 
         public static Double ReadDoubleBE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2387,8 +2133,7 @@ namespace Palmtree.IO
 
         public static Decimal ReadDecimalBE(this Stream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -2401,8 +2146,7 @@ namespace Palmtree.IO
 
         public static Decimal ReadDecimalBE(this ISequentialInputByteStream sourceStream)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             if (sourceStream.InternalReadBytes(buffer) != buffer.Length)
@@ -2424,14 +2168,12 @@ namespace Palmtree.IO
 
         public static Int32 Write(this Stream destinationStream, Byte[] buffer, Int32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             var bufferSpan = buffer.AsReadOnlySpan(offset);
             destinationStream.Write(bufferSpan);
@@ -2440,14 +2182,11 @@ namespace Palmtree.IO
 
         public static UInt32 Write(this Stream destinationStream, Byte[] buffer, UInt32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -2468,14 +2207,12 @@ namespace Palmtree.IO
 
         public static UInt32 Write(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > (UInt32)buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -2489,8 +2226,7 @@ namespace Palmtree.IO
 
         public static Int32 Write(this Stream destinationStream, ReadOnlyMemory<Byte> buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2500,24 +2236,19 @@ namespace Palmtree.IO
 
         public static Int32 Write(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return destinationStream.Write(buffer.AsReadOnlySpan(offset));
         }
 
         public static UInt32 Write(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = destinationStream.Write(buffer.AsReadOnlySpan(offset));
             return checked((UInt32)length);
@@ -2525,28 +2256,22 @@ namespace Palmtree.IO
 
         public static Int32 Write(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return destinationStream.Write(buffer.AsReadOnlySpan(offset, count));
         }
 
         public static UInt32 Write(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > (UInt32)buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             var length = destinationStream.Write(buffer.AsReadOnlySpan(offset, count));
             return checked((UInt32)length);
@@ -2554,8 +2279,7 @@ namespace Palmtree.IO
 
         public static Int32 Write(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return destinationStream.Write(buffer.Span);
         }
@@ -2577,7 +2301,7 @@ namespace Palmtree.IO
             Span<Byte> buffer = stackalloc Byte[1];
             buffer[0] = value;
             var length = destinationStream.Write(buffer);
-            Validation.Assert(length > 0, "length > 0");
+            Validation.Assert(length > 0);
         }
 
         #endregion
@@ -2586,40 +2310,33 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
             destinationStream.InternalWriteBytes(buffer);
         }
 
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, Int32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset));
         }
 
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, UInt32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -2630,45 +2347,37 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, Range range)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset, count));
         }
 
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset, count));
         }
 
         public static void WriteBytes(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > (UInt32)buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -2681,8 +2390,7 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this Stream destinationStream, ReadOnlyMemory<Byte> buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2691,8 +2399,7 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this Stream destinationStream, ReadOnlySpan<Byte> buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2701,12 +2408,10 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this Stream destinationStream, IEnumerable<ReadOnlyMemory<Byte>> buffers)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffers is null)
-                throw new ArgumentNullException(nameof(buffers));
+            ArgumentNullException.ThrowIfNull(buffers);
 
             foreach (var buffer in buffers)
                 destinationStream.Write(buffer.Span);
@@ -2714,34 +2419,27 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
             destinationStream.InternalWriteBytes(buffer);
         }
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset));
         }
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -2752,37 +2450,30 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Range range)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset, count));
         }
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset, count));
         }
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > (UInt32)buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 #if DEBUG
             if (offset > Int32.MaxValue)
                 throw new Exception();
@@ -2795,8 +2486,7 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var spanOfBuffer = buffer.Span;
             while (!spanOfBuffer.IsEmpty)
@@ -2810,18 +2500,15 @@ namespace Palmtree.IO
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, ReadOnlySpan<Byte> buffer)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             destinationStream.InternalWriteBytes(buffer);
         }
 
         public static void WriteBytes(this ISequentialOutputByteStream destinationStream, IEnumerable<ReadOnlyMemory<Byte>> buffers)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffers is null)
-                throw new ArgumentNullException(nameof(buffers));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffers);
 
             foreach (var buffer in buffers)
                 destinationStream.InternalWriteBytes(buffer.Span);
@@ -2833,12 +2520,10 @@ namespace Palmtree.IO
 
         public static void WriteByteSequence(this Stream destinationStream, IEnumerable<Byte> sequence)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (sequence is null)
-                throw new ArgumentNullException(nameof(sequence));
+            ArgumentNullException.ThrowIfNull(sequence);
 
             using var enumerator = sequence.GetEnumerator();
             var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
@@ -2864,10 +2549,8 @@ namespace Palmtree.IO
 
         public static void WriteByteSequence(this ISequentialOutputByteStream destinationStream, IEnumerable<Byte> sequence)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (sequence is null)
-                throw new ArgumentNullException(nameof(sequence));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(sequence);
 
             using var enumerator = sequence.GetEnumerator();
             var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
@@ -2897,8 +2580,7 @@ namespace Palmtree.IO
 
         public static void WriteInt16LE(this Stream destinationStream, Int16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2909,8 +2591,7 @@ namespace Palmtree.IO
 
         public static void WriteInt16LE(this ISequentialOutputByteStream destinationStream, Int16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             buffer.SetValueLE(value);
@@ -2923,8 +2604,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt16LE(this Stream destinationStream, UInt16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2935,8 +2615,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt16LE(this ISequentialOutputByteStream destinationStream, UInt16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             buffer.SetValueLE(value);
@@ -2949,8 +2628,7 @@ namespace Palmtree.IO
 
         public static void WriteInt32LE(this Stream destinationStream, Int32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2961,8 +2639,7 @@ namespace Palmtree.IO
 
         public static void WriteInt32LE(this ISequentialOutputByteStream destinationStream, Int32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             buffer.SetValueLE(value);
@@ -2975,8 +2652,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt32LE(this Stream destinationStream, UInt32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2987,8 +2663,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt32LE(this ISequentialOutputByteStream destinationStream, UInt32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             buffer.SetValueLE(value);
@@ -3001,8 +2676,7 @@ namespace Palmtree.IO
 
         public static void WriteInt64LE(this Stream destinationStream, Int64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3013,8 +2687,7 @@ namespace Palmtree.IO
 
         public static void WriteInt64LE(this ISequentialOutputByteStream destinationStream, Int64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             buffer.SetValueLE(value);
@@ -3027,8 +2700,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt64LE(this Stream destinationStream, UInt64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3039,8 +2711,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt64LE(this ISequentialOutputByteStream destinationStream, UInt64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             buffer.SetValueLE(value);
@@ -3053,8 +2724,7 @@ namespace Palmtree.IO
 
         public static void WriteSingleLE(this Stream destinationStream, Single value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3065,8 +2735,7 @@ namespace Palmtree.IO
 
         public static void WriteSingleLE(this ISequentialOutputByteStream destinationStream, Single value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             buffer.SetValueLE(value);
@@ -3079,8 +2748,7 @@ namespace Palmtree.IO
 
         public static void WriteDoubleLE(this Stream destinationStream, Double value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3091,8 +2759,7 @@ namespace Palmtree.IO
 
         public static void WriteDoubleLE(this ISequentialOutputByteStream destinationStream, Double value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             buffer.SetValueLE(value);
@@ -3105,8 +2772,7 @@ namespace Palmtree.IO
 
         public static void WriteDecimalLE(this Stream destinationStream, Decimal value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3117,8 +2783,7 @@ namespace Palmtree.IO
 
         public static void WriteDecimalLE(this ISequentialOutputByteStream destinationStream, Decimal value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             buffer.SetValueLE(value);
@@ -3131,8 +2796,7 @@ namespace Palmtree.IO
 
         public static void WriteInt16BE(this Stream destinationStream, Int16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3143,8 +2807,7 @@ namespace Palmtree.IO
 
         public static void WriteInt16BE(this ISequentialOutputByteStream destinationStream, Int16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int16)];
             buffer.SetValueBE(value);
@@ -3157,8 +2820,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt16BE(this Stream destinationStream, UInt16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3169,8 +2831,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt16BE(this ISequentialOutputByteStream destinationStream, UInt16 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt16)];
             buffer.SetValueBE(value);
@@ -3183,8 +2844,7 @@ namespace Palmtree.IO
 
         public static void WriteInt32BE(this Stream destinationStream, Int32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3195,8 +2855,7 @@ namespace Palmtree.IO
 
         public static void WriteInt32BE(this ISequentialOutputByteStream destinationStream, Int32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int32)];
             buffer.SetValueBE(value);
@@ -3209,8 +2868,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt32BE(this Stream destinationStream, UInt32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3221,8 +2879,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt32BE(this ISequentialOutputByteStream destinationStream, UInt32 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt32)];
             buffer.SetValueBE(value);
@@ -3235,8 +2892,7 @@ namespace Palmtree.IO
 
         public static void WriteInt64BE(this Stream destinationStream, Int64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3247,8 +2903,7 @@ namespace Palmtree.IO
 
         public static void WriteInt64BE(this ISequentialOutputByteStream destinationStream, Int64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Int64)];
             buffer.SetValueBE(value);
@@ -3261,8 +2916,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt64BE(this Stream destinationStream, UInt64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3273,8 +2927,7 @@ namespace Palmtree.IO
 
         public static void WriteUInt64BE(this ISequentialOutputByteStream destinationStream, UInt64 value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(UInt64)];
             buffer.SetValueBE(value);
@@ -3287,8 +2940,7 @@ namespace Palmtree.IO
 
         public static void WriteSingleBE(this Stream destinationStream, Single value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3299,8 +2951,7 @@ namespace Palmtree.IO
 
         public static void WriteSingleBE(this ISequentialOutputByteStream destinationStream, Single value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Single)];
             buffer.SetValueBE(value);
@@ -3313,8 +2964,7 @@ namespace Palmtree.IO
 
         public static void WriteDoubleBE(this Stream destinationStream, Double value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3325,8 +2975,7 @@ namespace Palmtree.IO
 
         public static void WriteDoubleBE(this ISequentialOutputByteStream destinationStream, Double value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Double)];
             buffer.SetValueBE(value);
@@ -3339,8 +2988,7 @@ namespace Palmtree.IO
 
         public static void WriteDecimalBE(this Stream destinationStream, Decimal value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -3351,8 +2999,7 @@ namespace Palmtree.IO
 
         public static void WriteDecimalBE(this ISequentialOutputByteStream destinationStream, Decimal value)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             buffer.SetValueBE(value);
@@ -3369,8 +3016,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3389,8 +3035,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3407,8 +3052,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3425,8 +3069,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3445,8 +3088,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc24(MAX_BUFFER_SIZE, null);
             }
@@ -3463,8 +3105,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc24(MAX_BUFFER_SIZE, progress);
             }
@@ -3479,8 +3120,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc24(bufferSize, null);
             }
@@ -3495,8 +3135,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc24(bufferSize, progress);
             }
@@ -3517,8 +3156,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3537,8 +3175,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3555,8 +3192,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3573,8 +3209,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3593,8 +3228,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc32(MAX_BUFFER_SIZE, null);
             }
@@ -3611,8 +3245,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc32(MAX_BUFFER_SIZE, progress);
             }
@@ -3627,8 +3260,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc32(bufferSize, null);
             }
@@ -3643,8 +3275,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalCalculateCrc32(bufferSize, progress);
             }
@@ -3814,8 +3445,7 @@ namespace Palmtree.IO
             var progressCounter = new ProgressCounterUInt64(progress);
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 progressCounter.Report();
                 var buffer = new Byte[BUFFER_SIZE];
@@ -3825,7 +3455,7 @@ namespace Palmtree.IO
                     pos -= BUFFER_SIZE;
                     _ = sourceStream.Seek(checked((Int64)pos), SeekOrigin.Begin);
                     var length = sourceStream.InternalReadBytes(buffer);
-                    Validation.Assert(length == buffer.Length, "length == buffer.Length");
+                    Validation.Assert(length == buffer.Length);
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3837,7 +3467,7 @@ namespace Palmtree.IO
                 {
                     var remain = checked((Int32)(pos - offset));
                     var length = sourceStream.InternalReadBytes(buffer.AsSpan(0, remain));
-                    Validation.Assert(length == remain, "length == remain");
+                    Validation.Assert(length == remain);
                     for (var index = remain - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3860,8 +3490,7 @@ namespace Palmtree.IO
             var progressCounter = new ProgressCounterUInt64(progress);
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 progressCounter.Report();
                 var buffer = new Byte[BUFFER_SIZE];
@@ -3871,7 +3500,7 @@ namespace Palmtree.IO
                     pos -= BUFFER_SIZE;
                     sourceStream.Seek(pos);
                     var length = sourceStream.InternalReadBytes(buffer);
-                    Validation.Assert(length == buffer.Length, "length == buffer.Length");
+                    Validation.Assert(length == buffer.Length);
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3883,7 +3512,7 @@ namespace Palmtree.IO
                 {
                     var remain = checked((Int32)(pos - offset));
                     var length = sourceStream.InternalReadBytes(buffer.AsSpan(0, remain));
-                    Validation.Assert(length == remain, "length == remain");
+                    Validation.Assert(length == remain);
                     for (var index = remain - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3906,7 +3535,7 @@ namespace Palmtree.IO
         {
             const Int32 bufferSize = 81920;
 
-            Validation.Assert(bufferSize % sizeof(UInt64) == 0, "bufferSize % sizeof(UInt64) == 0");
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0);
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
             var buffer1 = new Byte[bufferSize];
@@ -3952,7 +3581,7 @@ namespace Palmtree.IO
         {
             const Int32 bufferSize = 81920;
 
-            Validation.Assert(bufferSize % sizeof(UInt64) == 0, "bufferSize % sizeof(UInt64) == 0");
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0);
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
             var buffer1 = new Byte[bufferSize];

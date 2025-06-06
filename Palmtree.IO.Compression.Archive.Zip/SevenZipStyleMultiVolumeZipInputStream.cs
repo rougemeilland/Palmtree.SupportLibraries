@@ -23,7 +23,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// </item>
     /// </list>
     /// </remarks>
-    internal class SevenZipStyleMultiVolumeZipInputStream
+    internal sealed class SevenZipStyleMultiVolumeZipInputStream
         : ZipInputStream
     {
         private const Int32 _STREAM_CACHE_CAPACITY = 8;
@@ -78,18 +78,18 @@ namespace Palmtree.IO.Compression.Archive.Zip
             get
             {
                 var ok = _internalVolumeDisks.TryGetOffsetFromStart(_currentInternalVolmeDiskNumber, GetCurrentVolumeDiskStream().Position, out var offset);
-                Validation.Assert(ok == true, "ok == true");
+                Validation.Assert(ok == true);
                 return new(0, offset, this);
             }
         }
 
         protected override void SeekCore(UInt32 diskNumber, UInt64 offsetOnTheDisk)
         {
-            Validation.Assert(diskNumber == 0, "diskNumber == 0");
+            Validation.Assert(diskNumber == 0);
             if (offsetOnTheDisk > _internalVolumeDisks.TotalVolumeDiskSize)
                 throw new ArgumentOutOfRangeException($"An attempt was made to access a position outside the bounds of the volume disk in a 7-zip style multi-volume ZIP file.: {nameof(offsetOnTheDisk)}=0x{offsetOnTheDisk:x16}", nameof(offsetOnTheDisk));
             var ok = _internalVolumeDisks.TryGetVolumeDiskPosition(offsetOnTheDisk, out var internalDiskNumber, out var internalOffsetOnTheDisk);
-            Validation.Assert(ok == true, "ok == true");
+            Validation.Assert(ok == true);
 
             _currentInternalVolmeDiskNumber = internalDiskNumber;
             GetCurrentVolumeDiskStream().Seek(internalOffsetOnTheDisk);
@@ -112,7 +112,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override ZipStreamPosition AddCore(UInt32 diskNumber, UInt64 offsetOnTheDisk, UInt64 offset)
         {
-            Validation.Assert(diskNumber == 0, "diskNumber == 0");
+            Validation.Assert(diskNumber == 0);
             var newOffset = checked(offsetOnTheDisk + offset);
             if (newOffset > _internalVolumeDisks.TotalVolumeDiskSize)
                 throw new OverflowException();
@@ -122,14 +122,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override ZipStreamPosition SubtractCore(UInt32 diskNumber, UInt64 offsetOnTheDisk, UInt64 offset)
         {
-            Validation.Assert(diskNumber == 0, "diskNumber == 0");
+            Validation.Assert(diskNumber == 0);
             return new ZipStreamPosition(0, checked(offsetOnTheDisk - offset), this);
         }
 
         protected override UInt64 SubtractCore(UInt32 diskNumber1, UInt64 offsetOnTheDisk1, UInt32 diskNumber2, UInt64 offsetOnTheDisk2)
         {
-            Validation.Assert(diskNumber1 == 0, "diskNumber1 == 0");
-            Validation.Assert(diskNumber2 == 0, "diskNumber2 == 0");
+            Validation.Assert(diskNumber1 == 0);
+            Validation.Assert(diskNumber2 == 0);
             return checked(offsetOnTheDisk1 - offsetOnTheDisk2);
         }
 
@@ -183,11 +183,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
             try
             {
                 var ok = _internalVolumeDisks.TryGetVolumeDiskSize(internalVolumeDiskNumber, out var volumeDiskSize);
-                Validation.Assert(ok == true, "ok == true");
+                Validation.Assert(ok == true);
                 var volumeDiskFile = _internalVolumeDiskFileGetter(internalVolumeDiskNumber);
                 try
                 {
-                    stream = volumeDiskFile.OpenRead(FileShare.None).WithCache();
+                    stream = volumeDiskFile.OpenRead().WithCache();
                 }
                 catch (Exception ex)
                 {
@@ -211,7 +211,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
             var ok = _internalVolumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
-            Validation.Assert(ok == true, "ok == true");
+            Validation.Assert(ok == true);
             return volumeDiskSize;
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Palmtree.IO.Console.StringExpansion
@@ -25,8 +24,7 @@ namespace Palmtree.IO.Console.StringExpansion
 
         protected abstract String Format(String width, String precision, String typeSpec);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"^(?<width>\d+)?(\.(?<precision>\d+))?(?<type>[cdosuxX])$", RegexOptions.Compiled)]
+        [GeneratedRegex(@"^(?<width>\d+)?(\.(?<precision>\d+))?(?<type>[cdosuxX])$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetFormatSpecPattern();
     }
 }

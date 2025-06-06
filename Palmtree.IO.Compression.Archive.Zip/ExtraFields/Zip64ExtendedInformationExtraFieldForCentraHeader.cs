@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 {
-    internal class Zip64ExtendedInformationExtraFieldForCentraHeader
+    internal sealed class Zip64ExtendedInformationExtraFieldForCentraHeader
         : Zip64ExtendedInformationExtraField
     {
         public Zip64ExtendedInformationExtraFieldForCentraHeader()

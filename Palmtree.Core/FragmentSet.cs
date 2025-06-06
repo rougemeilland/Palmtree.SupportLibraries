@@ -20,10 +20,8 @@ namespace Palmtree
         public FragmentSet(POSITION_T initialStartPosition, SIZE_T initialSize)
             : this()
         {
-            if (initialStartPosition is null)
-                throw new ArgumentNullException(nameof(initialStartPosition));
-            if (initialSize is null)
-                throw new ArgumentNullException(nameof(initialSize));
+            ArgumentNullException.ThrowIfNull(initialStartPosition);
+            ArgumentNullException.ThrowIfNull(initialSize);
 
             _ = _fragments.AddFirst(new FragmentSetElement<POSITION_T, SIZE_T>(initialStartPosition, initialSize));
         }
@@ -36,8 +34,7 @@ namespace Palmtree
 
         public void AddFragment(FragmentSetElement<POSITION_T, SIZE_T> fragment)
         {
-            if (fragment is null)
-                throw new ArgumentNullException(nameof(fragment));
+            ArgumentNullException.ThrowIfNull(fragment);
 
             var firstNode = _fragments.First;
             if (firstNode is not null)
@@ -132,8 +129,7 @@ namespace Palmtree
 
         public void RemoveFragment(FragmentSetElement<POSITION_T, SIZE_T> fragment)
         {
-            if (fragment is null)
-                throw new ArgumentNullException(nameof(fragment));
+            ArgumentNullException.ThrowIfNull(fragment);
 
             for (var node = _fragments.First; node is not null; node = node.Next)
             {

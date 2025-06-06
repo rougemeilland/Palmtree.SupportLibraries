@@ -196,7 +196,7 @@ namespace Palmtree
             process.WaitForExit();
 
             var result = String.IsNullOrEmpty(foundPath) ? null : foundPath;
-            Validation.Assert(result is null || File.Exists(result), "result is null || File.Exists(result)");
+            Validation.Assert(result is null || File.Exists(result));
 
             // プロセスの終了コードを判別して復帰する
             //   0: 指定されたコマンドが見つかった場合 (Windows/Linux 共通)

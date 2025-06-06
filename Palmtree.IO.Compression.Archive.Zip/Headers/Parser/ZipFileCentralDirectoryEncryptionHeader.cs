@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipFileCentralDirectoryEncryptionHeader
+    internal sealed class ZipFileCentralDirectoryEncryptionHeader
     {
         public const UInt32 MinimumHeaderSize = 28U;
 

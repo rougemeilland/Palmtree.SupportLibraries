@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialInputBitStreamByByteStream
+    internal sealed class SequentialInputBitStreamByByteStream
         : SequentialInputBitStreamBy
     {
         private readonly ISequentialInputByteStream _baseStream;
@@ -17,8 +17,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _isDisposed = false;
                 _baseStream = baseStream;

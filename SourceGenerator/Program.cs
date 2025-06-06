@@ -9,17 +9,10 @@ using System.Text.RegularExpressions;
 
 namespace SourceGenerator
 {
-    internal partial class Program
+    internal sealed partial class Program
     {
-        private const byte _EAST_ASIAN_WIDTH_N = 0;
-        private const byte _EAST_ASIAN_WIDTH_F = 1;
-        private const byte _EAST_ASIAN_WIDTH_H = 2;
-        private const byte _EAST_ASIAN_WIDTH_W = 3;
-        private const byte _EAST_ASIAN_WIDTH_Na = 4;
-        private const byte _EAST_ASIAN_WIDTH_A = 5;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "<保留中>")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:不要な抑制を削除します", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:不要な抑制を削除します", Justification = "パラメタが追加された場合にIDE0060が発生してしまうため。")]
         static void Main(string[] args)
         {
             var baseDirectoryPath = new FileInfo(typeof(Program).Assembly.Location).Directory?.Parent?.Parent?.Parent?.Parent ?? throw new Exception();
@@ -85,11 +78,11 @@ namespace SourceGenerator
                 sourceWriter.WriteLine("                return;");
                 foreach (var unmanagedType in unmanagedTypes)
                 {
-                    if (unmanagedType.EndsWith("Int128"))
+                    if (unmanagedType.EndsWith("Int128", StringComparison.Ordinal))
                         sourceWriter.WriteLine("#if NET7_0_OR_GREATER");
                     sourceWriter.WriteLine($"            else if (typeof(ELEMENT_T) == typeof({unmanagedType}))");
                     sourceWriter.WriteLine($"                InternalQuickSortUnmanaged(ref Unsafe.As<ELEMENT_T, {unmanagedType}>(ref source.GetPinnableReference()), source.Length);");
-                    if (unmanagedType.EndsWith("Int128"))
+                    if (unmanagedType.EndsWith("Int128", StringComparison.Ordinal))
                         sourceWriter.WriteLine("#endif // NET7_0_OR_GREATER");
                 }
 
@@ -109,11 +102,11 @@ namespace SourceGenerator
                     var firstElement = true;
                     foreach (var unmanagedType in unmanagedTypes)
                     {
-                        if (unmanagedType.EndsWith("Int128"))
+                        if (unmanagedType.EndsWith("Int128", StringComparison.Ordinal))
                             sourceWriter.WriteLine("#if NET7_0_OR_GREATER");
                         sourceWriter.WriteLine($"            {(firstElement ? "" : "else ")}if (typeof(ELEMENT_T) == typeof({unmanagedType}))");
                         sourceWriter.WriteLine($"                return array1.Length == array2.Length && InternalSequenceEqualUnmanaged(ref Unsafe.As<ELEMENT_T, {unmanagedType}>(ref Unsafe.AsRef(in array1.GetPinnableReference())), ref Unsafe.As<ELEMENT_T, {unmanagedType}>(ref Unsafe.AsRef(in array2.GetPinnableReference())), array1.Length);");
-                        if (unmanagedType.EndsWith("Int128"))
+                        if (unmanagedType.EndsWith("Int128", StringComparison.Ordinal))
                             sourceWriter.WriteLine("#endif // NET7_0_OR_GREATER");
                         firstElement = false;
                     }
@@ -135,11 +128,11 @@ namespace SourceGenerator
                     var firstElement = true;
                     foreach (var unmanagedType in unmanagedTypes)
                     {
-                        if (unmanagedType.EndsWith("Int128"))
+                        if (unmanagedType.EndsWith("Int128", StringComparison.Ordinal))
                             sourceWriter.WriteLine("#if NET7_0_OR_GREATER");
                         sourceWriter.WriteLine($"            {(firstElement ? "" : "else ")}if (typeof(ELEMENT_T) == typeof({unmanagedType}))");
                         sourceWriter.WriteLine($"                return InternalSequenceCompareUnmanaged(ref Unsafe.As<ELEMENT_T, {unmanagedType}>(ref Unsafe.AsRef(in array1.GetPinnableReference())), array1.Length, ref Unsafe.As<ELEMENT_T, {unmanagedType}>(ref Unsafe.AsRef(in array2.GetPinnableReference())), array2.Length);");
-                        if (unmanagedType.EndsWith("Int128"))
+                        if (unmanagedType.EndsWith("Int128", StringComparison.Ordinal))
                             sourceWriter.WriteLine("#endif // NET7_0_OR_GREATER");
                         firstElement = false;
                     }
@@ -182,7 +175,7 @@ namespace SourceGenerator
 
             foreach (var lineText in File.ReadLines(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location) ?? throw new Exception(), "EastAsianWidth.txt")))
             {
-                if (!string.IsNullOrEmpty(lineText) && !lineText.StartsWith("#", StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(lineText) && !lineText.StartsWith('#'))
                 {
                     var match = GetEastAsianPattern().Match(lineText);
                     if (!match.Success)
@@ -262,7 +255,7 @@ namespace SourceGenerator
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("^(?<start>[\\da-fA-F]+)(..(?<end>[\\da-fA-F]+))?\\s*;\\s*(?<type>(A|F|H|N|Na|W))(\\s*#.*)?$")]
+        [GeneratedRegex("^(?<start>[\\da-fA-F]+)(..(?<end>[\\da-fA-F]+))?\\s*;\\s*(?<type>(A|F|H|N|Na|W))(\\s*#.*)?$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetEastAsianPattern();
     }
 }

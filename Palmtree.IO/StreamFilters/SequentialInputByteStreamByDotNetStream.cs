@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialInputByteStreamByDotNetStream
+    internal sealed class SequentialInputByteStreamByDotNetStream
         : SequentialInputByteStream
     {
         private readonly Stream _baseStream;
@@ -17,8 +17,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
                 if (!baseStream.CanRead)
                     throw new NotSupportedException();
 

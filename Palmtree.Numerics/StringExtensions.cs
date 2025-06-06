@@ -17,7 +17,11 @@ namespace Palmtree.Numerics
         /// <returns>変換された <see cref="Int32"/> 値です。</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ParseAsInt32(this String s, NumberStyles numberStyles = NumberStyles.None)
-            => Int32.Parse(s, numberStyles | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture.NumberFormat);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return Int32.Parse(s, numberStyles | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture.NumberFormat);
+        }
 
         /// <summary>
         /// 文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="UInt32"/> 型に変換します。
@@ -27,7 +31,11 @@ namespace Palmtree.Numerics
         /// <returns>変換された <see cref="UInt32"/> 値です。</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ParseAsUint32(this String s, NumberStyles numberStyles = NumberStyles.None)
-            => UInt32.Parse(s, numberStyles, CultureInfo.InvariantCulture.NumberFormat);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return UInt32.Parse(s, numberStyles, CultureInfo.InvariantCulture.NumberFormat);
+        }
 
         /// <summary>
         /// 文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="Int64"/> 型に変換します。
@@ -37,7 +45,11 @@ namespace Palmtree.Numerics
         /// <returns>変換された <see cref="Int64"/> 値です。</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ParseAsInt64(this String s, NumberStyles numberStyles = NumberStyles.None)
-            => Int64.Parse(s, numberStyles | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture.NumberFormat);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return Int64.Parse(s, numberStyles | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture.NumberFormat);
+        }
 
         /// <summary>
         /// 文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="UInt64"/> 型に変換します。
@@ -47,7 +59,11 @@ namespace Palmtree.Numerics
         /// <returns>変換された <see cref="UInt64"/> 値です。</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ParseAsUint64(this String s, NumberStyles numberStyles = NumberStyles.None)
-            => UInt64.Parse(s, numberStyles, CultureInfo.InvariantCulture.NumberFormat);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return UInt64.Parse(s, numberStyles, CultureInfo.InvariantCulture.NumberFormat);
+        }
 
         /// <summary>
         /// 固定小数点形式の文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="Double"/> 型に変換します。
@@ -57,7 +73,11 @@ namespace Palmtree.Numerics
         /// <returns>変換された <see cref="Double"/> 値です。</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ParseAsDouble(this String s, NumberStyles numberStyles = NumberStyles.None)
-            => Double.Parse(s, numberStyles | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture.NumberFormat);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return Double.Parse(s, numberStyles | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture.NumberFormat);
+        }
 
         /// <summary>
         /// 分数形式の文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="Int32"/> 型の分子と分母に変換します。
@@ -71,6 +91,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (Int32 numerator, Int32 denominator) ParseAsInt32Fraction(this String s)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
@@ -90,6 +112,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (UInt32 numerator, UInt32 denominator) ParseAsUInt32Fraction(this String s)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
@@ -109,6 +133,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (Int64 numerator, Int64 denominator) ParseAsInt64Fraction(this String s)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
@@ -128,6 +154,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static (UInt64 numerator, UInt64 denominator) ParseAsUInt64Fraction(this String s)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
                 throw new FormatException($"Expected a string in fraction format.: \"{s}\"");
@@ -149,7 +177,11 @@ namespace Palmtree.Numerics
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean TryParse(this String s, out Int32 value)
-            => Int32.TryParse(s, NumberStyles.AllowLeadingSign | NumberStyles.AllowTrailingSign, CultureInfo.InvariantCulture.NumberFormat, out value);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return Int32.TryParse(s, NumberStyles.AllowLeadingSign | NumberStyles.AllowTrailingSign, CultureInfo.InvariantCulture.NumberFormat, out value);
+        }
 
         /// <summary>
         /// 文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="UInt32"/> 値に変換します。
@@ -161,7 +193,11 @@ namespace Palmtree.Numerics
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean TryParse(this String s, out UInt32 value)
-            => UInt32.TryParse(s, NumberStyles.None, CultureInfo.InvariantCulture.NumberFormat, out value);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return UInt32.TryParse(s, NumberStyles.None, CultureInfo.InvariantCulture.NumberFormat, out value);
+        }
 
         /// <summary>
         /// 文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="Int64"/> 値に変換します。
@@ -173,7 +209,11 @@ namespace Palmtree.Numerics
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean TryParse(this String s, out Int64 value)
-            => Int64.TryParse(s, NumberStyles.AllowLeadingSign | NumberStyles.AllowTrailingSign, CultureInfo.InvariantCulture.NumberFormat, out value);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return Int64.TryParse(s, NumberStyles.AllowLeadingSign | NumberStyles.AllowTrailingSign, CultureInfo.InvariantCulture.NumberFormat, out value);
+        }
 
         /// <summary>
         /// 文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="UInt64"/> 値に変換します。
@@ -185,7 +225,11 @@ namespace Palmtree.Numerics
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean TryParse(this String s, out UInt64 value)
-            => UInt64.TryParse(s, NumberStyles.None, CultureInfo.InvariantCulture.NumberFormat, out value);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return UInt64.TryParse(s, NumberStyles.None, CultureInfo.InvariantCulture.NumberFormat, out value);
+        }
 
         /// <summary>
         /// 固定小数点形式の文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="Double"/> 値に変換します。
@@ -197,7 +241,11 @@ namespace Palmtree.Numerics
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean TryParse(this String s, out Double value)
-            => Double.TryParse(s, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture.NumberFormat, out value);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            return Double.TryParse(s, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture.NumberFormat, out value);
+        }
 
         /// <summary>
         /// 分数形式の文字列で表現された数値を <see cref="CultureInfo.InvariantCulture"/> の書式情報に基づいて <see cref="Int32"/> 型の分子と分母に変換します。
@@ -210,6 +258,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out Int32 numerator, out Int32 denominator)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
@@ -234,6 +284,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out UInt32 numerator, out UInt32 denominator)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
@@ -258,6 +310,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out Int64 numerator, out Int64 denominator)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
@@ -282,6 +336,8 @@ namespace Palmtree.Numerics
         /// </returns>
         public static Boolean TryParse(this String s, out UInt64 numerator, out UInt64 denominator)
         {
+            ArgumentNullException.ThrowIfNull(s);
+
             var match = GetRationalNumberPattern().Match(s);
             if (!match.Success)
             {
@@ -295,8 +351,7 @@ namespace Palmtree.Numerics
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"^(?<numerator>-?\d+)/(?<denominator>\d+)$", RegexOptions.Compiled)]
+        [GeneratedRegex(@"^(?<numerator>-?\d+)/(?<denominator>\d+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetRationalNumberPattern();
 
         #endregion

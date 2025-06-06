@@ -21,8 +21,7 @@ namespace Palmtree
         public ProgressCounterUInt64(Action<UInt64> action)
             : base(action, 0, TimeSpan.Zero)
         {
-            if (action is null)
-                throw new ArgumentNullException(nameof(action));
+            ArgumentNullException.ThrowIfNull(action);
         }
 
         /// <summary>
@@ -55,10 +54,8 @@ namespace Palmtree
         public ProgressCounterUInt64(Action<UInt64> action, TimeSpan minimumIntervalTime)
             : base(action, 0, minimumIntervalTime)
         {
-            if (action is null)
-                throw new ArgumentNullException(nameof(action));
-            if (minimumIntervalTime < TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException(nameof(minimumIntervalTime));
+            ArgumentNullException.ThrowIfNull(action);
+            ArgumentOutOfRangeException.ThrowIfLessThan(minimumIntervalTime, TimeSpan.Zero);
         }
 
         /// <summary>
@@ -77,8 +74,7 @@ namespace Palmtree
         public ProgressCounterUInt64(IProgress<UInt64>? progress, TimeSpan minimumIntervalTime)
             : base(progress, 0, minimumIntervalTime)
         {
-            if (minimumIntervalTime < TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException(nameof(minimumIntervalTime));
+            ArgumentOutOfRangeException.ThrowIfLessThan(minimumIntervalTime, TimeSpan.Zero);
         }
 
         /// <summary>

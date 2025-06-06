@@ -21,8 +21,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return IsMultiVolumeZipStreamCore;
             }
@@ -30,8 +29,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public ZipStreamPosition? GetPosition(UInt32 diskNumber, UInt64 offsetOnTheDisk)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return
                 ValidatePositionCore(diskNumber, offsetOnTheDisk)
@@ -43,8 +41,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return LastDiskStartPositionCore;
             }
@@ -54,8 +51,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return LastDiskSizeCore;
             }
@@ -63,33 +59,29 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Boolean CheckIfCanAtomicRead(UInt64 minimumAtomicDataSize)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return CheckIfCanAtmicReadCore(minimumAtomicDataSize);
         }
 
         public void LockVolumeDisk()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockVolumeDiskCore();
         }
 
         public void UnlockVolumeDisk()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             UnlockVolumeDiskCore();
         }
 
         public ZipStreamPosition Add(ZipStreamPosition position, UInt64 offset)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position.Host));
             try
             {
                 return AddCore(position.DiskNumber, position.OffsetOnTheDisk, offset);
@@ -102,9 +94,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public ZipStreamPosition Subtract(ZipStreamPosition position, UInt64 offset)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position.Host));
             try
             {
                 return SubtractCore(position.DiskNumber, position.OffsetOnTheDisk, offset);
@@ -117,10 +108,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public UInt64 Subtract(ZipStreamPosition position1, ZipStreamPosition position2)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
-            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position1.Host));
+            Validation.Assert(Equals(position2.Host));
             try
             {
                 return SubtractCore(position1.DiskNumber, position1.OffsetOnTheDisk, position2.DiskNumber, position2.OffsetOnTheDisk);
@@ -133,10 +123,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Int32 Compare(ZipStreamPosition position1, ZipStreamPosition position2)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
-            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position1.Host));
+            Validation.Assert(Equals(position2.Host));
             var (diskNumber1, offsetOnTheDisk1) = NormalizeCore(position1.DiskNumber, position1.OffsetOnTheDisk);
             var (diskNumber2, offsetOnTheDisk2) = NormalizeCore(position2.DiskNumber, position2.OffsetOnTheDisk);
             var c = diskNumber1.CompareTo(diskNumber2);
@@ -147,10 +136,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Boolean Equal(ZipStreamPosition position1, ZipStreamPosition position2)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
-            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position1.Host));
+            Validation.Assert(Equals(position2.Host));
             var (diskNumber1, offsetOnTheDisk1) = NormalizeCore(position1.DiskNumber, position1.OffsetOnTheDisk);
             var (diskNumber2, offsetOnTheDisk2) = NormalizeCore(position2.DiskNumber, position2.OffsetOnTheDisk);
 
@@ -161,9 +149,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Int32 GetHashCode(ZipStreamPosition position)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position.Host));
             var (diskNumber, offsetOnTheDisk) = NormalizeCore(position.DiskNumber, position.OffsetOnTheDisk);
             return HashCode.Combine(diskNumber, offsetOnTheDisk);
         }
@@ -177,8 +164,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return new ZipStreamPosition(0, 0, this);
             }
@@ -186,7 +172,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override void SeekCore(ZipStreamPosition position)
         {
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            Validation.Assert(Equals(position.Host));
             SeekCore(position.DiskNumber, position.OffsetOnTheDisk);
         }
 

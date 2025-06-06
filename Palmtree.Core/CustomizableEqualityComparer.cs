@@ -42,8 +42,7 @@ namespace Palmtree
 
         public Int32 GetHashCode(VALUE_T obj)
         {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
+            ArgumentNullException.ThrowIfNull(obj);
 
             return _hashCalculater(obj);
         }

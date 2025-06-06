@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class ExpansionBadArgumentExceptionException
+    internal sealed class ExpansionBadArgumentExceptionException
         : Exception
     {
         public ExpansionBadArgumentExceptionException(String message)

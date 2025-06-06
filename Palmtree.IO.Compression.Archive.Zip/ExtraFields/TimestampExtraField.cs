@@ -33,7 +33,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             set
             {
                 _lastWriteTimeUtc = value?.ToUniversalTime();
-                Validation.Assert(_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero, "_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero);
             }
         }
 
@@ -44,7 +44,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             set
             {
                 _lastAccessTimeUtc = value?.ToUniversalTime();
-                Validation.Assert(_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero, "_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             set
             {
                 _creationTimeUtc = value?.ToUniversalTime();
-                Validation.Assert(_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero, "_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero);
             }
         }
 

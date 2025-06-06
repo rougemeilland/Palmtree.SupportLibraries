@@ -12,22 +12,17 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(), array2.AsReadOnlySpan());
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(), array2.AsReadOnlySpan(), equalityComparer);
         }
@@ -35,26 +30,19 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(), array2.AsReadOnlySpan(), keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(), array2.AsReadOnlySpan(), keySelecter, keyEqualityComparer);
         }
@@ -63,42 +51,31 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, Int32 array1Offset, ELEMENT_T[] array2, Int32 array2Offset, Int32 count)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(array1Offset + count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array2.Length - array2Offset);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(array1Offset, count), array2.AsReadOnlySpan(array2Offset, count));
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, Int32 array1Offset, ELEMENT_T[] array2, Int32 array2Offset, Int32 count, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
-            if (checked(array1Offset + count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array2.Length - array2Offset);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(array1Offset, count), array2.AsReadOnlySpan(array2Offset, count), equalityComparer);
         }
@@ -106,46 +83,33 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Int32 array1Offset, ELEMENT_T[] array2, Int32 array2Offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (checked(array1Offset + count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array2.Length - array2Offset);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(array1Offset, count), array2.AsReadOnlySpan(array2Offset, count), keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Int32 array1Offset, ELEMENT_T[] array2, Int32 array2Offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
-            if (checked(array1Offset + count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array2.Length - array2Offset);
 
             return InternalSequenceEqual(array1.AsReadOnlySpan(array1Offset, count), array2.AsReadOnlySpan(array2Offset, count), keySelecter, keyEqualityComparer);
         }
@@ -154,14 +118,12 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, UInt32 array1Offset, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 count)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (checked(array1Offset + count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array2.Length - array2Offset);
 
             return
                 InternalSequenceEqual(array1.AsReadOnlySpan(
@@ -171,16 +133,13 @@ namespace Palmtree
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, UInt32 array1Offset, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 count, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
-            if (checked(array1Offset + count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array2.Length - array2Offset);
 
             return
                 InternalSequenceEqual(array1.AsReadOnlySpan(
@@ -192,16 +151,13 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, UInt32 array1Offset, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (checked(array1Offset + count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array2.Length - array2Offset);
 
             return
                 InternalSequenceEqual(array1.AsReadOnlySpan(
@@ -212,18 +168,14 @@ namespace Palmtree
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, UInt32 array1Offset, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
-            if (checked(array1Offset + count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)array2.Length - array2Offset);
 
             return
                 InternalSequenceEqual(array1.AsReadOnlySpan(
@@ -235,10 +187,8 @@ namespace Palmtree
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, equalityComparer);
         }
@@ -246,22 +196,17 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyEqualityComparer);
         }
@@ -270,18 +215,15 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
+            ArgumentNullException.ThrowIfNull(array1);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2, equalityComparer);
         }
@@ -289,22 +231,17 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter, keyEqualityComparer);
         }
@@ -313,18 +250,15 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array2);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, equalityComparer);
         }
@@ -332,30 +266,24 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyEqualityComparer);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this Span<ELEMENT_T> array1, Span<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, equalityComparer);
         }
@@ -363,26 +291,22 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyEqualityComparer);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this Span<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2, equalityComparer);
         }
@@ -390,18 +314,15 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter, keyEqualityComparer);
         }
@@ -410,18 +331,15 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array2);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2, equalityComparer);
         }
@@ -429,30 +347,24 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyEqualityComparer);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, Span<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2, equalityComparer);
         }
@@ -460,26 +372,22 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyEqualityComparer);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return InternalSequenceEqual(array1, array2, equalityComparer);
         }
@@ -487,18 +395,15 @@ namespace Palmtree
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceEqual(array1, array2, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return InternalSequenceEqual(array1, array2, keySelecter, keyEqualityComparer);
         }
@@ -597,14 +502,14 @@ namespace Palmtree
                 {
                     // 64 bit で動作しており、かつ ELEMENT_T のアラインメント境界が 8 である場合
 
-                    Validation.Assert(sizeof(ELEMENT_T) is 8 or 16, "sizeof(ELEMENT_T) is 8 or 16");
+                    Validation.Assert(sizeof(ELEMENT_T) is 8 or 16);
                     return InternalSequenceEqualUnmanaged((UInt64*)pointer1, (UInt64*)pointer2, unchecked((Int32)((UInt32)count * (sizeof(ELEMENT_T) / sizeof(UInt64)))));
                 }
                 else if (sizeof(ELEMENT_T) >= 4)
                 {
                     // ELEMENT_T のアラインメント境界が 4 である場合
 
-                    Validation.Assert(sizeof(ELEMENT_T) == 4, "sizeof(ELEMENT_T) == 4");
+                    Validation.Assert(sizeof(ELEMENT_T) == 4);
                     if (sizeof(void*) >= 8 && ((UInt32)pointer1 & 0x07) == 0 && ((UInt32)pointer2 & 0x07) == 0 && ((UInt32)count & 0x01) == 0)
                     {
                         // 64 bit で動作しており、かつ pointer1 および pointer2 が 8の倍数であり、かつ array1Length が 2 の倍数である場合
@@ -622,7 +527,7 @@ namespace Palmtree
                 {
                     // ELEMENT_T のアラインメント境界が 2 である場合
 
-                    Validation.Assert(sizeof(ELEMENT_T) == 2, "sizeof(ELEMENT_T) == 2");
+                    Validation.Assert(sizeof(ELEMENT_T) == 2);
                     if (sizeof(void*) >= 8 && ((UInt32)pointer1 & 0x07) == 0 && ((UInt32)pointer2 & 0x07) == 0 && ((UInt32)count & 0x03) == 0)
                     {
                         // 64 bit で動作しており、かつ pointer1 および pointer2 が 8の倍数であり、かつ array1Length が 4 の倍数である場合
@@ -647,7 +552,7 @@ namespace Palmtree
                 {
                     // ELEMENT_T のアラインメント境界が 1 である場合
 
-                    Validation.Assert(sizeof(ELEMENT_T) == 1, "sizeof(ELEMENT_T) == 1");
+                    Validation.Assert(sizeof(ELEMENT_T) == 1);
                     if (sizeof(void*) >= 8 && ((UInt32)pointer1 & 0x07) == 0 && ((UInt32)pointer2 & 0x07) == 0 && ((UInt32)count & 0x07) == 0)
                     {
                         // 64 bit で動作しており、かつ pointer1 および pointer2 が 8の倍数であり、かつ array1Length が 8 の倍数である場合

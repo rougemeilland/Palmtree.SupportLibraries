@@ -82,8 +82,8 @@ namespace Palmtree
         public ProgressValueHolder(Action<VALUE_T> action, VALUE_T initialCounterValue, TimeSpan minimumIntervalTime)
             : this(new SimpleProgress<VALUE_T>(action), initialCounterValue, minimumIntervalTime)
         {
-            if (!minimumIntervalTime.IsBetween(_minimumValueOfInterval, _maximumValueOfInterval))
-                throw new ArgumentOutOfRangeException(nameof(minimumIntervalTime));
+            ArgumentOutOfRangeException.ThrowIfLessThan(minimumIntervalTime, _minimumValueOfInterval);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(minimumIntervalTime, _maximumValueOfInterval);
 
             _action = action ?? throw new ArgumentNullException(nameof(action));
             _minimumStepTimeMilliSeconds = checked((Int32)minimumIntervalTime.TotalMilliseconds);
@@ -110,8 +110,8 @@ namespace Palmtree
         /// </exception>
         public ProgressValueHolder(IProgress<VALUE_T>? progress, VALUE_T initialCounterValue, TimeSpan minimumIntervalTime)
         {
-            if (!minimumIntervalTime.IsBetween(_minimumValueOfInterval, _maximumValueOfInterval))
-                throw new ArgumentOutOfRangeException(nameof(minimumIntervalTime));
+            ArgumentOutOfRangeException.ThrowIfLessThan(minimumIntervalTime, _minimumValueOfInterval);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(minimumIntervalTime, _maximumValueOfInterval);
 
             _action = value => progress?.Report(value);
             _minimumStepTimeMilliSeconds = checked((Int32)minimumIntervalTime.TotalMilliseconds);

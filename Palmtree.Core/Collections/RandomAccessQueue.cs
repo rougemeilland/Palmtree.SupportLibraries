@@ -23,8 +23,7 @@ namespace Palmtree.Collections
 
         public RandomAccessQueue(IEnumerable<ELEMENT_T> dataSource)
         {
-            if (dataSource is null)
-                throw new ArgumentNullException(nameof(dataSource));
+            ArgumentNullException.ThrowIfNull(dataSource);
 
             _queue = new SortedDictionary<UInt64, ELEMENT_T>();
             _indexOfStart = 0;
@@ -73,8 +72,8 @@ namespace Palmtree.Collections
         {
             get
             {
-                if (!index.InRange(0, _queue.Count))
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, _queue.Count);
 
                 try
                 {
@@ -122,7 +121,7 @@ namespace Palmtree.Collections
                     var firstKey = _queue.Keys.First();
                     foreach (var item in _queue)
                     {
-                        Validation.Assert(item.Key >= firstKey, "item.Key >= firstKey");
+                        Validation.Assert(item.Key >= firstKey);
                         _ = _queue.Remove(item.Key);
                         _queue[item.Key - firstKey] = item.Value;
                     }

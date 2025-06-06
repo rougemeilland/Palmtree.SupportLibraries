@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipEntryHeader
+    internal sealed class ZipEntryHeader
     {
         public ZipEntryHeader(ZipEntryCentralDirectoryHeader centralDirectoryHeader, ZipEntryLocalHeader localHeader)
         {

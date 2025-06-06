@@ -12,10 +12,8 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
 
             return
                 InternalSequenceCompare(
@@ -25,12 +23,9 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2, IComparer<ELEMENT_T> comparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return
                 InternalSequenceCompare(
@@ -42,12 +37,9 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return
                 InternalSequenceCompare(
@@ -58,14 +50,10 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return
                 InternalSequenceCompare(
@@ -79,13 +67,11 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, Range array1Range, ELEMENT_T[] array2, Range array2Range)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
 
-            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range, nameof(array1Range));
-            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range, nameof(array2Range));
+            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range);
+            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range);
             return
                 InternalSequenceCompare(
                     array1.AsReadOnlySpan(array1Offset, array1Count),
@@ -94,15 +80,12 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, Range array1Range, ELEMENT_T[] array2, Range array2Range, IComparer<ELEMENT_T> comparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(comparer);
 
-            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range, nameof(array1Range));
-            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range, nameof(array2Range));
+            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range);
+            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range);
             return
                 InternalSequenceCompare(
                     array1.AsReadOnlySpan(array1Offset, array1Count),
@@ -113,15 +96,12 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Range array1Range, ELEMENT_T[] array2, Range array2Range, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
-            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range, nameof(array1Range));
-            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range, nameof(array2Range));
+            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range);
+            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range);
             return
                 InternalSequenceCompare(
                     array1.AsReadOnlySpan(array1Offset, array1Count),
@@ -131,17 +111,13 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Range array1Range, ELEMENT_T[] array2, Range array2Range, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
-            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range, nameof(array1Range));
-            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range, nameof(array2Range));
+            var (array1Offset, array1Count) = array1.GetOffsetAndLength(array1Range);
+            var (array2Offset, array2Count) = array2.GetOffsetAndLength(array2Range);
             return
                 InternalSequenceCompare(
                     array1.AsReadOnlySpan(array1Offset, array1Count),
@@ -154,22 +130,16 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Count, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array1Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Count));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (array2Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Count));
-            if (checked(array1Offset + array1Count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Count);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, array2.Length - array2Offset);
 
             return
                 InternalSequenceCompare(
@@ -179,24 +149,17 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Count, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Count, IComparer<ELEMENT_T> comparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array1Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Count));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (array2Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Count));
-            if (checked(array1Offset + array1Count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Count);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, array2.Length - array2Offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return
                 InternalSequenceCompare(
@@ -208,24 +171,17 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Count, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array1Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Count));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (array2Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Count));
-            if (checked(array1Offset + array1Count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Count);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, array2.Length - array2Offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return
                 InternalSequenceCompare(
@@ -236,26 +192,18 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Int32 array1Offset, Int32 array1Count, ELEMENT_T[] array2, Int32 array2Offset, Int32 array2Count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array1Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Offset));
-            if (array1Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array1Count));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (array2Offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Offset));
-            if (array2Count < 0)
-                throw new ArgumentOutOfRangeException(nameof(array2Count));
-            if (checked(array1Offset + array1Count) > array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array1Count);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(array2Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, array2.Length - array2Offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return
                 InternalSequenceCompare(
@@ -269,14 +217,12 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, UInt32 array1Offset, UInt32 array1Count, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 array2Count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (checked(array1Offset + array1Count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, (UInt32)array2.Length - array2Offset);
 
             return
                 InternalSequenceCompare(
@@ -286,16 +232,13 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, UInt32 array1Offset, UInt32 array1Count, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 array2Count, IComparer<ELEMENT_T> comparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (checked(array1Offset + array1Count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, (UInt32)array2.Length - array2Offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return
                 InternalSequenceCompare(
@@ -307,16 +250,13 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, UInt32 array1Offset, UInt32 array1Count, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 array2Count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (checked(array1Offset + array1Count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, (UInt32)array2.Length - array2Offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return
                 InternalSequenceCompare(
@@ -327,18 +267,14 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, UInt32 array1Offset, UInt32 array1Count, ELEMENT_T[] array2, UInt32 array2Offset, UInt32 array2Count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (checked(array1Offset + array1Count) > (UInt32)array1.Length)
-                throw new ArgumentException($"The specified range ({nameof(array1Offset)} and {nameof(array1Count)}) is not within the {nameof(array1)}.");
-            if (checked(array2Offset + array2Count) > (UInt32)array2.Length)
-                throw new ArgumentException($"The specified range ({nameof(array2Offset)} and {nameof(array2Count)}) is not within the {nameof(array2)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Offset, (UInt32)array1.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array1Count, (UInt32)array1.Length - array1Offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Offset, (UInt32)array2.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(array2Count, (UInt32)array2.Length - array2Offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return
                 InternalSequenceCompare(
@@ -352,18 +288,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
+            ArgumentNullException.ThrowIfNull(array1);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, comparer);
         }
@@ -371,22 +304,17 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyComparer);
         }
@@ -395,18 +323,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
+            ArgumentNullException.ThrowIfNull(array1);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2, comparer);
         }
@@ -414,22 +339,17 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array1 is null)
-                throw new ArgumentNullException(nameof(array1));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array1);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter, keyComparer);
         }
@@ -438,18 +358,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array2);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2, IComparer<ELEMENT_T> comparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, comparer);
         }
@@ -457,22 +374,17 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyComparer);
         }
@@ -484,8 +396,7 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> array1, Span<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, comparer);
         }
@@ -493,18 +404,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyComparer);
         }
@@ -516,8 +424,7 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2, comparer);
         }
@@ -525,18 +432,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare((ReadOnlySpan<ELEMENT_T>)array1, array2, keySelecter, keyComparer);
         }
@@ -545,18 +449,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
+            ArgumentNullException.ThrowIfNull(array2);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2, IComparer<ELEMENT_T> comparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2, comparer);
         }
@@ -564,22 +465,17 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ELEMENT_T[] array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (array2 is null)
-                throw new ArgumentNullException(nameof(array2));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(array2);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyComparer);
         }
@@ -591,8 +487,7 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, Span<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2, comparer);
         }
@@ -600,18 +495,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, Span<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare(array1, (ReadOnlySpan<ELEMENT_T>)array2, keySelecter, keyComparer);
         }
@@ -623,8 +515,7 @@ namespace Palmtree
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IComparer<ELEMENT_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return InternalSequenceCompare(array1, array2, comparer);
         }
@@ -632,18 +523,15 @@ namespace Palmtree
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return InternalSequenceCompare(array1, array2, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return InternalSequenceCompare(array1, array2, keySelecter, keyComparer);
         }
@@ -655,8 +543,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompare<ELEMENT_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, IComparer<ELEMENT_T> keyComparer)
         {
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var count = array1.Length.Minimum(array2.Length);
             for (var index = 0; index < count; index++)
@@ -673,8 +560,7 @@ namespace Palmtree
         private static Int32 InternalSequenceCompare<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var count = array1.Length.Minimum(array2.Length);
             for (var index = 0; index < count; index++)
@@ -690,10 +576,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 InternalSequenceCompare<ELEMENT_T, KEY_T>(ReadOnlySpan<ELEMENT_T> array1, ReadOnlySpan<ELEMENT_T> array2, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var count = array1.Length.Minimum(array2.Length);
             for (var index = 0; index < count; index++)

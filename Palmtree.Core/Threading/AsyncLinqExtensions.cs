@@ -10,8 +10,7 @@ namespace Palmtree.Threading
     {
         public static IEnumerable<ELEMENT_T> AsSync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             try
@@ -32,10 +31,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> AggregateAsync<ELEMENT_T>(IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, ELEMENT_T, ELEMENT_T> func, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (func is null)
-                throw new ArgumentNullException(nameof(func));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(func);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -57,10 +54,8 @@ namespace Palmtree.Threading
 
         public static async Task<ACCUMULATE_T> AggregateAsync<ELEMENT_T, ACCUMULATE_T>(this IAsyncEnumerable<ELEMENT_T> source, ACCUMULATE_T seed, Func<ACCUMULATE_T, ELEMENT_T, ACCUMULATE_T> func, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (func is null)
-                throw new ArgumentNullException(nameof(func));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(func);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -79,12 +74,9 @@ namespace Palmtree.Threading
 
         public static async Task<RESULT_T> AggregateAsync<ELEMENT_T, ACCUMULATE_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, ACCUMULATE_T seed, Func<ACCUMULATE_T, ELEMENT_T, ACCUMULATE_T> func, Func<ACCUMULATE_T, RESULT_T> resultSelector, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (func is null)
-                throw new ArgumentNullException(nameof(func));
-            if (resultSelector is null)
-                throw new ArgumentNullException(nameof(resultSelector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(func);
+            ArgumentNullException.ThrowIfNull(resultSelector);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -105,10 +97,8 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> AllAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -129,8 +119,7 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> AnyAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -142,10 +131,8 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> AnyAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -166,8 +153,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Append<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T element, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -185,10 +171,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T[]> ChunkAsArray<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Int32 size, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (size <= 0)
-                throw new ArgumentOutOfRangeException(nameof(size));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
 
             var buffer = new List<ELEMENT_T>();
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -214,10 +198,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ReadOnlyMemory<ELEMENT_T>> ChunkAsReadOnlyMemory<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Int32 size, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (size <= 0)
-                throw new ArgumentOutOfRangeException(nameof(size));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
 
             var buffer = new List<ELEMENT_T>();
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -243,10 +225,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Concat<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
 
             {
                 var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
@@ -280,8 +260,7 @@ namespace Palmtree.Threading
         public static async Task<Boolean> ContainsAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T value, CancellationToken cancellationToken = default)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -309,10 +288,8 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> ContainsAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T value, IEqualityComparer<ELEMENT_T> equalityComparer, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -335,8 +312,7 @@ namespace Palmtree.Threading
 
         public static async Task<Int32> CountAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -359,10 +335,8 @@ namespace Palmtree.Threading
 
         public static async Task<Int32> CountAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -390,10 +364,8 @@ namespace Palmtree.Threading
 
         public static IComparer<VALUE_T> CreateComparer<VALUE_T>(this IAsyncEnumerable<VALUE_T> source, Func<VALUE_T, VALUE_T, Int32> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return new CustomizableComparer<VALUE_T>(comparer);
         }
@@ -403,8 +375,7 @@ namespace Palmtree.Threading
         public static async IAsyncEnumerable<ELEMENT_T> Distinct<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, [EnumeratorCancellation] CancellationToken cancellationToken = default)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -423,10 +394,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Distinct<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, IEqualityComparer<ELEMENT_T> equalityComparer, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -446,10 +415,8 @@ namespace Palmtree.Threading
         public static async IAsyncEnumerable<ELEMENT_T> Distinct<ELEMENT_T, KEY_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
             where ELEMENT_T : IEquatable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelector is null)
-                throw new ArgumentNullException(nameof(keySelector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelector);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -468,12 +435,9 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Distinct<ELEMENT_T, KEY_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IEqualityComparer<KEY_T> keyEqualityComparer, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelector is null)
-                throw new ArgumentNullException(nameof(keySelector));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelector);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -496,8 +460,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> FirstAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -512,10 +475,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> FirstAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -530,8 +491,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T?> FirstOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -546,8 +506,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> FirstOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T defaultValue, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -562,10 +521,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T?> FirstOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -585,10 +542,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> FirstOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, ELEMENT_T defaultValue, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -601,10 +556,8 @@ namespace Palmtree.Threading
 
         public static async Task ForEachAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Action<ELEMENT_T> action, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (action is null)
-                throw new ArgumentNullException(nameof(action));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(action);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -622,8 +575,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> LastAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -645,10 +597,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> LastAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -676,8 +626,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T?> LastOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -696,8 +645,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> LastOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T defaultValue, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -716,10 +664,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T?> LastOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -740,10 +686,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> LastOrDefaulAsynctAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, ELEMENT_T defaultValue, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -769,8 +713,7 @@ namespace Palmtree.Threading
         public static async Task<ELEMENT_T> MaxAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -795,10 +738,8 @@ namespace Palmtree.Threading
         public static async Task<RESULT_T> MaxAsync<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, RESULT_T> selector, CancellationToken cancellationToken = default)
             where RESULT_T : IComparable<RESULT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -822,10 +763,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> MaxAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> comparer, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -849,12 +788,9 @@ namespace Palmtree.Threading
 
         public static async Task<RESULT_T> MaxAsync<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, RESULT_T> selector, IComparer<RESULT_T> comparer, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -906,10 +842,8 @@ namespace Palmtree.Threading
         public static async Task<RESULT_T> MinAsync<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, RESULT_T> selector, CancellationToken cancellationToken = default)
             where RESULT_T : IComparable<RESULT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -933,10 +867,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> MinAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> comparer, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -960,12 +892,9 @@ namespace Palmtree.Threading
 
         public static async Task<RESULT_T> MinAsync<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, RESULT_T> selector, IComparer<RESULT_T> comparer, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -993,8 +922,7 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> NoneAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1006,10 +934,8 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> NoneAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1030,10 +956,8 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> NotAllAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1052,8 +976,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Prepend<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T element, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             yield return element;
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -1072,10 +995,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> Select<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, RESULT_T> selector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1091,10 +1012,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> Select<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int32, RESULT_T> selector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var index = 0;
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -1115,10 +1034,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> SelectMany<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, IAsyncEnumerable<RESULT_T>> selector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var enumerator1 = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator1.ConfigureAwait(false))
@@ -1144,10 +1061,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> SelectMany<ELEMENT_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int32, IAsyncEnumerable<RESULT_T>> selector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var index = 0;
             var enumerator1 = source.GetAsyncEnumerator(cancellationToken);
@@ -1174,12 +1089,9 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> SelectMany<ELEMENT_T, COLLECTION_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, IAsyncEnumerable<COLLECTION_T>> collectionSelector, Func<ELEMENT_T, COLLECTION_T, RESULT_T> resultSelector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (collectionSelector is null)
-                throw new ArgumentNullException(nameof(collectionSelector));
-            if (resultSelector is null)
-                throw new ArgumentNullException(nameof(resultSelector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(collectionSelector);
+            ArgumentNullException.ThrowIfNull(resultSelector);
 
             var enumerator1 = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator1.ConfigureAwait(false))
@@ -1205,12 +1117,9 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> SelectMany<ELEMENT_T, COLLECTION_T, RESULT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int32, IAsyncEnumerable<COLLECTION_T>> collectionSelector, Func<ELEMENT_T, COLLECTION_T, RESULT_T> resultSelector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (collectionSelector is null)
-                throw new ArgumentNullException(nameof(collectionSelector));
-            if (resultSelector is null)
-                throw new ArgumentNullException(nameof(resultSelector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(collectionSelector);
+            ArgumentNullException.ThrowIfNull(resultSelector);
 
             var index = 0;
             var enumerator1 = source.GetAsyncEnumerator(cancellationToken);
@@ -1242,10 +1151,8 @@ namespace Palmtree.Threading
         public static async Task<Int32> SequenceCompareAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, CancellationToken cancellationToken = default)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1289,12 +1196,9 @@ namespace Palmtree.Threading
 
         public static async Task<Int32> SequenceCompareAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, IComparer<ELEMENT_T> comparer, CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1331,12 +1235,9 @@ namespace Palmtree.Threading
         public static async Task<Int32> SequenceCompareAsync<ELEMENT_T, KEY_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, Func<ELEMENT_T, KEY_T> keySelecter, CancellationToken cancellationToken = default)
             where KEY_T : IComparable<KEY_T>
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1380,14 +1281,10 @@ namespace Palmtree.Threading
 
         public static async Task<Int32> SequenceCompareAsync<ELEMENT_T, KEY_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> comparer, CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1428,10 +1325,8 @@ namespace Palmtree.Threading
         public static async Task<Boolean> SequenceEqualAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, CancellationToken cancellationToken = default)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1477,12 +1372,9 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> SequenceEqualAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, IEqualityComparer<ELEMENT_T> equalityComparer, CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1551,14 +1443,10 @@ namespace Palmtree.Threading
 
         public static async Task<Boolean> SequenceEqualAsync<ELEMENT_T, KEY_T>(this IAsyncEnumerable<ELEMENT_T> first, IAsyncEnumerable<ELEMENT_T> second, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> equalityComparer, CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -1597,8 +1485,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> SingleAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1623,10 +1510,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> SingleAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1659,8 +1544,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T?> SingleOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1685,8 +1569,7 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> SingleOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, ELEMENT_T defaultValue, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1705,10 +1588,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T?> SingleOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1732,10 +1613,8 @@ namespace Palmtree.Threading
 
         public static async Task<ELEMENT_T> SingleOrDefaultAsync<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, ELEMENT_T defaultValue, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1761,8 +1640,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Skip<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Int32 count, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1789,8 +1667,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> SkipLast<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Int32 count, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var queue = new Queue<ELEMENT_T>();
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -1811,10 +1688,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> SkipWhile<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1843,10 +1718,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> SkipWhile<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int32, Boolean> predicate, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1878,8 +1751,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Take<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Int32 count, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1895,8 +1767,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> TakeLast<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Int32 count, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var queue = new Queue<ELEMENT_T>();
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -1923,10 +1794,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> TakeWhile<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1946,10 +1815,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> TakeWhile<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int32, Boolean> predicate, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1973,10 +1840,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Where<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -1994,10 +1859,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> Where<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int32, Boolean> predicate, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             var index = 0;
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
@@ -2016,8 +1879,7 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<ELEMENT_T> WhereNotNull<ELEMENT_T>(this IAsyncEnumerable<ELEMENT_T?> source, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -2037,12 +1899,9 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<RESULT_T> Zip<FIRST_T, SECOND_T, RESULT_T>(this IAsyncEnumerable<FIRST_T> first, IAsyncEnumerable<SECOND_T> second, Func<FIRST_T, SECOND_T, RESULT_T> resultSelector, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (resultSelector is null)
-                throw new ArgumentNullException(nameof(resultSelector));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(resultSelector);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -2068,10 +1927,8 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<(FIRST_T First, SECOND_T Second)> Zip<FIRST_T, SECOND_T>(this IAsyncEnumerable<FIRST_T> first, IAsyncEnumerable<SECOND_T> second, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))
@@ -2096,12 +1953,9 @@ namespace Palmtree.Threading
 
         public static async IAsyncEnumerable<(FIRST_T First, SECOND_T Second, THIRD_T Third)> Zip<FIRST_T, SECOND_T, THIRD_T>(this IAsyncEnumerable<FIRST_T> first, IAsyncEnumerable<SECOND_T> second, IAsyncEnumerable<THIRD_T> third, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-            if (third is null)
-                throw new ArgumentNullException(nameof(third));
+            ArgumentNullException.ThrowIfNull(first);
+            ArgumentNullException.ThrowIfNull(second);
+            ArgumentNullException.ThrowIfNull(third);
 
             var firstEnumerator = first.GetAsyncEnumerator(cancellationToken);
             await using (firstEnumerator.ConfigureAwait(false))

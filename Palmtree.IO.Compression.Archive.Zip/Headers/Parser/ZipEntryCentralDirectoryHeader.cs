@@ -6,7 +6,7 @@ using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipEntryCentralDirectoryHeader
+    internal sealed class ZipEntryCentralDirectoryHeader
          : ZipEntryInternalHeader
     {
         public const UInt32 MinimumHeaderSize = 46U;

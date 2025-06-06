@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialInputByteStreamWithCrc32Calculation
+    internal sealed class SequentialInputByteStreamWithCrc32Calculation
         : SequentialInputByteStreamFilter
     {
         private readonly ISequentialInputByteStream _baseStream;

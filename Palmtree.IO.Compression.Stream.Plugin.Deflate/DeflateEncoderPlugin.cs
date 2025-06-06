@@ -4,10 +4,10 @@ using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
-    internal class DeflateEncoderPlugin
+    internal sealed class DeflateEncoderPlugin
         : ICompressionCoder, ICompressionHierarchicalEncoder
     {
-        private class Encoder
+        private sealed class Encoder
             : HierarchicalEncoder
         {
             private Encoder(
@@ -20,12 +20,12 @@ namespace Palmtree.IO.Compression.Stream.Plugin
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static ISequentialOutputByteStream Create(
+            public static Encoder Create(
                 ISequentialOutputByteStream baseStream,
                 IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
                 Boolean leaveOpen,
                 CompressionLevel level)
-                => new Encoder(
+                => new(
                     baseStream,
                     progress,
                     leaveOpen,
@@ -40,10 +40,8 @@ namespace Palmtree.IO.Compression.Stream.Plugin
             IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress,
             Boolean leaveOpen)
         {
-            if (baseStream is null)
-                throw new ArgumentNullException(nameof(baseStream));
-            if (option is null)
-                throw new ArgumentNullException(nameof(option));
+            ArgumentNullException.ThrowIfNull(baseStream);
+            ArgumentNullException.ThrowIfNull(option);
             if (option is not ZipDeflateCompressionCoderOption deflateOption)
                 throw new ArgumentException($"Illegal {nameof(option)} data", nameof(option));
 

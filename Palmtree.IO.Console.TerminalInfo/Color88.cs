@@ -10,9 +10,9 @@ namespace Palmtree.IO.Console
     public readonly struct Color88
         : IEquatable<Color88>
     {
-        private static readonly Byte[] _rdbCubeTable = new[] { (Byte)0x0, (Byte)0x8b, (Byte)0xcd, (Byte)0xff };
+        private static readonly Byte[] _rdbCubeTable = [0x0, 0x8b, 0xcd, 0xff];
         private static readonly UInt16[] _rdbCubeBoundaries;
-        private static readonly Byte[] _grayScaleTable = new[] { (Byte)0x2e, (Byte)0x5c, (Byte)0x73, (Byte)0x8b, (Byte)0xa2, (Byte)0xb9, (Byte)0xd0, (Byte)0xe7 };
+        private static readonly Byte[] _grayScaleTable = [0x2e, 0x5c, 0x73, 0x8b, 0xa2, 0xb9, 0xd0, 0xe7];
         private readonly Byte _colorNumber;
 
         static Color88()
@@ -303,7 +303,7 @@ namespace Palmtree.IO.Console
                 ++rIndex;
             }
 
-            Validation.Assert(rIndex < _rdbCubeTable.Length, "rIndex < _rdbCubeTable.Length");
+            Validation.Assert(rIndex < _rdbCubeTable.Length);
 
             var gIndex = 0;
             while (gIndex < _rdbCubeTable.Length)
@@ -313,7 +313,7 @@ namespace Palmtree.IO.Console
                 ++gIndex;
             }
 
-            Validation.Assert(gIndex < _rdbCubeTable.Length, "gIndex < _rdbCubeTable.Length");
+            Validation.Assert(gIndex < _rdbCubeTable.Length);
 
             var bIndex = 0;
             while (bIndex < _rdbCubeTable.Length)
@@ -323,7 +323,7 @@ namespace Palmtree.IO.Console
                 ++bIndex;
             }
 
-            Validation.Assert(bIndex < _rdbCubeTable.Length, "bIndex < _rdbCubeTable.Length");
+            Validation.Assert(bIndex < _rdbCubeTable.Length);
 
             var colorNumber = (rIndex << 4) + (gIndex << 2) + (bIndex << 0) + 16;
             var rDistance = _rdbCubeTable[rIndex] - r;

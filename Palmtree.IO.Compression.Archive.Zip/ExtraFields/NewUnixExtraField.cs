@@ -183,7 +183,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 
         private static UInt32 FromBytesToUInt32LE(ReadOnlyMemory<Byte> buffer)
         {
-            Validation.Assert(buffer.Length <= sizeof(UInt32) && !buffer.IsEmpty, "buffer.Length <= sizeof(UInt32) && !buffer.IsEmpty");
+            Validation.Assert(buffer.Length <= sizeof(UInt32) && !buffer.IsEmpty);
             var data = buffer.Span;
             var value = 0U;
             for (var index = data.Length - 1; index >= 0; --index)

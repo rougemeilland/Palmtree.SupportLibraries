@@ -22,8 +22,7 @@ namespace Palmtree.IO
 
         public Int32 Write(ReadOnlySpan<Byte> buffer)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             var length = WriteCore(buffer);
             if (buffer.IsEmpty && length <= 0)
@@ -33,8 +32,7 @@ namespace Palmtree.IO
 
         public async Task<Int32> WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             var length = await WriteAsyncCore(buffer, cancellationToken).ConfigureAwait(false);
             if (buffer.IsEmpty && length <= 0)
@@ -44,16 +42,14 @@ namespace Palmtree.IO
 
         public void Flush()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             FlushCore();
         }
 
         public Task FlushAsync(CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return FlushAsyncCore(cancellationToken);
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialInputBitStreamBySequence
+    internal sealed class SequentialInputBitStreamBySequence
         : SequentialInputBitStreamBy
     {
         private readonly IEnumerator<Byte> _sourceSequenceEnumerator;
@@ -15,8 +15,7 @@ namespace Palmtree.IO.StreamFilters
         public SequentialInputBitStreamBySequence(IEnumerable<Byte> sourceSequence, BitPackingDirection bitPackingDirection)
             : base(bitPackingDirection)
         {
-            if (sourceSequence is null)
-                throw new ArgumentNullException(nameof(sourceSequence));
+            ArgumentNullException.ThrowIfNull(sourceSequence);
 
             _isDisposed = false;
             _sourceSequenceEnumerator = sourceSequence.GetEnumerator();

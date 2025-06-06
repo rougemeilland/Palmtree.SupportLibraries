@@ -10,9 +10,9 @@ namespace Palmtree.IO.Console
     public readonly struct Color256
         : IEquatable<Color256>
     {
-        private static readonly Byte[] _rdbCubeTable = new[] { (Byte)0x00, (Byte)0x5f, (Byte)0x87, (Byte)0xaf, (Byte)0xd7, (Byte)0xff };
+        private static readonly Byte[] _rdbCubeTable = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff];
         private static readonly UInt16[] _rdbCubeBoundaries;
-        private static readonly Byte[] _grayScaleTable = new[] { (Byte)0x08, (Byte)0x12, (Byte)0x1c, (Byte)0x26, (Byte)0x30, (Byte)0x3a, (Byte)0x44, (Byte)0x4e, (Byte)0x58, (Byte)0x62, (Byte)0x6c, (Byte)0x76, (Byte)0x80, (Byte)0x8a, (Byte)0x94, (Byte)0x9e, (Byte)0xa8, (Byte)0xb2, (Byte)0xbc, (Byte)0xc6, (Byte)0xd0, (Byte)0xda, (Byte)0xe4, (Byte)0xee };
+        private static readonly Byte[] _grayScaleTable = [0x08, 0x12, 0x1c, 0x26, 0x30, 0x3a, 0x44, 0x4e, 0x58, 0x62, 0x6c, 0x76, 0x80, 0x8a, 0x94, 0x9e, (Byte)0xa8, 0xb2, 0xbc, 0xc6, 0xd0, 0xda, 0xe4, 0xee];
         private readonly Byte _colorNumber;
 
         static Color256()
@@ -305,7 +305,7 @@ namespace Palmtree.IO.Console
                 ++rIndex;
             }
 
-            Validation.Assert(rIndex < _rdbCubeTable.Length, "rIndex < _rdbCubeTable.Length");
+            Validation.Assert(rIndex < _rdbCubeTable.Length);
 
             var gIndex = 0;
             while (gIndex < _rdbCubeTable.Length)
@@ -315,7 +315,7 @@ namespace Palmtree.IO.Console
                 ++gIndex;
             }
 
-            Validation.Assert(gIndex < _rdbCubeTable.Length, "gIndex < _rdbCubeTable.Length");
+            Validation.Assert(gIndex < _rdbCubeTable.Length);
 
             var bIndex = 0;
             while (bIndex < _rdbCubeTable.Length)
@@ -325,7 +325,7 @@ namespace Palmtree.IO.Console
                 ++bIndex;
             }
 
-            Validation.Assert(bIndex < _rdbCubeTable.Length, "bIndex < _rdbCubeTable.Length");
+            Validation.Assert(bIndex < _rdbCubeTable.Length);
 
             var colorNumber = rIndex * 36 + gIndex * 6 + bIndex + 16;
             var rDistance = _rdbCubeTable[rIndex] - r;

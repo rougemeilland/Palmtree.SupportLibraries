@@ -7,7 +7,7 @@ using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
-    internal class GenericStyleZipOutputStream
+    internal sealed class GenericStyleZipOutputStream
           : ZipOutputStream
     {
         private static readonly UInt64 _minimumAtomicDataSize;
@@ -48,8 +48,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public static IZipOutputStream CreateInstance(FilePath zipArchiveFile, UInt64 maximumVolumeSize)
         {
-            if (zipArchiveFile is null)
-                throw new ArgumentNullException(nameof(zipArchiveFile));
+            ArgumentNullException.ThrowIfNull(zipArchiveFile);
             if (maximumVolumeSize < _minimumAtomicDataSize)
                 throw new ArgumentOutOfRangeException($"Maximum volume size is too short. To create a ZIP archive, the maximum volume size must be at least {maximumVolumeSize:N0} bytes.");
 
@@ -104,13 +103,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override void LockVolumeDiskCore()
         {
-            Validation.Assert(!_isLocked, "!_isLocked");
+            Validation.Assert(!_isLocked);
             _isLocked = true;
         }
 
         protected override void UnlockVolumeDiskCore()
         {
-            Validation.Assert(_isLocked, "_isLocked");
+            Validation.Assert(_isLocked);
             _isLocked = false;
         }
 
@@ -148,7 +147,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override ZipStreamPosition AddCore(UInt32 diskNumber, UInt64 offsetOnTheDisk, UInt64 offset)
         {
-            Validation.Assert(diskNumber <= _volumeDisks.Count && (diskNumber < _volumeDisks.Count || offsetOnTheDisk <= _currentBaseStream.Length), "diskNumber <= _volumeDisks.Count && (diskNumber < _volumeDisks.Count || offsetOnTheDisk <= _currentBaseStream.Length)");
+            Validation.Assert(diskNumber <= _volumeDisks.Count && (diskNumber < _volumeDisks.Count || offsetOnTheDisk <= _currentBaseStream.Length));
             checked
             {
                 offsetOnTheDisk += offset;
@@ -172,7 +171,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override ZipStreamPosition SubtractCore(UInt32 diskNumber, UInt64 offsetOnTheDisk, UInt64 offset)
         {
-            Validation.Assert(diskNumber <= _volumeDisks.Count && (diskNumber < _volumeDisks.Count || offsetOnTheDisk <= _currentBaseStream.Length), "diskNumber <= _volumeDisks.Count && (diskNumber < _volumeDisks.Count || offsetOnTheDisk <= _currentBaseStream.Length)");
+            Validation.Assert(diskNumber <= _volumeDisks.Count && (diskNumber < _volumeDisks.Count || offsetOnTheDisk <= _currentBaseStream.Length));
             while (true)
             {
                 if (offsetOnTheDisk >= offset)
@@ -192,8 +191,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override UInt64 SubtractCore(UInt32 diskNumber1, UInt64 offsetOnTheDisk1, UInt32 diskNumber2, UInt64 offsetOnTheDisk2)
         {
-            Validation.Assert(diskNumber1 <= _volumeDisks.Count && (diskNumber1 < _volumeDisks.Count || offsetOnTheDisk1 <= _currentBaseStream.Length), "diskNumber1 <= _volumeDisks.Count && (diskNumber1 < _volumeDisks.Count || offsetOnTheDisk1 <= _currentBaseStream.Length)");
-            Validation.Assert(diskNumber2 <= _volumeDisks.Count && (diskNumber2 < _volumeDisks.Count || offsetOnTheDisk2 <= _currentBaseStream.Length), "diskNumber2 <= _volumeDisks.Count && (diskNumber2 < _volumeDisks.Count || offsetOnTheDisk2 <= _currentBaseStream.Length)");
+            Validation.Assert(diskNumber1 <= _volumeDisks.Count && (diskNumber1 < _volumeDisks.Count || offsetOnTheDisk1 <= _currentBaseStream.Length));
+            Validation.Assert(diskNumber2 <= _volumeDisks.Count && (diskNumber2 < _volumeDisks.Count || offsetOnTheDisk2 <= _currentBaseStream.Length));
             var minimumDiskNumber = diskNumber1.Minimum(diskNumber2);
             while (diskNumber1 > minimumDiskNumber)
             {
@@ -221,7 +220,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             if (diskNumber < _volumeDisks.Count)
             {
                 var volumeSize = _volumeDisks[diskNumber].volumeDiskSize;
-                Validation.Assert(offsetOnTheDisk <= volumeSize, "offsetOnTheDisk <= volumeSize");
+                Validation.Assert(offsetOnTheDisk <= volumeSize);
                 return
                     offsetOnTheDisk == volumeSize
                     ? (checked(diskNumber + 1), 0)
@@ -229,8 +228,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
             else
             {
-                Validation.Assert(diskNumber == _volumeDisks.Count, "diskNumber == _volumeDisks.Count");
-                Validation.Assert(offsetOnTheDisk <= _currentBaseStream.Length, "offsetOnTheDisk <= _currentBaseStream.Length");
+                Validation.Assert(diskNumber == _volumeDisks.Count);
+                Validation.Assert(offsetOnTheDisk <= _currentBaseStream.Length);
                 return (diskNumber, offsetOnTheDisk);
             }
         }
@@ -299,7 +298,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
-            Validation.Assert(diskNumber <= _volumeDisks.Count, "diskNumber <= _volumeDisks.Count");
+            Validation.Assert(diskNumber <= _volumeDisks.Count);
             return
                 diskNumber < _volumeDisks.Count
                 ? _volumeDisks[diskNumber].volumeDiskSize

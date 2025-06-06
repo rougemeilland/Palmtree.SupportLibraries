@@ -6,9 +6,9 @@ using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
 using Palmtree.IO.Compression.Stream.Plugin;
 
-namespace Test.ZipUtility.MultiVolume
+namespace Test.Zip.MultiVolume
 {
-    internal class Program
+    internal sealed class Program
     {
         static Program()
         {
@@ -102,7 +102,7 @@ namespace Test.ZipUtility.MultiVolume
                 for (var count = 1; count <= numberOfEntries; ++count)
                 {
                     Console.WriteLine($"書き込み中 {count}/{numberOfEntries}... \"{zipArchive.FullName}\"");
-                    var file = zipWriter.CreateEntry($"ファイル{count}.bin", new string(RandomSequence.GetAsciiCharSequence().Take(commentSize).ToArray()));
+                    var file = zipWriter.CreateEntry($"ファイル{count}.bin", new string([.. RandomSequence.GetAsciiCharSequence().Take(commentSize)]));
                     file.IsFile = true;
                     file.CreationTimeUtc = DateTime.Now;
                     file.LastAccessTimeUtc = DateTime.Now;
@@ -152,8 +152,7 @@ namespace Test.ZipUtility.MultiVolume
         {
             const ulong BUFFER_LENGTH = 1024UL * 1024UL;
 
-            if (contentLength < sizeof(uint) + sizeof(ulong))
-                throw new ArgumentOutOfRangeException(nameof(contentLength));
+            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (ulong)(sizeof(uint) + sizeof(ulong)));
 
             var crcHolder = new ValueHolder<(uint crc, ulong length)>();
             using var outStream1 = fileEntry.CreateContentStream();

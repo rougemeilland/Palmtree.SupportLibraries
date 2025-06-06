@@ -7,8 +7,7 @@ namespace Palmtree.IO
     {
         public static DirectoryPath GetBaseDirectory(this Assembly assembly)
         {
-            if (assembly is null)
-                throw new ArgumentNullException(nameof(assembly));
+            ArgumentNullException.ThrowIfNull(assembly);
 
 #pragma warning disable IL3000 // Avoid accessing Assembly file path when publishing as a single file
             // If published as a single file, assembly.Location returns an empty string.

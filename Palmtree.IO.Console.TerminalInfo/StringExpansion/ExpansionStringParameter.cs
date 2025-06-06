@@ -3,7 +3,7 @@ using Palmtree.Numerics;
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class ExpansionStringParameter
+    internal sealed class ExpansionStringParameter
         : ExpansionParameter
     {
         private readonly String _value;

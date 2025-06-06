@@ -30,8 +30,7 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static Int32 GetWidth(String s, CultureInfo? culture = null)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(s);
 
             return EastAsianWidth.GetWidth(s, culture ?? CultureInfo.CurrentCulture);
         }
@@ -67,10 +66,8 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static String ShrinkText(String s, Int32 width, String altStr, TextShrinkingStyle style, CultureInfo? culture = null)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            if (width <= 0)
-                throw new ArgumentOutOfRangeException(nameof(width));
+            ArgumentNullException.ThrowIfNull(s);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
             if (String.IsNullOrEmpty(altStr))
                 throw new ArgumentException($"'{nameof(altStr)}' must not be null or empty.", nameof(altStr));
 

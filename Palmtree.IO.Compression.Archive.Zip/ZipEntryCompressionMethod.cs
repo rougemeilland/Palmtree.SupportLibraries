@@ -9,7 +9,7 @@ using Palmtree.Threading;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
-    internal class ZipEntryCompressionMethod
+    internal sealed class ZipEntryCompressionMethod
     {
         private enum CoderType
         {
@@ -76,10 +76,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             UInt64 packedSize,
             IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress)
         {
-            if (baseStream is null)
-                throw new ArgumentNullException(nameof(baseStream));
-            if (decoderOption is null)
-                throw new ArgumentNullException(nameof(decoderOption));
+            ArgumentNullException.ThrowIfNull(baseStream);
+            ArgumentNullException.ThrowIfNull(decoderOption);
 
             return
                 InternalCreateDecoderStream(
@@ -95,10 +93,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
             ICoderOption encoderOption,
             IProgress<(UInt64 inUncompressedStreamProcessedCount, UInt64 outCompressedStreamProcessedCount)>? progress)
         {
-            if (baseStream is null)
-                throw new ArgumentNullException(nameof(baseStream));
-            if (encoderOption is null)
-                throw new ArgumentNullException(nameof(encoderOption));
+            ArgumentNullException.ThrowIfNull(baseStream);
+            ArgumentNullException.ThrowIfNull(encoderOption);
 
             return
                 InternalCreateEncoderStream(

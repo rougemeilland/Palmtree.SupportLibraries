@@ -114,7 +114,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(String csvText)
-            => Deserialize(csvText, new CsvSerializerOption { }).ToArray();
+            => [.. Deserialize(csvText, new CsvSerializerOption { })];
 
         /// <summary>
         /// 文字列からCSVデータへデシリアライズします。
@@ -129,7 +129,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(String csvText, CsvSerializerOption option)
-            => Deserialize(new StringReader(csvText), option).ToArray();
+            => [.. Deserialize(new StringReader(csvText), option)];
 
         /// <summary>
         /// ストリームからテキストを読み込んでCSVデータへデシリアライズします。
@@ -141,7 +141,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(TextReader reader)
-            => Deserialize(reader, new CsvSerializerOption { }).ToArray();
+            => [.. Deserialize(reader, new CsvSerializerOption { })];
 
         /// <summary>
         /// ストリームからテキストを読み込んでCSVデータへデシリアライズします。
@@ -156,7 +156,7 @@ namespace Palmtree.IO.Serialization
         /// CSVデータを表す列挙子です。
         /// </returns>
         public static IEnumerable<IEnumerable<String>> Deserialize(TextReader reader, CsvSerializerOption option)
-            => DeserializeRows(new BuffetredTextReader(reader, 2), option).ToArray();
+            => [.. DeserializeRows(new BuffetredTextReader(reader, 2), option)];
 
         private static IEnumerable<IEnumerable<String>> DeserializeRows(BuffetredTextReader reader, CsvSerializerOption option)
         {
@@ -202,7 +202,7 @@ namespace Palmtree.IO.Serialization
 
         private static String DeserializeQuotedColumn(BuffetredTextReader reader, CsvSerializerOption option)
         {
-            Validation.Assert(reader.StartsWith(_doubleQuoteChar), "reader.StartsWith(_doubleQuoteChar)");
+            Validation.Assert(reader.StartsWith(_doubleQuoteChar));
 
             // 先頭のダブルクォートを読み捨てる
             _ = reader.Read();

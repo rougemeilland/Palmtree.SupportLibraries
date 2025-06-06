@@ -28,8 +28,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </returns>
         public static Boolean IsUnknownEncodingText(this String text)
         {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text));
+            ArgumentNullException.ThrowIfNull(text);
 
             return text.StartsWith(_headerForUnknownEncoding, StringComparison.Ordinal);
         }

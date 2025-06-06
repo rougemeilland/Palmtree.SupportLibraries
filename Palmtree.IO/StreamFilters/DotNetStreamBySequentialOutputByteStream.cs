@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class DotNetStreamBySequentialOutputByteStream
+    internal sealed class DotNetStreamBySequentialOutputByteStream
         : Stream
     {
         private readonly ISequentialOutputByteStream _baseStream;
@@ -18,8 +18,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _baseStream = baseStream;
                 _leaveOpen = leaveOpen;
@@ -43,8 +42,7 @@ namespace Palmtree.IO.StreamFilters
             {
                 if (_randomAccessStream is null)
                     throw new NotSupportedException();
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return checked((Int64)_randomAccessStream.Length);
             }
@@ -54,10 +52,8 @@ namespace Palmtree.IO.StreamFilters
         {
             if (_randomAccessStream is null)
                 throw new NotSupportedException();
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (value < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             _randomAccessStream.Length = checked((UInt64)value);
         }
@@ -68,8 +64,7 @@ namespace Palmtree.IO.StreamFilters
             {
                 if (_randomAccessStream is null)
                     throw new NotSupportedException();
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return checked((Int64)_randomAccessStream.Position);
             }
@@ -78,10 +73,9 @@ namespace Palmtree.IO.StreamFilters
             {
                 if (_randomAccessStream is null)
                     throw new NotSupportedException();
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
+                ArgumentOutOfRangeException.ThrowIfNegative(value);
 
                 _randomAccessStream.Seek(checked((UInt64)value));
             }
@@ -91,15 +85,13 @@ namespace Palmtree.IO.StreamFilters
         {
             if (_randomAccessStream is null)
                 throw new NotSupportedException();
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             UInt64 absoluteOffset;
             switch (origin)
             {
                 case SeekOrigin.Begin:
-                    if (offset < 0)
-                        throw new ArgumentOutOfRangeException(nameof(offset));
+                    ArgumentOutOfRangeException.ThrowIfNegative(offset);
                     absoluteOffset = checked((UInt64)offset);
                     break;
                 case SeekOrigin.Current:
@@ -142,30 +134,24 @@ namespace Palmtree.IO.StreamFilters
 
         public override void Write(Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             _baseStream.WriteBytes(buffer, offset, count);
         }
 
         public override void Write(ReadOnlySpan<Byte> buffer)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             _baseStream.WriteBytes(buffer);
         }
 
         public override void WriteByte(Byte value)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             ReadOnlySpan<Byte> buffer = stackalloc Byte[] { value };
             _baseStream.WriteBytes(buffer);
@@ -173,38 +159,31 @@ namespace Palmtree.IO.StreamFilters
 
         public override Task WriteAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return _baseStream.WriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public override async ValueTask WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             await _baseStream.WriteBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
 
         public override void Flush()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             _baseStream.Flush();
         }
 
         public override Task FlushAsync(CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return _baseStream.FlushAsync(cancellationToken);
         }

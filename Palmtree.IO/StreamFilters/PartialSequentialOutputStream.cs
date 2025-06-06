@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class PartialSequentialOutputStream
+    internal sealed class PartialSequentialOutputStream
         : SequentialOutputByteStreamFilter
     {
         private readonly ISequentialOutputByteStream _baseStream;
@@ -35,8 +35,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _baseStream = baseStream;
                 _size = size;

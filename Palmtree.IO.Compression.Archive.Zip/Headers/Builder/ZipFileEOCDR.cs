@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
-    internal class ZipFileEOCDR
+    internal sealed class ZipFileEOCDR
     {
         public const Int32 MinimumHeaderSize = 22;
         public const Int32 MaximumHeaderSize = 22 + UInt16.MaxValue;
@@ -63,7 +63,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             UInt32 numberOfCentralDirectoryHeadersOnDiskWithLastCentralDirectoryHeader,
             ReadOnlyMemory<Byte> commentBytes)
         {
-            Validation.Assert(commentBytes.Length <= UInt16.MaxValue, "commentBytes.Length <= UInt16.MaxValue");
+            Validation.Assert(commentBytes.Length <= UInt16.MaxValue);
             return
                 new ZipFileEOCDR(
                     startOfCentralDirectoryHeaders,

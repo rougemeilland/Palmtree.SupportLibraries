@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class ExpansionReader
+    internal sealed class ExpansionReader
         : IPrefetchableTextReader
     {
         private readonly String _source;

@@ -219,13 +219,13 @@ namespace Palmtree.Numerics
         public String ToString(String? format, IFormatProvider? provider) => Value.NativeValue.ToString(format, provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public String ToString(String? format) => Value.NativeValue.ToString(format);
+        public String ToString(String? format) => Value.NativeValue.ToString(format, null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public String ToString(IFormatProvider? provider) => Value.NativeValue.ToString(provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override String ToString() => Value.NativeValue.ToString();
+        public override String ToString() => Value.NativeValue.ToString(null, null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean TryFormat(Span<Char> destination, out Int32 charsWritten, ReadOnlySpan<Char> format = default, IFormatProvider? provider = default) => Value.NativeValue.TryFormat(destination, out charsWritten, format, provider);
@@ -355,13 +355,13 @@ namespace Palmtree.Numerics
         public static BigInt Negate(BigInt value) => new(BigInteger.Negate(value.Value.NativeValue));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BigInt Parse(String value) => new(BigInteger.Parse(value));
+        public static BigInt Parse(String value) => new(BigInteger.Parse(value, null));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static BigInt Parse(ReadOnlySpan<Char> s, IFormatProvider? provider) => new(BigInteger.Parse(s, provider));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static BigInt Parse(String value, NumberStyles style) => new(BigInteger.Parse(value, style));
+        public static BigInt Parse(String value, NumberStyles style) => new(BigInteger.Parse(value, style, null));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static BigInt Parse(String value, IFormatProvider? provider) => new(BigInteger.Parse(value, provider));

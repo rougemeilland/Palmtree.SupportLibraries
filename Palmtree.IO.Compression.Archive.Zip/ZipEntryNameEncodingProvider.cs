@@ -12,7 +12,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// </summary>
     public class ZipEntryNameEncodingProvider
     {
-        private class EncodingProvider
+        private sealed class EncodingProvider
             : IZipEntryNameEncodingProvider
         {
             private static readonly IDictionary<Int32, Int32> _codePagePriority;
@@ -218,12 +218,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </example>
         public static IZipEntryNameEncodingProvider CreateInstance(IEnumerable<String> allowedEncodingNames, IEnumerable<String> excludedEncodingNames, String alternativeText = "")
         {
-            if (allowedEncodingNames is null)
-                throw new ArgumentNullException(nameof(allowedEncodingNames));
-            if (excludedEncodingNames is null)
-                throw new ArgumentNullException(nameof(excludedEncodingNames));
-            if (alternativeText is null)
-                throw new ArgumentNullException(nameof(alternativeText));
+            ArgumentNullException.ThrowIfNull(allowedEncodingNames);
+            ArgumentNullException.ThrowIfNull(excludedEncodingNames);
+            ArgumentNullException.ThrowIfNull(alternativeText);
 
             var allowedEncodingNameArray = allowedEncodingNames.ToArray().AsReadOnlyMemory();
             var excludedEncodingNamesArray = excludedEncodingNames.ToArray().AsReadOnlyMemory();

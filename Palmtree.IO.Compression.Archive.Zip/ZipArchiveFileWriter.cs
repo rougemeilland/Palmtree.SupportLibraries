@@ -149,12 +149,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </exception>
         public ZipDestinationEntry CreateEntry(String entryFullName, String entryComment = "")
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
             if (String.IsNullOrEmpty(entryFullName))
                 throw new ArgumentException($"{nameof(entryFullName)} must not be either null or an empty string.");
-            if (entryComment is null)
-                throw new ArgumentNullException(nameof(entryComment));
+            ArgumentNullException.ThrowIfNull(entryComment);
             var entryFullNameBytes = _standardUnicodeEncoding.GetReadOnlyBytes(entryFullName);
             if (entryFullNameBytes.Length > UInt16.MaxValue)
                 throw new ArgumentException($"{nameof(entryFullName)} is too long. {nameof(entryFullName)} must be less than or equal to {UInt16.MaxValue} bytes.");
@@ -239,20 +237,17 @@ namespace Palmtree.IO.Compression.Archive.Zip
             Encoding? exactEntryEncoding,
             IEnumerable<Encoding> possibleEntryEncodings)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
             if (String.IsNullOrEmpty(entryFullName))
                 throw new ArgumentException($"'{nameof(entryFullName)}' must not be null or empty string.", nameof(entryFullName));
             if (entryFullNameBytes.Length <= 0)
                 throw new ArgumentException($"'{nameof(entryFullNameBytes)}' must not be empty.", nameof(entryFullNameBytes));
             if (entryFullNameBytes.Length > UInt16.MaxValue)
                 throw new ArgumentException($"{nameof(entryFullNameBytes)} is too long. {nameof(entryFullNameBytes)} must be less than or equal to {UInt16.MaxValue} bytes.");
-            if (entryComment is null)
-                throw new ArgumentNullException(nameof(entryComment));
+            ArgumentNullException.ThrowIfNull(entryComment);
             if (entryCommentBytes.Length > UInt16.MaxValue)
                 throw new ArgumentException($"{nameof(entryCommentBytes)} is too long. {nameof(entryCommentBytes)} must be less than or equal to {UInt16.MaxValue} bytes.");
-            if (possibleEntryEncodings is null)
-                throw new ArgumentNullException(nameof(possibleEntryEncodings));
+            ArgumentNullException.ThrowIfNull(possibleEntryEncodings);
             if (_writerState is not WriterState.Initial and not WriterState.EntryCreated)
                 throw new InvalidOperationException();
 
@@ -269,11 +264,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <summary>
         /// ZIP アーカイブの書き込みを明示的に終了します。
         /// </summary>
-        public void Close()
-        {
-            if (!_isDisposed)
-                InternalFlush();
-        }
+        public void Close() => Dispose(true, true);
 
         /// <summary>
         /// オブジェクトに関連付けられたリソースを解放します。
@@ -341,13 +332,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         void IZipFileWriterOutputStreamAccesser.BeginToWriteContent()
         {
-            Validation.Assert(_writerState == WriterState.EntryCreated, "_writerState == WriterState.EntryCreated");
+            Validation.Assert(_writerState == WriterState.EntryCreated);
             _writerState = WriterState.WritingContent;
         }
 
         void IZipFileWriterOutputStreamAccesser.EndToWritingContent()
         {
-            Validation.Assert(_writerState == WriterState.WritingContent, "_writerState == WriterState.WritingContent");
+            Validation.Assert(_writerState == WriterState.WritingContent);
             _writerState = WriterState.Initial;
         }
 
@@ -361,29 +352,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// <param name="disposing">
         /// <see cref="Dispose()"/> から呼び出された場合は true です。
         /// </param>
-        protected virtual void Dispose(Boolean disposing)
-        {
-            if (!_isDisposed)
-            {
-                try
-                {
-                    InternalFlush();
-                }
-                catch (Exception)
-                {
-                }
-
-                if (disposing)
-                {
-                    _outStreamForCentoralDirectories.Dispose();
-                    _zipOutputStream.Dispose();
-                }
-
-                if (_temporaryFileForCentoralDirectories.Exists)
-                    _temporaryFileForCentoralDirectories.Delete();
-                _isDisposed = true;
-            }
-        }
+        protected virtual void Dispose(Boolean disposing) => Dispose(disposing, false);
 
         /// <summary>
         /// オブジェクトに関連付けられたリソースを非同期的に解放します。
@@ -572,6 +541,37 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 // 出力先ボリュームのロックを解除する。
                 outputStream.UnlockVolumeDisk();
+            }
+        }
+
+        private void Dispose(Boolean disposing, Boolean ignoreException)
+        {
+            if (!_isDisposed)
+            {
+                if (ignoreException)
+                {
+                    InternalFlush();
+                }
+                else
+                {
+                    try
+                    {
+                        InternalFlush();
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
+                if (disposing)
+                {
+                    _outStreamForCentoralDirectories.Dispose();
+                    _zipOutputStream.Dispose();
+                }
+
+                if (_temporaryFileForCentoralDirectories.Exists)
+                    _temporaryFileForCentoralDirectories.Delete();
+                _isDisposed = true;
             }
         }
     }

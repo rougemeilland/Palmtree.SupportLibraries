@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialInputByteStreamBySequence
+    internal sealed class SequentialInputByteStreamBySequence
           : SequentialInputByteStream
     {
         private readonly IEnumerator<Byte> _sourceSequenceEnumerator;

@@ -27,7 +27,7 @@ namespace Palmtree.IO.Console
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static Int32 GetStandardFileNo(Int32 standardFileType)
             {
-                Validation.Assert(OperatingSystem.IsWindows() == false, "OperatingSystem.IsWindows() == false");
+                Validation.Assert(OperatingSystem.IsWindows() == false);
                 if (OperatingSystem.IsLinux())
                     return GetStandardFileNo_linux(standardFileType);
                 else if (OperatingSystem.IsMacOS())
@@ -53,7 +53,7 @@ namespace Palmtree.IO.Console
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static Int32 GetWindowSize(Int32 consoleFileNo, out WinSize windowSize, out Int32 errno)
             {
-                Validation.Assert(OperatingSystem.IsWindows() == false, "OperatingSystem.IsWindows() == false");
+                Validation.Assert(OperatingSystem.IsWindows() == false);
                 if (OperatingSystem.IsLinux())
                     return GetWindowSize_linux(consoleFileNo, out windowSize, out errno);
                 else if (OperatingSystem.IsMacOS())

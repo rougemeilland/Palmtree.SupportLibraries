@@ -6,7 +6,7 @@ using Palmtree;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class DotNetStreamBySequentialInputByteStream
+    internal sealed class DotNetStreamBySequentialInputByteStream
         : Stream
     {
         private readonly ISequentialInputByteStream _baseStream;
@@ -19,8 +19,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _baseStream = baseStream;
                 _leaveOpen = leaveOpen;
@@ -45,8 +44,7 @@ namespace Palmtree.IO.StreamFilters
             {
                 if (_randomAccessStream is null)
                     throw new NotSupportedException();
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return checked((Int64)_randomAccessStream.Length);
             }
@@ -60,8 +58,7 @@ namespace Palmtree.IO.StreamFilters
             {
                 if (_randomAccessStream is null)
                     throw new NotSupportedException();
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return checked((Int64)_randomAccessStream.Position);
             }
@@ -70,10 +67,8 @@ namespace Palmtree.IO.StreamFilters
             {
                 if (_randomAccessStream is null)
                     throw new NotSupportedException();
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
+                ArgumentOutOfRangeException.ThrowIfNegative(value);
 
                 _randomAccessStream.Seek(checked((UInt64)value));
             }
@@ -83,15 +78,13 @@ namespace Palmtree.IO.StreamFilters
         {
             if (_randomAccessStream is null)
                 throw new NotSupportedException();
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             UInt64 absoluteOffset;
             switch (origin)
             {
                 case SeekOrigin.Begin:
-                    if (offset < 0)
-                        throw new ArgumentOutOfRangeException(nameof(offset));
+                    ArgumentOutOfRangeException.ThrowIfNegative(offset);
 
                     absoluteOffset = checked((UInt64)offset);
                     break;
@@ -130,30 +123,24 @@ namespace Palmtree.IO.StreamFilters
 
         public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return _baseStream.Read(buffer.AsSpan(offset, count));
         }
 
         public override Int32 Read(Span<Byte> buffer)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return _baseStream.Read(buffer);
         }
 
         public override Int32 ReadByte()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             Span<Byte> buffer = stackalloc Byte[1];
             var length = _baseStream.ReadBytes(buffer);
@@ -164,22 +151,17 @@ namespace Palmtree.IO.StreamFilters
 
         public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return _baseStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public override async ValueTask<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return await _baseStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
@@ -206,18 +188,6 @@ namespace Palmtree.IO.StreamFilters
             }
 
             base.Dispose(disposing);
-        }
-
-        protected virtual async ValueTask DisposeAsyncCore()
-        {
-            if (!_isDisposed)
-            {
-                if (!_leaveOpen)
-                    _baseStream.Dispose();
-                _isDisposed = true;
-            }
-
-            await base.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

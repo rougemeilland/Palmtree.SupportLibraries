@@ -7,7 +7,7 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>$(AssemblyName)</Title>
-    <VersionPrefix>1.17.0</VersionPrefix>
+    <VersionPrefix>1.17.1</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Authors>Palmtree Software</Authors>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
@@ -24,12 +24,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <NoWarn>1701;1702;CA1510;IDE0290;CA1513;CA1512;CA1513;IDE0302;IDE0300</NoWarn>
+    <NoWarn>1701;1702;CA1510;IDE0290;CA1513;CA1512;CA1513;IDE0302;IDE0300;IDE0330</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <NoWarn>1701;1702;CA1510;IDE0290;CA1513;CA1512;CA1513;IDE0302;IDE0300</NoWarn>
+    <NoWarn>1701;1702;CA1510;IDE0290;CA1513;CA1512;CA1513;IDE0302;IDE0300;IDE0330</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
@@ -48,6 +48,16 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>

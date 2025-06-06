@@ -27,8 +27,7 @@ namespace Palmtree
         /// </exception>
         public static ELEMENT_T[] ReverseArray<ELEMENT_T>(this ELEMENT_T[] source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             InternalReverseArray(source.AsSpan());
             return source;
@@ -64,14 +63,11 @@ namespace Palmtree
         /// </exception>
         public static ELEMENT_T[] ReverseArray<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset, Int32 count)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > source.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(source)}.");
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, source.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, source.Length - offset);
 
             InternalReverseArray(source.AsSpan(offset, count));
             return source;

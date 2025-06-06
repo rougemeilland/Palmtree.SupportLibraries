@@ -27,34 +27,29 @@ namespace Palmtree.IO.Console
 
         public static Int32 GetWidth(String text, CultureInfo culture)
         {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text));
-            if (culture is null)
-                throw new ArgumentNullException(nameof(culture));
+            ArgumentNullException.ThrowIfNull(text);
+            ArgumentNullException.ThrowIfNull(culture);
 
             return GetWidth(GetCodePoints(text, IsEastAsianCulture(culture)));
         }
 
         public static String ShrinkText(String text, Int32 width, String altStr, TextShrinkingStyle style, CultureInfo culture)
         {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text));
-            if (width <= 0)
-                throw new ArgumentOutOfRangeException(nameof(width));
-            if (String.IsNullOrEmpty(altStr))
-                throw new ArgumentException($"'{nameof(altStr)}' must not be null or empty.", nameof(altStr));
-            if (culture is null)
-                throw new ArgumentNullException(nameof(culture));
+            ArgumentNullException.ThrowIfNull(text);
+            ArgumentException.ThrowIfNullOrEmpty(altStr);
+            ArgumentNullException.ThrowIfNull(culture);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
 
             var isEastAsia = IsEastAsianCulture(culture);
             var textCodePoints = GetCodePoints(text, isEastAsia);
             var textWidth = GetWidth(textCodePoints);
             if (textWidth <= width)
                 return text.Normalize(NormalizationForm.FormC);
+
             var altStrCodePoints = GetCodePoints(altStr, isEastAsia);
             var altStrWidth = GetWidth(altStrCodePoints);
-            if (width < altStrWidth)
-                throw new ArgumentOutOfRangeException(nameof(width));
+            ArgumentOutOfRangeException.ThrowIfLessThan(width, altStrWidth);
+
             var extraCharactersWidth = textWidth + altStrWidth - width;
             switch (style)
             {
@@ -106,7 +101,7 @@ namespace Palmtree.IO.Console
                     var rightOffset = 0;
                     while (true)
                     {
-                        var codePointWidth = textCodePoints[^(rightOffset+1)].Width;
+                        var codePointWidth = textCodePoints[^(rightOffset + 1)].Width;
 
                         // 次の文字に進めようとして幅の上限を超えた場合は、ループを打ち切る
                         if (rightWidth + codePointWidth > rightWidthLimit)
@@ -146,8 +141,8 @@ namespace Palmtree.IO.Console
                     }
 
 #if DEBUG
-                    Validation.Assert(outputCodePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth, "codePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth");
-                    Validation.Assert(totalWidth <= width, "totalWidth <= width");
+                    Validation.Assert(outputCodePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth);
+                    Validation.Assert(totalWidth <= width);
 #endif
                     var outBytes = new Byte[outputCodePoints.Count * sizeof(Int32)];
                     for (var index = 0; index < outputCodePoints.Count; ++index)
@@ -214,8 +209,8 @@ namespace Palmtree.IO.Console
                     }
 
 #if DEBUG
-                    Validation.Assert(outputCodePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth, "codePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth");
-                    Validation.Assert(totalWidth <= width, "totalWidth <= width");
+                    Validation.Assert(outputCodePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth);
+                    Validation.Assert(totalWidth <= width);
 #endif
                     var outBytes = new Byte[outputCodePoints.Count * sizeof(Int32)];
                     for (var index = 0; index < outputCodePoints.Count; ++index)
@@ -277,8 +272,8 @@ namespace Palmtree.IO.Console
                     }
 
 #if DEBUG
-                    Validation.Assert(outputCodePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth, "codePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth");
-                    Validation.Assert(totalWidth <= width, "totalWidth <= width");
+                    Validation.Assert(outputCodePoints.Select(codePoint => GetWidth(codePoint, isEastAsia)).Sum() == totalWidth);
+                    Validation.Assert(totalWidth <= width);
 #endif
                     var outBytes = new Byte[outputCodePoints.Count * sizeof(Int32)];
                     for (var index = 0; index < outputCodePoints.Count; ++index)
@@ -294,7 +289,7 @@ namespace Palmtree.IO.Console
         private static (Int32 CodePoint, Int32 Width)[] GetCodePoints(String text, Boolean isEastAsia)
         {
             var utf32Bytes = Encoding.UTF32.GetBytes(text.Normalize(NormalizationForm.FormC));
-            Validation.Assert(utf32Bytes.Length % sizeof(Int32) == 0, "utf32Bytes.Length % sizeof(Int32) == 0");
+            Validation.Assert(utf32Bytes.Length % sizeof(Int32) == 0);
             var textLength = utf32Bytes.Length / sizeof(Int32);
             var outBytes = new (Int32 CodePoint, Int32 Width)[textLength];
             for (var index = 0; index < outBytes.Length; ++index)
@@ -364,10 +359,10 @@ namespace Palmtree.IO.Console
                 }
             }
 
-            Validation.Assert(count == 1, "count == 1");
+            Validation.Assert(count == 1);
             var foundElement = _eastAsianWidthRanges[offset];
 #if DEBUG
-            Validation.Assert(codePoint >= foundElement.StartCodePoint && codePoint < foundElement.StartCodePoint + foundElement.Length, "codePoint >= foundElement.StartCodePoint && codePoint < foundElement.StartCodePoint + foundElement.Length");
+            Validation.Assert(codePoint >= foundElement.StartCodePoint && codePoint < foundElement.StartCodePoint + foundElement.Length);
 #endif
             return foundElement.Type;
         }
@@ -385,7 +380,7 @@ namespace Palmtree.IO.Console
         /// <paramref name="firstCodePoint"/> で示されるコードポイントと <paramref name="secondCodePoint"/> で示されるコードポイントとの間で文字列を分割可能してはならないなら true、そうではない場合は false を返します。
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "firstCodePoint パラメタは現時点では不要であるが、将来の拡張性を考慮して削除しない。")]
         private static Boolean MustNotBeDivided(Int32 firstCodePoint, Int32 secondCodePoint)
             => CharUnicodeInfo.GetUnicodeCategory(secondCodePoint) == UnicodeCategory.NonSpacingMark; // 2 番目のコードポイントが結合文字指定である場合
 
@@ -393,7 +388,7 @@ namespace Palmtree.IO.Console
         private static void DoTest()
         {
             for (var index = 0; index < _eastAsianWidthRanges.Length - 1; ++index)
-                Validation.Assert(_eastAsianWidthRanges[index].StartCodePoint + _eastAsianWidthRanges[index].Length == _eastAsianWidthRanges[index + 1].StartCodePoint, "_eastAsianWidthRanges[index].StartCodePoint + _eastAsianWidthRanges[index].Length == _eastAsianWidthRanges[index+1].StartCodePoint");
+                Validation.Assert(_eastAsianWidthRanges[index].StartCodePoint + _eastAsianWidthRanges[index].Length == _eastAsianWidthRanges[index + 1].StartCodePoint);
             for (var codePoint = 0; codePoint <= 0x10ffff; ++codePoint)
                 _ = GetWidthType(codePoint);
         }

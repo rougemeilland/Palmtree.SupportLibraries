@@ -6,7 +6,7 @@ namespace Palmtree.Text
 {
     public static class EncodingExtensions
     {
-        private class EncodingWithoutPreamble
+        private sealed class EncodingWithoutPreamble
             : Encoding
         {
             private readonly Encoding _sourceEncoding;
@@ -72,8 +72,7 @@ namespace Palmtree.Text
 
         public static Encoding WithoutPreamble(this Encoding encoding)
         {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return
                 encoding.Preamble.Length > 0

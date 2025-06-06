@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class PartialRandomOutputStream<POSITION_T, BASE_POSITION_T>
+    internal sealed class PartialRandomOutputStream<POSITION_T, BASE_POSITION_T>
         : RandomOutputByteStreamFilter<POSITION_T, BASE_POSITION_T>
         where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         where BASE_POSITION_T : struct, IComparable<BASE_POSITION_T>, IAdditionOperators<BASE_POSITION_T, UInt64, BASE_POSITION_T>, ISubtractionOperators<BASE_POSITION_T, BASE_POSITION_T, UInt64>
@@ -58,8 +58,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _baseStream = baseStream;
                 _regionOnBaseStream =

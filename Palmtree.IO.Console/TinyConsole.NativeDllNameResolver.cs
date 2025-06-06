@@ -8,7 +8,7 @@ namespace Palmtree.IO.Console
 {
     partial class TinyConsole
     {
-        private class NativeDllNameResolver
+        private sealed class NativeDllNameResolver
         {
             private readonly Dictionary<String, IntPtr> _loadedDllHandles;
 

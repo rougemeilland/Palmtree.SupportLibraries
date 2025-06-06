@@ -30,8 +30,7 @@ namespace Palmtree.IO
         /// </exception>
         public BuffetredTextReader(TextReader reader, Int32 cacheSize, Boolean leaveOpen = false)
         {
-            if (cacheSize < 1)
-                throw new ArgumentException($"Invalid {nameof(cacheSize)} value.", nameof(cacheSize));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize);
 
             _rawReader = reader;
             _cacheBuffer = new Char[cacheSize];
@@ -129,6 +128,7 @@ namespace Palmtree.IO
         /// </returns>
         public Boolean StartsWith(String s)
         {
+            ArgumentNullException.ThrowIfNullOrEmpty(s);
             if (s.Length > _cacheBuffer.Length)
                 throw new ArgumentException($"The string length of parameter \"{nameof(s)}\" must be less than or equal to {_cacheBuffer.Length}.", nameof(s));
             FillCache();

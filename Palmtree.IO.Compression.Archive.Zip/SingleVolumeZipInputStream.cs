@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
-    internal class SingleVolumeZipInputStream
+    internal sealed class SingleVolumeZipInputStream
         : ZipInputStream
     {
         private readonly UInt64 _totalDiskSize;
@@ -28,7 +27,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             var success = false;
             try
             {
-                stream = zipArchiveFile.OpenRead(FileShare.None).WithCache();
+                stream = zipArchiveFile.OpenRead().WithCache();
                 var zipStream =
                     new SingleVolumeZipInputStream(
                         stream.Length,
@@ -50,7 +49,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override void SeekCore(UInt32 diskNumber, UInt64 offsetOnTheDisk)
         {
-            Validation.Assert(diskNumber == 0, "diskNumber == 0");
+            Validation.Assert(diskNumber == 0);
             if (offsetOnTheDisk > LengthCore || offsetOnTheDisk > Int64.MaxValue)
                 throw new ArgumentOutOfRangeException($"An attempt was made to access position outside the bounds of a single-volume ZIP file.: {nameof(offsetOnTheDisk)}=0x{offsetOnTheDisk:x16}", nameof(offsetOnTheDisk));
 
@@ -64,7 +63,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override ZipStreamPosition AddCore(UInt32 diskNumber, UInt64 offsetOnTheDisk, UInt64 offset)
         {
-            Validation.Assert(diskNumber == 0, "diskNumber == 0");
+            Validation.Assert(diskNumber == 0);
             var newOffset = checked(offsetOnTheDisk + offset);
             if (newOffset > _totalDiskSize)
                 throw new OverflowException();
@@ -74,14 +73,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override ZipStreamPosition SubtractCore(UInt32 diskNumber, UInt64 offsetOnTheDisk, UInt64 offset)
         {
-            Validation.Assert(diskNumber == 0, "diskNumber == 0");
+            Validation.Assert(diskNumber == 0);
             return new ZipStreamPosition(0, checked(offsetOnTheDisk - offset), this);
         }
 
         protected override UInt64 SubtractCore(UInt32 diskNumber1, UInt64 offsetOnTheDisk1, UInt32 diskNumber2, UInt64 offsetOnTheDisk2)
         {
-            Validation.Assert(diskNumber1 == 0, "diskNumber1 == 0");
-            Validation.Assert(diskNumber2 == 0, "diskNumber2 == 0");
+            Validation.Assert(diskNumber1 == 0);
+            Validation.Assert(diskNumber2 == 0);
             return checked(offsetOnTheDisk1 - offsetOnTheDisk2);
         }
 

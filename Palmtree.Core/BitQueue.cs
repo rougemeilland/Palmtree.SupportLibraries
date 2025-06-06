@@ -50,8 +50,8 @@ namespace Palmtree
 
         public void Enqueue(Byte value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_BYTE))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfLessThan(bitCount, 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_BYTE);
 
             _bitQueue.Enqueue(value, bitCount, bitPackingDirection);
         }
@@ -61,8 +61,8 @@ namespace Palmtree
 
         public void Enqueue(UInt16 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_UINT16))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfLessThan(bitCount, 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT16);
 
             _bitQueue.Enqueue(value, bitCount, bitPackingDirection);
         }
@@ -72,8 +72,8 @@ namespace Palmtree
 
         public void Enqueue(UInt32 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_UINT32))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfLessThan(bitCount, 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT32);
 
             _bitQueue.Enqueue(value, bitCount, bitPackingDirection);
         }
@@ -83,8 +83,8 @@ namespace Palmtree
 
         public void Enqueue(UInt64 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_UINT64))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfLessThan(bitCount, 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT64);
 
             _bitQueue.Enqueue(value, bitCount, bitPackingDirection);
         }

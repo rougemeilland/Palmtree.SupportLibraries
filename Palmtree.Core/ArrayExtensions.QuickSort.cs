@@ -13,8 +13,7 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
+            ArgumentNullException.ThrowIfNull(sourceArray);
 
             sourceArray.AsSpan().InternalQuickSort();
             return sourceArray;
@@ -23,10 +22,8 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             sourceArray.AsSpan().InternalQuickSort(keySelecter);
             return sourceArray;
@@ -34,10 +31,8 @@ namespace Palmtree
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             sourceArray.AsSpan().InternalQuickSort(comparer);
             return sourceArray;
@@ -45,12 +40,9 @@ namespace Palmtree
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             sourceArray.AsSpan().InternalQuickSort(keySelecter, keyComparer);
             return sourceArray;
@@ -60,10 +52,9 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Range range)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
+            ArgumentNullException.ThrowIfNull(sourceArray);
 
-            var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = sourceArray.GetOffsetAndLength(range);
             sourceArray.AsSpan(offset, count).InternalQuickSort();
             return sourceArray;
         }
@@ -71,38 +62,31 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Range range, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
-            var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = sourceArray.GetOffsetAndLength(range);
             sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter);
             return sourceArray;
         }
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Range range, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(comparer);
 
-            var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = sourceArray.GetOffsetAndLength(range);
             sourceArray.AsSpan(offset, count).InternalQuickSort(comparer);
             return sourceArray;
         }
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Range range, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
-            var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = sourceArray.GetOffsetAndLength(range);
             sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter, keyComparer);
             return sourceArray;
         }
@@ -111,14 +95,11 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
 
             sourceArray.AsSpan(offset, count).InternalQuickSort();
             return sourceArray;
@@ -127,16 +108,12 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter);
             return sourceArray;
@@ -144,16 +121,12 @@ namespace Palmtree
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             sourceArray.AsSpan(offset, count).InternalQuickSort(comparer);
             return sourceArray;
@@ -161,18 +134,13 @@ namespace Palmtree
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter, keyComparer);
             return sourceArray;
@@ -182,10 +150,9 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
 
             sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort();
             return sourceArray;
@@ -194,12 +161,10 @@ namespace Palmtree
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(keySelecter);
             return sourceArray;
@@ -207,12 +172,10 @@ namespace Palmtree
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(comparer);
             return sourceArray;
@@ -220,14 +183,11 @@ namespace Palmtree
 
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(keySelecter, keyComparer);
             return sourceArray;
@@ -248,8 +208,7 @@ namespace Palmtree
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             sourceArray.InternalQuickSort(keySelecter);
             return sourceArray;
@@ -257,8 +216,7 @@ namespace Palmtree
 
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T>(this Span<ELEMENT_T> sourceArray, IComparer<ELEMENT_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             sourceArray.InternalQuickSort(comparer);
             return sourceArray;
@@ -266,10 +224,8 @@ namespace Palmtree
 
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             sourceArray.InternalQuickSort(keySelecter, keyComparer);
             return sourceArray;
@@ -283,8 +239,7 @@ namespace Palmtree
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
+            ArgumentNullException.ThrowIfNull(sourceArray);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1);
             return sourceArray;
@@ -293,10 +248,8 @@ namespace Palmtree
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1, keySelecter);
             return sourceArray;
@@ -304,10 +257,8 @@ namespace Palmtree
 
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1, comparer);
             return sourceArray;
@@ -315,12 +266,9 @@ namespace Palmtree
 
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1, keySelecter, keyComparer);
             return sourceArray;
@@ -330,14 +278,11 @@ namespace Palmtree
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1);
             return sourceArray;
@@ -346,16 +291,12 @@ namespace Palmtree
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter);
             return sourceArray;
@@ -363,16 +304,12 @@ namespace Palmtree
 
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1, comparer);
             return sourceArray;
@@ -380,18 +317,13 @@ namespace Palmtree
 
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter, keyComparer);
             return sourceArray;
@@ -401,10 +333,9 @@ namespace Palmtree
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)));
             return sourceArray;
@@ -413,12 +344,10 @@ namespace Palmtree
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter);
             return sourceArray;
@@ -426,12 +355,10 @@ namespace Palmtree
 
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), comparer);
             return sourceArray;
@@ -439,14 +366,11 @@ namespace Palmtree
 
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Count)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter, keyComparer);
             return sourceArray;
@@ -460,8 +384,7 @@ namespace Palmtree
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
+            ArgumentNullException.ThrowIfNull(sourceArray);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1);
             return sourceArray;
@@ -470,10 +393,8 @@ namespace Palmtree
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1, keySelecter);
             return sourceArray;
@@ -481,10 +402,8 @@ namespace Palmtree
 
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1, comparer);
             return sourceArray;
@@ -492,12 +411,9 @@ namespace Palmtree
 
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1, keySelecter, keyComparer);
             return sourceArray;
@@ -507,14 +423,11 @@ namespace Palmtree
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1);
             return sourceArray;
@@ -523,16 +436,12 @@ namespace Palmtree
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter);
             return sourceArray;
@@ -540,16 +449,12 @@ namespace Palmtree
 
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1, comparer);
             return sourceArray;
@@ -557,18 +462,13 @@ namespace Palmtree
 
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter, keyComparer);
             return sourceArray;
@@ -578,10 +478,9 @@ namespace Palmtree
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)));
             return sourceArray;
@@ -590,12 +489,10 @@ namespace Palmtree
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter);
             return sourceArray;
@@ -603,12 +500,10 @@ namespace Palmtree
 
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, IComparer<ELEMENT_T> comparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), comparer);
             return sourceArray;
@@ -616,14 +511,11 @@ namespace Palmtree
 
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (sourceArray is null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (checked(offset + count) > (UInt32)sourceArray.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceArray)}.");
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(sourceArray);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter, keyComparer);
             return sourceArray;

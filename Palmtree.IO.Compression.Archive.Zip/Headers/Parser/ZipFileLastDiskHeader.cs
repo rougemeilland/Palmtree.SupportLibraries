@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipFileLastDiskHeader
+    internal sealed class ZipFileLastDiskHeader
     {
-        private class DiskHeaderEnumeratorParameter
+        private sealed class DiskHeaderEnumeratorParameter
         {
             private readonly IZipInputStream _zipStream;
 
@@ -56,7 +56,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             zipInputStream.Seek(possibleFirstHeaderPosition);
             var buffer = new Byte[checked((Int32)(zipInputStream.LastDiskSize - possibleFirstHeaderOffsetOnLastDisk))];
             var length = zipInputStream.ReadBytes(buffer);
-            Validation.Assert(length == buffer.Length, "length == buffer.Length");
+            Validation.Assert(length == buffer.Length);
 
             var foundHeaders =
                 EnumerateLastDiskHeaders(

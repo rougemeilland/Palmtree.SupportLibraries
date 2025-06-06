@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,9 +7,10 @@ using Palmtree.Collections;
 
 namespace Palmtree.IO
 {
+    [SuppressMessage("Design", "CA1001:破棄可能なフィールドを所有する型は、破棄可能でなければなりません", Justification = "OpenInputStream() メソッドおよび OpenOutputStream() メソッドで開かれたストリームが共に閉じられた場合に InProcessPipe オブジェクトは自動的に破棄される。InProcessPipe オブジェクトを明示的に破棄してはならない。")]
     public class InProcessPipe
     {
-        private class Reader
+        private sealed class Reader
             : SequentialInputByteStream
         {
             private readonly InProcessPipe _parent;
@@ -50,7 +52,7 @@ namespace Palmtree.IO
             }
         }
 
-        private class Writer
+        private sealed class Writer
             : SequentialOutputByteStream
         {
             private readonly InProcessPipe _parent;

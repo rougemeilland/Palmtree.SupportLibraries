@@ -10,10 +10,10 @@ using Palmtree.Threading;
 
 namespace Palmtree
 {
-    internal class InternalBitQueue
+    internal sealed class InternalBitQueue
         : IEnumerable<Boolean>, IEquatable<InternalBitQueue>, ICloneable<InternalBitQueue>
     {
-        private class RandomAccessBitQueue
+        private sealed class RandomAccessBitQueue
                 : IEnumerable<Boolean>, ICloneable<RandomAccessBitQueue>, IEquatable<RandomAccessBitQueue>
         {
             //
@@ -116,8 +116,7 @@ namespace Palmtree
             {
                 get
                 {
-                    if (index < 0)
-                        throw new ArgumentOutOfRangeException(nameof(index));
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
                     if (index < _firstBitArrayLength)
                         return (_firstBitArray & (1UL << index)) != 0;
                     index -= _firstBitArrayLength;
@@ -129,8 +128,7 @@ namespace Palmtree
                     }
 
                     index -= _queue.Length * BIT_LENGTH_OF_UINT64;
-                    if (index >= _lastBitArrayLength)
-                        throw new ArgumentOutOfRangeException(nameof(index));
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _lastBitArrayLength);
 
                     return (_lastBitArray & (1UL << index)) != 0;
                 }
@@ -266,11 +264,10 @@ namespace Palmtree
 
             private Int32 InternalEnqueue(UInt64 bitArray, Int32 bitCount)
             {
-                if (!bitCount.IsBetween(1, BIT_LENGTH_OF_UINT64))
-                    throw new ArgumentOutOfRangeException(nameof(bitCount));
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, BIT_LENGTH_OF_UINT64);
 #if DEBUG
-                if (_lastBitArrayLength >= BIT_LENGTH_OF_UINT64)
-                    throw new Exception();
+                Validation.Assert(_lastBitArrayLength < BIT_LENGTH_OF_UINT64);
 #endif
                 var actualBitCount = bitCount.Minimum(BIT_LENGTH_OF_UINT64 - _lastBitArrayLength);
                 _lastBitArray |= (bitArray & (UInt64.MaxValue >> (BIT_LENGTH_OF_UINT64 - actualBitCount))) << _lastBitArrayLength;
@@ -291,8 +288,8 @@ namespace Palmtree
 
             private (Int32, UInt64) InternalDequeue(Int32 bitCount)
             {
-                if (!bitCount.IsBetween(1, BIT_LENGTH_OF_UINT64))
-                    throw new ArgumentOutOfRangeException(nameof(bitCount));
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, BIT_LENGTH_OF_UINT64);
 #if DEBUG
                 if (_lastBitArrayLength >= BIT_LENGTH_OF_UINT64)
                     throw new Exception();
@@ -443,8 +440,8 @@ namespace Palmtree
 
         public static InternalBitQueue FromInteger(UInt64 value, Int32 bitCount, BitPackingDirection bitPackingDirection)
         {
-            if (bitCount is < 1 or > BIT_LENGTH_OF_UINT64)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, BIT_LENGTH_OF_UINT64);
 
             return new InternalBitQueue(value.ConvertBitOrder(bitCount, bitPackingDirection), bitCount, null);
         }
@@ -468,8 +465,7 @@ namespace Palmtree
 
         public void Enqueue(UInt64 value, Int32 bitCount, BitPackingDirection bitPackingDirection)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
             if (_bitLength >= BIT_LENGTH_OF_UINT64)
             {
@@ -503,8 +499,7 @@ namespace Palmtree
 
         public void Enqueue(InternalBitQueue bitQueue)
         {
-            if (bitQueue is null)
-                throw new ArgumentNullException(nameof(bitQueue));
+            ArgumentNullException.ThrowIfNull(bitQueue);
 
             if (_bitLength >= BIT_LENGTH_OF_UINT64)
             {
@@ -551,15 +546,11 @@ namespace Palmtree
 
         public UInt64 DequeueInteger(Int32 bitCount, BitPackingDirection bitPackingDirection)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > BIT_LENGTH_OF_UINT64)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > Length)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, BIT_LENGTH_OF_UINT64);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Length);
 #if DEBUG
-            if (bitCount > _bitLength)
-                throw new Exception();
+            Validation.Assert(bitCount <= _bitLength);
 #endif
 
             var value = _bitArray.ConvertBitOrder(bitCount, bitPackingDirection);
@@ -571,10 +562,8 @@ namespace Palmtree
 
         public InternalBitQueue DequeueBitQueue(Int32 bitCount)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > Length)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Length);
 
             if (bitCount < BIT_LENGTH_OF_UINT64)
             {
@@ -625,11 +614,10 @@ namespace Palmtree
 
         public UInt64 ToInteger(Int32 bitCount, BitPackingDirection bitPackingDirection)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, BIT_LENGTH_OF_UINT64);
             if (Length < 1)
                 throw new InvalidOperationException();
-            if (bitCount is < 1 or > BIT_LENGTH_OF_UINT64)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-
             if (Length > bitCount)
                 throw new OverflowException();
 

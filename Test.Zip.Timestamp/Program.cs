@@ -5,7 +5,7 @@ using Palmtree.IO.Compression.Archive.Zip;
 
 namespace Test.Zip.Timestamp
 {
-    internal class Program
+    internal sealed class Program
     {
         static void Main(string[] args)
         {
@@ -20,7 +20,7 @@ namespace Test.Zip.Timestamp
 
             foreach (var high_precision_timestamp in new[] { true, false })
             {
-                foreach (var w_isNull in high_precision_timestamp ? new[] { true, false } : new[] { true })
+                foreach (var w_isNull in high_precision_timestamp ? [true, false] : new[] { true })
                 {
                     foreach (var w_isLocal in new[] { true, false })
                     {
@@ -28,7 +28,7 @@ namespace Test.Zip.Timestamp
                         {
                             foreach (var w_inDateTime in new[] { true, false })
                             {
-                                foreach (var a_isNull in high_precision_timestamp ? new[] { true, false } : new[] { true })
+                                foreach (var a_isNull in high_precision_timestamp ? [true, false] : new[] { true })
                                 {
                                     foreach (var a_isLocal in new[] { true, false })
                                     {
@@ -36,7 +36,7 @@ namespace Test.Zip.Timestamp
                                         {
                                             foreach (var a_inDateTime in new[] { true, false })
                                             {
-                                                foreach (var c_isNull in high_precision_timestamp ? new[] { true, false } : new[] { true })
+                                                foreach (var c_isNull in high_precision_timestamp ? [true, false] : new[] { true })
                                                 {
                                                     foreach (var c_isLocal in new[] { true, false })
                                                     {

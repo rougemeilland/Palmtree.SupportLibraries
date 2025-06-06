@@ -1,20 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO
 {
     public abstract class FileSystemPath
     {
-        private readonly FileSystemInfo _path;
-
         protected FileSystemPath(FileSystemInfo path)
         {
-            _path = path ?? throw new ArgumentNullException(nameof(path));
-            Extension = _path.Extension;
-            FullName = _path.FullName;
-            Name = _path.Name;
-            NameWithoutExtension = Path.GetFileNameWithoutExtension(_path.Name);
+            ArgumentNullException.ThrowIfNull(path);
+
+            Extension = path.Extension;
+            FullName = path.FullName;
+            Name = path.Name;
+            NameWithoutExtension = Path.GetFileNameWithoutExtension(path.Name);
         }
 
         public DateTime CreationTimeUtc
@@ -23,10 +21,13 @@ namespace Palmtree.IO
 
             set
             {
-                if (value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is 'DateTimeKind.Unspecified'.", nameof(value));
-
-                InternalCreationTimeUtc = value;
+                InternalCreationTimeUtc =
+                    value.Kind switch
+                    {
+                        DateTimeKind.Utc => value,
+                        DateTimeKind.Local => value.ToUniversalTime(),
+                        _ => throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(value)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(value)}.{nameof(DateTime.Kind)}={value.Kind}", nameof(value)),
+                    };
             }
         }
 
@@ -36,14 +37,7 @@ namespace Palmtree.IO
             set => InternalCreationTimeUtc = value.ToDateTime(DateTimeKind.Utc);
         }
 
-        public Boolean Exists
-        {
-            get
-            {
-                _path.Refresh();
-                return _path.Exists;
-            }
-        }
+        public abstract Boolean Exists { get; }
 
         public String Extension { get; }
 
@@ -55,10 +49,13 @@ namespace Palmtree.IO
 
             set
             {
-                if (value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is 'DateTimeKind.Unspecified'.", nameof(value));
-
-                InternalLastAccessTimeUtc = value;
+                InternalLastAccessTimeUtc =
+                    value.Kind switch
+                    {
+                        DateTimeKind.Utc => value,
+                        DateTimeKind.Local => value.ToUniversalTime(),
+                        _ => throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(value)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(value)}.{nameof(DateTime.Kind)}={value.Kind}", nameof(value)),
+                    };
             }
         }
 
@@ -74,10 +71,13 @@ namespace Palmtree.IO
 
             set
             {
-                if (value.Kind == DateTimeKind.Unspecified)
-                    throw new ArgumentException("Do not set a DateTime value whose Kind property value is 'DateTimeKind.Unspecified'.", nameof(value));
-
-                InternalLastWriteTimeUtc = value;
+                InternalLastWriteTimeUtc =
+                    value.Kind switch
+                    {
+                        DateTimeKind.Utc => value,
+                        DateTimeKind.Local => value.ToUniversalTime(),
+                        _ => throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(value)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(value)}.{nameof(DateTime.Kind)}={value.Kind}", nameof(value)),
+                    };
             }
         }
 
@@ -90,108 +90,10 @@ namespace Palmtree.IO
         public String Name { get; }
         public String NameWithoutExtension { get; }
 
-        public void Delete()
-        {
-            _path.Refresh();
-            try
-            {
-                _path.Delete();
-
-            }
-            finally
-            {
-                _path.Refresh();
-#if DEBUG
-                ValidationPath();
-#endif
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override String ToString() => FullName;
 
-        internal void Refresh() => _path.Refresh();
-
-#if DEBUG
-        protected virtual void ValidationPath()
-        {
-            Validation.Assert(String.Equals(_path.Extension, Extension, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.Extension, Extension, StringComparison.OrdinalIgnoreCase)");
-            Validation.Assert(String.Equals(_path.FullName, FullName, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.FullName, FullName, StringComparison.OrdinalIgnoreCase)");
-            Validation.Assert(String.Equals(_path.Name, Name, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.Name, Name, StringComparison.OrdinalIgnoreCase)");
-            Validation.Assert(String.Equals(_path.GetNameWithoutExtension(), NameWithoutExtension, StringComparison.OrdinalIgnoreCase), "String.Equals(_path.GetNameWithoutExtension(), NameWithoutExtension, StringComparison.OrdinalIgnoreCase)");
-        }
-#endif
-
-        private DateTime InternalCreationTimeUtc
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _path.Refresh();
-                return _path.CreationTimeUtc;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
-                try
-                {
-                    _path.CreationTimeUtc = value.ToUniversalTime();
-                }
-                finally
-                {
-                    _path.Refresh();
-                }
-            }
-        }
-
-        private DateTime InternalLastAccessTimeUtc
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _path.Refresh();
-                return _path.LastAccessTimeUtc;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                Palmtree.Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
-                try
-                {
-                    _path.LastAccessTimeUtc = value.ToUniversalTime();
-                }
-                finally
-                {
-                    _path.Refresh();
-                }
-            }
-        }
-
-        private DateTime InternalLastWriteTimeUtc
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _path.Refresh();
-                return _path.LastWriteTimeUtc;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                Validation.Assert(value.Kind is DateTimeKind.Utc or DateTimeKind.Local, "value.Kind is DateTimeKind.Utc or DateTimeKind.Local");
-                try
-                {
-                    _path.LastWriteTimeUtc = value.ToUniversalTime();
-                }
-                finally
-                {
-                    _path.Refresh();
-                }
-            }
-        }
+        protected abstract DateTime InternalCreationTimeUtc { get; set; }
+        protected abstract DateTime InternalLastAccessTimeUtc { get; set; }
+        protected abstract DateTime InternalLastWriteTimeUtc { get; set; }
     }
 }

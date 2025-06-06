@@ -38,15 +38,14 @@ namespace Palmtree.Collections
 
         public Int32 Read(Span<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockReader();
             try
             {
                 _isNotEmptyOrCompletedEvent.Wait(cancellationToken);
                 var length = _queue.Read(buffer);
-                Validation.Assert(length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty, "length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty");
+                Validation.Assert(length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty);
 
                 // 読み込めた長さが 0 になるのは、 buffer.Length が 0 の場合か、あるいは、 キューが空でかつ Complete 済である場合
                 return length;
@@ -60,15 +59,14 @@ namespace Palmtree.Collections
 
         public async Task<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockReader();
             try
             {
                 await _isNotEmptyOrCompletedAsyncEvent.WaitAsync(cancellationToken).ConfigureAwait(false);
                 var length = _queue.Read(buffer.Span);
-                Validation.Assert(length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty, "length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty");
+                Validation.Assert(length > 0 || buffer.Length <= 0 || _queue.IsCompleted && _queue.IsEmpty);
 
                 // 読み込めた長さが 0 になるのは、 buffer.Length が 0 の場合か、あるいは、 キューが空でかつ Complete 済である場合
                 return length;
@@ -82,8 +80,7 @@ namespace Palmtree.Collections
 
         public Int32 Write(ReadOnlySpan<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockWriter();
             try
@@ -92,7 +89,7 @@ namespace Palmtree.Collections
                 if (_queue.IsCompleted)
                     throw new InvalidOperationException();
                 var length = _queue.Write(buffer);
-                Validation.Assert(length > 0 || buffer.Length <= 0, "length != 0 || buffer.Length <= 0");
+                Validation.Assert(length > 0 || buffer.Length <= 0);
 
                 // 書き込めた長さが 0 になるのは、 buffer.Length が 0 の場合
                 return length;
@@ -106,8 +103,7 @@ namespace Palmtree.Collections
 
         public async Task<Int32> WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockWriter();
             try
@@ -116,7 +112,7 @@ namespace Palmtree.Collections
                 if (_queue.IsCompleted)
                     throw new InvalidOperationException();
                 var length = _queue.Write(buffer.Span);
-                Validation.Assert(length > 0 || buffer.Length <= 0, "length > 0 || buffer.Length <= 0");
+                Validation.Assert(length > 0 || buffer.Length <= 0);
 
                 // 書き込めた長さが 0 になるのは、 buffer.Length が 0 の場合
                 return length;
@@ -130,8 +126,7 @@ namespace Palmtree.Collections
 
         public void Flush(CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockWriter();
             try
@@ -149,8 +144,7 @@ namespace Palmtree.Collections
 
         public async Task FlushAsync(CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockWriter();
             try
@@ -168,8 +162,7 @@ namespace Palmtree.Collections
 
         public void Complete()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             try
             {

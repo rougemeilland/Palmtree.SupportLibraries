@@ -6,9 +6,9 @@ using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
 using Palmtree.IO.Compression.Stream.Plugin;
 
-namespace Test.ZipUtility.Zip64
+namespace Test.Zip.Zip64
 {
-    internal class Program
+    internal sealed class Program
     {
         static Program()
         {
@@ -110,7 +110,7 @@ namespace Test.ZipUtility.Zip64
                 {
                     if (count % step == 0 || count == numberOfEntries - 1)
                         Console.WriteLine($"書き込み中 {count + 1}/{numberOfEntries}... \"{zipArchive.FullName}\"");
-                    var file = zipWriter.CreateEntry($"ファイル{count + 1}.bin", new string(RandomSequence.GetAsciiCharSequence().Take(commentSizeGetter(count)).ToArray()));
+                    var file = zipWriter.CreateEntry($"ファイル{count + 1}.bin", new string([.. RandomSequence.GetAsciiCharSequence().Take(commentSizeGetter(count))]));
                     file.IsFile = true;
                     file.CreationTimeUtc = DateTime.Now;
                     file.LastAccessTimeUtc = DateTime.Now;
@@ -164,8 +164,7 @@ namespace Test.ZipUtility.Zip64
         {
             const ulong BUFFER_LENGTH = 1024UL * 1024UL;
 
-            if (contentLength < sizeof(uint) + sizeof(ulong))
-                throw new ArgumentOutOfRangeException(nameof(contentLength));
+            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (ulong)(sizeof(uint) + sizeof(ulong)));
 
             var crcHolder = new ValueHolder<(uint crc, ulong length)>();
             using var outStream1 = fileEntry.CreateContentStream();

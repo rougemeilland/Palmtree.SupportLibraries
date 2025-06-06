@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Palmtree
     {
         #region private class
 
-        private class Crc32Calculator
+        private sealed class Crc32Calculator
             : CrcCalculationMethod<UInt32>
         {
             protected override UInt32 InitialValue => 0xffffffffU;
@@ -22,7 +23,7 @@ namespace Palmtree
             protected override UInt32 Finalize(UInt32 crc) => ~crc;
         }
 
-        private class Crc24ForRadix64Calculator
+        private sealed class Crc24ForRadix64Calculator
             : CrcCalculationMethod<UInt32>
         {
             protected override UInt32 InitialValue => 0x00b704ceU;
@@ -194,8 +195,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (UInt32 Crc, UInt64 Length) CalculateCrc32(this IEnumerable<Byte> source, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return _commonCrc32.Calculate(source, progress);
         }
@@ -211,8 +211,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this IAsyncEnumerable<Byte> source, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return await _commonCrc32.CalculateAsync(source, progress).ConfigureAwait(false);
         }
@@ -220,10 +219,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Byte> GetSequenceWithCrc32(this IEnumerable<Byte> source, ValueHolder<(UInt32 Crc, UInt64 Length)> crcValueHolder, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (crcValueHolder is null)
-                throw new ArgumentNullException(nameof(crcValueHolder));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(crcValueHolder);
 
             return _commonCrc32.GetSequenceWithCrc(source, crcValueHolder, progress);
         }
@@ -231,10 +228,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IAsyncEnumerable<Byte> GetAsyncSequenceWithCrc32(this IAsyncEnumerable<Byte> source, ValueHolder<(UInt32 Crc, UInt64 Length)> crcValueHolder, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (crcValueHolder is null)
-                throw new ArgumentNullException(nameof(crcValueHolder));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(crcValueHolder);
 
             return _commonCrc32.GetAsyncSequenceWithCrc(source, crcValueHolder, progress);
         }
@@ -242,8 +237,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (UInt32 Crc, UInt64 Length) CalculateCrc24(this IEnumerable<Byte> source, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return _crc24ForRadix64.Calculate(source, progress);
         }
@@ -251,8 +245,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this IAsyncEnumerable<Byte> source, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return await _crc24ForRadix64.CalculateAsync(source, progress).ConfigureAwait(false);
         }
@@ -260,10 +253,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Byte> GetSequenceWithCrc24(this IEnumerable<Byte> source, ValueHolder<(UInt32 Crc, UInt64 Length)> crcValueHolder, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (crcValueHolder is null)
-                throw new ArgumentNullException(nameof(crcValueHolder));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(crcValueHolder);
 
             return _crc24ForRadix64.GetSequenceWithCrc(source, crcValueHolder, progress);
         }
@@ -271,10 +262,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IAsyncEnumerable<Byte> GetAsyncSequenceWithCrc24(this IAsyncEnumerable<Byte> source, ValueHolder<(UInt32 Crc, UInt64 Length)> crcValueHolder, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (crcValueHolder is null)
-                throw new ArgumentNullException(nameof(crcValueHolder));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(crcValueHolder);
 
             return _crc24ForRadix64.GetAsyncSequenceWithCrc(source, crcValueHolder, progress);
         }
@@ -282,11 +271,10 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Char> GetBase64EncodedSequence(this IEnumerable<Byte> source, Char char62 = '+', Char char63 = '/')
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (char62.IsBetween('0', '9') || char62.IsBetween('A', 'Z') || char62.IsBetween('a', 'z') || char62 == '=' || !char62.IsBetween('\u0021', '\u007e'))
+            ArgumentNullException.ThrowIfNull(source);
+            if (!char62.IsValidBase64OptionalCharacter())
                 throw new ArgumentException("Invalid character", nameof(char62));
-            if (char63.IsBetween('0', '9') || char63.IsBetween('A', 'Z') || char63.IsBetween('a', 'z') || char63 == '=' || !char63.IsBetween('\u0021', '\u007e'))
+            if (!char63.IsValidBase64OptionalCharacter())
                 throw new ArgumentException("Invalid character", nameof(char63));
             if (char62 == char63)
                 throw new ArgumentException($"Invalid character ({nameof(char62)}=={nameof(char63)})");
@@ -297,11 +285,10 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Byte> GetBase64DecodedSequence(this IEnumerable<Char> source, Boolean ignoreSpace = false, Boolean ignoreInvalidCharacter = false, Char char62 = '+', Char char63 = '/')
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (char62.IsBetween('0', '9') || char62.IsBetween('A', 'Z') || char62.IsBetween('a', 'z') || char62 == '=' || !char62.IsBetween('\u0021', '\u007e'))
+            ArgumentNullException.ThrowIfNull(source);
+            if (!char62.IsValidBase64OptionalCharacter())
                 throw new ArgumentException("Invalid character", nameof(char62));
-            if (char63.IsBetween('0', '9') || char63.IsBetween('A', 'Z') || char63.IsBetween('a', 'z') || char63 == '=' || !char63.IsBetween('\u0021', '\u007e'))
+            if (!char63.IsValidBase64OptionalCharacter())
                 throw new ArgumentException("Invalid character", nameof(char63));
             if (char62 == char63)
                 throw new ArgumentException($"Invalid character ({nameof(char62)}=={nameof(char63)})");
@@ -312,8 +299,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String EncodeBase64(this IEnumerable<Byte> source, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return InternalEncodeBase64(source, Base64EncodingType.Default, progress);
         }
@@ -321,8 +307,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String EncodeBase64(this IEnumerable<Byte> source, Base64EncodingType encodingType, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return InternalEncodeBase64(source, encodingType, progress);
         }
@@ -330,8 +315,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Byte> DecodeBase64(this String source, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return InternalDecodeBase64(source, Base64EncodingType.Default, progress);
         }
@@ -339,8 +323,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Byte> DecodeBase64(this String source, Base64EncodingType encodingType, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return InternalDecodeBase64(source, encodingType, progress);
         }
@@ -348,8 +331,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsMatchCrc32(this IEnumerable<Byte> source, UInt32 expectedCrc, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.CalculateCrc32(progress).Crc == expectedCrc;
         }
@@ -366,8 +348,7 @@ namespace Palmtree
 
         public static IEnumerable<TinyBitArray> GetBitArraySequence(this IEnumerable<Byte> source, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var bitQueue = new BitQueue();
             foreach (var data in source)
@@ -412,8 +393,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TinyBitArray> GetBitArraySequence(this IEnumerable<Byte[]> source, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.SelectMany(bytes => bytes).GetBitArraySequence(bitCount, bitPackingDirection);
         }
@@ -421,8 +401,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TinyBitArray> GetBitArraySequence(this IEnumerable<Memory<Byte>> source, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.SelectMany(bytes => bytes.GetSequence()).GetBitArraySequence(bitCount, bitPackingDirection);
         }
@@ -430,8 +409,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TinyBitArray> GetBitArraySequence(this IEnumerable<ReadOnlyMemory<Byte>> source, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.SelectMany(bytes => bytes.GetSequence()).GetBitArraySequence(bitCount, bitPackingDirection);
         }
@@ -440,8 +418,7 @@ namespace Palmtree
 
         public static IEnumerable<Byte> GetByteSequence(this IEnumerable<TinyBitArray> source, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var bitQueue = new BitQueue();
             foreach (var bitArray in source)
@@ -460,14 +437,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16LE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int16) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Int16)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Int16));
 
             return unchecked((Int16)array.InternalToUInt16LE(startIndex));
         }
@@ -515,14 +489,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16LE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt16) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(UInt16)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(UInt16));
 
             return array.InternalToUInt16LE(startIndex);
         }
@@ -570,14 +541,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32LE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int32) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Int32)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Int32));
 
             return unchecked((Int32)array.InternalToUInt32LE(startIndex));
         }
@@ -625,14 +593,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32LE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt32) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(UInt32)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(UInt32));
 
             return array.InternalToUInt32LE(startIndex);
         }
@@ -680,14 +645,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64LE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int64) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Int64)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Int64));
 
             return unchecked((Int64)array.InternalToUInt64LE(startIndex));
         }
@@ -735,14 +697,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64LE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt64) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(UInt64)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(UInt64));
 
             return array.InternalToUInt64LE(startIndex);
         }
@@ -789,14 +748,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleLE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Single) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Single)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Single));
 
             return array.InternalToSingleLE(startIndex);
         }
@@ -844,14 +800,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleLE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Double) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Double)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Double));
 
             return array.InternalToDoubleLE(startIndex);
         }
@@ -899,14 +852,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalLE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Decimal) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Decimal)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Decimal));
 
             return array.InternalToDecimalLE(startIndex);
         }
@@ -954,14 +904,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int16 ToInt16BE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int16) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Int16)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Int16));
 
             return unchecked((Int16)array.InternalToUInt16BE(startIndex));
         }
@@ -1009,14 +956,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt16 ToUInt16BE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt16) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(UInt16)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(UInt16));
 
             return array.InternalToUInt16BE(startIndex);
         }
@@ -1064,14 +1008,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ToInt32BE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int32) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Int32)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Int32));
 
             return unchecked((Int32)array.InternalToUInt32BE(startIndex));
         }
@@ -1119,14 +1060,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 ToUInt32BE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt32) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(UInt32)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(UInt32));
 
             return array.InternalToUInt32BE(startIndex);
         }
@@ -1174,14 +1112,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 ToInt64BE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int64) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Int64)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Int64));
 
             return unchecked((Int64)array.InternalToUInt64BE(startIndex));
         }
@@ -1229,14 +1164,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 ToUInt64BE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt64) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(UInt64)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(UInt64));
 
             return array.InternalToUInt64BE(startIndex);
         }
@@ -1284,14 +1216,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Single ToSingleBE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Single) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Single)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Single));
 
             return array.InternalToSingleBE(startIndex);
         }
@@ -1339,14 +1268,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Double ToDoubleBE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Double) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Double)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Double));
 
             return array.InternalToDoubleBE(startIndex);
         }
@@ -1394,14 +1320,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Decimal ToDecimalBE(this Byte[] array, Int32 startIndex = 0)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Decimal) > array.Length)
                 throw new ArgumentException("Too short array", nameof(array));
-            if (checked(startIndex + sizeof(Decimal)) > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, array.Length - sizeof(Decimal));
 
             return array.InternalToDecimalBE(startIndex);
         }
@@ -1449,12 +1372,9 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String ToFriendlyString(this Byte[] value, Int32 startIndex = 0)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if (startIndex > value.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, value.Length);
 
             return value.AsSpan(startIndex).AsReadOnly().ToFriendlyString();
         }
@@ -1462,16 +1382,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String ToFriendlyString(this Byte[] value, Int32 startIndex, Int32 length)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if (startIndex > value.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if (length < 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-            if (checked(startIndex + length) > value.Length)
-                throw new ArgumentException($"The specified range ({nameof(startIndex)} and {nameof(length)}) is not within the {nameof(value)}.");
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, value.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(length, value.Length - startIndex);
 
             return value.AsSpan(startIndex, length).AsReadOnly().ToFriendlyString();
         }
@@ -1496,7 +1411,7 @@ namespace Palmtree
             {
                 if (!isFirst)
                     _ = sb.Append('-');
-                _ = sb.Append(array[index].ToString("x2"));
+                _ = sb.Append(array[index].ToString("x2", CultureInfo.InvariantCulture.NumberFormat));
                 isFirst = false;
             }
 
@@ -1509,8 +1424,7 @@ namespace Palmtree
 
         public static Encoding? GuessWhichEncoding(this Byte[] bytes)
         {
-            if (bytes is null)
-                throw new ArgumentNullException(nameof(bytes));
+            ArgumentNullException.ThrowIfNull(bytes);
 
             return ((ReadOnlySpan<Byte>)bytes).GuessWhichEncoding();
         }
@@ -1682,6 +1596,13 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static ICrcCalculationState<UInt32> CreateCrc24CalculationState() => _crc24ForRadix64.CreateSession();
 
+        private static Boolean IsValidBase64OptionalCharacter(this Char c)
+            => c switch
+            {
+                '!' or '"' or '#' or '$' or '%' or '&' or '\'' or '(' or ')' or '*' or '+' or ',' or '-' or '.' or '/' or ':' or ';' or '<' or '>' or '?' or '@' or '[' or '\\' or ']' or '^' or '_' or '`' or '{' or '|' or '}' or '~' => true,
+                _ => false,
+            };
+
         private static String InternalEncodeBase64(IEnumerable<Byte> source, Base64EncodingType encodingType, IProgress<UInt64>? progress)
         {
             switch (encodingType)
@@ -1705,14 +1626,15 @@ namespace Palmtree
                     var crc24 = crc24ValueHolder.Value.Crc;
                     var crcPart =
                         new String(
-                            new[]
-                            {
-                                (Byte)(crc24 >> 16),
-                                (Byte)(crc24 >> 8),
-                                (Byte)(crc24 >> 0),
-                            }
-                            .GetBase64EncodedSequence()
-                            .ToArray());
+                            [..
+                                new[]
+                                {
+                                    (Byte)(crc24 >> 16),
+                                    (Byte)(crc24 >> 8),
+                                    (Byte)(crc24 >> 0),
+                                }
+                                .GetBase64EncodedSequence()
+                            ]);
                     return bodyPart + "\r\n=" + crcPart;
                 default:
                     throw new ArgumentException($"Unexpected {nameof(Base64EncodingType)} value", nameof(encodingType));
@@ -1827,7 +1749,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Char ToBase64Character(Int32 n, Char char62, Char char63)
         {
-            Validation.Assert(n >= 0, "n >= 0");
+            Validation.Assert(n >= 0);
             if (n < 26)
                 return (Char)('A' + n);
             if (n < 52)
@@ -1836,21 +1758,35 @@ namespace Palmtree
                 return (Char)('0' + n - 52);
             if (n == 62)
                 return char62;
-            Validation.Assert(n == 63, "n == 63");
+            Validation.Assert(n == 63);
             return char63;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 FromBase64Character(Char c, Char char62, Char char63)
-            => c.IsBetween('A', 'Z')
-                ? c - 'A'
-                : c.IsBetween('a', 'z')
-                ? c - 'a' + 26
-                : c.IsBetween('0', '9')
-                ? c - '0' + 52
-                : c == char62
-                ? 62
-                : c == char63 ? 63 : -1;
+        {
+            Validation.Assert('0' < 'A');
+            Validation.Assert('A' < 'a');
+
+            if (c == char62)
+                return 62;
+            else if (c == char63)
+                return 63;
+            else if (c < '0')
+                return -1;
+            else if (c <= '9')
+                return c - '0' + 52;
+            else if (c < 'A')
+                return -1;
+            else if (c <= 'Z')
+                return c - 'A';
+            else if (c < 'a')
+                return -1;
+            else if (c <= 'z')
+                return c - 'a' + 26;
+            else
+                return -1;
+        }
 
         #region InternalToUInt16LE
 

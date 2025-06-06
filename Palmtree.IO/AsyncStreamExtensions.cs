@@ -21,8 +21,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -40,8 +39,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -59,14 +57,12 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (offset > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
                 return sourceStream.InternalGetByteSequenceAsync(offset, checked((UInt64)sourceStream.Length - offset), null, leaveOpen, cancellationToken);
             }
@@ -82,14 +78,12 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (offset > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
                 return sourceStream.InternalGetByteSequenceAsync(offset, checked((UInt64)sourceStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
@@ -105,14 +99,13 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (checked(offset + count) > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
                 return sourceStream.InternalGetByteSequenceAsync(offset, count, null, leaveOpen, cancellationToken);
             }
@@ -128,14 +121,13 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (checked(offset + count) > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
                 return sourceStream.InternalGetByteSequenceAsync(offset, count, progress, leaveOpen, cancellationToken);
             }
@@ -151,8 +143,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalGetByteSequenceAsync(null, null, leaveOpen, cancellationToken);
             }
@@ -167,8 +158,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return sourceStream.InternalGetByteSequenceAsync(null, progress, leaveOpen, cancellationToken);
             }
@@ -183,12 +173,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (offset > randomAccessStream.Length)
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
                 return randomAccessStream.InternalGetByteSequenceAsync(offset, checked(randomAccessStream.Length - offset), null, leaveOpen, cancellationToken);
             }
@@ -203,12 +191,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (offset > randomAccessStream.Length)
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
                 return randomAccessStream.InternalGetByteSequenceAsync(offset, checked(randomAccessStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
@@ -223,12 +209,11 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (checked(offset + count) > randomAccessStream.Length)
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
                 return randomAccessStream.InternalGetByteSequenceAsync(offset, count, null, leaveOpen, cancellationToken);
             }
@@ -243,12 +228,11 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (checked(offset + count) > randomAccessStream.Length)
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
                 return randomAccessStream.InternalGetByteSequenceAsync<UInt64>(offset, count, progress, leaveOpen, cancellationToken);
             }
@@ -267,8 +251,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
@@ -288,8 +271,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
@@ -309,14 +291,12 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (offset > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
                 return InternalGetReverseByteSequenceAsync(sourceStream, offset, checked((UInt64)sourceStream.Length - offset), null, leaveOpen, cancellationToken);
             }
@@ -332,14 +312,12 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (offset > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
                 return InternalGetReverseByteSequenceAsync(sourceStream, offset, checked((UInt64)sourceStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
@@ -355,14 +333,13 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (checked(offset + count) > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
                 return InternalGetReverseByteSequenceAsync(sourceStream, offset, count, null, leaveOpen, cancellationToken);
             }
@@ -378,14 +355,13 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanSeek)
                     throw new NotSupportedException();
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
-                if (checked(offset + count) > checked((UInt64)sourceStream.Length))
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
                 return InternalGetReverseByteSequenceAsync(sourceStream, offset, count, progress, leaveOpen, cancellationToken);
             }
@@ -401,8 +377,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
 
@@ -420,8 +395,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
 
@@ -439,12 +413,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (offset > randomAccessStream.Length)
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
                 return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, checked(randomAccessStream.Length - offset), null, leaveOpen, cancellationToken);
             }
@@ -460,12 +432,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (offset > randomAccessStream.Length)
-                    throw new ArgumentOutOfRangeException(nameof(offset));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
                 return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, checked(randomAccessStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
@@ -481,12 +451,11 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (checked(offset + count) > randomAccessStream.Length)
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
                 return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, count, null, leaveOpen, cancellationToken);
             }
@@ -502,12 +471,11 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
-                if (checked(offset + count) > randomAccessStream.Length)
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceStream)}.");
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
                 return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, count, progress, leaveOpen, cancellationToken);
             }
@@ -527,12 +495,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
+                ArgumentNullException.ThrowIfNull(stream1);
                 if (!stream1.CanRead)
                     throw new NotSupportedException();
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream2);
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
@@ -551,12 +517,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
+                ArgumentNullException.ThrowIfNull(stream1);
                 if (!stream1.CanRead)
                     throw new NotSupportedException();
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream2);
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
@@ -578,12 +542,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
+                ArgumentNullException.ThrowIfNull(stream1);
                 if (!stream1.CanRead)
                     throw new NotSupportedException();
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream2);
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
@@ -602,12 +564,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
+                ArgumentNullException.ThrowIfNull(stream1);
                 if (!stream1.CanRead)
                     throw new NotSupportedException();
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream2);
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
@@ -629,10 +589,8 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream1);
+                ArgumentNullException.ThrowIfNull(stream2);
 
                 return await stream1.InternalStreamBytesEqualAsync(stream2, null, cancellationToken).ConfigureAwait(false);
             }
@@ -649,10 +607,8 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream1);
+                ArgumentNullException.ThrowIfNull(stream2);
 
                 return await stream1.InternalStreamBytesEqualAsync(stream2, null, cancellationToken).ConfigureAwait(false);
             }
@@ -672,10 +628,8 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream1);
+                ArgumentNullException.ThrowIfNull(stream2);
 
                 return await stream1.InternalStreamBytesEqualAsync(stream2, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -692,10 +646,8 @@ namespace Palmtree.IO
         {
             try
             {
-                if (stream1 is null)
-                    throw new ArgumentNullException(nameof(stream1));
-                if (stream2 is null)
-                    throw new ArgumentNullException(nameof(stream2));
+                ArgumentNullException.ThrowIfNull(stream1);
+                ArgumentNullException.ThrowIfNull(stream2);
 
                 return await stream1.InternalStreamBytesEqualAsync(stream2, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -733,12 +685,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (source is null)
-                    throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
                 if (!source.CanRead)
                     throw new NotSupportedException();
-                if (destination is null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(destination);
                 if (!destination.CanWrite)
                     throw new NotSupportedException();
 
@@ -760,12 +710,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (source is null)
-                    throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
                 if (!source.CanRead)
                     throw new NotSupportedException();
-                if (destination is null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(destination);
                 if (!destination.CanWrite)
                     throw new NotSupportedException();
 
@@ -784,12 +732,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (source is null)
-                    throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
                 if (!source.CanRead)
                     throw new NotSupportedException();
-                if (destination is null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(destination);
                 if (!destination.CanWrite)
                     throw new NotSupportedException();
 
@@ -811,12 +757,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (source is null)
-                    throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
                 if (!source.CanRead)
                     throw new NotSupportedException();
-                if (destination is null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(destination);
                 if (!destination.CanWrite)
                     throw new NotSupportedException();
 
@@ -838,12 +782,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (source is null)
-                    throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
                 if (!source.CanRead)
                     throw new NotSupportedException();
-                if (destination is null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(destination);
                 if (!destination.CanWrite)
                     throw new NotSupportedException();
 
@@ -862,12 +804,10 @@ namespace Palmtree.IO
         {
             try
             {
-                if (source is null)
-                    throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
                 if (!source.CanRead)
                     throw new NotSupportedException();
-                if (destination is null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(destination);
                 if (!destination.CanWrite)
                     throw new NotSupportedException();
 
@@ -887,88 +827,68 @@ namespace Palmtree.IO
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
 
             return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, null, false, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Boolean leaveOpen, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
 
             return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, null, leaveOpen, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
 
             return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, progress, false, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
 
             return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, progress, leaveOpen, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             return source.InternalCopyToAsync(destination, bufferSize, null, false, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             return source.InternalCopyToAsync(destination, bufferSize, null, leaveOpen, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             return source.InternalCopyToAsync(destination, bufferSize, progress, false, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             return source.InternalCopyToAsync(destination, bufferSize, progress, leaveOpen, cancellationToken);
         }
@@ -986,28 +906,23 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.ReadAsync(buffer.AsMemory(offset), cancellationToken).AsTask();
         }
 
         public static async Task<UInt32> ReadAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length =
                 await sourceStream.ReadAsync(
@@ -1019,27 +934,23 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadAsync(this Stream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
         }
 
         public static async Task<UInt32> ReadAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count > (UInt32)buffer.Length))
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             var length =
                 await sourceStream.ReadAsync(
@@ -1051,24 +962,19 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.ReadAsync(buffer.AsMemory(offset), cancellationToken);
         }
 
         public static async Task<UInt32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length =
                 await sourceStream.ReadAsync(
@@ -1080,39 +986,31 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public static Task<Int32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return sourceStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public static async Task<UInt32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count > (UInt32)buffer.Length))
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             var length =
                 await sourceStream.ReadAsync(
@@ -1128,8 +1026,7 @@ namespace Palmtree.IO
 
         public static async Task<Byte?> ReadByteOrNullAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1142,8 +1039,7 @@ namespace Palmtree.IO
 
         public static async Task<Byte?> ReadByteOrNullAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[1];
             return
@@ -1158,8 +1054,7 @@ namespace Palmtree.IO
 
         public static async Task<Byte> ReadByteAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1172,8 +1067,7 @@ namespace Palmtree.IO
 
         public static async Task<Byte> ReadByteAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[1];
             if (await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) <= 0)
@@ -1188,20 +1082,17 @@ namespace Palmtree.IO
 
         public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this Stream sourceStream, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return sourceStream.InternalReadBytesAsync(count, cancellationToken);
         }
 
         public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this Stream sourceStream, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1210,40 +1101,33 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
         }
 
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken);
         }
 
         public static async Task<UInt32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken).ConfigureAwait(false);
             return checked((UInt32)length);
@@ -1251,45 +1135,37 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public static async Task<UInt32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
             return checked((UInt32)length);
@@ -1297,8 +1173,7 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1307,52 +1182,42 @@ namespace Palmtree.IO
 
         public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
 
             return sourceStream.InternalReadBytesAsync(count, cancellationToken);
         }
 
         public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this ISequentialInputByteStream sourceStream, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadBytesAsync(checked((Int32)count), cancellationToken);
         }
 
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
         }
 
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken);
         }
 
         public static async Task<UInt32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken).ConfigureAwait(false);
             return checked((UInt32)length);
@@ -1360,39 +1225,31 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public static async Task<UInt32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
             return checked((UInt32)length);
@@ -1400,8 +1257,7 @@ namespace Palmtree.IO
 
         public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
         }
@@ -1412,8 +1268,7 @@ namespace Palmtree.IO
 
         public static Task<ReadOnlyMemory<Byte>> ReadAllBytesAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1422,8 +1277,7 @@ namespace Palmtree.IO
 
         public static Task<ReadOnlyMemory<Byte>> ReadAllBytesAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             return sourceStream.InternalReadAllBytesAsync(cancellationToken);
         }
@@ -1434,8 +1288,7 @@ namespace Palmtree.IO
 
         public static async Task<Int16> ReadInt16LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1448,8 +1301,7 @@ namespace Palmtree.IO
 
         public static async Task<Int16> ReadInt16LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Int16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1464,8 +1316,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt16> ReadUInt16LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1478,8 +1329,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt16> ReadUInt16LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(UInt16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1494,8 +1344,7 @@ namespace Palmtree.IO
 
         public static async Task<Int32> ReadInt32LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1508,8 +1357,7 @@ namespace Palmtree.IO
 
         public static async Task<Int32> ReadInt32LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Int32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1524,8 +1372,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt32> ReadUInt32LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1538,8 +1385,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt32> ReadUInt32LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(UInt32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1554,8 +1400,7 @@ namespace Palmtree.IO
 
         public static async Task<Int64> ReadInt64LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1568,8 +1413,7 @@ namespace Palmtree.IO
 
         public static async Task<Int64> ReadInt64LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Int64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1584,8 +1428,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt64> ReadUInt64LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1598,8 +1441,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt64> ReadUInt64LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(UInt64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1614,8 +1456,7 @@ namespace Palmtree.IO
 
         public static async Task<Single> ReadSingleLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1628,8 +1469,7 @@ namespace Palmtree.IO
 
         public static async Task<Single> ReadSingleLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Single)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1644,8 +1484,7 @@ namespace Palmtree.IO
 
         public static async Task<Double> ReadDoubleLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1658,8 +1497,7 @@ namespace Palmtree.IO
 
         public static async Task<Double> ReadDoubleLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Double)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1674,8 +1512,7 @@ namespace Palmtree.IO
 
         public static async Task<Decimal> ReadDecimalLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1688,8 +1525,7 @@ namespace Palmtree.IO
 
         public static async Task<Decimal> ReadDecimalLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Decimal)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1704,8 +1540,7 @@ namespace Palmtree.IO
 
         public static async Task<Int16> ReadInt16BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1718,8 +1553,7 @@ namespace Palmtree.IO
 
         public static async Task<Int16> ReadInt16BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Int16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1734,8 +1568,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt16> ReadUInt16BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1748,8 +1581,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt16> ReadUInt16BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(UInt16)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1764,8 +1596,7 @@ namespace Palmtree.IO
 
         public static async Task<Int32> ReadInt32BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1778,8 +1609,7 @@ namespace Palmtree.IO
 
         public static async Task<Int32> ReadInt32BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Int32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1794,8 +1624,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt32> ReadUInt32BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1808,8 +1637,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt32> ReadUInt32BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(UInt32)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1824,8 +1652,7 @@ namespace Palmtree.IO
 
         public static async Task<Int64> ReadInt64BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1838,8 +1665,7 @@ namespace Palmtree.IO
 
         public static async Task<Int64> ReadInt64BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Int64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1854,8 +1680,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt64> ReadUInt64BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1868,8 +1693,7 @@ namespace Palmtree.IO
 
         public static async Task<UInt64> ReadUInt64BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(UInt64)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1884,8 +1708,7 @@ namespace Palmtree.IO
 
         public static async Task<Single> ReadSingleBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1898,8 +1721,7 @@ namespace Palmtree.IO
 
         public static async Task<Single> ReadSingleBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Single)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1914,8 +1736,7 @@ namespace Palmtree.IO
 
         public static async Task<Double> ReadDoubleBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1928,8 +1749,7 @@ namespace Palmtree.IO
 
         public static async Task<Double> ReadDoubleBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Double)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1944,8 +1764,7 @@ namespace Palmtree.IO
 
         public static async Task<Decimal> ReadDecimalBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
             if (!sourceStream.CanRead)
                 throw new NotSupportedException();
 
@@ -1958,8 +1777,7 @@ namespace Palmtree.IO
 
         public static async Task<Decimal> ReadDecimalBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
         {
-            if (sourceStream is null)
-                throw new ArgumentNullException(nameof(sourceStream));
+            ArgumentNullException.ThrowIfNull(sourceStream);
 
             var buffer = new Byte[sizeof(Decimal)];
             if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
@@ -1974,14 +1792,12 @@ namespace Palmtree.IO
 
         public static async Task<Int32> WriteAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             var count = buffer.Length - offset;
             await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
@@ -1990,14 +1806,11 @@ namespace Palmtree.IO
 
         public static async Task<UInt32> WriteAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var count = checked((UInt32)buffer.Length - offset);
             await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
@@ -2006,14 +1819,12 @@ namespace Palmtree.IO
 
         public static async Task<UInt32> WriteAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count > (UInt32)buffer.Length))
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
             return count;
@@ -2021,8 +1832,7 @@ namespace Palmtree.IO
 
         public static async Task<Int32> WriteAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2032,24 +1842,19 @@ namespace Palmtree.IO
 
         public static Task<Int32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
         }
 
         public static async Task<UInt32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             var length = await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset), cancellationToken).ConfigureAwait(false);
             return checked((UInt32)length);
@@ -2057,28 +1862,22 @@ namespace Palmtree.IO
 
         public static Task<Int32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static async Task<UInt32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count > (UInt32)buffer.Length))
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             var length = await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
             return checked((UInt32)length);
@@ -2091,7 +1890,7 @@ namespace Palmtree.IO
         public static async Task WriteByteAsync(this ISequentialOutputByteStream destinationStream, Byte value, CancellationToken cancellationToken = default)
         {
             var length = await destinationStream.WriteAsync(new[] { value }, cancellationToken).ConfigureAwait(false);
-            Validation.Assert(length > 0, "length > 0");
+            Validation.Assert(length > 0);
         }
 
         #endregion
@@ -2100,93 +1899,77 @@ namespace Palmtree.IO
 
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
         }
 
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count > (UInt32)buffer.Length))
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2195,79 +1978,64 @@ namespace Palmtree.IO
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
 
             return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
         }
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (!offset.IsBetween(0, buffer.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset > (UInt32)buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
-            var (offset, count) = buffer.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = buffer.GetOffsetAndLength(range);
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > buffer.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (checked(offset + count > (UInt32)buffer.Length))
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(buffer)}.");
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 
             return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
         }
 
         public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
         }
@@ -2278,12 +2046,10 @@ namespace Palmtree.IO
 
         public static async Task WriteByteSequenceAsync(this Stream destinationStream, IEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (sequence is null)
-                throw new ArgumentNullException(nameof(sequence));
+            ArgumentNullException.ThrowIfNull(sequence);
 
             using var enumerator = sequence.GetEnumerator();
             var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
@@ -2309,12 +2075,10 @@ namespace Palmtree.IO
 
         public static async Task WriteByteSequenceAsync(this Stream destinationStream, IAsyncEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
-            if (sequence is null)
-                throw new ArgumentNullException(nameof(sequence));
+            ArgumentNullException.ThrowIfNull(sequence);
 
             var enumerator = sequence.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -2343,10 +2107,8 @@ namespace Palmtree.IO
 
         public static async Task WriteByteSequenceAsync(this ISequentialOutputByteStream destinationStream, IEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (sequence is null)
-                throw new ArgumentNullException(nameof(sequence));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(sequence);
 
             using var enumerator = sequence.GetEnumerator();
             var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
@@ -2372,10 +2134,8 @@ namespace Palmtree.IO
 
         public static async Task WriteByteSequenceAsync(this ISequentialOutputByteStream destinationStream, IAsyncEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
-            if (sequence is null)
-                throw new ArgumentNullException(nameof(sequence));
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(sequence);
 
             var enumerator = sequence.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
@@ -2408,8 +2168,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt16LEAsync(this Stream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2420,8 +2179,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt16LEAsync(this ISequentialOutputByteStream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Int16)];
             buffer.SetValueLE(0, value);
@@ -2434,8 +2192,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt16LEAsync(this Stream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2446,8 +2203,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt16LEAsync(this ISequentialOutputByteStream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(UInt16)];
             buffer.SetValueLE(0, value);
@@ -2460,8 +2216,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt32LEAsync(this Stream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2472,8 +2227,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt32LEAsync(this ISequentialOutputByteStream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Int32)];
             buffer.SetValueLE(0, value);
@@ -2486,8 +2240,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt32LEAsync(this Stream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2498,8 +2251,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt32LEAsync(this ISequentialOutputByteStream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(UInt32)];
             buffer.SetValueLE(0, value);
@@ -2512,8 +2264,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt64LEAsync(this Stream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2524,8 +2275,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt64LEAsync(this ISequentialOutputByteStream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Int64)];
             buffer.SetValueLE(0, value);
@@ -2538,8 +2288,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt64LEAsync(this Stream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2550,8 +2299,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt64LEAsync(this ISequentialOutputByteStream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(UInt64)];
             buffer.SetValueLE(0, value);
@@ -2564,8 +2312,7 @@ namespace Palmtree.IO
 
         public static Task WriteSingleLEAsync(this Stream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2576,8 +2323,7 @@ namespace Palmtree.IO
 
         public static Task WriteSingleLEAsync(this ISequentialOutputByteStream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Single)];
             buffer.SetValueLE(0, value);
@@ -2590,8 +2336,7 @@ namespace Palmtree.IO
 
         public static Task WriteDoubleLEAsync(this Stream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2602,8 +2347,7 @@ namespace Palmtree.IO
 
         public static Task WriteDoubleLEAsync(this ISequentialOutputByteStream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Double)];
             buffer.SetValueLE(0, value);
@@ -2616,8 +2360,7 @@ namespace Palmtree.IO
 
         public static Task WriteDecimalLEAsync(this Stream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2628,8 +2371,7 @@ namespace Palmtree.IO
 
         public static Task WriteDecimalLEAsync(this ISequentialOutputByteStream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Decimal)];
             buffer.SetValueLE(0, value);
@@ -2642,8 +2384,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt16BEAsync(this Stream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2654,8 +2395,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt16BEAsync(this ISequentialOutputByteStream destinationStream, Int16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Int16)];
             buffer.SetValueBE(0, value);
@@ -2668,8 +2408,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt16BEAsync(this Stream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2680,8 +2419,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt16BEAsync(this ISequentialOutputByteStream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(UInt16)];
             buffer.SetValueBE(0, value);
@@ -2694,8 +2432,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt32BEAsync(this Stream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2706,8 +2443,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt32BEAsync(this ISequentialOutputByteStream destinationStream, Int32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Int32)];
             buffer.SetValueBE(0, value);
@@ -2720,8 +2456,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt32BEAsync(this Stream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2732,8 +2467,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt32BEAsync(this ISequentialOutputByteStream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(UInt32)];
             buffer.SetValueBE(0, value);
@@ -2746,8 +2480,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt64BEAsync(this Stream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2758,8 +2491,7 @@ namespace Palmtree.IO
 
         public static Task WriteInt64BEAsync(this ISequentialOutputByteStream destinationStream, Int64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Int64)];
             buffer.SetValueBE(0, value);
@@ -2772,8 +2504,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt64BEAsync(this Stream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2784,8 +2515,7 @@ namespace Palmtree.IO
 
         public static Task WriteUInt64BEAsync(this ISequentialOutputByteStream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(UInt64)];
             buffer.SetValueBE(0, value);
@@ -2798,8 +2528,7 @@ namespace Palmtree.IO
 
         public static Task WriteSingleBEAsync(this Stream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2810,8 +2539,7 @@ namespace Palmtree.IO
 
         public static Task WriteSingleBEAsync(this ISequentialOutputByteStream destinationStream, Single value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Single)];
             buffer.SetValueBE(0, value);
@@ -2824,8 +2552,7 @@ namespace Palmtree.IO
 
         public static Task WriteDoubleBEAsync(this Stream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2836,8 +2563,7 @@ namespace Palmtree.IO
 
         public static Task WriteDoubleBEAsync(this ISequentialOutputByteStream destinationStream, Double value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Double)];
             buffer.SetValueBE(0, value);
@@ -2850,8 +2576,7 @@ namespace Palmtree.IO
 
         public static Task WriteDecimalBEAsync(this Stream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
             if (!destinationStream.CanWrite)
                 throw new NotSupportedException();
 
@@ -2862,8 +2587,7 @@ namespace Palmtree.IO
 
         public static Task WriteDecimalBEAsync(this ISequentialOutputByteStream destinationStream, Decimal value, CancellationToken cancellationToken = default)
         {
-            if (destinationStream is null)
-                throw new ArgumentNullException(nameof(destinationStream));
+            ArgumentNullException.ThrowIfNull(destinationStream);
 
             var buffer = new Byte[sizeof(Decimal)];
             buffer.SetValueBE(0, value);
@@ -2880,8 +2604,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -2900,8 +2623,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -2923,8 +2645,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -2943,8 +2664,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -2964,8 +2684,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -2982,8 +2701,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3003,8 +2721,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3021,8 +2738,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3044,8 +2760,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3062,8 +2777,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3083,8 +2797,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3101,8 +2814,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3120,8 +2832,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3136,8 +2847,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3155,8 +2865,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3171,8 +2880,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc24Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3196,8 +2904,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3216,8 +2923,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3239,8 +2945,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3259,8 +2964,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3280,8 +2984,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3298,8 +3001,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3319,8 +3021,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3337,8 +3038,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
@@ -3360,8 +3060,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3378,8 +3077,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3399,8 +3097,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3417,8 +3114,7 @@ namespace Palmtree.IO
 
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3436,8 +3132,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3452,8 +3147,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
             }
@@ -3471,8 +3165,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3487,8 +3180,7 @@ namespace Palmtree.IO
         {
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 return await sourceStream.InternalCalculateCrc32Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
             }
@@ -3661,8 +3353,7 @@ namespace Palmtree.IO
             var progressCounter = new ProgressCounterUInt64(progress);
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 progressCounter.Report();
                 var buffer = new Byte[BUFFER_SIZE];
@@ -3672,7 +3363,7 @@ namespace Palmtree.IO
                     pos -= BUFFER_SIZE;
                     _ = sourceStream.Seek(checked((Int64)pos), SeekOrigin.Begin);
                     var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
-                    Validation.Assert(length == buffer.Length, "length == buffer.Length");
+                    Validation.Assert(length == buffer.Length);
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3684,7 +3375,7 @@ namespace Palmtree.IO
                 {
                     var remain = checked((Int32)(pos - offset));
                     var length = sourceStream.ReadBytes(buffer.AsMemory(0, remain));
-                    Validation.Assert(length == remain, "length == remain");
+                    Validation.Assert(length == remain);
                     for (var index = remain - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3707,8 +3398,7 @@ namespace Palmtree.IO
             var progressCounter = new ProgressCounterUInt64(progress);
             try
             {
-                if (sourceStream is null)
-                    throw new ArgumentNullException(nameof(sourceStream));
+                ArgumentNullException.ThrowIfNull(sourceStream);
 
                 progressCounter.Report();
                 var buffer = new Byte[BUFFER_SIZE];
@@ -3718,7 +3408,7 @@ namespace Palmtree.IO
                     pos -= BUFFER_SIZE;
                     sourceStream.Seek(pos);
                     var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
-                    Validation.Assert(length == buffer.Length, "length == buffer.Length");
+                    Validation.Assert(length == buffer.Length);
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3730,7 +3420,7 @@ namespace Palmtree.IO
                 {
                     var remain = checked((Int32)(pos - offset));
                     var length = sourceStream.ReadBytes(buffer.AsMemory(0, remain));
-                    Validation.Assert(length == remain, "length == remain");
+                    Validation.Assert(length == remain);
                     for (var index = remain - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -3753,7 +3443,7 @@ namespace Palmtree.IO
         {
             const Int32 bufferSize = 81920;
 
-            Validation.Assert(bufferSize % sizeof(UInt64) == 0, "bufferSize % sizeof(UInt64) == 0");
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0);
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
             var buffer1 = new Byte[bufferSize];
@@ -3799,7 +3489,7 @@ namespace Palmtree.IO
         {
             const Int32 bufferSize = 81920;
 
-            Validation.Assert(bufferSize % sizeof(UInt64) == 0, "bufferSize % sizeof(UInt64) == 0");
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0);
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
             var buffer1 = new Byte[bufferSize];
@@ -3913,7 +3603,6 @@ namespace Palmtree.IO
 
         #region InternalReadBytesAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<ReadOnlyMemory<Byte>> InternalReadBytesAsync(this Stream sourceStream, Int32 count, CancellationToken cancellationToken)
         {
             var buffer = new Byte[count];
@@ -3923,7 +3612,6 @@ namespace Palmtree.IO
             return buffer;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<ReadOnlyMemory<Byte>> InternalReadBytesAsync(this ISequentialInputByteStream sourceStream, Int32 count, CancellationToken cancellationToken)
         {
             var buffer = new Byte[count];
@@ -3933,7 +3621,6 @@ namespace Palmtree.IO
             return buffer;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<Int32> InternalReadBytesAsync(this Stream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken)
         {
             var totalLength = 0;
@@ -3949,7 +3636,6 @@ namespace Palmtree.IO
             return totalLength;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<Int32> InternalReadBytesAsync(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken)
         {
             var totalLength = 0;
@@ -4034,11 +3720,9 @@ namespace Palmtree.IO
 
         #region InternalWriteBytesAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task InternalWriteBytesAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
             => destinationStream.WriteAsync(buffer, cancellationToken).AsTask();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task InternalWriteBytesAsync(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
         {
             while (!buffer.IsEmpty)
@@ -4058,6 +3742,7 @@ namespace Palmtree.IO
         private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc24Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
             => InternalCalculateCrcAsync(sourceStream, bufferSize, progress, Crc24.CreateCalculationState(), cancellationToken);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc24Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
             => InternalCalculateCrcAsync(sourceStream, bufferSize, progress, Crc24.CreateCalculationState(), cancellationToken);
 
@@ -4077,7 +3762,6 @@ namespace Palmtree.IO
 
         #region InternalCalculateCrcAsync
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrcAsync(Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, ICrcCalculationState<UInt32> session, CancellationToken cancellationToken)
         {
             var processedCounter = new ProgressCounterUInt64(progress);
@@ -4102,7 +3786,6 @@ namespace Palmtree.IO
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static async Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrcAsync(ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, ICrcCalculationState<UInt32> session, CancellationToken cancellationToken)
         {
             var processedCounter = new ProgressCounterUInt64(progress);

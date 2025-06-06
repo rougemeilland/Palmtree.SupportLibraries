@@ -53,8 +53,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ZipExtraField
 
         public Boolean Read(Byte[] extraFieldData, Int32 offset, Int32 size, Boolean forCentralDirectoryHeader)
         {
-            if (extraFieldData is null)
-                throw new ArgumentNullException(nameof(extraFieldData));
+            ArgumentNullException.ThrowIfNull(extraFieldData);
             if (offset < 0 || offset > extraFieldData.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 

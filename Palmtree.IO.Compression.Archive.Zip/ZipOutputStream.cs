@@ -23,8 +23,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return PositionCore;
             }
@@ -32,41 +31,36 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public void ReserveAtomicSpace(UInt64 atomicSpaceSize)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             ReserveAtomicSpaceCore(atomicSpaceSize);
         }
 
         public void LockVolumeDisk()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             LockVolumeDiskCore();
         }
 
         public void UnlockVolumeDisk()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             UnlockVolumeDiskCore();
         }
 
         public void CompletedSuccessfully()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             _isCompletedSuccessfully = true;
         }
 
         public ZipStreamPosition Add(ZipStreamPosition position, UInt64 offset)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position.Host));
             try
             {
                 return AddCore(position.DiskNumber, position.OffsetOnTheDisk, offset);
@@ -79,9 +73,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public ZipStreamPosition Subtract(ZipStreamPosition position, UInt64 offset)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position.Host));
             try
             {
                 return SubtractCore(position.DiskNumber, position.OffsetOnTheDisk, offset);
@@ -94,10 +87,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public UInt64 Subtract(ZipStreamPosition position1, ZipStreamPosition position2)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
-            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position1.Host));
+            Validation.Assert(Equals(position2.Host));
             try
             {
                 return SubtractCore(position1.DiskNumber, position1.OffsetOnTheDisk, position2.DiskNumber, position2.OffsetOnTheDisk);
@@ -110,10 +102,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Int32 Compare(ZipStreamPosition position1, ZipStreamPosition position2)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
-            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position1.Host));
+            Validation.Assert(Equals(position2.Host));
             var (diskNumber1, offsetOnTheDisk1) = NormalizeCore(position1.DiskNumber, position1.OffsetOnTheDisk);
             var (diskNumber2, offsetOnTheDisk2) = NormalizeCore(position2.DiskNumber, position2.OffsetOnTheDisk);
             var c = diskNumber1.CompareTo(diskNumber2);
@@ -124,10 +115,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Boolean Equal(ZipStreamPosition position1, ZipStreamPosition position2)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position1.Host), "Equals(position1.Host)");
-            Validation.Assert(Equals(position2.Host), "Equals(position2.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position1.Host));
+            Validation.Assert(Equals(position2.Host));
             var (diskNumber1, offsetOnTheDisk1) = NormalizeCore(position1.DiskNumber, position1.OffsetOnTheDisk);
             var (diskNumber2, offsetOnTheDisk2) = NormalizeCore(position2.DiskNumber, position2.OffsetOnTheDisk);
 
@@ -138,9 +128,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public Int32 GetHashCode(ZipStreamPosition position)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            Validation.Assert(Equals(position.Host), "Equals(position.Host)");
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            Validation.Assert(Equals(position.Host));
             var (diskNumber, offsetOnTheDisk) = NormalizeCore(position.DiskNumber, position.OffsetOnTheDisk);
             return HashCode.Combine(diskNumber, offsetOnTheDisk);
         }
@@ -210,7 +199,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private Int32 GetSizeToWrite(IRandomOutputByteStream<UInt64> stream, ReadOnlySpan<Byte> buffer)
         {
             var sizeToWrite = checked((Int32)(MaximumDiskSizeCore - stream.Length).Minimum((UInt64)buffer.Length));
-            Validation.Assert(sizeToWrite > 0, "sizeToWrite > 0");
+            Validation.Assert(sizeToWrite > 0);
             return sizeToWrite;
         }
     }

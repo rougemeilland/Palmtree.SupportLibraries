@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 {
-    internal class ExtraFieldCollection
+    internal sealed class ExtraFieldCollection
         : IExtraFieldCollection
     {
-        private class InternalExtraFieldItem
+        private sealed class InternalExtraFieldItem
         {
             public InternalExtraFieldItem(UInt16 extraFieldId, ZipEntryHeaderType appliedHeaderType, ReadOnlyMemory<Byte> extraFieldBody)
             {
@@ -21,7 +21,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             public ReadOnlyMemory<Byte> ExtraFieldBody { get; }
         }
 
-        private class DecodingParameter
+        private sealed class DecodingParameter
             : IExtraFieldDecodingParameter
         {
             private readonly ValidationStringency _stringency;
@@ -34,7 +34,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             ValidationStringency IExtraFieldDecodingParameter.Stringency => _stringency;
         }
 
-        private class EncodingParameter
+        private sealed class EncodingParameter
             : IExtraFieldEncodingParameter
         {
         }

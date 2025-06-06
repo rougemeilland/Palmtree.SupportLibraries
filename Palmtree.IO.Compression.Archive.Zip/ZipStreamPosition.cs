@@ -9,8 +9,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     {
         internal ZipStreamPosition(UInt32 diskNumber, UInt64 offsetOnTheDisk, IVirtualZipFile hostVirtualDisk)
         {
-            if (hostVirtualDisk is null)
-                throw new ArgumentNullException(nameof(hostVirtualDisk));
+            ArgumentNullException.ThrowIfNull(hostVirtualDisk);
 
             DiskNumber = diskNumber;
             OffsetOnTheDisk = offsetOnTheDisk;
@@ -50,7 +49,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ZipStreamPosition Add(UInt64 x)
         {
-            Validation.Assert(Host is not null, "Host is not null");
+            Validation.Assert(Host is not null);
             return Host.Add(this, x);
         }
 
@@ -61,14 +60,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UInt64 Subtract(ZipStreamPosition x)
         {
-            Validation.Assert(Host is not null, "Host is not null");
+            Validation.Assert(Host is not null);
             return Host.Subtract(this, x);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ZipStreamPosition Subtract(UInt64 x)
         {
-            Validation.Assert(Host is not null, "Host is not null");
+            Validation.Assert(Host is not null);
             return Host.Subtract(this, x);
         }
 
@@ -77,14 +76,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Int32 CompareTo(ZipStreamPosition other)
         {
-            Validation.Assert(Host is not null, "Host is not null");
+            Validation.Assert(Host is not null);
             return Host.Compare(this, other);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean Equals(ZipStreamPosition other)
         {
-            Validation.Assert(Host is not null, "Host is not null");
+            Validation.Assert(Host is not null);
             return Host.Equal(this, other);
         }
 
@@ -95,7 +94,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public override Int32 GetHashCode()
         {
-            Validation.Assert(Host is not null, "Host is not null");
+            Validation.Assert(Host is not null);
             return Host.GetHashCode(this);
         }
 

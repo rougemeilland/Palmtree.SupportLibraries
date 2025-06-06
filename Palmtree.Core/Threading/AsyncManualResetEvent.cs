@@ -6,7 +6,7 @@ namespace Palmtree.Threading
 {
     public class AsyncManualResetEvent
     {
-        private class AsynchronousTaskCompletionSource
+        private sealed class AsynchronousTaskCompletionSource
             : TaskCompletionSource<Byte>
         {
             private readonly Task<Byte> _copyOfTask;

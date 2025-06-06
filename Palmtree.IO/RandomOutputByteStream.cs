@@ -19,8 +19,7 @@ namespace Palmtree.IO
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return PositionCore;
             }
@@ -30,8 +29,7 @@ namespace Palmtree.IO
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return StartOfThisStreamCore;
             }
@@ -41,16 +39,14 @@ namespace Palmtree.IO
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return LengthCore;
             }
 
             set
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 LengthCore = value;
             }
@@ -58,8 +54,7 @@ namespace Palmtree.IO
 
         public void Seek(POSITION_T position)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             SeekCore(position);
         }

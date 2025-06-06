@@ -1,20 +1,39 @@
-﻿using System;
+﻿//#define _LOG_FILE_ACCESS
+#define _RETRY_TO_CREAT_FILE_STREAM_AND_DELETE_FILE
+#define _SLEEP_BETWEEN_RETRIES
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace Palmtree.IO
 {
     public class FilePath
         : FileSystemPath
     {
+        /// <summary>
+        /// パス名の最大長を示す整数。
+        /// </summary>
+        /// <remarks>
+        /// この値は、.NET 9.0 (2025年5月現在) の native ソースコードにてハードコーディングされている。
+        /// (<see href="https://github.com/dotnet/runtime/blob/main/src/coreclr/pal/inc/pal.h"/> など、複数個所)
+        /// </remarks>
+        private static readonly Int32 MAX_LONGPATH = 1024;
+
+        private const Int32 _E_ERROR_SHARING_VIOLATION = unchecked((Int32)0x80070020u);
+#if _RETRY_TO_CREAT_FILE_STREAM_AND_DELETE_FILE
+        private const Int32 _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = 10;
+#else
+        private const Int32 _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = 0;
+#endif
+#if _SLEEP_BETWEEN_RETRIES
+        private static readonly TimeSpan _INTERVAL_TIME_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = TimeSpan.FromMilliseconds(1);
+#endif
         private static readonly Random _randomNumberGeneratorForTemporaryFileName;
         private static readonly Char[] _temporaryFileNameMap;
-
-        private readonly FileInfo _file;
 
         static FilePath()
         {
@@ -22,62 +41,34 @@ namespace Palmtree.IO
             _temporaryFileNameMap = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v' };
 #if DEBUG
             // _temporaryFileNameMap の要素が数字あるいは英小文字のみであることの確認
-            Validation.Assert(_temporaryFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z'), "_temporaryFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z')");
+            Validation.Assert(_temporaryFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z'));
 
             // _temporaryFileNameMap の配列の長さが 32 であることの確認
-            Validation.Assert(_temporaryFileNameMap.Length == 32, "_temporaryFileNameMap.Length == 32");
+            Validation.Assert(_temporaryFileNameMap.Length == 32);
 
             // _temporaryFileNameMap の要素が重複していないことの確認
-            Validation.Assert(_temporaryFileNameMap.Distinct().Count() == 32, "_temporaryFileNameMap.Distinct().Count() == 32");
+            Validation.Assert(_temporaryFileNameMap.Distinct().Count() == 32);
 #endif
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FilePath(String path)
-            : this(GetFineInfo(path))
+            : this(GetFileInfo(path))
         {
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private FilePath(FileInfo file)
             : base(file)
         {
-            _file = file;
+            var directoryPath = Path.GetDirectoryName(FullName);
+            Validation.Assert(directoryPath is not null);
+            Directory = new DirectoryPath(directoryPath);
         }
 
-        public DirectoryPath Directory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _file.Refresh();
-                var directory = _file.Directory;
-                Validation.Assert(directory is not null, $" _file.Directory is not null (_file == \"{_file.FullName}\")");
-                return DirectoryPath.CreateInstance(directory);
-            }
-        }
+        public DirectoryPath Directory { get; }
+        public override Boolean Exists => File.Exists(FullName);
+        public UInt64 Length => checked((UInt64)GetFileInfo(FullName).Length);
 
-        public UInt64 Length
-        {
-            get
-            {
-                _file.Refresh();
-                return checked((UInt64)_file.Length);
-            }
-        }
-
-        public ISequentialOutputByteStream Append(FileShare share = FileShare.None)
-        {
-            _file.Refresh();
-            try
-            {
-                return Append(_file.FullName, share);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
+        public ISequentialOutputByteStream Append(FileShare share = FileShare.None) => Append(FullName, share);
 
         #region AppendText
 
@@ -89,15 +80,7 @@ namespace Palmtree.IO
         {
             ArgumentNullException.ThrowIfNull(encoding);
 
-            _file.Refresh();
-            try
-            {
-                return Append(_file.FullName, share).AsTextWriter(encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
+            return Append(FullName, share).AsTextWriter(encoding);
         }
 
         #endregion
@@ -106,68 +89,29 @@ namespace Palmtree.IO
         {
             ArgumentNullException.ThrowIfNull(destinationFile);
 
-            _file.Refresh();
-            destinationFile.Refresh();
-            try
-            {
-                _ = _file.CopyTo(destinationFile.FullName, overwrite);
-            }
-            finally
-            {
-                _file.Refresh();
-                destinationFile.Refresh();
-#if DEBUG
-                ValidationPath();
-                destinationFile.ValidationPath();
-#endif
-            }
+            File.Copy(FullName, destinationFile.FullName, overwrite);
         }
 
-        public IRandomOutputByteStream<UInt64> Create(FileShare share = FileShare.None)
-        {
-            _file.Refresh();
-            try
-            {
-                return OpenWrite(_file.FullName, FileMode.Create, share);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
+        public IRandomOutputByteStream<UInt64> Create(FileShare share = FileShare.None) => OpenWrite(FullName, FileMode.Create, share);
 
-        public IRandomOutputByteStream<UInt64> CreateNew(FileShare share = FileShare.None)
-        {
-            _file.Refresh();
-            try
-            {
-                return OpenWrite(_file.FullName, FileMode.CreateNew, share);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
+        public IRandomOutputByteStream<UInt64> CreateNew(FileShare share = FileShare.None) => OpenWrite(FullName, FileMode.CreateNew, share);
 
         #region CreateNewText
 
         public TextWriter CreateNewText(FileShare share = FileShare.None) => CreateNewText(share, Encoding.UTF8);
 
-        public TextWriter CreateNewText(Encoding encoding) => CreateNewText(FileShare.None, encoding);
+        public TextWriter CreateNewText(Encoding encoding)
+        {
+            ArgumentNullException.ThrowIfNull(encoding);
+
+            return CreateNewText(FileShare.None, encoding);
+        }
 
         public TextWriter CreateNewText(FileShare share, Encoding encoding)
         {
             ArgumentNullException.ThrowIfNull(encoding);
 
-            _file.Refresh();
-            try
-            {
-                return OpenWrite(_file.FullName, FileMode.CreateNew, share).AsTextWriter(encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
+            return OpenWrite(FullName, FileMode.CreateNew, share).AsTextWriter(encoding);
         }
 
         #endregion
@@ -177,16 +121,16 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(prefix);
             ArgumentNullException.ThrowIfNull(suffix);
 
+            // 乱数を生成してパス名を決定する。
+            // 乱数の範囲は [0..2^31-1] で 31 ビットで表現できる。
+            // そのうちそれぞれ 5 ビットずつを 1 文字に変換し、合計 30 ビットを6文字に変換する。
+
             var tempFileNameBuilder = new StringBuilder(prefix.Length + 6 + suffix.Length);
             var getTempDir = Path.GetTempPath();
             var retryCount = 0;
             while (true)
             {
-#if false
-                var randomNumber = 0x12345678;
-#else
                 var randomNumber = _randomNumberGeneratorForTemporaryFileName.Next();
-#endif
                 _ = tempFileNameBuilder.Clear();
                 _ = tempFileNameBuilder.Append(prefix);
                 _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 25) & 0x1f]);
@@ -199,94 +143,11 @@ namespace Palmtree.IO
 
                 var path = Path.Combine(getTempDir, tempFileNameBuilder.ToString());
                 var tempFilePath =
-                    CreateFilePathInstance(path)
+                    TryToCreateFilePath(path)
                     ?? throw new ArgumentException($"Can't create temporary file. Probably parameter 'prefix' or parameter 'suffix' contains invalid characters.: {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"");
-                if (CheckTemporaryFile(tempFilePath.FullName, retryCount))
+                if (TryToCreateTemporaryFile(tempFilePath.FullName, retryCount))
                     return tempFilePath;
                 ++retryCount;
-            }
-
-            static Boolean CheckTemporaryFile(String tempFilePath, Int32 retryCount)
-            {
-                if (retryCount < 100)
-                    return TryToCreateTemporaryFile(tempFilePath);
-                var stream = (Stream?)null;
-                try
-                {
-                    stream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
-                    return true;
-                }
-                finally
-                {
-                    stream?.Dispose();
-                }
-
-                static Boolean TryToCreateTemporaryFile(String tempFilePath)
-                {
-                    if (OperatingSystem.IsWindows())
-                    {
-                        var normalizedPath = InterOpForWindows.NormalizePath(tempFilePath);
-                        var handle =
-                            InterOpForWindows.CreateFile(
-                                normalizedPath,
-                                InterOpForWindows.AccessMode.GENERIC_WRITE,
-                                InterOpForWindows.FileShare.FILE_SHARE_NONE,
-                                IntPtr.Zero,
-                                InterOpForWindows.CreationMode.CREATE_NEW,
-                                InterOpForWindows.FileAttribute.FILE_ATTRIBUTE_NORMAL,
-                                IntPtr.Zero);
-                        try
-                        {
-                            var errorCode = Marshal.GetLastWin32Error();
-                            if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
-                                return true;
-                            else if (errorCode == InterOpForWindows.ERROR_FILE_EXISTS)
-                                return false;
-                            else
-                                throw new Win32Exception(errorCode);
-                        }
-                        finally
-                        {
-                            if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
-                                _ = InterOpForWindows.CloseHandle(handle);
-                        }
-                    }
-                    else
-                    {
-                        var handle =
-                            InterOpForLinux.Open(
-                                tempFilePath,
-                                InterOpForLinux.OpenMode.O_CREAT | InterOpForLinux.OpenMode.O_EXCL,
-                                InterOpForLinux.Permission.S_IRWXU);
-                        try
-                        {
-                            var errno = Marshal.GetLastSystemError();
-                            if (handle >= 0)
-                                return true;
-                            else if (errno == InterOpForLinux.ERROR_CODE_EEXIST)
-                                return false;
-                            else
-                                throw new IOException(InterOpForLinux.StrError(errno));
-                        }
-                        finally
-                        {
-                            if (handle >= 0)
-                                _ = InterOpForLinux.Close(handle);
-                        }
-                    }
-                }
-            }
-
-            static FilePath? CreateFilePathInstance(String path)
-            {
-                try
-                {
-                    return new FilePath(path);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
             }
         }
 
@@ -294,24 +155,23 @@ namespace Palmtree.IO
 
         public TextWriter CreateText(FileShare share = FileShare.None) => CreateText(share, Encoding.UTF8);
 
-        public TextWriter CreateText(Encoding encoding) => CreateText(FileShare.None, encoding);
+        public TextWriter CreateText(Encoding encoding)
+        {
+            ArgumentNullException.ThrowIfNull(encoding);
+
+            return CreateText(FileShare.None, encoding);
+        }
 
         public TextWriter CreateText(FileShare share, Encoding encoding)
         {
             ArgumentNullException.ThrowIfNull(encoding);
 
-            _file.Refresh();
-            try
-            {
-                return OpenWrite(_file.FullName, FileMode.Create, share).AsTextWriter(encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
+            return OpenWrite(FullName, FileMode.Create, share).AsTextWriter(encoding);
         }
 
         #endregion
+
+        public void Delete() => DeleteFile(FullName);
 
         public FilePath GetCasePreservedPath()
         {
@@ -340,128 +200,82 @@ namespace Palmtree.IO
         {
             ArgumentNullException.ThrowIfNull(destinationFile);
 
-            _file.Refresh();
-            destinationFile.Refresh();
-            try
-            {
-                File.Move(_file.FullName, destinationFile._file.FullName, overwrite);
-            }
-            finally
-            {
-                _file.Refresh();
-                destinationFile.Refresh();
-#if DEBUG
-                ValidationPath();
-                destinationFile.ValidationPath();
-#endif
-            }
+            System.IO.File.Move(FullName, destinationFile.FullName, overwrite);
         }
 
-        public IRandomInputByteStream<UInt64> OpenRead(FileShare share = FileShare.None)
-        {
-            _file.Refresh();
-            try
-            {
-                return OpenRead(_file.FullName, share);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
-        }
+        public IRandomInputByteStream<UInt64> OpenRead(FileShare share = FileShare.None) => OpenRead(FullName, share);
 
         #region OpenText
 
         public TextReader OpenText(FileShare share = FileShare.None) => OpenText(share, Encoding.UTF8);
 
-        public TextReader OpenText(Encoding encoding) => OpenText(FileShare.None, encoding);
+        public TextReader OpenText(Encoding encoding)
+        {
+            ArgumentNullException.ThrowIfNull(encoding);
+
+            return OpenText(FileShare.None, encoding);
+        }
 
         public TextReader OpenText(FileShare share, Encoding encoding)
         {
             ArgumentNullException.ThrowIfNull(encoding);
 
-            _file.Refresh();
-            try
-            {
-                return OpenRead(_file.FullName, share).AsTextReader(encoding);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
+            return OpenRead(FullName, share).AsTextReader(encoding);
         }
 
         #endregion
 
-        public IRandomOutputByteStream<UInt64> OpenWrite(FileShare share = FileShare.None)
+        public IRandomOutputByteStream<UInt64> OpenWrite(FileShare share = FileShare.None) => OpenWrite(FullName, FileMode.OpenOrCreate, share);
+
+        public FilePath Replace(FilePath destinationFilePath, FilePath? destinationBackupFilePath)
         {
-            _file.Refresh();
-            try
-            {
-                return OpenWrite(_file.FullName, FileMode.OpenOrCreate, share);
-            }
-            finally
-            {
-                _file.Refresh();
-            }
+            ArgumentNullException.ThrowIfNull(destinationFilePath);
+
+            return GetFileInfo(FullName).Replace(destinationFilePath.FullName, destinationBackupFilePath?.FullName);
         }
 
-        public void Replace(FilePath destination, FilePath destinatonBackupFile)
+        public FilePath Replace(FilePath destinationFilePath, FilePath? destinationBackupFilePath, Boolean ignoreMetadataErrors)
         {
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (destinatonBackupFile is null)
-                throw new ArgumentNullException(nameof(destinatonBackupFile));
+            ArgumentNullException.ThrowIfNull(destinationFilePath);
 
-            _file.Refresh();
-            destination.Refresh();
-            destinatonBackupFile.Refresh();
-            try
-            {
-                _ = _file.Replace(destination._file.FullName, destinatonBackupFile._file.FullName);
-            }
-            finally
-            {
-                _file.Refresh();
-                destination.Refresh();
-                destinatonBackupFile.Refresh();
-#if DEBUG
-                ValidationPath();
-                destination.ValidationPath();
-                destinatonBackupFile.ValidationPath();
-#endif
-            }
+            return GetFileInfo(FullName).Replace(destinationFilePath.FullName, destinationBackupFilePath?.FullName, ignoreMetadataErrors);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator FileInfo(FilePath path)
         {
-            if (path is null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
-            return new(path._file.FullName);
+            return new(path.FullName);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator FilePath(FileInfo directory)
+        public static implicit operator FilePath(FileInfo file)
         {
-            if (directory is null)
-                throw new ArgumentNullException(nameof(directory));
+            ArgumentNullException.ThrowIfNull(file);
 
-            return new(new FileInfo(directory.FullName));
+            return new(file.FullName);
         }
 
-        /// <remarks>
-        /// The same instance as the object indicated by parameter <paramref name="file"/> must not be used elsewhere.
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static FilePath CreateInstance(FileInfo file) => new(file);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static FileInfo GetFineInfo(String path)
+        protected override DateTime InternalCreationTimeUtc
         {
-            if (String.IsNullOrEmpty(path))
-                throw new ArgumentException($"'{nameof(path)}' must not be null or empty.", nameof(path));
+            get => File.GetCreationTimeUtc(FullName);
+            set => File.SetCreationTimeUtc(FullName, value);
+        }
+
+        protected override DateTime InternalLastAccessTimeUtc
+        {
+            get => File.GetLastAccessTimeUtc(FullName);
+            set => File.SetLastAccessTimeUtc(FullName, value);
+        }
+
+        protected override DateTime InternalLastWriteTimeUtc
+        {
+            get => File.GetLastWriteTimeUtc(FullName);
+            set => File.SetLastWriteTime(FullName, value);
+        }
+
+        private static FileInfo GetFileInfo(String path)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path);
 
             try
             {
@@ -480,11 +294,20 @@ namespace Palmtree.IO
             var success = false;
             try
             {
-                outStream = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.Write, share);
+                outStream = CreateFileStream(fullPath, FileMode.OpenOrCreate, FileAccess.Write, share);
                 _ = outStream.Seek(0, SeekOrigin.End);
                 sequentialOutStream = outStream.AsOutputByteStream();
                 success = true;
                 return sequentialOutStream;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Validation.Debug.WriteLine(ex);
+#elif TRACE
+                Validation.Trace.WriteLine(ex);
+#endif
+                throw;
             }
             finally
             {
@@ -504,11 +327,20 @@ namespace Palmtree.IO
             var success = false;
             try
             {
-                inStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, share);
+                inStream = CreateFileStream(fullPath, FileMode.Open, FileAccess.Read, share);
                 sequentialInStream = inStream.AsInputByteStream();
                 randomInStream = sequentialInStream.AsRandomAccess<UInt64>();
                 success = true;
                 return randomInStream;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Validation.Debug.WriteLine(ex);
+#elif TRACE
+                Validation.Trace.WriteLine(ex);
+#endif
+                throw;
             }
             finally
             {
@@ -529,11 +361,20 @@ namespace Palmtree.IO
             var success = false;
             try
             {
-                outStream = new FileStream(fullPath, mode, FileAccess.Write, share);
+                outStream = CreateFileStream(fullPath, mode, FileAccess.Write, share);
                 sequentialOutStream = outStream.AsOutputByteStream();
                 randomOutStream = sequentialOutStream.AsRandomAccess<UInt64>();
                 success = true;
                 return randomOutStream;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Validation.Debug.WriteLine(ex);
+#elif TRACE
+                Validation.Trace.WriteLine(ex);
+#endif
+                throw;
             }
             finally
             {
@@ -543,6 +384,203 @@ namespace Palmtree.IO
                     sequentialOutStream?.Dispose();
                     outStream?.Dispose();
                 }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:可能な場合は具象型を使用してパフォーマンスを向上させる", Justification = "Release ビルドでは復帰値の型を FileStream にすることが可能だが、Debug ビルドでは Stream にせざるを得ないため。")]
+        private static Stream CreateFileStream(String fullPath, FileMode mode, FileAccess access, FileShare share)
+        {
+            for (var count = 0; ; ++count)
+            {
+                try
+                {
+                    var stream = new FileStream(fullPath, mode, access, share);
+#if DEBUG
+                    if (count > 0)
+                        System.Diagnostics.Debug.WriteLine($"FilePath.CreateFileStream(String, FileMode, FileAccess, FileShare): Tried {count} times.");
+#endif
+#if DEBUG && _LOG_FILE_ACCESS
+                    return stream.WithLogger();
+#else
+                    return stream;
+#endif
+                }
+                catch (IOException ex)
+                {
+                    if (!OperatingSystem.IsWindows() || ex.HResult != _E_ERROR_SHARING_VIOLATION || count >= _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR)
+                    {
+#if DEBUG
+                        Validation.Debug.WriteLine(ex);
+#elif TRACE
+                        Validation.Trace.WriteLine(ex);
+#endif
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Validation.Debug.WriteLine(ex);
+#elif TRACE
+                    Validation.Trace.WriteLine(ex);
+#endif
+                    throw;
+                }
+#if _SLEEP_BETWEEN_RETRIES
+                Thread.Sleep(_INTERVAL_TIME_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR);
+#endif
+            }
+        }
+
+        private static void DeleteFile(String fullPath)
+        {
+            for (var count = 0; ; ++count)
+            {
+                try
+                {
+                    File.Delete(fullPath);
+#if DEBUG
+                    if (count > 0)
+                        System.Diagnostics.Debug.WriteLine($"FilePath.CreateFileStream(String, FileMode, FileAccess, FileShare): Tried {count} times.");
+#endif
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    if (!OperatingSystem.IsWindows() || ex.HResult != _E_ERROR_SHARING_VIOLATION || count >= _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR)
+                    {
+#if DEBUG
+                        Validation.Debug.WriteLine(ex);
+#elif TRACE
+                        Validation.Trace.WriteLine(ex);
+#endif
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Validation.Debug.WriteLine(ex);
+#elif TRACE
+                    Validation.Trace.WriteLine(ex);
+#endif
+                    throw;
+                }
+#if _SLEEP_BETWEEN_RETRIES
+                Thread.Sleep(_INTERVAL_TIME_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR);
+#endif
+            }
+        }
+
+        static Boolean TryToCreateTemporaryFile(String tempFilePath, Int32 retryCount)
+        {
+            if (retryCount < 100)
+                return TryToCreateTemporaryFile(tempFilePath);
+
+            var stream = (Stream?)null;
+            try
+            {
+                stream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
+                return true;
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
+        }
+
+        private static Boolean TryToCreateTemporaryFile(String tempFilePath)
+        {
+            var normalizedPath = NormalizePath(tempFilePath);
+            if (OperatingSystem.IsWindows())
+            {
+                var handle =
+                    InterOpForWindows.CreateFile(
+                        normalizedPath,
+                        InterOpForWindows.AccessMode.GENERIC_WRITE,
+                        InterOpForWindows.FileShare.FILE_SHARE_NONE,
+                        IntPtr.Zero,
+                        InterOpForWindows.CreationMode.CREATE_NEW,
+                        InterOpForWindows.FileAttribute.FILE_ATTRIBUTE_NORMAL,
+                        IntPtr.Zero);
+                try
+                {
+                    var errorCode = Marshal.GetLastWin32Error();
+                    if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
+                        return true;
+                    else if (errorCode == InterOpForWindows.ERROR_FILE_EXISTS)
+                        return false;
+                    else
+                        throw new Win32Exception(errorCode);
+                }
+                finally
+                {
+                    if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
+                        _ = InterOpForWindows.CloseHandle(handle);
+                }
+            }
+            else
+            {
+                var handle =
+                    InterOpForLinux.Open(
+                        tempFilePath,
+                        InterOpForLinux.OpenMode.O_CREAT | InterOpForLinux.OpenMode.O_EXCL,
+                        InterOpForLinux.Permission.S_IRWXU);
+                try
+                {
+                    var errno = Marshal.GetLastSystemError();
+                    if (handle >= 0)
+                        return true;
+                    else if (errno == InterOpForLinux.ERROR_CODE_EEXIST)
+                        return false;
+                    else
+                        throw new IOException(InterOpForLinux.StrError(errno));
+                }
+                finally
+                {
+                    if (handle >= 0)
+                        _ = InterOpForLinux.Close(handle);
+                }
+            }
+        }
+
+        /// <remarks>
+        /// See NormalizePath method in <see hcref="https://github.com/dotnet/runtime/blob/main/src/coreclr/utilcode/longfilepathwrappers.cpp"/>
+        /// </remarks>
+        public static String NormalizePath(String path)
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                if (path.Length <= 0
+                    || path.StartsWith(@"\\.\", StringComparison.Ordinal)
+                    || path.StartsWith(@"\\?\", StringComparison.Ordinal)
+                    || path.StartsWith(@"\\?\UNC\", StringComparison.Ordinal)
+                    || Path.IsPathFullyQualified(path) && path.Length < MAX_LONGPATH)
+                {
+                    return path;
+                }
+
+                var fullPath = Path.GetFullPath(path);
+                return
+                    fullPath.StartsWith(@"\\", StringComparison.Ordinal)
+                    ? $@"\\?\UNC\{fullPath[2..]}"
+                    : $@"\\?\{fullPath}";
+            }
+            else
+            {
+                return Path.GetFullPath(path);
+            }
+        }
+
+        private static FilePath? TryToCreateFilePath(String path)
+        {
+            try
+            {
+                return new FilePath(path);
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }

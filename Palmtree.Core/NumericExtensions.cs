@@ -318,14 +318,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int16 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int16) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Int16)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int16));
 
             buffer.InternalCopyValueLE(startIndex, (UInt16)value);
         }
@@ -333,14 +330,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt16) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(UInt16)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt16));
 
             buffer.InternalCopyValueLE(startIndex, value);
         }
@@ -348,14 +342,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int32 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int32) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Int32)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int32));
 
             buffer.InternalCopyValueLE(startIndex, (UInt32)value);
         }
@@ -363,14 +354,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt32) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(UInt32)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt32));
 
             buffer.InternalCopyValueLE(startIndex, value);
         }
@@ -378,14 +366,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int64 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int64) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Int64)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int64));
 
             buffer.InternalCopyValueLE(startIndex, (UInt64)value);
         }
@@ -393,14 +378,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt64) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(UInt64)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt64));
 
             buffer.InternalCopyValueLE(startIndex, value);
         }
@@ -408,14 +390,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Single value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Single) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Single)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Single));
 
             buffer.InternalCopyValueLE(startIndex, value);
         }
@@ -423,14 +402,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Double value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Double) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Double)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Double));
 
             buffer.InternalCopyValueLE(startIndex, value);
         }
@@ -438,14 +414,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Decimal) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Decimal)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Decimal));
 
             buffer.InternalCopyValueLE(startIndex, value);
         }
@@ -619,14 +592,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int16 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int16) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Int16)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int16));
 
             buffer.InternalCopyValueBE(startIndex, (UInt16)value);
         }
@@ -634,14 +604,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt16) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(UInt16)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt16));
 
             buffer.InternalCopyValueBE(startIndex, value);
         }
@@ -649,14 +616,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int32 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int32) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Int32)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int32));
 
             buffer.InternalCopyValueBE(startIndex, (UInt32)value);
         }
@@ -664,14 +628,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt32) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(UInt32)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt32));
 
             buffer.InternalCopyValueBE(startIndex, value);
         }
@@ -679,14 +640,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int64 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Int64) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Int64)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int64));
 
             buffer.InternalCopyValueBE(startIndex, (UInt64)value);
         }
@@ -694,14 +652,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(UInt64) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(UInt64)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt64));
 
             buffer.InternalCopyValueBE(startIndex, value);
         }
@@ -709,14 +664,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Single value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Single) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Single)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Single));
 
             buffer.InternalCopyValueBE(startIndex, value);
         }
@@ -724,14 +676,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Double value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Double) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Double)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Double));
 
             buffer.InternalCopyValueBE(startIndex, value);
         }
@@ -739,14 +688,11 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
             if (sizeof(Decimal) > buffer.Length)
                 throw new ArgumentException("Too short array", nameof(buffer));
-            if (checked(startIndex + sizeof(Decimal)) > buffer.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Decimal));
 
             buffer.InternalCopyValueBE(startIndex, value);
         }
@@ -1650,7 +1596,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
-            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
+            Validation.Assert(sizeof(UInt16) == 2);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1665,7 +1611,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
-            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
+            Validation.Assert(sizeof(UInt32) == 4);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1682,7 +1628,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
-            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
+            Validation.Assert(sizeof(UInt64) == 8);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1705,7 +1651,7 @@ namespace Palmtree
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
             var success = BitConverter.TryWriteBytes(bufferSpan, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (!BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1715,7 +1661,7 @@ namespace Palmtree
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
             var success = BitConverter.TryWriteBytes(bufferSpan, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (!BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1723,7 +1669,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
-            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
+            Validation.Assert(sizeof(Decimal) == 16);
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);
@@ -1740,7 +1686,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, UInt16 value)
         {
-            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
+            Validation.Assert(sizeof(UInt16) == 2);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1755,7 +1701,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, UInt32 value)
         {
-            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
+            Validation.Assert(sizeof(UInt32) == 4);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1772,7 +1718,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, UInt64 value)
         {
-            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
+            Validation.Assert(sizeof(UInt64) == 8);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1794,7 +1740,7 @@ namespace Palmtree
         private static void InternalCopyValueLE(this Span<Byte> buffer, Single value)
         {
             var success = BitConverter.TryWriteBytes(buffer, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (!BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Single)].ReverseArray();
         }
@@ -1803,7 +1749,7 @@ namespace Palmtree
         private static void InternalCopyValueLE(this Span<Byte> buffer, Double value)
         {
             var success = BitConverter.TryWriteBytes(buffer, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (!BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Double)].ReverseArray();
         }
@@ -1811,7 +1757,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueLE(this Span<Byte> buffer, Decimal value)
         {
-            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
+            Validation.Assert(sizeof(Decimal) == 16);
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);
@@ -1832,7 +1778,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt16 value)
         {
-            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
+            Validation.Assert(sizeof(UInt16) == 2);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1847,7 +1793,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt32 value)
         {
-            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
+            Validation.Assert(sizeof(UInt32) == 4);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1864,7 +1810,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt64 value)
         {
-            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
+            Validation.Assert(sizeof(UInt64) == 8);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer[startIndex])
@@ -1887,7 +1833,7 @@ namespace Palmtree
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
             var success = BitConverter.TryWriteBytes(bufferSpan, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1897,7 +1843,7 @@ namespace Palmtree
         {
             var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
             var success = BitConverter.TryWriteBytes(bufferSpan, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (BitConverter.IsLittleEndian)
                 _ = bufferSpan.ReverseArray();
         }
@@ -1905,7 +1851,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Decimal value)
         {
-            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
+            Validation.Assert(sizeof(Decimal) == 16);
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);
@@ -1943,7 +1889,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, UInt16 value)
         {
-            Validation.Assert(sizeof(UInt16) == 2, "sizeof(UInt16) == 2");
+            Validation.Assert(sizeof(UInt16) == 2);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1958,7 +1904,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, UInt32 value)
         {
-            Validation.Assert(sizeof(UInt32) == 4, "sizeof(UInt32) == 4");
+            Validation.Assert(sizeof(UInt32) == 4);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1975,7 +1921,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, UInt64 value)
         {
-            Validation.Assert(sizeof(UInt64) == 8, "sizeof(UInt64) == 8");
+            Validation.Assert(sizeof(UInt64) == 8);
             unsafe
             {
                 fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
@@ -1997,7 +1943,7 @@ namespace Palmtree
         private static void InternalCopyValueBE(this Span<Byte> buffer, Single value)
         {
             var success = BitConverter.TryWriteBytes(buffer, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Single)].ReverseArray();
         }
@@ -2006,7 +1952,7 @@ namespace Palmtree
         private static void InternalCopyValueBE(this Span<Byte> buffer, Double value)
         {
             var success = BitConverter.TryWriteBytes(buffer, value);
-            Validation.Assert(success == true, "success == true");
+            Validation.Assert(success == true);
             if (BitConverter.IsLittleEndian)
                 _ = buffer[..sizeof(Double)].ReverseArray();
         }
@@ -2014,7 +1960,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void InternalCopyValueBE(this Span<Byte> buffer, Decimal value)
         {
-            Validation.Assert(sizeof(Decimal) == 16, "sizeof(Decimal) == 16");
+            Validation.Assert(sizeof(Decimal) == 16);
             const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
             Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
             _ = Decimal.GetBits(value, tempBuffer);

@@ -288,8 +288,7 @@ namespace Palmtree
         public static Boolean IsAnyOf<ELEMENT_T>(this ELEMENT_T value, params ELEMENT_T[] otherValues)
             where ELEMENT_T : Enum
         {
-            if (otherValues is null)
-                throw new ArgumentNullException(nameof(otherValues));
+            ArgumentNullException.ThrowIfNull(otherValues);
 
             if (value is null)
             {

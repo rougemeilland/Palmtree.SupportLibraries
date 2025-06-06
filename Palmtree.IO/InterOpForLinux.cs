@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace Palmtree.IO
 {
     [UnsupportedOSPlatform("windows")]
-    internal partial class InterOpForLinux
+    internal sealed partial class InterOpForLinux
     {
         [Flags]
         public enum OpenMode

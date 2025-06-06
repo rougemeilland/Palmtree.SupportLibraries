@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -10,6 +9,115 @@ namespace Palmtree
     /// </summary>
     public static class Validation
     {
+#if DEBUG
+        private sealed class DebugValidationLogger
+            : IValidationLogger
+        {
+            void IValidationLogger.Indent()
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Debug.Indent();
+                }
+            }
+
+            void IValidationLogger.Unindent()
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Debug.Unindent();
+                }
+            }
+
+            void IValidationLogger.Write(String message)
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Debug.Write(message);
+                }
+            }
+
+            void IValidationLogger.WriteLine()
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Debug.WriteLine("");
+                }
+            }
+
+            void IValidationLogger.WriteLine(String message)
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Debug.WriteLine(message);
+                }
+            }
+        }
+#endif
+
+#if TRACE
+        private sealed class TraceValidationLogger
+            : IValidationLogger
+        {
+            void IValidationLogger.Indent()
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Trace.Indent();
+                }
+            }
+
+            void IValidationLogger.Unindent()
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Trace.Unindent();
+                }
+            }
+
+            void IValidationLogger.Write(String message)
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Trace.Write(message);
+                }
+            }
+
+            void IValidationLogger.WriteLine()
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Trace.WriteLine("");
+                }
+            }
+
+            void IValidationLogger.WriteLine(String message)
+            {
+                lock (this)
+                {
+                    System.Diagnostics.Trace.WriteLine(message);
+                }
+            }
+        }
+#endif
+
+        static Validation()
+        {
+#if DEBUG
+            Debug = new DebugValidationLogger();
+#endif
+#if TRACE
+            Trace = new TraceValidationLogger();
+#endif
+        }
+
+#if DEBUG
+        public static IValidationLogger Debug { get; }
+#endif
+#if TRACE
+        public static IValidationLogger Trace { get; }
+#endif
+
         /// <summary>
         /// 与えられた条件を検証し、条件が満たされていない場合に与えられたメッセージの例外を発生させます。
         /// </summary>
@@ -26,12 +134,12 @@ namespace Palmtree
         /// 検証条件が満たされませんでした。
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Conditional("DEBUG")]
-        [Conditional("TRACE")]
-        public static void Assert([DoesNotReturnIf(false)] Boolean condition, String conditionText)
+        [System.Diagnostics.Conditional("DEBUG")]
+        [System.Diagnostics.Conditional("TRACE")]
+        public static void Assert([DoesNotReturnIf(false)] Boolean condition, [CallerArgumentExpression(nameof(condition))] String? conditionText = null)
         {
             if (!condition)
-                FailedToAssert(conditionText);
+                FailedToAssert(conditionText ?? "???");
         }
 
         /// <summary>
@@ -46,7 +154,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static Exception GetFailErrorException(String message)
         {
-            Debug.Fail(message);
+            System.Diagnostics.Debug.Fail(message);
             return new AssertionException(message);
         }
 
@@ -65,7 +173,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static Exception GetFailErrorException(String message, Exception? innerException)
         {
-            Debug.Fail(message);
+            System.Diagnostics.Debug.Fail(message);
             return new AssertionException(message, innerException);
         }
 
@@ -73,7 +181,7 @@ namespace Palmtree
         [DoesNotReturn]
         private static void FailedToAssert(String conditionText)
         {
-            Debug.Fail(conditionText);
+            System.Diagnostics.Debug.Fail(conditionText);
             throw new AssertionException($"Failed to assert.; condition=\"{conditionText}\"");
         }
     }

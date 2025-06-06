@@ -6,9 +6,9 @@ using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
 using Palmtree.IO.Compression.Stream.Plugin;
 
-namespace Test.ZipUtility.SingleVolume
+namespace Test.Zip.SingleVolume
 {
-    internal class Program
+    internal sealed class Program
     {
         static Program()
         {

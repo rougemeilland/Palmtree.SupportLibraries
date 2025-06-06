@@ -11,7 +11,7 @@ namespace Palmtree
     {
         #region private class
 
-        private class CrcCalculationSession
+        private sealed class CrcCalculationSession
             : ICrcCalculationState<CRC_VALUE_T>
         {
             private readonly CrcCalculationMethod<CRC_VALUE_T> _calculator;
@@ -36,14 +36,11 @@ namespace Palmtree
 
             public void Put(Byte[] data, Int32 offset, Int32 count)
             {
-                if (data is null)
-                    throw new ArgumentNullException(nameof(data));
-                if (offset < 0)
-                    throw new ArgumentOutOfRangeException(nameof(offset));
-                if (count < 0)
-                    throw new ArgumentOutOfRangeException(nameof(count));
-                if (checked(offset + count) > data.Length)
-                    throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(data)}.");
+                ArgumentNullException.ThrowIfNull(data);
+                ArgumentOutOfRangeException.ThrowIfNegative(offset);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, data.Length);
+                ArgumentOutOfRangeException.ThrowIfNegative(count);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(count, data.Length - offset);
 
                 for (var index = 0; index < count; ++index)
                     _state = _calculator.Update(_state, data[offset + index]);
@@ -91,8 +88,7 @@ namespace Palmtree
 
         public (CRC_VALUE_T Crc, UInt64 Length) Calculate(IEnumerable<Byte> byteSequence, IProgress<UInt64>? progress = null)
         {
-            if (byteSequence is null)
-                throw new ArgumentNullException(nameof(byteSequence));
+            ArgumentNullException.ThrowIfNull(byteSequence);
 
             var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
@@ -109,8 +105,7 @@ namespace Palmtree
 
         public async Task<(CRC_VALUE_T Crc, UInt64 Length)> CalculateAsync(IAsyncEnumerable<Byte> byteSequence, IProgress<UInt64>? progress = null, CancellationToken cancellationToken = default)
         {
-            if (byteSequence is null)
-                throw new ArgumentNullException(nameof(byteSequence));
+            ArgumentNullException.ThrowIfNull(byteSequence);
 
             var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
@@ -132,10 +127,8 @@ namespace Palmtree
 
         public IEnumerable<Byte> GetSequenceWithCrc(IEnumerable<Byte> source, ValueHolder<(CRC_VALUE_T Crc, UInt64 Length)> result, IProgress<UInt64>? progress = null)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (result is null)
-                throw new ArgumentNullException(nameof(result));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(result);
 
             var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
@@ -153,10 +146,8 @@ namespace Palmtree
 
         public async IAsyncEnumerable<Byte> GetAsyncSequenceWithCrc(IAsyncEnumerable<Byte> source, ValueHolder<(CRC_VALUE_T Crc, UInt64 Length)> result, IProgress<UInt64>? progress = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (result is null)
-                throw new ArgumentNullException(nameof(result));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(result);
 
             var progressCounter = new ProgressCounterUInt64(progress);
             progressCounter.Report();
@@ -181,8 +172,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
+            ArgumentNullException.ThrowIfNull(array);
 
             return Calculate(array, 0, array.Length);
         }
@@ -190,10 +180,9 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array, Int32 offset)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (!offset.IsBetween(0, array.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length);
 
             return Calculate(array, offset, array.Length - offset);
         }
@@ -201,10 +190,8 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array, UInt32 offset)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (offset > array.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)array.Length);
 
             return Calculate(array, (Int32)offset, array.Length - (Int32)offset);
         }
@@ -212,23 +199,19 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public CRC_VALUE_T Calculate(Byte[] array, Range range)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
+            ArgumentNullException.ThrowIfNull(array);
 
-            var (offset, count) = array.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = array.GetOffsetAndLength(range);
             return Calculate(array, offset, count);
         }
 
         public CRC_VALUE_T Calculate(Byte[] array, Int32 offset, Int32 count)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(offset + count) > array.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(array)}.");
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, array.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array.Length - offset);
 
             var crc = InitialValue;
             for (var index = 0; index < count; ++index)
@@ -238,10 +221,9 @@ namespace Palmtree
 
         public CRC_VALUE_T Calculate(Byte[] array, UInt32 offset, UInt32 count)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
-            if (checked(offset + count) > array.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(array)}.");
+            ArgumentNullException.ThrowIfNull(array);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)array.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, array.Length - offset);
 
             var crc = InitialValue;
             for (var index = 0U; index < count; ++index)

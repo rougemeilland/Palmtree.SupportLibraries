@@ -3,9 +3,9 @@ using Palmtree.IO.Console;
 
 namespace Test.Console.Native
 {
-    internal class Program
+    internal sealed class Program
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
         static void Main(string[] args)
         {
             TinyConsole.Clear();

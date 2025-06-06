@@ -6,7 +6,7 @@ using System.Runtime.Versioning;
 namespace Palmtree.IO
 {
     [SupportedOSPlatform("windows")]
-    internal partial class InterOpForWindows
+    internal sealed partial class InterOpForWindows
     {
         public enum CreationMode
             : UInt32
@@ -110,14 +110,6 @@ namespace Palmtree.IO
         public const UInt32 MAX_PREFERRED_LENGTH = 0xFFFFFFFFu;
 
         /// <summary>
-        /// パス名の最大長を示す整数。
-        /// </summary>
-        /// <remarks>
-        /// この値は、.NET 9.0 (2025年5月現在) の native ソースコードにてハードコーディングされている。
-        /// </remarks>
-        private static readonly Int32 MAX_LONGPATH = 1024;
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="lpFileName">
@@ -203,36 +195,5 @@ namespace Palmtree.IO
 
         [LibraryImport("Netapi32.dll")]
         public static partial NERR NetApiBufferFree(IntPtr buffer);
-
-        /// <remarks>
-        /// See NormalizePath method in <see hcref="https://github.com/dotnet/runtime/blob/main/src/coreclr/utilcode/longfilepathwrappers.cpp"/>
-        /// </remarks>
-        public static String NormalizePath(String path)
-        {
-            if (path.Length <= 0
-                || path.StartsWith(@"\\.\")
-                || path.StartsWith(@"\\?\")
-                || path.StartsWith(@"\\?\UNC\")
-                || IsFullyQualifiedPath(path) && path.Length < MAX_LONGPATH)
-            {
-                return path;
-            }
-
-            var fullPath = Path.GetFullPath(path);
-            return
-                fullPath.StartsWith(@"\\")
-                ? $@"\\?\UNC\{fullPath[2..]}"
-                : $@"\\?\{fullPath}";
-
-            static Boolean IsFullyQualifiedPath(String path)
-            {
-                if (path.Length >= 2 && path[0] is '\\' or '/')
-                    return path[1] is '\\' or '/';
-                return
-                    path.Length >= 3
-                    && path[1] == ':'
-                    && path[2] is '\\' or '/';
-            }
-        }
     }
 }

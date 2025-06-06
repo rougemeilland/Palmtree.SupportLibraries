@@ -18,8 +18,7 @@ namespace Palmtree.Collections
 
         public ByteQueue(Int32 bufferSize = _DEFAULT_BUFFER_SIZE)
         {
-            if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             _internalBuffer = new Byte[bufferSize.Maximum(_MINIMUM_BUFFER_SIZE).Minimum(_MAXIMUM_BUFFER_SIZE)];
             _startOfDataInInternalBuffer = 0;
@@ -44,7 +43,7 @@ namespace Palmtree.Collections
                     .Minimum(_internalBuffer.Length - _startOfDataInInternalBuffer);
                 if (actualCount <= 0)
                 {
-                    Validation.Assert(buffer.Length <= 0 || IsCompleted, "buffer.Length <= 0 || IsCompleted");
+                    Validation.Assert(buffer.Length <= 0 || IsCompleted);
                     return 0;
                 }
 

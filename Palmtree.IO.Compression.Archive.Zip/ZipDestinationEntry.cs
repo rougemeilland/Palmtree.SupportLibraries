@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
@@ -16,7 +14,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// </summary>
     public partial class ZipDestinationEntry
     {
-        private class ExtraFieldCollection
+        private sealed class ExtraFieldCollection
             : IWriteOnlyExtraFieldCollection
         {
             private readonly ExtraFields.ExtraFieldCollection _localHeaderExtraFields;
@@ -86,12 +84,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 throw new InvalidOperationException($"The {nameof(fullNameBytes)} value must not be empty.");
             if (fullNameBytes.Length > UInt16.MaxValue)
                 throw new InvalidOperationException($"The value of the {nameof(fullNameBytes)} is too long.: {fullNameBytes.Length} bytes");
-            if (comment is null)
-                throw new ArgumentNullException(nameof(comment));
+            ArgumentNullException.ThrowIfNull(comment);
             if (commentBytes.Length > UInt16.MaxValue)
                 throw new InvalidOperationException($"The value of the {nameof(commentBytes)} is too long.: {commentBytes.Length} bytes");
-            if (possibleEntryEncodings is null)
-                throw new ArgumentNullException(nameof(possibleEntryEncodings));
+            ArgumentNullException.ThrowIfNull(possibleEntryEncodings);
             if (GetDotEntryNamePattern().IsMatch(fullName))
                 throw new ArgumentException($"Entry names containing directory names \".\" or \"..\" are not allowed.: {fullName}", nameof(fullName));
 
@@ -369,7 +365,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             get
             {
                 var value = _lastWriteTimeOffsetUtc?.ToDateTime();
-                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc, "value is null || value.Value.Kind == DateTimeKind.Utc");
+                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc);
                 return value;
             }
 
@@ -381,7 +377,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new ArgumentException($"Setting a value where the {nameof(value.Value.Kind)} property is {nameof(DateTimeKind.Unspecified)} is prohibited.", nameof(value));
 
                 var v = value?.ToUniversalTime().ToDateTimeOffset();
-                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero);
                 _lastWriteTimeOffsetUtc = v;
             }
         }
@@ -401,7 +397,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                Validation.Assert(_lastWriteTimeOffsetUtc is null || _lastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "_lastWriteTimeUtc is null || _lastWriteTimeUtc.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(_lastWriteTimeOffsetUtc is null || _lastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero);
                 return _lastWriteTimeOffsetUtc;
             }
 
@@ -411,7 +407,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new InvalidOperationException();
 
                 var v = value?.ToUniversalTime();
-                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero);
                 _lastWriteTimeOffsetUtc = v;
             }
         }
@@ -432,7 +428,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             get
             {
                 var value = _lastAccessTimeOffsetUtc?.ToDateTime();
-                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc, "value is null || value.Value.Kind == DateTimeKind.Utc");
+                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc);
                 return value;
             }
 
@@ -444,7 +440,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new ArgumentException($"Setting a value where the {nameof(value.Value.Kind)} property is {nameof(DateTimeKind.Unspecified)} is prohibited.", nameof(value));
 
                 var v = value?.ToUniversalTime().ToDateTimeOffset();
-                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero);
                 _lastAccessTimeOffsetUtc = v;
             }
         }
@@ -464,7 +460,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                Validation.Assert(_lastAccessTimeOffsetUtc is null || _lastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "_lastAccessTimeUtc is null || _lastAccessTimeUtc.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(_lastAccessTimeOffsetUtc is null || _lastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero);
                 return _lastAccessTimeOffsetUtc;
             }
 
@@ -474,7 +470,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new InvalidOperationException();
 
                 var v = value?.ToUniversalTime();
-                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero);
                 _lastAccessTimeOffsetUtc = v;
             }
         }
@@ -495,7 +491,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             get
             {
                 var value = _creationTimeOffsetUtc?.ToDateTime();
-                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc, "value is null || value.Value.Kind == DateTimeKind.Utc");
+                Validation.Assert(value is null || value.Value.Kind == DateTimeKind.Utc);
                 return value;
             }
 
@@ -507,7 +503,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new ArgumentException($"Setting a value where the {nameof(value.Value.Kind)} property is {nameof(DateTimeKind.Unspecified)} is prohibited.", nameof(value));
 
                 var v = value?.ToUniversalTime().ToDateTimeOffset();
-                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero);
                 _creationTimeOffsetUtc = v;
             }
         }
@@ -527,7 +523,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                Validation.Assert(_creationTimeOffsetUtc is null || _creationTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "_creationTimeUtc is null || _creationTimeUtc.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(_creationTimeOffsetUtc is null || _creationTimeOffsetUtc.Value.Offset == TimeSpan.Zero);
                 return _creationTimeOffsetUtc;
             }
 
@@ -537,7 +533,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     throw new InvalidOperationException();
 
                 var v = value?.ToUniversalTime();
-                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero, "v is null || v.Value.Offset == TimeSpan.Zero");
+                Validation.Assert(v is null || v.Value.Offset == TimeSpan.Zero);
                 _creationTimeOffsetUtc = v;
             }
         }
@@ -936,15 +932,15 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var success = false;
                 try
                 {
-                    Validation.Assert(temporaryFile is not null && temporaryFile.Exists, "temporaryFile is not null && temporaryFile.Exists");
-                    Validation.Assert(CompressionMethodId == ZipEntryCompressionMethodId.Stored == (packedTemporaryFile is null), "CompressionMethodId == ZipEntryCompressionMethodId.Stored != (packedTemporaryFile is null)");
+                    Validation.Assert(temporaryFile is not null && temporaryFile.Exists);
+                    Validation.Assert(CompressionMethodId == ZipEntryCompressionMethodId.Stored == (packedTemporaryFile is null));
                     var size = temporaryFile.Length;
                     var packedSize = temporaryFile.Length;
                     var crc = actualCrc;
-                    Validation.Assert(size == actualSize, "size == actualSize");
+                    Validation.Assert(size == actualSize);
                     if (packedTemporaryFile is not null)
                     {
-                        Validation.Assert(packedTemporaryFile.Exists, "packedTemporaryFile.Exists");
+                        Validation.Assert(packedTemporaryFile.Exists);
                         packedSize = packedTemporaryFile.Length;
 
                         if (size <= 0 || packedSize >= size)
@@ -1085,7 +1081,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 var success = false;
                 try
                 {
-                    Validation.Assert(localHeaderPosition is not null, "localHeaderPosition is not null");
+                    Validation.Assert(localHeaderPosition is not null);
                     var actualPackedSize = packedSizeHolder.Value;
                     var dataDescriptor = ZipEntryDataDescriptor.Build(actualCrc, actualSize, actualPackedSize);
                     var centralDirectoryHeader =
@@ -1251,8 +1247,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 throw new InvalidOperationException($"The extra fields [{String.Join(", ", localHeaderExtraFields.EnumerateExtraFieldIds().Select(id => $"0x{id:x4}"))}] is specified even though the {nameof(ZipDestinationEntryFlag.DoNotUseExtraFieldsInLocalHeaders)} flag is specified.");
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("(^|/|\\\\)\\.{1,2}($|/|\\\\)", RegexOptions.Compiled)]
+        [GeneratedRegex("(^|/|\\\\)\\.{1,2}($|/|\\\\)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetDotEntryNamePattern();
     }
 }

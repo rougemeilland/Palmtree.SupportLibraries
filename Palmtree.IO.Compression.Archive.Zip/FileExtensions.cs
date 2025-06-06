@@ -117,10 +117,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </exception>
         public static ZipArchiveValidationResult ValidateAsZipFile(this FilePath zipFile, IZipEntryNameEncodingProvider zipEntryNameEncodingProvider, ValidationStringency stringency, IProgress<Double>? progress = null)
         {
-            if (zipFile is null)
-                throw new ArgumentNullException(nameof(zipFile));
-            if (zipEntryNameEncodingProvider is null)
-                throw new ArgumentNullException(nameof(zipEntryNameEncodingProvider));
+            ArgumentNullException.ThrowIfNull(zipFile);
+            ArgumentNullException.ThrowIfNull(zipEntryNameEncodingProvider);
 
             return InternalValidateZipFile(zipFile, zipEntryNameEncodingProvider, stringency, progress);
         }
@@ -240,10 +238,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </exception>
         public static Task<ZipArchiveValidationResult> ValidateAsZipFileAsync(this FilePath zipFile, IZipEntryNameEncodingProvider zipEntryNameEncodingProvider, ValidationStringency stringency, IProgress<Double>? progress = null, CancellationToken cancellationToken = default)
         {
-            if (zipFile is null)
-                throw new ArgumentNullException(nameof(zipFile));
-            if (zipEntryNameEncodingProvider is null)
-                throw new ArgumentNullException(nameof(zipEntryNameEncodingProvider));
+            ArgumentNullException.ThrowIfNull(zipFile);
+            ArgumentNullException.ThrowIfNull(zipEntryNameEncodingProvider);
 
             return InternalValidateZipFileAsync(zipFile, zipEntryNameEncodingProvider, stringency, progress, cancellationToken);
         }
@@ -286,10 +282,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </exception>
         public static ZipArchiveFileReader OpenAsZipFile(this FilePath sourceZipFile, IZipEntryNameEncodingProvider zipEntryNameEncodingProvider, ValidationStringency stringency = ValidationStringency.Normal)
         {
-            if (sourceZipFile is null)
-                throw new ArgumentNullException(nameof(sourceZipFile));
-            if (zipEntryNameEncodingProvider is null)
-                throw new ArgumentNullException(nameof(zipEntryNameEncodingProvider));
+            ArgumentNullException.ThrowIfNull(sourceZipFile);
+            ArgumentNullException.ThrowIfNull(zipEntryNameEncodingProvider);
             var baseDirectory = sourceZipFile.Directory;
             if (baseDirectory is null)
                 throw new ArgumentException($"The parent directory of the file specified by parameter {nameof(sourceZipFile)} does not exist.", nameof(baseDirectory));
@@ -357,10 +351,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         /// </exception>
         public static ZipArchiveFileWriter CreateAsZipFile(this FilePath zipArchiveFile, IZipEntryNameEncodingProvider zipEntryNameEncodingProvider, UInt64 maximumVolumeSize = UInt64.MaxValue)
         {
-            if (zipArchiveFile is null)
-                throw new ArgumentNullException(nameof(zipArchiveFile));
-            if (zipEntryNameEncodingProvider is null)
-                throw new ArgumentNullException(nameof(zipEntryNameEncodingProvider));
+            ArgumentNullException.ThrowIfNull(zipArchiveFile);
+            ArgumentNullException.ThrowIfNull(zipEntryNameEncodingProvider);
 
             return
                 new ZipArchiveFileWriter(
@@ -642,11 +634,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 : baseFile;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("^(?<body>[^\\\\/]+\\.zip)\\.[0-9]{3,}$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        [GeneratedRegex("^(?<body>[^\\\\/]+\\.zip)\\.[0-9]{3,}$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetSevenZipMultiVolumeZipFileNamePattern();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex("^(?<body>[^\\\\/]+)\\.zip$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+        [GeneratedRegex("^(?<body>[^\\\\/]+)\\.zip$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetGeneralMultiVolumeZipFileNamePattern();
     }
 }

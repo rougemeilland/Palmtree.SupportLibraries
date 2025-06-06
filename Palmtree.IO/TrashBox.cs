@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -14,17 +15,17 @@ namespace Palmtree.IO
     {
         private const String trashBoxEnvironmentVariableName = "TRASH_BOX_PATH";
 
-        private class WindowsTrashBox
+        private sealed class WindowsTrashBox
             : ITrashBox
         {
             private WindowsTrashBox()
             {
             }
 
-            public static ITrashBox? Open()
+            public static WindowsTrashBox? Open()
                 => OperatingSystem.IsWindows()
                     ? new WindowsTrashBox()
-                    : null as ITrashBox;
+                    : null;
 
             Boolean ITrashBox.DisposeFile(FilePath file)
             {
@@ -53,7 +54,7 @@ namespace Palmtree.IO
             }
         }
 
-        private class GenericTrashBox
+        private sealed class GenericTrashBox
             : ITrashBox
         {
             private static readonly Guid _thisClassId;
@@ -68,11 +69,11 @@ namespace Palmtree.IO
             private GenericTrashBox(DirectoryPath trashBoxDirectory)
             {
                 _trashBoxDirectory = new DirectoryPath(trashBoxDirectory.FullName);
-                var hashValue = MD5.HashData(Encoding.UTF8.GetBytes(_trashBoxDirectory.FullName.ToUpperInvariant()));
-                _lockObjectName = $"{_thisClassId}-{String.Concat(hashValue.Select(byteValue => byteValue.ToString("x2")))}";
+                var hashValue = SHA256.HashData(Encoding.UTF8.GetBytes(_trashBoxDirectory.FullName.ToUpperInvariant()));
+                _lockObjectName = $"{_thisClassId}-{String.Concat(hashValue.Select(byteValue => byteValue.ToString("x2", CultureInfo.InvariantCulture.NumberFormat)))}";
             }
 
-            public static ITrashBox? Open(String environmentVariableName)
+            public static GenericTrashBox? Open(String environmentVariableName)
             {
                 var trashBoxDirector = TryGetTrashBoxDirectory(environmentVariableName);
                 if (trashBoxDirector is null)
@@ -137,16 +138,11 @@ namespace Palmtree.IO
                 try
                 {
                     var trashBoxDirectory = new DirectoryPath(trashBoxPath);
-                    if (!trashBoxDirectory.Exists)
-                        trashBoxDirectory.Create().Refresh();
-
                     var temporaryFile = trashBoxDirectory.GetFile($".temporary.{Guid.NewGuid()}");
                     try
                     {
                         temporaryFile.WriteAllText("temporary");
                         _ = temporaryFile.ReadAllLines();
-
-                        trashBoxDirectory.Refresh();
                         return trashBoxDirectory;
                     }
                     finally
@@ -163,7 +159,7 @@ namespace Palmtree.IO
 
         public static ITrashBox OpenTrashBox()
             => GenericTrashBox.Open(trashBoxEnvironmentVariableName)
-                ?? WindowsTrashBox.Open()
+                ?? WindowsTrashBox.Open() as ITrashBox
                 ?? throw new IOException("ごみ箱を開けません。");
     }
 }

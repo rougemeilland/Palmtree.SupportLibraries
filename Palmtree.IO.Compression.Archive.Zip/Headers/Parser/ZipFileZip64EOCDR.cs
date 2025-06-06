@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipFileZip64EOCDR
+    internal sealed class ZipFileZip64EOCDR
     {
         public const UInt32 MinimumHeaderSize = 56U;
 

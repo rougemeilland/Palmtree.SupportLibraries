@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class BufferedSequentialOutputStream
+    internal sealed class BufferedSequentialOutputStream
         : SequentialOutputByteStreamFilter
     {
         private readonly ISequentialOutputByteStream _baseStream;
@@ -21,10 +21,8 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
-                if (bufferSize <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(bufferSize));
+                ArgumentNullException.ThrowIfNull(baseStream);
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
                 _baseStream = baseStream;
                 _cache = new WriteOnlyBytesCache<InvalidPositionType>(bufferSize);

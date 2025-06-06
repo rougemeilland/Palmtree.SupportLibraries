@@ -6,9 +6,9 @@ using Palmtree.IO;
 using Palmtree.IO.Compression.Archive.Zip;
 using Palmtree.IO.Compression.Stream.Plugin;
 
-namespace Test.ZipUtility.Validation
+namespace Test.Zip.Validation
 {
-    internal class Program
+    internal sealed class Program
     {
         static Program()
         {

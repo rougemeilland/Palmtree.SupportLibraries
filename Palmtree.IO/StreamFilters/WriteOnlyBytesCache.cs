@@ -5,7 +5,7 @@ using Palmtree;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class WriteOnlyBytesCache<POSITION_T>
+    internal sealed class WriteOnlyBytesCache<POSITION_T>
         where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
     {
         public const Int32 MAXIMUM_BUFFER_SIZE = 1024 * 1024;
@@ -20,8 +20,7 @@ namespace Palmtree.IO.StreamFilters
 
         public WriteOnlyBytesCache(Int32 bufferSize, POSITION_T? baseStreamPosition = null)
         {
-            if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             _baseStreamPosition = baseStreamPosition;
             _internalBuffer = new Byte[(bufferSize.Minimum(MAXIMUM_BUFFER_SIZE).Maximum(MINIMUM_BUFFER_SIZE))];

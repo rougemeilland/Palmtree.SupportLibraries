@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,7 +11,7 @@ using Palmtree.IO.Console.StringExpansion;
 
 namespace Palmtree.IO.Console
 {
-    internal partial class TerminalInfoDatabase
+    internal sealed partial class TerminalInfoDatabase
     {
         private const Int16 _legacyMagicNumber = 0x011a;
         private const Int16 _32bitMagicNumber = 0x021e;
@@ -24,8 +25,7 @@ namespace Palmtree.IO.Console
         private const String _terminalNameWindowsLocalConsole = "windows-terminal";
 
         private static readonly String[] _termInfoPathList =
-            new[]
-            {
+            [
                 "/usr/share/misc/terminfo",
                 "/usr/share/terminfo",
                 "/usr/share/lib/terminfo",
@@ -36,7 +36,7 @@ namespace Palmtree.IO.Console
                 "/usr/local/ncurses/lib/terminfo",
                 "/lib/terminfo",
                 "/etc/terminfo",
-            };
+            ];
 
         private readonly IDictionary<TermInfoBooleanCapabilities, Boolean> _booleanCapabilities;
         private readonly IDictionary<TermInfoNumberCapabilities, Int32> _numberCapabilities;
@@ -58,14 +58,14 @@ namespace Palmtree.IO.Console
             Boolean includeUniqueCapabilities)
         {
             TermInfoFilePath = termInfoFilePath;
-            TerminalNames = terminalNames.ToArray();
+            TerminalNames = [.. terminalNames];
             _booleanCapabilities = booleanCapabilities;
             _numberCapabilities = numberCapabilities;
             _stringCapabilities = stringCapabilities;
             _extendedBooleanCapabilities = extendedBooleanCapabilities;
             _extendedNumberCapabilities = extendedNumberCapabilities;
             _extendedStringCapabilities = extendedStringCapabilities;
-            _warnings = new List<String>();
+            _warnings = [];
             if (includeUniqueCapabilities)
             {
                 #region Add pseudo-capability "__set_title"
@@ -638,7 +638,7 @@ namespace Palmtree.IO.Console
                     }
                     catch (Exception)
                     {
-                        return Array.Empty<String>();
+                        return [];
                     }
                 });
             foreach (var path in termInfoFullPathNames)
@@ -702,11 +702,11 @@ namespace Palmtree.IO.Console
             {
                 relativePathNames =
                     relativePathNames
-                    .Concat(new[]
-                    {
+                    .Concat(
+                    [
                         Path.Combine(terminalName[..1], terminalName),
-                        Path.Combine(((Int32)terminalName[0]).ToString(), terminalName),
-                    });
+                        Path.Combine(((Int32)terminalName[0]).ToString(CultureInfo.InvariantCulture.NumberFormat), terminalName),
+                    ]);
             }
 
             if (terminalName.Length >= 2)
@@ -1040,7 +1040,7 @@ namespace Palmtree.IO.Console
                     includeUniqueCapabilities);
         }
 
-        private static IEnumerable<String> ReadTerminalNames(ISequentialInputByteStream inStream, Int16 nameSectionBytes)
+        private static String[] ReadTerminalNames(ISequentialInputByteStream inStream, Int16 nameSectionBytes)
         {
             var terminalNamesBuffer = new Byte[nameSectionBytes].AsSpan();
             if (inStream.ReadBytes(terminalNamesBuffer) != terminalNamesBuffer.Length)
@@ -1180,12 +1180,10 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"\u001b\[(39:49|49:39)m", RegexOptions.Compiled)]
+        [GeneratedRegex(@"\u001b\[(39:49|49:39)m", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetResetColorPattern();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"^\e\[6n$", RegexOptions.Compiled)]
+        [GeneratedRegex(@"^\e\[6n$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetDeviceStatusReportPattern();
     }
 }

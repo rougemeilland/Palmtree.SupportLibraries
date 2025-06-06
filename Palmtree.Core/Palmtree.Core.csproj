@@ -8,7 +8,7 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <RootNamespace>Palmtree</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.17.0</VersionPrefix>
+    <VersionPrefix>1.17.1</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Description>This is a supplementary library that collects commonly used code in .NET. This package contains the most basic functionality. (Example: array operations, bit arrays, Linq extensions, CRC calculations, BASE64 encoding/decoding, etc.)</Description>
@@ -51,6 +51,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
+    <IsAotCompatible>True</IsAotCompatible>
+    <IsTrimmable>True</IsTrimmable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
+    <IsAotCompatible>True</IsAotCompatible>
+    <IsTrimmable>True</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>

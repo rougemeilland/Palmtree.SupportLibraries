@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class ExpansionState
+    internal sealed class ExpansionState
     {
-        private class ArgumentsAccesser
+        private sealed class ArgumentsAccesser
             : IArgumentIndexer<Char, ExpansionParameter>
         {
             private readonly Char _startIndex;
@@ -25,17 +25,18 @@ namespace Palmtree.IO.Console.StringExpansion
                 _startIndex = startIndex;
                 _endIndex = endIndex;
                 _parameters =
-                    parameters
-                    .Select(arg =>
-                        arg switch
-                        {
-                            Int32 intArg => new ExpansionNumberParameter(intArg) as ExpansionParameter,
-                            Char charArg => new ExpansionNumberParameter(charArg),
-                            Boolean boolArg => new ExpansionNumberParameter(boolArg),
-                            String stringArgument => new ExpansionStringParameter(stringArgument),
-                            _ => throw new ExpansionBadArgumentExceptionException($"Not supported argument type.: arg=\"{arg}\", type={arg.GetType().FullName}"),
-                        })
-                    .ToArray();
+                    [..
+                        parameters
+                        .Select(arg =>
+                            arg switch
+                            {
+                                Int32 intArg => new ExpansionNumberParameter(intArg) as ExpansionParameter,
+                                Char charArg => new ExpansionNumberParameter(charArg),
+                                Boolean boolArg => new ExpansionNumberParameter(boolArg),
+                                String stringArgument => new ExpansionStringParameter(stringArgument),
+                                _ => throw new ExpansionBadArgumentExceptionException($"Not supported argument type.: arg=\"{arg}\", type={arg.GetType().FullName}"),
+                            })
+                    ];
             }
 
             public ExpansionParameter this[Char index]
@@ -72,7 +73,7 @@ namespace Palmtree.IO.Console.StringExpansion
             }
         }
 
-        private class VariableAccesser
+        private sealed class VariableAccesser
             : IIndexer<Char, ExpansionParameter>
         {
             private readonly Char _startIndex;

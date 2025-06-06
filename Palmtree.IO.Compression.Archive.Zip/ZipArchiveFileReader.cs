@@ -30,7 +30,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             void UnlockZipStream();
         }
 
-        private class ReaderParameter
+        private sealed class ReaderParameter
             : IZipReaderEnvironment
         {
             private readonly FilePath _zipArchiveFile;
@@ -305,8 +305,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return _zipInputStream;
             }
@@ -351,12 +350,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         internal static ZipArchiveFileReader Parse(FilePath zipArchiveFile, IZipInputStream zipInputStream, IZipEntryNameEncodingProvider entryNameEncodingProvider, ValidationStringency stringency)
         {
-            if (entryNameEncodingProvider is null)
-                throw new ArgumentNullException(nameof(entryNameEncodingProvider));
-            if (zipArchiveFile is null)
-                throw new ArgumentNullException(nameof(zipArchiveFile));
-            if (zipInputStream is null)
-                throw new ArgumentNullException(nameof(zipInputStream));
+            ArgumentNullException.ThrowIfNull(entryNameEncodingProvider);
+            ArgumentNullException.ThrowIfNull(zipArchiveFile);
+            ArgumentNullException.ThrowIfNull(zipInputStream);
 
             var paramter = new ReaderParameter(entryNameEncodingProvider, zipArchiveFile);
 
@@ -391,7 +387,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
             else
             {
-                Validation.Assert(!lastDiskHeader.EOCDR.IsRequiresZip64, "!lastDiskHeader.EOCDR.IsRequiresZip64");
+                Validation.Assert(!lastDiskHeader.EOCDR.IsRequiresZip64);
                 var centralDirectoryPosition =
                     zipInputStream.GetPosition(
                         lastDiskHeader.EOCDR.DiskWhereCentralDirectoryStarts,

@@ -59,8 +59,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 .OrderBy(item => item.precition)
                 .Select(item => (DateTimeOffset?)item.dateTimeOffset)
                 .FirstOrDefault();
-            Validation.Assert(LastWriteTimeUtc is null || LastWriteTimeUtc.Value.Kind == DateTimeKind.Utc, "LastWriteTimeUtc is null || LastWriteTimeUtc.Value.Kind == DateTimeKind.Utc");
-            Validation.Assert(LastWriteTimeOffsetUtc is null || LastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "LastWriteTimeOffsetUtc is null || LastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero");
+            Validation.Assert(LastWriteTimeUtc is null || LastWriteTimeUtc.Value.Kind == DateTimeKind.Utc);
+            Validation.Assert(LastWriteTimeOffsetUtc is null || LastWriteTimeOffsetUtc.Value.Offset == TimeSpan.Zero);
             LastAccessTimeOffsetUtc =
                 new[]
                 {
@@ -71,8 +71,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 .OrderBy(item => item.precition)
                 .Select(item => (DateTimeOffset?)item.dateTimeOffset)
                 .FirstOrDefault();
-            Validation.Assert(LastAccessTimeUtc is null || LastAccessTimeUtc.Value.Kind == DateTimeKind.Utc, "LastAccessTimeUtc is null || LastAccessTimeUtc.Value.Kind == DateTimeKind.Utc");
-            Validation.Assert(LastAccessTimeOffsetUtc is null || LastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "LastAccessTimeOffsetUtc is null || LastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero");
+            Validation.Assert(LastAccessTimeUtc is null || LastAccessTimeUtc.Value.Kind == DateTimeKind.Utc);
+            Validation.Assert(LastAccessTimeOffsetUtc is null || LastAccessTimeOffsetUtc.Value.Offset == TimeSpan.Zero);
             CreationTimeOffsetUtc =
                 new[]
                 {
@@ -83,8 +83,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 .OrderBy(item => item.precition)
                 .Select(item => (DateTimeOffset?)item.dateTimeOffset)
                 .FirstOrDefault();
-            Validation.Assert(CreationTimeUtc is null || CreationTimeUtc.Value.Kind == DateTimeKind.Utc, "CreationTimeUtc is null || CreationTimeUtc.Value.Kind == DateTimeKind.Utc");
-            Validation.Assert(CreationTimeOffsetUtc is null || CreationTimeOffsetUtc.Value.Offset == TimeSpan.Zero, "CreationTimeOffsetUtc is null || CreationTimeOffsetUtc.Value.Offset == TimeSpan.Zero");
+            Validation.Assert(CreationTimeUtc is null || CreationTimeUtc.Value.Kind == DateTimeKind.Utc);
+            Validation.Assert(CreationTimeOffsetUtc is null || CreationTimeOffsetUtc.Value.Offset == TimeSpan.Zero);
 
             FullName = internalHeader.LocalHeader.FullName;
             FullNameBytes = internalHeader.LocalHeader.FullNameBytes;

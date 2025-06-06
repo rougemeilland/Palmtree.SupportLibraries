@@ -26,8 +26,8 @@ namespace Palmtree.Text
         /// </exception>
         public PlaneRowCellNumber(Int32 cell)
         {
-            if (!cell.IsBetween(Byte.MinValue, (Int32)Byte.MaxValue))
-                throw new ArgumentOutOfRangeException(nameof(cell));
+            ArgumentOutOfRangeException.ThrowIfLessThan(cell, Byte.MinValue);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(cell, Byte.MaxValue);
 
             Plane = 0;
             Row = 0;
@@ -51,12 +51,12 @@ namespace Palmtree.Text
         /// </exception>
         public PlaneRowCellNumber(Int32 plane, Int32 row, Int32 cell)
         {
-            if (!plane.IsBetween(1, 2))
-                throw new ArgumentOutOfRangeException(nameof(plane));
-            if (!row.IsBetween(1, 94))
-                throw new ArgumentOutOfRangeException(nameof(row));
-            if (!cell.IsBetween(1, 94))
-                throw new ArgumentOutOfRangeException(nameof(cell));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(plane);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(plane, 2);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(row);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(row, 94);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cell);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(cell, 94);
 
             Plane = (Byte)plane;
             Row = (Byte)row;
@@ -87,7 +87,7 @@ namespace Palmtree.Text
             {
                 if (Plane > 0)
                     return false;
-                Validation.Assert(Row <= 0, "Row <= 0");
+                Validation.Assert(Row <= 0);
                 return true;
             }
         }

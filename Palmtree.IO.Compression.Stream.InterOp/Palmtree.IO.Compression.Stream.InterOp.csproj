@@ -7,7 +7,7 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <RootNamespace>Palmtree.IO.Compression.Stream</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.7.13</VersionPrefix>
+    <VersionPrefix>1.7.14</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Title>$(AssemblyName)</Title>
@@ -48,6 +48,16 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
+    <IsTrimmable>True</IsTrimmable>
+    <IsAotCompatible>True</IsAotCompatible>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>

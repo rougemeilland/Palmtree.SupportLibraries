@@ -24,8 +24,7 @@ namespace Palmtree.IO
         {
             get
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return _tempraryDirectoryPath;
             }

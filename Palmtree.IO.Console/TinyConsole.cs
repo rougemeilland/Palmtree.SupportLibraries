@@ -47,7 +47,7 @@ namespace Palmtree.IO.Console
 
         #region private properties
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "private field の代替として使用されるので、private field の命名規則に従う。")]
         private static TerminalInfo _thisTerminalInfo
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,7 +65,7 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "private field の代替として使用されるので、private field の命名規則に従う。")]
         private static IntPtr _consoleOutputHandle
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,7 +80,7 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "private field の代替として使用されるので、private field の命名規則に従う。")]
         private static Int32 _consoleOutputFileNo
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -95,7 +95,7 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "private field の代替として使用されるので、private field の命名規則に従う。")]
         private static TextWriter _consoleTextWriter
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,13 +105,13 @@ namespace Palmtree.IO.Console
                 {
                     if (!__initializedRedirection)
                         RefreshRedirectionSettings();
-                    Validation.Assert(__consoleTextWriter is not null, "__consoleTextWriter is not null");
+                    Validation.Assert(__consoleTextWriter is not null);
                     return __consoleTextWriter;
                 }
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "private field の代替として使用されるので、private field の命名規則に従う。")]
         private static TextWriter? _escapeCodeWriter
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,7 +126,7 @@ namespace Palmtree.IO.Console
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "private field の代替として使用されるので、private field の命名規則に従う。")]
         private static Char[] _alternativeCharacterSetMap
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,7 +137,7 @@ namespace Palmtree.IO.Console
                     if (__alternativeCharacterSetMap is not null)
                         return __alternativeCharacterSetMap;
 
-                    __alternativeCharacterSetMap = Array.Empty<Char>();
+                    __alternativeCharacterSetMap = [];
                     var acs = _thisTerminalInfo.AcsChars;
                     if (acs is not null)
                     {

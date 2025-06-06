@@ -9,7 +9,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// <summary>
     /// シングルボリューム/マルチボリューム ZIP アーカイブのボリュームディスク情報を保持するクラスです。
     /// </summary>
-    internal class VolumeDiskCollection
+    internal sealed class VolumeDiskCollection
         : IDisposable
     {
         [StructLayout(LayoutKind.Sequential)]
@@ -39,7 +39,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             ELEMENT_T[] GetRawArray();
         }
 
-        private class ArrayOfVolumeDisksOnMemory
+        private sealed class ArrayOfVolumeDisksOnMemory
             : IVirtualArray<VolumeInfo>
         {
             private readonly List<VolumeInfo> _volumeDisks;
@@ -58,8 +58,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 get
                 {
-                    if (_isDisposed)
-                        throw new ObjectDisposedException(GetType().FullName);
+                    ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                     return _volumeDisks[checked((Int32)index)];
                 }
@@ -69,8 +68,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 get
                 {
-                    if (_isDisposed)
-                        throw new ObjectDisposedException(GetType().FullName);
+                    ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                     return checked((UInt32)_volumeDisks.Count);
                 }
@@ -78,16 +76,14 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             public void Add(VolumeInfo element)
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 _volumeDisks.Add(element);
             }
 
             public VolumeInfo[] GetRawArray()
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 return [.. _volumeDisks];
             }
@@ -98,7 +94,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 GC.SuppressFinalize(this);
             }
 
-            protected virtual void Dispose(Boolean disposing)
+            private void Dispose(Boolean disposing)
             {
                 if (!_isDisposed)
                 {
@@ -111,7 +107,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        private class ArrayOfVolumeDisksOnSharedMemory
+        private sealed class ArrayOfVolumeDisksOnSharedMemory
             : IVirtualArray<VolumeInfo>
         {
             private readonly FilePath _baseFile;
@@ -130,8 +126,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 {
                     fixed (VolumeInfo* p = sourceArray)
                     {
-                        Validation.Assert(VolumeInfo.Size == 16, "VolumeInfo.Size == 16");
-                        Validation.Assert(sizeof(VolumeInfo) == 16, "sizeof(VolumeInfo) == 16");
+                        Validation.Assert(VolumeInfo.Size == 16);
+                        Validation.Assert(sizeof(VolumeInfo) == 16);
                         _baseFileStream.Write(new ReadOnlySpan<Byte>((Byte*)p, sourceArray.Length * sizeof(VolumeInfo)));
                     }
                 }
@@ -148,13 +144,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 get
                 {
-                    if (_isDisposed)
-                        throw new ObjectDisposedException(GetType().FullName);
+                    ObjectDisposedException.ThrowIf(_isDisposed, this);
                     if (index >= _length)
                         throw new ArgumentOutOfRangeException(nameof(index));
 
 #if DEBUG
-                    Validation.Assert(checked(_length * VolumeInfo.Size) == _baseFileStream.Length, "checked(_length * VolumeInfo.Size) == _baseFileStream.Length");
+                    Validation.Assert(checked(_length * VolumeInfo.Size) == _baseFileStream.Length);
 #endif
                     _ = _baseFileStream.Seek(checked(index * VolumeInfo.Size), SeekOrigin.Begin);
                     VolumeInfo value;
@@ -173,8 +168,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             {
                 get
                 {
-                    if (_isDisposed)
-                        throw new ObjectDisposedException(GetType().FullName);
+                    ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                     return _length;
                 }
@@ -182,13 +176,12 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             public void Add(VolumeInfo value)
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
                 if (_length >= UInt32.MaxValue)
                     throw new OutOfMemoryException();
 
 #if DEBUG
-                Validation.Assert(checked(_length * VolumeInfo.Size) == _baseFileStream.Length, "checked(_length * VolumeInfo.Size) == _baseFileStream.Length");
+                Validation.Assert(checked(_length * VolumeInfo.Size) == _baseFileStream.Length);
 #endif
                 _ = _baseFileStream.Seek(checked(_length * VolumeInfo.Size), SeekOrigin.Begin);
                 unsafe
@@ -204,8 +197,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             public VolumeInfo[] GetRawArray()
             {
-                if (_isDisposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
 
                 throw new NotSupportedException();
             }
@@ -216,7 +208,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 GC.SuppressFinalize(this);
             }
 
-            protected virtual void Dispose(Boolean disposing)
+            private static MemoryMappedViewAccessor CreateAccesser(MemoryMappedFile memoryMappedFile, Int64 offset, Int64 count)
+                => memoryMappedFile.CreateViewAccessor(offset, count, MemoryMappedFileAccess.ReadWrite);
+
+            private void Dispose(Boolean disposing)
             {
                 if (!_isDisposed)
                 {
@@ -237,9 +232,6 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     _isDisposed = true;
                 }
             }
-
-            private static MemoryMappedViewAccessor CreateAccesser(MemoryMappedFile memoryMappedFile, Int64 offset, Int64 count)
-                => memoryMappedFile.CreateViewAccessor(offset, count, MemoryMappedFileAccess.ReadWrite);
         }
 
         private const UInt32 _MAX_MEMORY_ARRAY_LENGTH = 1024 * 1024 / 16;
@@ -428,22 +420,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(Boolean disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    _volumeDisks.Dispose();
-                }
-
-                _isDisposed = true;
-            }
-        }
-
         private void GetVolumeDiskPosition(UInt64 offsetFromStart, UInt32 startOfDiskNumber, UInt32 endOfDiskNumber, out UInt32 diskNumber, out UInt64 totalOffset)
         {
-            Validation.Assert(startOfDiskNumber <= endOfDiskNumber, "startOfDiskNumber <= endOfDiskNumber");
+            Validation.Assert(startOfDiskNumber <= endOfDiskNumber);
             if (startOfDiskNumber == endOfDiskNumber)
             {
                 var element = _volumeDisks[startOfDiskNumber];
@@ -459,6 +438,19 @@ namespace Palmtree.IO.Compression.Archive.Zip
                     GetVolumeDiskPosition(offsetFromStart, startOfDiskNumber, middleDiskNumber - 1, out diskNumber, out totalOffset);
                 else
                     GetVolumeDiskPosition(offsetFromStart, middleDiskNumber, endOfDiskNumber, out diskNumber, out totalOffset);
+            }
+        }
+
+        private void Dispose(Boolean disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    _volumeDisks.Dispose();
+                }
+
+                _isDisposed = true;
             }
         }
     }

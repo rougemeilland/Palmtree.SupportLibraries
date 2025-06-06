@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
-    internal class VolumeDiskStreamCache<STREAM_T>
+    internal sealed class VolumeDiskStreamCache<STREAM_T>
         : IDisposable, IAsyncDisposable
         where STREAM_T : IDisposable, IAsyncDisposable
     {
@@ -15,8 +15,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         public VolumeDiskStreamCache(Int32 capacity, Func<UInt32, STREAM_T> newStreamGetter)
         {
-            if (capacity <= 0)
-                throw new ArgumentOutOfRangeException(nameof(capacity));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
 
             _capacity = capacity;
             _newStreamGetter = newStreamGetter ?? throw new ArgumentNullException(nameof(newStreamGetter));
@@ -64,7 +63,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(Boolean disposing)
+        private void Dispose(Boolean disposing)
         {
             if (!_isDisposed)
             {
@@ -81,7 +80,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             }
         }
 
-        protected async virtual Task DisposeAsyncCore()
+        private async Task DisposeAsyncCore()
         {
             if (!_isDisposed)
             {

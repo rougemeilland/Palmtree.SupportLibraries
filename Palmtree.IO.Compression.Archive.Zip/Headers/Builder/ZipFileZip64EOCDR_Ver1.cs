@@ -2,7 +2,7 @@
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
-    internal class ZipFileZip64EOCDR_Ver1
+    internal sealed class ZipFileZip64EOCDR_Ver1
     {
         public const Int32 FixedHeaderSize = 56;
 

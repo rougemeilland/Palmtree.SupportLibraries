@@ -28,8 +28,7 @@ namespace Palmtree.Collections
         /// </example>
         public static IEnumerable<TinyBitArray> GetBitArraySequence(Int32 bitCount)
         {
-            if (bitCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
             using var generator = RandomNumberGenerator.Create();
             var bitQueue = new BitQueue();

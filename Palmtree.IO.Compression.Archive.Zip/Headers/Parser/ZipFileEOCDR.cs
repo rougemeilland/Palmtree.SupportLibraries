@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipFileEOCDR
+    internal sealed class ZipFileEOCDR
     {
         public const UInt32 MinimumHeaderSize = 22U;
         public const UInt32 MaximumHeaderSize = MinimumHeaderSize + UInt16.MaxValue;
@@ -116,7 +116,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 
         private static IEnumerable<Int32> EnumerateIndexOfSignature(ReadOnlyMemory<Byte> buffer)
         {
-            Validation.Assert(buffer.Length >= MinimumHeaderSize, "buffer.Length >= MinimumHeaderSize");
+            Validation.Assert(buffer.Length >= MinimumHeaderSize);
             var signatureByte0 = unchecked((Byte)(_eocdSignature >> 8 * 0));
             var signatureByte1 = unchecked((Byte)(_eocdSignature >> 8 * 1));
             var signatureByte2 = unchecked((Byte)(_eocdSignature >> 8 * 2));

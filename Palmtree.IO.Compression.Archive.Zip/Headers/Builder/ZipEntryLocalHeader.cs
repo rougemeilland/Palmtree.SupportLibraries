@@ -3,7 +3,7 @@ using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
-    internal class ZipEntryLocalHeader
+    internal sealed class ZipEntryLocalHeader
     {
         public const Int32 MaximumHeaderSize = MinimumHeaderSize + UInt16.MaxValue + UInt16.MaxValue;
         public const Int32 MinimumHeaderSize = 30;

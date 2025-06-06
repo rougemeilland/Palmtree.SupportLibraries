@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipEntryDataDescriptor
+    internal sealed class ZipEntryDataDescriptor
     {
         public const Int32 MinimumHeaderSize = 12;
         public const Int32 MaximumHeaderSize = 16;

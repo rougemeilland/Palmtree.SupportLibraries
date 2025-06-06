@@ -52,8 +52,8 @@ namespace Palmtree
 
         public static TinyBitArray FromByte(Byte value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_BYTE))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_BYTE);
 
             return new TinyBitArray(InternalBitQueue.FromInteger(value, bitCount, bitPackingDirection));
         }
@@ -63,8 +63,8 @@ namespace Palmtree
 
         public static TinyBitArray FromUInt16(UInt16 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_UINT16))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT16);
 
             return new TinyBitArray(InternalBitQueue.FromInteger(value, bitCount, bitPackingDirection));
         }
@@ -74,8 +74,8 @@ namespace Palmtree
 
         public static TinyBitArray FromUInt32(UInt32 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_UINT32))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT32);
 
             return new TinyBitArray(InternalBitQueue.FromInteger(value, bitCount, bitPackingDirection));
         }
@@ -85,8 +85,8 @@ namespace Palmtree
 
         public static TinyBitArray FromUInt64(UInt64 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (!bitCount.IsBetween(1, _BIT_LENGTH_OF_UINT64))
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT64);
 
             return new TinyBitArray(InternalBitQueue.FromInteger(value, bitCount, bitPackingDirection));
         }
@@ -158,10 +158,8 @@ namespace Palmtree
 
         public TinyBitArray Concat(Byte value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > _BIT_LENGTH_OF_BYTE)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_BYTE);
 
             var bitArray = _bitArray.Clone();
             bitArray.Enqueue(value, bitCount, bitPackingDirection);
@@ -173,10 +171,8 @@ namespace Palmtree
 
         public TinyBitArray Concat(UInt16 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > _BIT_LENGTH_OF_UINT16)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT16);
 
             return ConcatInterger(value, bitCount, bitPackingDirection);
         }
@@ -186,10 +182,8 @@ namespace Palmtree
 
         public TinyBitArray Concat(UInt32 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > _BIT_LENGTH_OF_UINT32)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT32);
 
             return ConcatInterger(value, bitCount, bitPackingDirection);
         }
@@ -199,10 +193,8 @@ namespace Palmtree
 
         public TinyBitArray Concat(UInt64 value, Int32 bitCount, BitPackingDirection bitPackingDirection = BitPackingDirection.Default)
         {
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
-            if (bitCount > _BIT_LENGTH_OF_UINT64)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, _BIT_LENGTH_OF_UINT64);
 
             return ConcatInterger(value, bitCount, bitPackingDirection);
         }
@@ -216,11 +208,10 @@ namespace Palmtree
 
         public (TinyBitArray FirstHalf, TinyBitArray SecondHalf) Divide(Int32 count)
         {
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count));
-            }
-            else if (count == 0)
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, _bitArray.Length);
+
+            if (count == 0)
             {
                 return (new TinyBitArray(), Clone());
             }
@@ -232,8 +223,7 @@ namespace Palmtree
             }
             else
             {
-                if (count != _bitArray.Length)
-                    throw new ArgumentOutOfRangeException(nameof(count));
+                Validation.Assert(count == _bitArray.Length);
 
                 return (Clone(), new TinyBitArray());
             }

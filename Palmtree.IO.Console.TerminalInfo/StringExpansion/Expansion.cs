@@ -4,7 +4,7 @@ using Palmtree.Numerics;
 
 namespace Palmtree.IO.Console.StringExpansion
 {
-    internal class Expansion
+    internal sealed class Expansion
     {
         public static String ExpandArguments(String value, Object[] args)
         {
@@ -30,7 +30,7 @@ namespace Palmtree.IO.Console.StringExpansion
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0045:条件式に変換します", Justification = "<保留中>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0045:条件式に変換します", Justification = "ソースがかえって読みづらくなる")]
         private static (ExpansionStatementState statementState, String output) ExpandArguments(ExpansionState state)
         {
             var outputStringBuffer = new StringBuilder();

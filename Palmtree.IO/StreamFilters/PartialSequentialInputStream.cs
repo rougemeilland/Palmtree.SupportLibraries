@@ -7,7 +7,7 @@ namespace Palmtree.IO.StreamFilters
     /// <summary>
     /// バイトストリームの部分的な範囲のアクセスのみを可能にするクラスです。
     /// </summary>
-    internal class PartialSequentialInputStream
+    internal sealed class PartialSequentialInputStream
         : SequentialInputByteStreamFilter
     {
         private readonly ISequentialInputByteStream _baseStream;
@@ -34,8 +34,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _baseStream = baseStream;
                 _size = size;

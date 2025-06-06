@@ -21,16 +21,14 @@ namespace Palmtree.IO
 
         public Int32 Read(Span<Byte> buffer)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return ReadCore(buffer);
         }
 
         public Task<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return ReadAsyncCore(buffer, cancellationToken);
         }

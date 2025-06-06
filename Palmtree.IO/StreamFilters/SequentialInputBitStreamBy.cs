@@ -25,8 +25,7 @@ namespace Palmtree.IO.StreamFilters
 
         public Boolean? ReadBit()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             if (_isEndOfSequence)
                 return null;
@@ -43,8 +42,7 @@ namespace Palmtree.IO.StreamFilters
 
         public async Task<Boolean?> ReadBitAsync(CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             if (_isEndOfSequence)
                 return null;
@@ -61,10 +59,8 @@ namespace Palmtree.IO.StreamFilters
 
         public TinyBitArray? ReadBits(Int32 bitCount)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
             if (_isEndOfSequence)
                 return null;
@@ -81,10 +77,8 @@ namespace Palmtree.IO.StreamFilters
 
         public async Task<TinyBitArray?> ReadBitsAsync(Int32 bitCount, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (bitCount < 1)
-                throw new ArgumentOutOfRangeException(nameof(bitCount));
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
             if (_isEndOfSequence)
                 return null;
@@ -139,7 +133,7 @@ namespace Palmtree.IO.StreamFilters
         {
             const Int32 maximumCount = BitQueue.RecommendedMaxCount - 8;
             var actualBitCount = bitCount.Minimum(maximumCount);
-            Validation.Assert(actualBitCount >= 0, "actualBitCount >= 0");
+            Validation.Assert(actualBitCount >= 0);
             return actualBitCount;
         }
 

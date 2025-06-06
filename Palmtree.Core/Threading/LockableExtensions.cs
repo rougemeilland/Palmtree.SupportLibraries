@@ -6,7 +6,7 @@ namespace Palmtree.Threading
 {
     public static class LockableExtensions
     {
-        private class LocalSemaphore
+        private sealed class LocalSemaphore
             : ILockable, IAsyncLockable
         {
             private readonly SemaphoreSlim _semaphore;
@@ -33,7 +33,7 @@ namespace Palmtree.Threading
                 GC.SuppressFinalize(this);
             }
 
-            protected virtual void Dispose(Boolean disposing)
+            private void Dispose(Boolean disposing)
             {
                 if (!_isDisposed)
                 {
@@ -48,7 +48,7 @@ namespace Palmtree.Threading
             }
         }
 
-        private class GlobalSemaphore
+        private sealed class GlobalSemaphore
             : ILockable, IAsyncLockable
         {
             private readonly Semaphore _semaphore;
@@ -75,7 +75,7 @@ namespace Palmtree.Threading
                 GC.SuppressFinalize(this);
             }
 
-            protected virtual void Dispose(Boolean disposing)
+            private void Dispose(Boolean disposing)
             {
                 if (!_isDisposed)
                 {
@@ -90,7 +90,7 @@ namespace Palmtree.Threading
             }
         }
 
-        private class GlobalMutex
+        private sealed class GlobalMutex
             : ILockable
         {
             private readonly Mutex _mutex;
@@ -109,7 +109,12 @@ namespace Palmtree.Threading
 
             public void Lock() => _ = _mutex.WaitOne();
 
-            public Task LockAsync() => Task.Run(_mutex.WaitOne);
+            public Task LockAsync()
+                => Task.Run(
+                    () =>
+                    {
+                        _ = _mutex.WaitOne();
+                    });
 
             public void Dispose()
             {
@@ -117,7 +122,7 @@ namespace Palmtree.Threading
                 GC.SuppressFinalize(this);
             }
 
-            protected virtual void Dispose(Boolean disposing)
+            private void Dispose(Boolean disposing)
             {
                 if (!_isDisposed)
                 {

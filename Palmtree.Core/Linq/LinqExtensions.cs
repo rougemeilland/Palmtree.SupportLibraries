@@ -12,15 +12,14 @@ namespace Palmtree.Linq
     {
         #region private class
 
-        private class ReadOnlyCollectionWrapper<ELEMENT_T>
+        private sealed class ReadOnlyCollectionWrapper<ELEMENT_T>
             : IReadOnlyCollection<ELEMENT_T>
         {
             private readonly ICollection<ELEMENT_T> _internalCollection;
 
             public ReadOnlyCollectionWrapper(ICollection<ELEMENT_T> sourceCollection)
             {
-                if (sourceCollection is null)
-                    throw new ArgumentNullException(nameof(sourceCollection));
+                ArgumentNullException.ThrowIfNull(sourceCollection);
 
                 _internalCollection = sourceCollection;
             }
@@ -38,23 +37,20 @@ namespace Palmtree.Linq
 
         public static IEnumerable<ELEMENT_T> AsEnumerable<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (!offset.IsBetween(0, source.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, source.Length);
 
             return source.AsReadOnlyMemory(offset).AsEnumerable();
         }
 
         public static IEnumerable<ELEMENT_T> AsEnumerable<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset, Int32 count)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (!offset.IsBetween(0, source.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            var limit = checked(offset + count);
-            if (!limit.IsBetween(0, source.Length))
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, source.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, source.Length - offset);
 
             return source.AsReadOnlyMemory(offset, count).AsEnumerable();
         }
@@ -145,27 +141,22 @@ namespace Palmtree.Linq
 
         public static Boolean None<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return !source.Any();
         }
 
         public static Boolean None<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
             return !source.Any(predicate);
         }
 
         public static Boolean NotAll<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(predicate);
 
             return !source.All(predicate);
         }
@@ -200,8 +191,7 @@ namespace Palmtree.Linq
         public static IEnumerable<ELEMENT_T> QuickDistinct<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return QuickDistinct(source, new Dictionary<ELEMENT_T, Object?>());
         }
@@ -209,10 +199,8 @@ namespace Palmtree.Linq
         public static IEnumerable<ELEMENT_T> QuickDistinct<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEqualityComparer<ELEMENT_T> equalityComparer)
             where ELEMENT_T : notnull
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return QuickDistinct(source, new Dictionary<ELEMENT_T, Object?>(equalityComparer));
         }
@@ -224,8 +212,7 @@ namespace Palmtree.Linq
         public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var sourceArray = source.ToArray();
             sourceArray.AsSpan().InternalQuickSort();
@@ -234,10 +221,8 @@ namespace Palmtree.Linq
 
         public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var sourceArray = source.ToArray();
             sourceArray.AsSpan().InternalQuickSort(keyComparer);
@@ -247,10 +232,8 @@ namespace Palmtree.Linq
         public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySekecter is null)
-                throw new ArgumentNullException(nameof(keySekecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySekecter);
 
             var sourceArray = source.ToArray();
             sourceArray.AsSpan().InternalQuickSort(keySekecter);
@@ -259,12 +242,9 @@ namespace Palmtree.Linq
 
         public static IEnumerable<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySekecter, IComparer<KEY_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySekecter is null)
-                throw new ArgumentNullException(nameof(keySekecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySekecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var sourceArray = source.ToArray();
             sourceArray.AsSpan().InternalQuickSort(keySekecter, keyComparer);
@@ -278,10 +258,8 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
@@ -328,12 +306,9 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
@@ -366,12 +341,9 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
@@ -418,14 +390,10 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
@@ -458,10 +426,8 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -501,12 +467,9 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, IComparer<ELEMENT_T> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -538,12 +501,9 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -583,14 +543,10 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -622,18 +578,15 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other, comparer);
         }
@@ -641,22 +594,17 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other, keySelecter, keyComparer);
         }
@@ -664,8 +612,7 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -705,10 +652,8 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -740,10 +685,8 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -783,12 +726,9 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -820,10 +760,8 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -870,12 +808,9 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -907,12 +842,9 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -959,14 +891,10 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -998,18 +926,15 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(other);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other, comparer);
         }
@@ -1017,22 +942,17 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other, keySelecter);
         }
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other, keySelecter, keyComparer);
         }
@@ -1040,8 +960,7 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1088,10 +1007,8 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1123,10 +1040,8 @@ namespace Palmtree.Linq
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1173,12 +1088,9 @@ namespace Palmtree.Linq
 
         public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyComparer is null)
-                throw new ArgumentNullException(nameof(keyComparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyComparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1214,12 +1126,9 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
@@ -1258,14 +1167,10 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
@@ -1297,10 +1202,8 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1339,12 +1242,9 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1375,12 +1275,9 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1419,14 +1316,10 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1457,18 +1350,15 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.SequenceEqual((ReadOnlySpan<ELEMENT_T>)other);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return source.SequenceEqual((ReadOnlySpan<ELEMENT_T>)other, equalityComparer);
         }
@@ -1476,22 +1366,17 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return source.SequenceEqual((ReadOnlySpan<ELEMENT_T>)other, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return source.SequenceEqual((ReadOnlySpan<ELEMENT_T>)other, keySelecter, keyEqualityComparer);
         }
@@ -1499,8 +1384,7 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1539,10 +1423,8 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1573,10 +1455,8 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1615,12 +1495,9 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             var enumerator1 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1651,10 +1528,8 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1693,12 +1568,9 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1729,12 +1601,9 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1773,14 +1642,10 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1811,18 +1676,15 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(other);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceEqual(other);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceEqual(other, equalityComparer);
         }
@@ -1830,22 +1692,17 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceEqual(other, keySelecter);
         }
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             return ((ReadOnlySpan<ELEMENT_T>)source).SequenceEqual(other, keySelecter, keyEqualityComparer);
         }
@@ -1853,8 +1710,7 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IEquatable<ELEMENT_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(other);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1893,10 +1749,8 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IEqualityComparer<ELEMENT_T> equalityComparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (equalityComparer is null)
-                throw new ArgumentNullException(nameof(equalityComparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(equalityComparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1927,10 +1781,8 @@ namespace Palmtree.Linq
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IEquatable<KEY_T>
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -1969,12 +1821,9 @@ namespace Palmtree.Linq
 
         public static Boolean SequenceEqual<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IEqualityComparer<KEY_T> keyEqualityComparer)
         {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-            if (keySelecter is null)
-                throw new ArgumentNullException(nameof(keySelecter));
-            if (keyEqualityComparer is null)
-                throw new ArgumentNullException(nameof(keyEqualityComparer));
+            ArgumentNullException.ThrowIfNull(other);
+            ArgumentNullException.ThrowIfNull(keySelecter);
+            ArgumentNullException.ThrowIfNull(keyEqualityComparer);
 
             var enumerator2 = (IEnumerator<ELEMENT_T>?)null;
             try
@@ -2120,30 +1969,24 @@ namespace Palmtree.Linq
 
         public static IEnumerable<ELEMENT_T[]> ChunkAsArray<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Int32 count)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (count <= 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 
             return source.Chunk(count);
         }
 
         public static IEnumerable<ReadOnlyMemory<ELEMENT_T>> ChunkAsReadOnlyMemory<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Int32 count)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (count <= 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 
             return source.Chunk(count).Select(array => array.AsReadOnly());
         }
 
         public static IComparer<VALUE_T> CreateComparer<VALUE_T>(this IEnumerable<VALUE_T> source, Func<VALUE_T, VALUE_T, Int32> comparer)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return new CustomizableComparer<VALUE_T>(comparer);
         }
@@ -2156,8 +1999,7 @@ namespace Palmtree.Linq
 
         public static void ForEach<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Action<ELEMENT_T> action)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             foreach (var element in source)
                 action(element);
@@ -2165,44 +2007,38 @@ namespace Palmtree.Linq
 
         public static Boolean IsSingle<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return source.Take(2).Count() == 1;
         }
 
         public static IComparer<CAPSULE_T> MapComparer<CAPSULE_T, VALUE_T>(this IComparer<VALUE_T> comparer, Func<CAPSULE_T, VALUE_T> selecter)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
-            if (selecter is null)
-                throw new ArgumentNullException(nameof(selecter));
+            ArgumentNullException.ThrowIfNull(comparer);
+            ArgumentNullException.ThrowIfNull(selecter);
 
             return new CustomizableComparer<CAPSULE_T>((value1, value2) => comparer.Compare(selecter(value1), selecter(value2)));
         }
 
         public static IReadOnlyCollection<ELEMENT_T> ToReadOnlyCollection<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
-            return new ReadOnlyCollectionWrapper<ELEMENT_T>(source.ToList());
+            return new ReadOnlyCollectionWrapper<ELEMENT_T>([.. source]);
         }
 
         public static ReadOnlyMemory<ELEMENT_T> ToReadOnlyMemory<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             return (ReadOnlyMemory<ELEMENT_T>)source.ToArray();
         }
 
         public static ReadOnlySpan<ELEMENT_T> ToReadOnlySpan<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
-            return (ReadOnlySpan<ELEMENT_T>)source.ToArray();
+            return ((ReadOnlyMemory<ELEMENT_T>)source.ToArray()).Span;
         }
 
         #region private methods
@@ -2230,8 +2066,7 @@ namespace Palmtree.Linq
         private static ELEMENT_T InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var max = (ELEMENT_T?)null;
             foreach (var value in source)
@@ -2248,10 +2083,8 @@ namespace Palmtree.Linq
         private static VALUE_T InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var max = (VALUE_T?)null;
             foreach (var element in source)
@@ -2269,8 +2102,7 @@ namespace Palmtree.Linq
         private static ELEMENT_T? InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var max = (ELEMENT_T?)null;
             foreach (var value in source)
@@ -2290,10 +2122,8 @@ namespace Palmtree.Linq
         private static VALUE_T? InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var max = (VALUE_T?)null;
             foreach (var element in source)
@@ -2314,8 +2144,7 @@ namespace Palmtree.Linq
         private static ELEMENT_T InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var min = (ELEMENT_T?)null;
             foreach (var value in source)
@@ -2332,10 +2161,8 @@ namespace Palmtree.Linq
         private static VALUE_T InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var min = (VALUE_T?)null;
             foreach (var element in source)
@@ -2353,8 +2180,7 @@ namespace Palmtree.Linq
         private static ELEMENT_T? InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
             where ELEMENT_T : struct, IComparable<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var min = (ELEMENT_T?)null;
             foreach (var value in source)
@@ -2374,10 +2200,8 @@ namespace Palmtree.Linq
         private static VALUE_T? InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
             where VALUE_T : struct, IComparable<VALUE_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var min = (VALUE_T?)null;
             foreach (var element in source)
@@ -2408,8 +2232,7 @@ namespace Palmtree.Linq
         private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
             where ELEMENT_T : struct, INumberBase<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var sum = ELEMENT_T.Zero;
             foreach (var value in source)
@@ -2426,10 +2249,8 @@ namespace Palmtree.Linq
         private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
             where VALUE_T : struct, INumberBase<VALUE_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var sum = VALUE_T.Zero;
             foreach (var element in source)
@@ -2447,8 +2268,7 @@ namespace Palmtree.Linq
         private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
             where ELEMENT_T : struct, INumberBase<ELEMENT_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             var sum = ELEMENT_T.Zero;
             foreach (var value in source)
@@ -2468,10 +2288,8 @@ namespace Palmtree.Linq
         private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
             where VALUE_T : struct, INumberBase<VALUE_T>
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector is null)
-                throw new ArgumentNullException(nameof(selector));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(selector);
 
             var sum = VALUE_T.Zero;
             foreach (var element in source)

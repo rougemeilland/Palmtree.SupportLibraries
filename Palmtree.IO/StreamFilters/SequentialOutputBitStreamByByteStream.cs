@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialOutputBitStreamByByteStream
+    internal sealed class SequentialOutputBitStreamByByteStream
         : IOutputBitStream
     {
         private readonly ISequentialOutputByteStream _baseStream;
@@ -18,8 +18,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _isDisposed = false;
                 _baseStream = baseStream;
@@ -37,8 +36,7 @@ namespace Palmtree.IO.StreamFilters
 
         public void Write(Boolean bit)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             _bitQueue.Enqueue(bit);
             FlushBytes();
@@ -46,8 +44,7 @@ namespace Palmtree.IO.StreamFilters
 
         public Task WriteAsync(Boolean bit, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             _bitQueue.Enqueue(bit);
             return FlushBytesAsync(cancellationToken);
@@ -55,8 +52,7 @@ namespace Palmtree.IO.StreamFilters
 
         public void Write(TinyBitArray bitArray)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             while (bitArray.Length > 0)
             {
@@ -67,8 +63,7 @@ namespace Palmtree.IO.StreamFilters
 
         public async Task WriteAsync(TinyBitArray bitArray, CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             while (bitArray.Length > 0)
             {
@@ -79,16 +74,14 @@ namespace Palmtree.IO.StreamFilters
 
         public void Flush()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             _baseStream.Flush();
         }
 
         public Task FlushAsync(CancellationToken cancellationToken = default)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
 
             return _baseStream.FlushAsync(cancellationToken);
         }
@@ -104,46 +97,6 @@ namespace Palmtree.IO.StreamFilters
             await DisposeAsyncCore().ConfigureAwait(false);
             Dispose(disposing: false);
             GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(Boolean disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    try
-                    {
-                        FlushAllBytes();
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    if (!_leaveOpen)
-                        _baseStream.Dispose();
-                }
-
-                _isDisposed = true;
-            }
-        }
-
-        protected virtual async ValueTask DisposeAsyncCore()
-        {
-            if (!_isDisposed)
-            {
-                try
-                {
-                    await FlushAllBytesAsync().ConfigureAwait(false);
-                }
-                catch (Exception)
-                {
-                }
-
-                if (!_leaveOpen)
-                    await _baseStream.DisposeAsync().ConfigureAwait(false);
-                _isDisposed = true;
-            }
         }
 
         private TinyBitArray QueueBitArray(TinyBitArray bitArray)
@@ -211,6 +164,46 @@ namespace Palmtree.IO.StreamFilters
         {
             while (_bitQueue.Count >= 8)
                 await _baseStream.WriteByteAsync(_bitQueue.DequeueByte(_bitPackingDirection), cancellationToken).ConfigureAwait(false);
+        }
+
+        private void Dispose(Boolean disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    try
+                    {
+                        FlushAllBytes();
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    if (!_leaveOpen)
+                        _baseStream.Dispose();
+                }
+
+                _isDisposed = true;
+            }
+        }
+
+        private async ValueTask DisposeAsyncCore()
+        {
+            if (!_isDisposed)
+            {
+                try
+                {
+                    await FlushAllBytesAsync().ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                }
+
+                if (!_leaveOpen)
+                    await _baseStream.DisposeAsync().ConfigureAwait(false);
+                _isDisposed = true;
+            }
         }
     }
 }

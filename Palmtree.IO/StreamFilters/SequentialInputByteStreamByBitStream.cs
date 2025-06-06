@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class SequentialInputByteStreamByBitStream
+    internal sealed class SequentialInputByteStreamByBitStream
         : SequentialInputByteStream
     {
         private readonly IInputBitStream _baseStream;
@@ -20,8 +20,7 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
+                ArgumentNullException.ThrowIfNull(baseStream);
 
                 _baseStream = baseStream;
                 _bitPackingDirection = bitPackingDirection;

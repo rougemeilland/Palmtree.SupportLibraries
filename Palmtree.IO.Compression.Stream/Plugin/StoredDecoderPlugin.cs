@@ -2,10 +2,10 @@
 
 namespace Palmtree.IO.Compression.Stream.Plugin
 {
-    internal class StoredDecoderPlugin
+    internal sealed class StoredDecoderPlugin
         : ICompressionCoder, ICompressionHierarchicalDecoder
     {
-        private class Decoder
+        private sealed class Decoder
             : HierarchicalDecoder
         {
             private Decoder(
@@ -18,12 +18,12 @@ namespace Palmtree.IO.Compression.Stream.Plugin
             {
             }
 
-            public static ISequentialInputByteStream Create(
+            public static Decoder Create(
                 ISequentialInputByteStream baseStream,
                 UInt64 unpackedStreamSize,
                 IProgress<(UInt64 inCompressedStreamProcessedCount, UInt64 outUncompressedStreamProcessedCount)>? progress,
                 Boolean leaveOpen)
-                => new Decoder(baseStream, unpackedStreamSize, progress, leaveOpen, stream => stream);
+                => new(baseStream, unpackedStreamSize, progress, leaveOpen, stream => stream);
         }
 
         CompressionMethodId ICompressionCoder.CompressionMethodId => StoredCoderPlugin.COMPRESSION_METHOD_ID;

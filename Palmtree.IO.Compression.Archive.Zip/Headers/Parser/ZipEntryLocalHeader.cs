@@ -6,7 +6,7 @@ using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {
-    internal class ZipEntryLocalHeader
+    internal sealed class ZipEntryLocalHeader
          : ZipEntryInternalHeader
     {
         public const UInt32 MinimumHeaderSize = 30U;
@@ -58,7 +58,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                   requiredZip64,
                   stringency)
         {
-            Validation.Assert(!generalPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor) || dataDescriptor is not null, "!generalPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor) || dataDescriptor is not null");
+            Validation.Assert(!generalPurposeBitFlag.HasFlag(ZipEntryGeneralPurposeBitFlag.HasDataDescriptor) || dataDescriptor is not null);
             DataDescriptor = dataDescriptor;
             DataPosition = dataPosition;
         }
@@ -77,12 +77,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             ZipEntryCentralDirectoryHeader centralDirectoryHeader,
             ValidationStringency stringency)
         {
-            if (zipReader is null)
-                throw new ArgumentNullException(nameof(zipReader));
-            if (zipStream is null)
-                throw new ArgumentNullException(nameof(zipStream));
-            if (centralDirectoryHeader is null)
-                throw new ArgumentNullException(nameof(centralDirectoryHeader));
+            ArgumentNullException.ThrowIfNull(zipReader);
+            ArgumentNullException.ThrowIfNull(zipStream);
+            ArgumentNullException.ThrowIfNull(centralDirectoryHeader);
 
             try
             {
@@ -126,12 +123,9 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             ValidationStringency stringency,
             CancellationToken cancellationToken)
         {
-            if (zipReader is null)
-                throw new ArgumentNullException(nameof(zipReader));
-            if (zipStream is null)
-                throw new ArgumentNullException(nameof(zipStream));
-            if (centralDirectoryHeader is null)
-                throw new ArgumentNullException(nameof(centralDirectoryHeader));
+            ArgumentNullException.ThrowIfNull(zipReader);
+            ArgumentNullException.ThrowIfNull(zipStream);
+            ArgumentNullException.ThrowIfNull(centralDirectoryHeader);
 
             try
             {

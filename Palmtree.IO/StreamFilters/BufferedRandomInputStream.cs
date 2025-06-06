@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal class BufferedRandomInputStream<POSITION_T>
+    internal sealed class BufferedRandomInputStream<POSITION_T>
         : RandomInputByteStreamFilter<POSITION_T, POSITION_T>
         where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>, ISubtractionOperators<POSITION_T, UInt64, POSITION_T>
     {
@@ -22,10 +22,8 @@ namespace Palmtree.IO.StreamFilters
         {
             try
             {
-                if (baseStream is null)
-                    throw new ArgumentNullException(nameof(baseStream));
-                if (bufferSize <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(bufferSize));
+                ArgumentNullException.ThrowIfNull(baseStream);
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
                 _baseStream = baseStream;
                 _cache = new ReadOnlyBytesCache<POSITION_T>(bufferSize, baseStream.Position);

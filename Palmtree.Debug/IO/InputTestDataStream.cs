@@ -19,8 +19,7 @@ namespace Palmtree.Debug.IO
 
         public static InputTestDataStream Create(UInt64 length, Func<Byte, Byte>? byteDataFilter = null)
         {
-            if (length < (sizeof(UInt64) + sizeof(UInt32)))
-                throw new ArgumentOutOfRangeException(nameof(length));
+            ArgumentOutOfRangeException.ThrowIfLessThan(length, (UInt64)(sizeof(UInt64) + sizeof(UInt32)));
 
             var pipe = new InProcessPipe();
             _ = Task.Run(() =>

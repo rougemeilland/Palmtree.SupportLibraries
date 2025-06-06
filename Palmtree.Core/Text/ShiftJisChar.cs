@@ -161,12 +161,12 @@ namespace Palmtree.Text
             if (_data2 == 0)
                 return new PlaneRowCellNumber(0, 0, _data1);
             var cell = _mapFromShiftJisSecondByteToCell[_data2];
-            Validation.Assert(cell is not null, "cell is not null");
+            Validation.Assert(cell is not null);
             var plane1AndRow = _mapFromPlane1RowToShiftJisFirstByte[_data1];
             if (plane1AndRow is not null)
                 return new PlaneRowCellNumber(1, plane1AndRow.Value, cell.Value);
             var plane2AndRow = _mapFromPlane2RowToShiftJisFirstByte[_data1];
-            Validation.Assert(plane2AndRow is not null, "plane2AndRow is not null");
+            Validation.Assert(plane2AndRow is not null);
             return new PlaneRowCellNumber(1, plane2AndRow.Value, cell.Value);
         }
 

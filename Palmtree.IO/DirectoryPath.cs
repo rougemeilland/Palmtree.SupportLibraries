@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -15,157 +14,85 @@ namespace Palmtree.IO
     {
         private const String _SERVER_NAME_LOCAL_HOST = "localhost";
 
-        private readonly DirectoryInfo _directory;
+        static DirectoryPath()
+        {
+            var homeDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            UserHomeDirectory = String.IsNullOrEmpty(homeDirectoryPath) ? null : new DirectoryPath(homeDirectoryPath);
+        }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath(String path)
             : this(GetDirectoryInfo(path))
         {
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DirectoryPath(DirectoryInfo directory)
             : base(directory)
         {
-            _directory = directory;
-        }
-
-        public static DirectoryPath CurrentDirectory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new(Environment.CurrentDirectory);
-        }
-
-        public DirectoryPath? Parent
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
+            var parent = directory.Parent;
+            if (parent is null)
             {
-                _directory.Refresh();
-                var parent = _directory.Parent;
-                return
-                    parent is null
-                    ? null
-                    : new DirectoryPath(parent);
+                Parent = null;
+                Root = this;
+            }
+            else
+            {
+                Parent = new DirectoryPath(parent);
+                Root = new DirectoryPath(directory.Root);
             }
         }
 
-        public DirectoryPath Root
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                _directory.Refresh();
-                return new DirectoryPath(_directory.Root);
-            }
-        }
-
-        public static DirectoryPath? UserHomeDirectory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                return String.IsNullOrEmpty(path) ? null : new DirectoryPath(path);
-            }
-        }
+        public static DirectoryPath CurrentDirectory => new(Environment.CurrentDirectory);
+        public override Boolean Exists => Directory.Exists(FullName);
+        public DirectoryPath? Parent { get; }
+        public DirectoryPath Root { get; }
+        public static DirectoryPath? UserHomeDirectory { get; }
 
         public DirectoryPath Create()
         {
-            _directory.Refresh();
-            try
-            {
-                if (!_directory.Exists)
-                    _directory.Create();
-                return this;
-            }
-            finally
-            {
-                _directory.Refresh();
-#if DEBUG
-                ValidationPath();
-#endif
-            }
+            if (!Directory.Exists(FullName))
+                _ = Directory.CreateDirectory(FullName);
+            return this;
         }
 
-        public static DirectoryPath CreateTemporaryDirectory()
-            => new(Directory.CreateTempSubdirectory());
+        public static DirectoryPath CreateTemporaryDirectory() => new(Directory.CreateTempSubdirectory());
 
-        public void Delete(Boolean recursive = false)
-        {
-            _directory.Refresh();
-            try
-            {
-                _directory.Delete(recursive);
-            }
-            finally
-            {
-                _directory.Refresh();
-#if DEBUG
-                ValidationPath();
-#endif
-            }
-        }
+        public void Delete(Boolean recursive = false) => Directory.Delete(FullName, recursive);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<DirectoryPath> EnumerateDirectories(Boolean recursive = false)
-            => EnumerateDirectories("*", recursive);
+        public IEnumerable<DirectoryPath> EnumerateDirectories(Boolean recursive = false) => EnumerateDirectories("*", recursive);
 
         public IEnumerable<DirectoryPath> EnumerateDirectories(String namePattern, Boolean recursive = false)
         {
-            _directory.Refresh();
-            try
-            {
-                var subDirectories =
-                    _directory.EnumerateDirectories(
-                        namePattern,
-                        recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-                foreach (var directory in subDirectories)
-                    yield return new DirectoryPath(directory);
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            ArgumentException.ThrowIfNullOrEmpty(namePattern);
+
+            var directoryPathNames =
+                Directory.EnumerateDirectories(
+                    FullName,
+                    namePattern,
+                    recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+            foreach (var directoryPathName in directoryPathNames)
+                yield return new DirectoryPath(directoryPathName);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<FilePath> EnumerateFiles(Boolean recursive = false)
-            => EnumerateFiles("*", recursive);
+        public IEnumerable<FilePath> EnumerateFiles(Boolean recursive = false) => EnumerateFiles("*", recursive);
 
         public IEnumerable<FilePath> EnumerateFiles(String namePattern, Boolean recursive = false)
         {
-            _directory.Refresh();
-            try
-            {
-                var subFiles =
-                    _directory.EnumerateFiles(
+            ArgumentException.ThrowIfNullOrEmpty(namePattern);
+
+            var filePathNames =
+                    Directory.EnumerateFiles(
+                        FullName,
                         namePattern,
                         recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-                foreach (var file in subFiles)
-                    yield return FilePath.CreateInstance(file);
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            foreach (var filePathName in filePathNames)
+                yield return new FilePath(filePathName);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FilePath GetFile(String fileName)
         {
-            if (fileName is null)
-                throw new ArgumentNullException(nameof(fileName));
+            ArgumentException.ThrowIfNullOrEmpty(fileName);
 
-            _directory.Refresh();
-            try
-            {
-                return new FilePath(Path.Combine(_directory.FullName, fileName));
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            return new FilePath(Path.Combine(FullName, fileName));
         }
 
         public DirectoryPath GetCasePreservedPath()
@@ -181,7 +108,7 @@ namespace Palmtree.IO
                 var driveLetter = m.Groups["driveLetter"];
                 var guid = m.Groups["guid"];
                 var bootPartition = m.Groups["bootPartition"];
-                Validation.Assert(driveLetter.Success || guid.Success || bootPartition.Success, "driveLetter.Success || guid.Success || bootPartition.Success");
+                Validation.Assert(driveLetter.Success || guid.Success || bootPartition.Success);
                 if (driveLetter.Success)
                     return new DirectoryInfo($"\\\\{prefix}\\{driveLetter.Value.ToUpperInvariant()}:\\");
                 else if (guid.Success)
@@ -330,135 +257,83 @@ namespace Palmtree.IO
             return null;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath GetSubDirectory(String subDirectoryName)
         {
-            if (subDirectoryName is null)
-                throw new ArgumentNullException(nameof(subDirectoryName));
+            ArgumentException.ThrowIfNullOrEmpty(subDirectoryName);
 
-            _directory.Refresh();
-            try
-            {
-                return new DirectoryPath(Path.Combine(_directory.FullName, subDirectoryName));
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            return new DirectoryPath(Path.Combine(FullName, subDirectoryName));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath GetSubDirectory(String subDirectoryName1, String subDirectoryName2)
         {
-            if (String.IsNullOrEmpty(subDirectoryName1))
-                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null or empty.", nameof(subDirectoryName1));
-            if (String.IsNullOrEmpty(subDirectoryName2))
-                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null or empty.", nameof(subDirectoryName2));
+            ArgumentException.ThrowIfNullOrEmpty(subDirectoryName1);
+            ArgumentException.ThrowIfNullOrEmpty(subDirectoryName2);
 
-            _directory.Refresh();
-            try
-            {
-                return new DirectoryPath(Path.Combine(_directory.FullName, subDirectoryName1, subDirectoryName2));
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            return new DirectoryPath(Path.Combine(FullName, subDirectoryName1, subDirectoryName2));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DirectoryPath GetSubDirectory(String subDirectoryName1, String subDirectoryName2, String subDirectoryName3)
         {
-            if (String.IsNullOrEmpty(subDirectoryName1))
-                throw new ArgumentException($"'{nameof(subDirectoryName1)}' must not be null or empty.", nameof(subDirectoryName1));
-            if (String.IsNullOrEmpty(subDirectoryName2))
-                throw new ArgumentException($"'{nameof(subDirectoryName2)}' must not be null or empty.", nameof(subDirectoryName2));
-            if (String.IsNullOrEmpty(subDirectoryName3))
-                throw new ArgumentException($"'{nameof(subDirectoryName3)}' must not be null or empty.", nameof(subDirectoryName3));
-
-            _directory.Refresh();
-            try
-            {
-                return new DirectoryPath(Path.Combine(_directory.FullName, subDirectoryName1, subDirectoryName2, subDirectoryName3));
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            ArgumentException.ThrowIfNullOrEmpty(subDirectoryName1);
+            ArgumentException.ThrowIfNullOrEmpty(subDirectoryName2);
+            ArgumentException.ThrowIfNullOrEmpty(subDirectoryName3);
+            return new DirectoryPath(Path.Combine(FullName, subDirectoryName1, subDirectoryName2, subDirectoryName3));
         }
 
         public DirectoryPath GetSubDirectory(params String[] subDirectoryNames)
         {
-            if (subDirectoryNames is null)
-                throw new ArgumentNullException(nameof(subDirectoryNames));
+            ArgumentNullException.ThrowIfNull(subDirectoryNames);
 
             var pathElements = new String[subDirectoryNames.Length + 1];
-            pathElements[0] = _directory.FullName;
+            pathElements[0] = FullName;
             for (var index = 0; index < subDirectoryNames.Length; ++index)
             {
-                if (String.IsNullOrEmpty(subDirectoryNames[index]))
-                    throw new ArgumentException($"'{nameof(subDirectoryNames)}[{index}]' must not be null or empty.", nameof(subDirectoryNames));
+                ArgumentException.ThrowIfNullOrEmpty(subDirectoryNames[index], $"subDirectoryNames[{index}]");
                 pathElements[index + 1] = subDirectoryNames[index];
             }
 
-            _directory.Refresh();
-            try
-            {
-                return new DirectoryPath(Path.Combine(pathElements));
-            }
-            finally
-            {
-                _directory.Refresh();
-            }
+            return new DirectoryPath(Path.Combine(pathElements));
         }
 
         public void MoveTo(DirectoryPath destinationDirectory)
         {
-            if (destinationDirectory is null)
-                throw new ArgumentNullException(nameof(destinationDirectory));
+            ArgumentNullException.ThrowIfNull(destinationDirectory);
 
-            _directory.Refresh();
-            destinationDirectory.Refresh();
-            try
-            {
-                Directory.Move(_directory.FullName, destinationDirectory.FullName);
-            }
-            finally
-            {
-                _directory.Refresh();
-                destinationDirectory.Refresh();
-#if DEBUG
-                ValidationPath();
-                destinationDirectory.ValidationPath();
-#endif
-            }
+            Directory.Move(FullName, destinationDirectory.FullName);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator DirectoryInfo(DirectoryPath path)
         {
-            if (path is null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
-            return new(path._directory.FullName);
+            return new(path.FullName);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator DirectoryPath(DirectoryInfo directory)
         {
-            if (directory is null)
-                throw new ArgumentNullException(nameof(directory));
+            ArgumentNullException.ThrowIfNull(directory);
 
             return new(new DirectoryInfo(directory.FullName));
         }
 
-        /// <remarks>
-        /// The same instance as the object indicated by parameter <paramref name="directory"/> must not be used elsewhere.
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DirectoryPath CreateInstance(DirectoryInfo directory) => new(directory);
+        protected override DateTime InternalCreationTimeUtc
+        {
+            get => Directory.GetCreationTimeUtc(FullName);
+            set => Directory.SetCreationTimeUtc(FullName, value);
+        }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override DateTime InternalLastAccessTimeUtc
+        {
+            get => Directory.GetLastAccessTimeUtc(FullName);
+            set => Directory.SetLastAccessTimeUtc(FullName, value);
+        }
+
+        protected override DateTime InternalLastWriteTimeUtc
+        {
+            get => Directory.GetLastWriteTimeUtc(FullName);
+            set => Directory.SetLastWriteTime(FullName, value);
+        }
+
         private static DirectoryInfo GetDirectoryInfo(String path)
         {
             if (String.IsNullOrEmpty(path))
@@ -472,20 +347,20 @@ namespace Palmtree.IO
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"A character string that cannot be used as a directory path name was specified. : \"{path}\"", nameof(path), ex);
+                throw new ArgumentException($"A string that cannot be used as a directory path name is specified. : {nameof(path)}=\"{path}\"", nameof(path), ex);
             }
         }
 
-        [GeneratedRegex(@"^(?<driveLetter>[a-zA-Z]):\\$", RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^(?<driveLetter>[a-zA-Z]):\\$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetDosRootPathPattern();
 
-        [GeneratedRegex(@"^\\\\(?<serverName>[^\\]+)\\(?<sharedResourceName>[^\\]+)$", RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^\\\\(?<serverName>[^\\]+)\\(?<sharedResourceName>[^\\]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetUncRootPathPattern();
 
-        [GeneratedRegex(@"^\\\\(?<prefix>[\.\?])\\(((?<driveLetter>[a-z]):)|(Volume(?<guid>{[\da-f]+-[\da-f]+-[\da-f]+-[\da-f]+-[\da-f]+}))|(?<bootPartition>BootPartition))\\$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^\\\\(?<prefix>[\.\?])\\(((?<driveLetter>[a-z]):)|(Volume(?<guid>{[\da-f]+-[\da-f]+-[\da-f]+-[\da-f]+-[\da-f]+}))|(?<bootPartition>BootPartition))\\$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetDosDeviceRootPathPattern();
 
-        [GeneratedRegex(@"^\\\\(?<prefix>[\.\?])\\UNC\\(?<serverName>[^\\]+)\\(?<sharedResourceName>[^\\]+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^\\\\(?<prefix>[\.\?])\\UNC\\(?<serverName>[^\\]+)\\(?<sharedResourceName>[^\\]+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetUncLinkPattern();
     }
 }

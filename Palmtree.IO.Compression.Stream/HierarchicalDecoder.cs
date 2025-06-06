@@ -26,10 +26,8 @@ namespace Palmtree.IO.Compression.Stream
             Boolean leaveOpen,
             Func<ISequentialInputByteStream, ISequentialInputByteStream> decoderStreamCreator)
         {
-            if (baseStream is null)
-                throw new ArgumentNullException(nameof(baseStream));
-            if (decoderStreamCreator is null)
-                throw new ArgumentNullException(nameof(decoderStreamCreator));
+            ArgumentNullException.ThrowIfNull(baseStream);
+            ArgumentNullException.ThrowIfNull(decoderStreamCreator);
 
             _comprssedStreamProcessedCount = new ValueHolder<UInt64>();
             _uncomprssedStreamProcessedCount = new ValueHolder<UInt64>();

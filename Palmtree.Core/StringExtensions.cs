@@ -15,14 +15,14 @@ namespace Palmtree
         static StringExtensions()
         {
 #if DEBUG
-            Validation.Assert('\u0007' == '\a', "'\u0007' == '\a'");
-            Validation.Assert('\u0008' == '\b', "'\u0008' == '\b'");
-            Validation.Assert('\u0009' == '\t', "'\u0009' == '\t'");
-            Validation.Assert('\u000a' == '\n', "'\u000a' == '\n'");
-            Validation.Assert('\u000b' == '\v', "'\u000b' == '\v'");
-            Validation.Assert('\u000c' == '\f', "'\u000c' == '\f'");
-            Validation.Assert('\u000c' == '\f', "'\u000c' == '\f'");
-            Validation.Assert('\u000d' == '\r', "'\u000d' == '\r'");
+            Validation.Assert('\u0007' == '\a');
+            Validation.Assert('\u0008' == '\b');
+            Validation.Assert('\u0009' == '\t');
+            Validation.Assert('\u000a' == '\n');
+            Validation.Assert('\u000b' == '\v');
+            Validation.Assert('\u000c' == '\f');
+            Validation.Assert('\u000c' == '\f');
+            Validation.Assert('\u000d' == '\r');
 #endif
         }
 
@@ -45,8 +45,8 @@ namespace Palmtree
         /// </exception>
         public static Int32 IndexOfNot(this String s, Char c, Int32 startIndex = 0)
         {
-            if (startIndex < 0 || startIndex > s.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, s.Length);
 
             for (var index = startIndex; index < s.Length; ++index)
             {
@@ -95,8 +95,8 @@ namespace Palmtree
         /// </exception>
         public static Int32 IndexOfNotAny(this String s, Char[] characters, Int32 startIndex = 0)
         {
-            if (startIndex < 0 || startIndex > s.Length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, s.Length);
 
             for (var index = startIndex; index < s.Length; ++index)
             {
@@ -113,10 +113,8 @@ namespace Palmtree
 
         public static IEnumerable<String> ChunkAsString(this IEnumerable<Char> source, Int32 count)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-            if (count <= 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 
             var sb = new StringBuilder();
             foreach (var c in source)
@@ -136,10 +134,9 @@ namespace Palmtree
 
         public static ReadOnlyMemory<Char> Slice(this String sourceString, Int32 offset)
         {
-            if (sourceString is null)
-                throw new ArgumentNullException(nameof(sourceString));
-            if (!offset.IsBetween(0, sourceString.Length))
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceString);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceString.Length);
 
             return (ReadOnlyMemory<Char>)sourceString[offset..].ToCharArray();
         }
@@ -147,34 +144,28 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<Char> Slice(this String sourceString, UInt32 offset)
         {
-            if (sourceString is null)
-                throw new ArgumentNullException(nameof(sourceString));
-            if (checked((Int32)offset) > sourceString.Length)
-                throw new ArgumentOutOfRangeException(nameof(offset));
+            ArgumentNullException.ThrowIfNull(sourceString);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceString.Length);
 
             return sourceString.Slice(checked((Int32)offset));
         }
 
         public static ReadOnlyMemory<Char> Slice(this String sourceString, Range range)
         {
-            if (sourceString is null)
-                throw new ArgumentNullException(nameof(sourceString));
+            ArgumentNullException.ThrowIfNull(sourceString);
             var sourceArray = sourceString.ToCharArray();
 
-            var (offset, count) = sourceArray.GetOffsetAndLength(range, nameof(range));
+            var (offset, count) = sourceArray.GetOffsetAndLength(range);
             return sourceString.Substring(offset, count).ToCharArray();
         }
 
         public static ReadOnlyMemory<Char> Slice(this String sourceString, Int32 offset, Int32 count)
         {
-            if (sourceString is null)
-                throw new ArgumentNullException(nameof(sourceString));
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (checked(count + offset) > sourceString.Length)
-                throw new ArgumentException($"The specified range ({nameof(offset)} and {nameof(count)}) is not within the {nameof(sourceString)}.");
+            ArgumentNullException.ThrowIfNull(sourceString);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, sourceString.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceString.Length - offset);
 
             return (ReadOnlyMemory<Char>)sourceString.Substring(offset, count).ToCharArray();
         }
@@ -191,8 +182,7 @@ namespace Palmtree
         /// <returns>エンコードされた文字列です。</returns>
         public static String JsonEncode(this String s)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(s);
 
             return
                 String.Concat(
@@ -220,8 +210,7 @@ namespace Palmtree
         /// <returns>エンコードされた文字列です。</returns>
         public static String CSharpEncode(this String s)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(s);
 
             return
                 String.Concat(
@@ -266,8 +255,7 @@ namespace Palmtree
         /// </remarks>
         public static String EncodeCommandLineArgument(this String arg)
         {
-            if (arg is null)
-                throw new ArgumentNullException(nameof(arg));
+            ArgumentNullException.ThrowIfNull(arg);
 
             arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
             if (arg.Length > 0 && arg.IndexOfAny(_delimiterOfCommandParameters) < 0)
@@ -298,8 +286,7 @@ namespace Palmtree
         /// </remarks>
         public static String DecodeCommandLineArgument(this String arg)
         {
-            if (arg is null)
-                throw new ArgumentNullException(nameof(arg));
+            ArgumentNullException.ThrowIfNull(arg);
 
             try
             {
@@ -367,8 +354,7 @@ namespace Palmtree
         /// </remarks>
         public static IEnumerable<(String element, Int32 start, Int32 end)> SplitCommandLineArguments(this String commandLine)
         {
-            if (commandLine is null)
-                throw new ArgumentNullException(nameof(commandLine));
+            ArgumentNullException.ThrowIfNull(commandLine);
 
             var first = true;
             for (var index = 0; index < commandLine.Length;)
@@ -391,7 +377,7 @@ namespace Palmtree
                 yield return (element, start, index);
             }
 
-            static int GetToken(String commandLine, int startAt, out string token)
+            static Int32 GetToken(String commandLine, Int32 startAt, out String token)
             {
                 try
                 {
@@ -443,8 +429,7 @@ namespace Palmtree
         [SupportedOSPlatform("windows")]
         public static String CommandPromptCommandLineArgumentEncode(this String arg)
         {
-            if (arg is null)
-                throw new ArgumentNullException(nameof(arg));
+            ArgumentNullException.ThrowIfNull(arg);
 
             arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^$1");
             arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
@@ -465,8 +450,7 @@ namespace Palmtree
         /// </returns>
         public static String ToNarrow(this String s)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(s);
 
             var sb = new StringBuilder();
             foreach (var c in s)
@@ -524,8 +508,7 @@ namespace Palmtree
         /// <returns>エンコードされた文字列です。</returns>
         public static String WindowsFileNameEncoding(this String s)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(s);
 
             var pathName =
                 String.Concat(
@@ -707,24 +690,19 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static String GetString(this Encoding encoding, ReadOnlyMemory<Byte> bytes)
         {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
+            ArgumentNullException.ThrowIfNull(encoding);
 
             return encoding.GetString(bytes.Span);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlyMemory<Byte> GetReadOnlyBytes(this Encoding encoding, String s)
         {
-            if (encoding is null)
-                throw new ArgumentNullException(nameof(encoding));
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
+            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentNullException.ThrowIfNull(s);
 
             return encoding.GetBytes(s);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 SkipCommandLineDelimiter(this String commandLine, Int32 startAt)
         {
             var nextPos = commandLine.IndexOfNotAny(_delimiterOfCommandParameters, startAt);
@@ -771,13 +749,13 @@ namespace Palmtree
         /// <item>このメソッドでは、必要最低限のデコードのみをサポートしています。各種シェル (コマンドプロンプトやPowerShellを含む) 固有のデコードが必要な場合には別途行ってください。</item>
         /// </list>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Int32 ParseCommandLine(this String commandLine, Int32 startAt, out String decodedToken)
         {
-            if (startAt < 0 || startAt > commandLine.Length)
-                throw new ArgumentOutOfRangeException(nameof(startAt));
+            ArgumentOutOfRangeException.ThrowIfNegative(startAt);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startAt, commandLine.Length);
             if (startAt < commandLine.Length && (commandLine[startAt] == ' ' || commandLine[startAt] == '\t'))
                 throw new InvalidOperationException("The character at the start of parsing is a space or a TAB.");
+
             var index = startAt;
             var quoted = false;
             var token = new StringBuilder();
@@ -881,26 +859,21 @@ namespace Palmtree
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Boolean CharacterEqual(Char c1, Char c2, Boolean ignoreCase)
             => ignoreCase ?
                 Char.ToUpperInvariant(c1) == Char.ToUpperInvariant(c2)
                 : c1 == c2;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"([\?!]*\?[\?!]*)", RegexOptions.Compiled)]
+        [GeneratedRegex(@"([\?!]*\?[\?!]*)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"(&|<|>|\^|\|)", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(&|<|>|\^|\|)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetCharacterEscapedAtCaretPattern();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"(\\*)""", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(\\*)""", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetBackSlashAndDoubleQuotePattern();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GeneratedRegex(@"(\\+)$", RegexOptions.Compiled)]
+        [GeneratedRegex(@"(\\+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetEndsWithBackSlashPattern();
     }
 }

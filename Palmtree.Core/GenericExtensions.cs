@@ -819,8 +819,7 @@ namespace Palmtree
         public static Boolean IsAnyOf<VALUE1_T, VALUE2_T>(this VALUE1_T value, params VALUE2_T[] otherValues)
             where VALUE1_T : IEquatable<VALUE2_T>
         {
-            if (otherValues is null)
-                throw new ArgumentNullException(nameof(otherValues));
+            ArgumentNullException.ThrowIfNull(otherValues);
 
             if (value is null)
             {
@@ -1224,8 +1223,7 @@ namespace Palmtree
         [return: MaybeNull, NotNullIfNotNull(nameof(x)), NotNullIfNotNull(nameof(y))]
         public static VALUE_T Minimum<VALUE_T>([AllowNull] this VALUE_T x, [AllowNull] VALUE_T y, IComparer<VALUE_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return comparer.Compare(x, y) < 0 ? x : y;
         }
@@ -1302,8 +1300,7 @@ namespace Palmtree
         [return: MaybeNull, NotNullIfNotNull(nameof(x)), NotNullIfNotNull(nameof(y))]
         public static VALUE_T Maximum<VALUE_T>([AllowNull] this VALUE_T x, [AllowNull] VALUE_T y, IComparer<VALUE_T> comparer)
         {
-            if (comparer is null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(comparer);
 
             return comparer.Compare(x, y) > 0 ? x : y;
         }
@@ -1315,8 +1312,7 @@ namespace Palmtree
         public static VALUE_T Duplicate<VALUE_T>(this VALUE_T value)
             where VALUE_T : ICloneable<VALUE_T>
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
 
             return value.Clone();
         }

@@ -15,14 +15,14 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 MakeUInt32LESignature(Char c0, Char c1, Char c2, Char c3)
         {
-            if (c0 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c0));
-            if (c1 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c1));
-            if (c2 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c2));
-            if (c3 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c3));
+            ArgumentOutOfRangeException.ThrowIfLessThan(c0, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c0, '\xff');
+            ArgumentOutOfRangeException.ThrowIfLessThan(c1, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c1, '\xff');
+            ArgumentOutOfRangeException.ThrowIfLessThan(c2, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c2, '\xff');
+            ArgumentOutOfRangeException.ThrowIfLessThan(c3, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c3, '\xff');
 
             return
                 (UInt32)(Byte)c0 << (8 * 0)
@@ -41,14 +41,14 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 MakeUInt32BESignature(Char c0, Char c1, Char c2, Char c3)
         {
-            if (c0 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c0));
-            if (c1 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c1));
-            if (c2 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c2));
-            if (c3 is < '\x00' or > '\xff')
-                throw new ArgumentOutOfRangeException(nameof(c3));
+            ArgumentOutOfRangeException.ThrowIfLessThan(c0, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c0, '\xff');
+            ArgumentOutOfRangeException.ThrowIfLessThan(c1, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c1, '\xff');
+            ArgumentOutOfRangeException.ThrowIfLessThan(c2, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c2, '\xff');
+            ArgumentOutOfRangeException.ThrowIfLessThan(c3, '\x00');
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(c3, '\xff');
 
             return
                 (UInt32)(Byte)c0 << (8 * 3)

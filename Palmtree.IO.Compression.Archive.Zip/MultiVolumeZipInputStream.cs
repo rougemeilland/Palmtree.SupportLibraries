@@ -9,7 +9,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
     /// <summary>
     /// 一般的なスタイルのマルチボリューム ZIP アーカイブ の仮想ストリームのクラスです。
     /// </summary>
-    internal class MultiVolumeZipInputStream
+    internal sealed class MultiVolumeZipInputStream
            : ZipInputStream
     {
         private const Int32 _STREAM_CACHE_CAPACITY = 8;
@@ -25,7 +25,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         private MultiVolumeZipInputStream(VolumeDiskCollection volumeDisks, Func<UInt32, FilePath> volumeDiskFileGetter, ValidationStringency stringency)
         {
-            Validation.Assert(volumeDisks.LastVolumeDiskNumber > 0, "volumeDisks.LastVolumeDiskNumber > 0");
+            Validation.Assert(volumeDisks.LastVolumeDiskNumber > 0);
             _volumeDisks = volumeDisks;
             _volumeDiskFileGetter = volumeDiskFileGetter;
             _stringency = stringency;
@@ -62,7 +62,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             // (例: PKZIP によって作成された ZIP アーカイブなど。)
             // その場合は、Seek は正常に実行し、次の GetCurrentStream() の呼び出し時に次のボリュームに遷移しなければなりません。(最後のディスクの終端を指している場合を除く)
 
-            Validation.Assert(offsetOnTheDisk <= GetVolumeDiskSize(diskNumber), "offsetOnTheDisk > GetVolumeDiskSize(diskNumber)");
+            Validation.Assert(offsetOnTheDisk <= GetVolumeDiskSize(diskNumber));
             ThrowExceptionIfLocked();
             _currentVolumeDiskNumber = diskNumber;
             GetCurrentVolumeDiskStream().Seek(offsetOnTheDisk);
@@ -102,13 +102,13 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
         protected override void LockVolumeDiskCore()
         {
-            Validation.Assert(!_isLocked, "!_isLocked");
+            Validation.Assert(!_isLocked);
             _isLocked = true;
         }
 
         protected override void UnlockVolumeDiskCore()
         {
-            Validation.Assert(_isLocked, "_isLocked");
+            Validation.Assert(_isLocked);
             _isLocked = false;
         }
 
@@ -211,11 +211,11 @@ namespace Palmtree.IO.Compression.Archive.Zip
             try
             {
                 var ok = _volumeDisks.TryGetVolumeDiskSize(volumeDiskNumber, out var volumeDiskSize);
-                Validation.Assert(ok == true, "ok == true");
+                Validation.Assert(ok == true);
                 var volumeDiskFile = _volumeDiskFileGetter(volumeDiskNumber);
                 try
                 {
-                    stream = volumeDiskFile.OpenRead(FileShare.None).WithCache();
+                    stream = volumeDiskFile.OpenRead().WithCache();
                 }
                 catch (Exception ex)
                 {
@@ -246,7 +246,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private UInt64 GetVolumeDiskSize(UInt32 diskNumber)
         {
             var ok = _volumeDisks.TryGetVolumeDiskSize(diskNumber, out var volumeDiskSize);
-            Validation.Assert(ok == true, "ok == true");
+            Validation.Assert(ok == true);
             return volumeDiskSize;
         }
 
