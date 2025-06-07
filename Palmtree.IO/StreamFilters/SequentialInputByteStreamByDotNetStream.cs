@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Palmtree.IO.StreamFilters
 {
     internal sealed class SequentialInputByteStreamByDotNetStream
-        : SequentialInputByteStream
+        : SequentialInputByteStream, IDirectDotNetStreamWrapper
     {
         private readonly Stream _baseStream;
         private readonly Boolean _leaveOpen;
@@ -64,6 +64,16 @@ namespace Palmtree.IO.StreamFilters
             }
 
             await base.DisposeAsyncCore().ConfigureAwait(false);
+        }
+
+        Stream IDirectDotNetStreamWrapper.BaseStream
+        {
+            get
+            {
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
+
+                return _baseStream;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal sealed class BranchOutputStream
+    internal sealed class SequentialOutputByteStreamWithBranch
         : SequentialOutputByteStream
     {
         private readonly ISequentialOutputByteStream _baseStream1;
@@ -12,7 +12,7 @@ namespace Palmtree.IO.StreamFilters
         private readonly Boolean _leaveOpen;
         private Boolean _isDisposed;
 
-        public BranchOutputStream(ISequentialOutputByteStream baseStream1, ISequentialOutputByteStream baseStream2, Boolean leaveOpen)
+        public SequentialOutputByteStreamWithBranch(ISequentialOutputByteStream baseStream1, ISequentialOutputByteStream baseStream2, Boolean leaveOpen)
         {
             _baseStream1 = baseStream1;
             _baseStream2 = baseStream2;

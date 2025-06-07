@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Palmtree.IO.StreamFilters
 {
     internal sealed class DotNetStreamWithEndAction
-        : Stream
+        : Stream, IDirectDotNetStreamWrapper
     {
         private readonly Stream _baseStream;
         private readonly Action _endAction;
@@ -25,11 +25,9 @@ namespace Palmtree.IO.StreamFilters
         public override Boolean CanSeek => _baseStream.CanSeek;
         public override Boolean CanTimeout => _baseStream.CanTimeout;
         public override Boolean CanWrite => _baseStream.CanWrite;
-        public override Boolean Equals(Object? obj) => _baseStream.Equals(obj);
         public override IAsyncResult BeginRead(Byte[] buffer, Int32 offset, Int32 count, AsyncCallback? callback, Object? state) => _baseStream.BeginRead(buffer, offset, count, callback, state);
         public override IAsyncResult BeginWrite(Byte[] buffer, Int32 offset, Int32 count, AsyncCallback? callback, Object? state) => _baseStream.BeginWrite(buffer, offset, count, callback, state);
         public override Int32 EndRead(IAsyncResult asyncResult) => _baseStream.EndRead(asyncResult);
-        public override Int32 GetHashCode() => _baseStream.GetHashCode();
         public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count) => _baseStream.Read(buffer, offset, count);
         public override Int32 Read(Span<Byte> buffer) => _baseStream.Read(buffer);
         public override Int32 ReadByte() => _baseStream.ReadByte();
@@ -38,22 +36,12 @@ namespace Palmtree.IO.StreamFilters
         public override Int64 Length => _baseStream.Length;
         public override Int64 Position { get => _baseStream.Position; set => _baseStream.Position = value; }
         public override Int64 Seek(Int64 offset, SeekOrigin origin) => _baseStream.Seek(offset, origin);
-        public override String ToString() => _baseStream.ToString() ?? GetType().FullName ?? "???";
         public override Task CopyToAsync(Stream destination, Int32 bufferSize, CancellationToken cancellationToken) => _baseStream.CopyToAsync(destination, bufferSize, cancellationToken);
         public override Task FlushAsync(CancellationToken cancellationToken) => _baseStream.FlushAsync(cancellationToken);
         public override Task WriteAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => _baseStream.WriteAsync(buffer, offset, count, cancellationToken);
         public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => _baseStream.ReadAsync(buffer, offset, count, cancellationToken);
-
-        public override async ValueTask DisposeAsync()
-        {
-            Dispose(false);
-            await base.DisposeAsync();
-            GC.SuppressFinalize(this);
-        }
-
         public override ValueTask WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default) => _baseStream.WriteAsync(buffer, cancellationToken);
         public override ValueTask<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default) => _baseStream.ReadAsync(buffer, cancellationToken);
-        public override void Close() => base.Close();
         public override void CopyTo(Stream destination, Int32 bufferSize) => _baseStream.CopyTo(destination, bufferSize);
         public override void EndWrite(IAsyncResult asyncResult) => _baseStream.EndWrite(asyncResult);
         public override void Flush() => _baseStream.Flush();
@@ -84,6 +72,16 @@ namespace Palmtree.IO.StreamFilters
             }
 
             base.Dispose(disposing);
+        }
+
+        Stream IDirectDotNetStreamWrapper.BaseStream
+        {
+            get
+            {
+                ObjectDisposedException.ThrowIf(_isDisposed, this);
+
+                return _baseStream;
+            }
         }
     }
 }

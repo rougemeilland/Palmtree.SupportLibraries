@@ -8,7 +8,7 @@ namespace Experiment.CSharp
     internal sealed partial class Program
     {
         [SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var path = Path.Combine(Environment.CurrentDirectory, "work.dat");
             var originalText1 = "<<Data Block 1>>";

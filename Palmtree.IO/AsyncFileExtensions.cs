@@ -315,10 +315,6 @@ namespace Palmtree.IO
             return sourceFile.OpenRead().CalculateCrc32Async(progress, cancellationToken);
         }
 
-#if NET8_0_OR_GREATER
-#else
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2016:'CancellationToken' パラメーターをメソッドに転送する", Justification = "<保留中>")]
-#endif
         private static async Task InternalWriteAllLinesAsync(String fileFullPath, IAsyncEnumerable<String> lines, Encoding encoding, CancellationToken cancellationToken)
         {
             var writer = new StreamWriter(fileFullPath, false, encoding);
@@ -334,11 +330,7 @@ namespace Palmtree.IO
                     }
                 }
 
-#if NET8_0_OR_GREATER
                 await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
-#else
-                await writer.FlushAsync().ConfigureAwait(false);
-#endif
             }
         }
     }

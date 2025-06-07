@@ -910,7 +910,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
                 var tempraryFileStream =
                     (packedOutputStream is not null
-                        ? outputStrem.Branch(packedOutputStream)
+                        ? outputStrem.WithBranch(packedOutputStream)
                         : progress is null
                         ? outputStrem
                         : outputStrem.WithProgression(new SimpleProgress<UInt64>(value => progress.Report((value / 2, value / 2)))))

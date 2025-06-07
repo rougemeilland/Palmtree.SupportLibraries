@@ -184,6 +184,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         /// <value>
         /// テキストの出力先を示す <see cref="ConsoleTextWriterType"/> 値です。
+        /// 既定値は <see cref="ConsoleTextWriterType.None"/> です。
         /// </value>
         /// <remarks>
         /// </remarks>

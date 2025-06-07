@@ -32,22 +32,22 @@ namespace Palmtree.IO
 #if _SLEEP_BETWEEN_RETRIES
         private static readonly TimeSpan _INTERVAL_TIME_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = TimeSpan.FromMilliseconds(1);
 #endif
-        private static readonly Random _randomNumberGeneratorForTemporaryFileName;
-        private static readonly Char[] _temporaryFileNameMap;
+        private static readonly Random _randomNumberGeneratorForUniqueFileName;
+        private static readonly Char[] _uniqueFileNameMap;
 
         static FilePath()
         {
-            _randomNumberGeneratorForTemporaryFileName = new Random(Environment.TickCount);
-            _temporaryFileNameMap = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v' };
+            _randomNumberGeneratorForUniqueFileName = new Random(Environment.TickCount);
+            _uniqueFileNameMap = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v' };
 #if DEBUG
-            // _temporaryFileNameMap の要素が数字あるいは英小文字のみであることの確認
-            Validation.Assert(_temporaryFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z'));
+            // _uniqueFileNameMap の要素が数字あるいは英小文字のみであることの確認
+            Validation.Assert(_uniqueFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z'));
 
-            // _temporaryFileNameMap の配列の長さが 32 であることの確認
-            Validation.Assert(_temporaryFileNameMap.Length == 32);
+            // _uniqueFileNameMap の配列の長さが 32 であることの確認
+            Validation.Assert(_uniqueFileNameMap.Length == 32);
 
-            // _temporaryFileNameMap の要素が重複していないことの確認
-            Validation.Assert(_temporaryFileNameMap.Distinct().Count() == 32);
+            // _uniqueFileNameMap の要素が重複していないことの確認
+            Validation.Assert(_uniqueFileNameMap.Distinct().Count() == 32);
 #endif
         }
 
@@ -121,33 +121,22 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(prefix);
             ArgumentNullException.ThrowIfNull(suffix);
 
-            // 乱数を生成してパス名を決定する。
-            // 乱数の範囲は [0..2^31-1] で 31 ビットで表現できる。
-            // そのうちそれぞれ 5 ビットずつを 1 文字に変換し、合計 30 ビットを6文字に変換する。
-
-            var tempFileNameBuilder = new StringBuilder(prefix.Length + 6 + suffix.Length);
-            var getTempDir = Path.GetTempPath();
-            var retryCount = 0;
-            while (true)
+            var temporaryDirectoryPath = Path.GetTempPath();
+            try
             {
-                var randomNumber = _randomNumberGeneratorForTemporaryFileName.Next();
-                _ = tempFileNameBuilder.Clear();
-                _ = tempFileNameBuilder.Append(prefix);
-                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 25) & 0x1f]);
-                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 20) & 0x1f]);
-                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 15) & 0x1f]);
-                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 10) & 0x1f]);
-                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 5) & 0x1f]);
-                _ = tempFileNameBuilder.Append(_temporaryFileNameMap[(randomNumber >> 0) & 0x1f]);
-                _ = tempFileNameBuilder.Append(suffix);
-
-                var path = Path.Combine(getTempDir, tempFileNameBuilder.ToString());
-                var tempFilePath =
-                    TryToCreateFilePath(path)
-                    ?? throw new ArgumentException($"Can't create temporary file. Probably parameter 'prefix' or parameter 'suffix' contains invalid characters.: {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"");
-                if (TryToCreateTemporaryFile(tempFilePath.FullName, retryCount))
-                    return tempFilePath;
-                ++retryCount;
+                return CreateUniqueFile(temporaryDirectoryPath, prefix, suffix);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"A temporary file could not be created.: directory=\"{temporaryDirectoryPath}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
+            }
+            catch (IOException ex)
+            {
+                throw new IOException($"A temporary file could not be created.: directory=\"{temporaryDirectoryPath}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"A unitemporaryque file could not be created.: directory=\"{temporaryDirectoryPath}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
             }
         }
 
@@ -253,6 +242,37 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(file);
 
             return new(file.FullName);
+        }
+
+        internal static FilePath CreateUniqueFile(String baseDirectoryPath, String prefix, String suffix)
+        {
+            // 乱数を生成してパス名を決定する。
+            // 乱数の範囲は [0..2^31-1] で 31 ビットで表現できる。
+            // そのうちそれぞれ 5 ビットずつを 1 文字に変換し、合計 30 ビットを6文字に変換する。
+
+            var uniqueFileNameBuilder = new StringBuilder(prefix.Length + 6 + suffix.Length);
+            var retryCount = 0;
+            while (true)
+            {
+                var randomNumber = _randomNumberGeneratorForUniqueFileName.Next();
+                _ = uniqueFileNameBuilder.Clear();
+                _ = uniqueFileNameBuilder.Append(prefix);
+                _ = uniqueFileNameBuilder.Append(_uniqueFileNameMap[(randomNumber >> 25) & 0x1f]);
+                _ = uniqueFileNameBuilder.Append(_uniqueFileNameMap[(randomNumber >> 20) & 0x1f]);
+                _ = uniqueFileNameBuilder.Append(_uniqueFileNameMap[(randomNumber >> 15) & 0x1f]);
+                _ = uniqueFileNameBuilder.Append(_uniqueFileNameMap[(randomNumber >> 10) & 0x1f]);
+                _ = uniqueFileNameBuilder.Append(_uniqueFileNameMap[(randomNumber >> 5) & 0x1f]);
+                _ = uniqueFileNameBuilder.Append(_uniqueFileNameMap[(randomNumber >> 0) & 0x1f]);
+                _ = uniqueFileNameBuilder.Append(suffix);
+
+                var path = Path.Combine(baseDirectoryPath, uniqueFileNameBuilder.ToString());
+                var uniqueFilePath =
+                    TryToCreateFilePath(path)
+                    ?? throw new ArgumentException($"Can't create unique file. Probably parameter 'prefix' or parameter 'suffix' contains invalid characters.: {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"");
+                if (TryToCreateUniqueFile(uniqueFilePath.FullName, retryCount))
+                    return uniqueFilePath;
+                ++retryCount;
+            }
         }
 
         protected override DateTime InternalCreationTimeUtc
@@ -472,10 +492,18 @@ namespace Palmtree.IO
             }
         }
 
-        static Boolean TryToCreateTemporaryFile(String tempFilePath, Int32 retryCount)
+        private static Boolean TryToCreateUniqueFile(String tempFilePath, Int32 retryCount)
         {
             if (retryCount < 100)
-                return TryToCreateTemporaryFile(tempFilePath);
+            {
+                // 総試行回数が 100 回以下の場合
+
+                // ユニークな名前のファイルの作成を試みる
+                return TryToCreateUniqueFile(tempFilePath);
+            }
+
+            // 総試行回数が 100 を超えた場合
+            // この先のルートは new FileStream() で例外が発生することがほぼ確定している。
 
             var stream = (Stream?)null;
             try
@@ -489,11 +517,12 @@ namespace Palmtree.IO
             }
         }
 
-        private static Boolean TryToCreateTemporaryFile(String tempFilePath)
+        private static Boolean TryToCreateUniqueFile(String tempFilePath)
         {
             var normalizedPath = NormalizePath(tempFilePath);
             if (OperatingSystem.IsWindows())
             {
+                // Windows 
                 var handle =
                     InterOpForWindows.CreateFile(
                         normalizedPath,

@@ -54,6 +54,26 @@ namespace Palmtree.IO
             return this;
         }
 
+        public FilePath CreateUniqueFile(String prefix = ".tmp", String suffix = ".tmp")
+        {
+            try
+            {
+                return FilePath.CreateUniqueFile(FullName, prefix, suffix);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"A unique file could not be created.: directory=\"{FullName}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
+            }
+            catch (IOException ex)
+            {
+                throw new IOException($"A unique file could not be created.: directory=\"{FullName}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"A unique file could not be created.: directory=\"{FullName}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
+            }
+        }
+
         public static DirectoryPath CreateTemporaryDirectory() => new(Directory.CreateTempSubdirectory());
 
         public void Delete(Boolean recursive = false) => Directory.Delete(FullName, recursive);

@@ -7,7 +7,7 @@ namespace Test.Zip.Timestamp
 {
     internal sealed class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // 組み合わせ
             // ・LastWrite/LastAccess/Creation

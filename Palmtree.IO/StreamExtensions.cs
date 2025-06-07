@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -276,7 +275,11 @@ namespace Palmtree.IO
         {
             ArgumentNullException.ThrowIfNull(sourceStream);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, _defaultTextStreamEncoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Boolean leaveOpen = false)
@@ -284,14 +287,22 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(sourceStream);
             ArgumentNullException.ThrowIfNull(encoding);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), encoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, encoding, true, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Boolean detectEncodingFromByteOrderMarks, Boolean leaveOpen = false)
         {
             ArgumentNullException.ThrowIfNull(sourceStream);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Boolean leaveOpen = false)
@@ -299,7 +310,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(sourceStream);
             ArgumentNullException.ThrowIfNull(encoding);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), encoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, encoding, detectEncodingFromByteOrderMarks, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Int32 bufferSize, Boolean leaveOpen = false)
@@ -307,7 +322,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(sourceStream);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, true, bufferSize, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, _defaultTextStreamEncoding, true, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Int32 bufferSize, Boolean leaveOpen = false)
@@ -316,7 +335,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(encoding);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), encoding, true, bufferSize, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, encoding, true, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize, Boolean leaveOpen = false)
@@ -324,7 +347,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(sourceStream);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, _defaultTextStreamEncoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
         }
 
         public static TextReader AsTextReader(this ISequentialInputByteStream sourceStream, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize, Boolean leaveOpen = false)
@@ -333,7 +360,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(encoding);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamReader(sourceStream.AsDotNetStream(), encoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
+            var dotNetStream =
+                sourceStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : sourceStream.AsDotNetStream();
+            return new StreamReader(dotNetStream, encoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen);
         }
 
         #endregion
@@ -424,7 +455,11 @@ namespace Palmtree.IO
         {
             ArgumentNullException.ThrowIfNull(destinationStream);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, _defaultTextStreamEncoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Boolean leaveOpen = false)
@@ -432,7 +467,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(destinationStream);
             ArgumentNullException.ThrowIfNull(encoding);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Int32 bufferSize, Boolean leaveOpen = false)
@@ -440,7 +479,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(destinationStream);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, bufferSize, leaveOpen);
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, _defaultTextStreamEncoding, bufferSize, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Int32 bufferSize, Boolean leaveOpen = false)
@@ -449,14 +492,22 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(encoding);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), encoding, bufferSize, leaveOpen);
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, encoding, bufferSize, leaveOpen);
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Boolean autoFlush, Boolean leaveOpen = false)
         {
             ArgumentNullException.ThrowIfNull(destinationStream);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, _defaultTextStreamEncoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Boolean autoFlush, Boolean leaveOpen = false)
@@ -464,7 +515,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(destinationStream);
             ArgumentNullException.ThrowIfNull(encoding);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, encoding, _DEFAULT_TEXT_STREAM_BUFFER_SIZE, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Int32 bufferSize, Boolean autoFlush, Boolean leaveOpen = false)
@@ -472,7 +527,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(destinationStream);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), _defaultTextStreamEncoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, _defaultTextStreamEncoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
         }
 
         public static TextWriter AsTextWriter(this ISequentialOutputByteStream destinationStream, Encoding encoding, Int32 bufferSize, Boolean autoFlush, Boolean leaveOpen = false)
@@ -481,7 +540,11 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(encoding);
             ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-            return new StreamWriter(destinationStream.AsDotNetStream(), encoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
+            var dotNetStream =
+                destinationStream is IDirectDotNetStreamWrapper dotNetDirectWrapperStream
+                ? dotNetDirectWrapperStream.BaseStream
+                : destinationStream.AsDotNetStream();
+            return new StreamWriter(dotNetStream, encoding, bufferSize, leaveOpen) { AutoFlush = autoFlush };
         }
 
         #endregion
@@ -837,14 +900,34 @@ namespace Palmtree.IO
 
         #endregion
 
-        #region Branch
+        #region WithBranch
 
-        public static ISequentialOutputByteStream Branch(this ISequentialOutputByteStream baseStream1, ISequentialOutputByteStream baseStream2, Boolean leaveOpen = false)
+        public static ISequentialOutputByteStream WithBranch(this ISequentialOutputByteStream baseStream1, ISequentialOutputByteStream baseStream2, Boolean leaveOpen = false)
         {
             ArgumentNullException.ThrowIfNull(baseStream1);
             ArgumentNullException.ThrowIfNull(baseStream2);
 
-            return new BranchOutputStream(baseStream1, baseStream2, leaveOpen);
+            return new SequentialOutputByteStreamWithBranch(baseStream1, baseStream2, leaveOpen);
+        }
+
+        public static Stream WithBranch(this Stream baseStream1, Stream baseStream2, Boolean leaveOpen = false)
+        {
+            ArgumentNullException.ThrowIfNull(baseStream1);
+            ArgumentNullException.ThrowIfNull(baseStream2);
+            if (!baseStream1.CanWrite)
+                throw new ArgumentException("Non-writable stream is specified.", nameof(baseStream1));
+            if (!baseStream2.CanWrite)
+                throw new ArgumentException("Non-writable stream is specified.", nameof(baseStream2));
+
+            return new DotNetStreamWithBranch(baseStream1, baseStream2, leaveOpen);
+        }
+
+        public static TextWriter WithBranch(this TextWriter baseStream1, TextWriter baseStream2, Boolean leaveOpen = false)
+        {
+            ArgumentNullException.ThrowIfNull(baseStream1);
+            ArgumentNullException.ThrowIfNull(baseStream2);
+
+            return new TextWriterWithBranch(baseStream1, baseStream2, leaveOpen);
         }
 
         #endregion
