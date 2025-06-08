@@ -28,22 +28,28 @@ namespace Palmtree.IO.Console
         private const Char _alternativeCharacterSetMapMinimumKey = '\u0020';
         private const Char _alternativeCharacterSetMapMaximumKey = '\u007e';
 
-        private static readonly NativeDllNameResolver _dllNameResolver;
-        private static readonly Object _lockObject;
-        private static readonly ConsoleColor _defaultBackgrouongColor;
-        private static readonly ConsoleColor _defaultForegrouongColor;
+        private static readonly NativeDllNameResolver _dllNameResolver = new();
+        private static readonly Object _lockObject = new();
+        private static readonly ConsoleColor _defaultBackgrouongColor = System.Console.BackgroundColor;
+        private static readonly ConsoleColor _defaultForegrouongColor = System.Console.ForegroundColor;
 
         private static TerminalInfo? __thisTerminalInfo;
-        private static Boolean __initializedRedirection;
-        private static IntPtr __consoleOutputHandle;
-        private static Int32 __consoleOutputFileNo;
+        private static Boolean __initializedOutputRedirections;
+        private static IntPtr __consoleOutputHandle = InterOpWindows.INVALID_HANDLE_VALUE;
+        private static Int32 __consoleOutputFileNo = -1;
         private static Char[]? __alternativeCharacterSetMap;
         private static TextWriter? __consoleTextWriter;
         private static TextWriter? __escapeCodeWriter;
-        private static ConsoleColor _currentBackgrouongColor;
-        private static ConsoleColor _currentForegrouongColor;
-        private static CharacterSet _currentCharSet;
-        private static ConsoleTextWriterType _defaultTextWriter;
+        private static ConsoleColor _currentBackgrouongColor = System.Console.BackgroundColor;
+        private static ConsoleColor _currentForegrouongColor = System.Console.ForegroundColor;
+        private static CharacterSet _currentCharSet = CharacterSet.Primary;
+        private static ConsoleTextWriterType _defaultTextWriter = ConsoleTextWriterType.None;
+        private static Stream _standardInputBinaryStream;
+        private static Stream _standardOutputBinaryStream;
+        private static Stream _standardErrorBinaryStream;
+        private static ISequentialInputByteStream _standardInputSequenrialByteStream;
+        private static ISequentialOutputByteStream _standardOutputSequenrialByteStream;
+        private static ISequentialOutputByteStream _standardErrorSequenrialByteStream;
 
         #region private properties
 
@@ -73,7 +79,7 @@ namespace Palmtree.IO.Console
             {
                 lock (_lockObject)
                 {
-                    if (!__initializedRedirection)
+                    if (!__initializedOutputRedirections)
                         RefreshRedirectionSettings();
                     return __consoleOutputHandle;
                 }
@@ -88,7 +94,7 @@ namespace Palmtree.IO.Console
             {
                 lock (_lockObject)
                 {
-                    if (!__initializedRedirection)
+                    if (!__initializedOutputRedirections)
                         RefreshRedirectionSettings();
                     return __consoleOutputFileNo;
                 }
@@ -103,7 +109,7 @@ namespace Palmtree.IO.Console
             {
                 lock (_lockObject)
                 {
-                    if (!__initializedRedirection)
+                    if (!__initializedOutputRedirections)
                         RefreshRedirectionSettings();
                     Validation.Assert(__consoleTextWriter is not null);
                     return __consoleTextWriter;
@@ -119,7 +125,7 @@ namespace Palmtree.IO.Console
             {
                 lock (_lockObject)
                 {
-                    if (!__initializedRedirection)
+                    if (!__initializedOutputRedirections)
                         RefreshRedirectionSettings();
                     return __escapeCodeWriter;
                 }
@@ -156,25 +162,17 @@ namespace Palmtree.IO.Console
 
         static TinyConsole()
         {
-            _dllNameResolver = new NativeDllNameResolver();
-            NativeLibrary.SetDllImportResolver(
-                typeof(InterOpUnix).Assembly,
-                (libraryName, assembly, searchPath) => _dllNameResolver.ResolveDllName(libraryName, assembly, searchPath));
-            _lockObject = new Object();
-            _defaultBackgrouongColor = System.Console.BackgroundColor;
-            _defaultForegrouongColor = System.Console.ForegroundColor;
+            NativeLibrary.SetDllImportResolver(typeof(InterOpUnix).Assembly, _dllNameResolver.ResolveDllName);
 
-            __thisTerminalInfo = null;
-            __initializedRedirection = false;
-            __consoleOutputHandle = InterOpWindows.INVALID_HANDLE_VALUE;
-            __consoleOutputFileNo = -1;
-            __consoleTextWriter = null;
-            __escapeCodeWriter = null;
-            __alternativeCharacterSetMap = null;
-            _currentBackgrouongColor = System.Console.BackgroundColor;
-            _currentForegrouongColor = System.Console.ForegroundColor;
-            _currentCharSet = CharacterSet.Primary;
-            _defaultTextWriter = ConsoleTextWriterType.None;
+            _standardInputBinaryStream = System.Console.OpenStandardInput();
+            _standardOutputBinaryStream = System.Console.OpenStandardOutput();
+            _standardErrorBinaryStream = System.Console.OpenStandardError();
+            _standardInputSequenrialByteStream = _standardInputBinaryStream.AsInputByteStream();
+            _standardOutputSequenrialByteStream = _standardOutputBinaryStream.AsOutputByteStream();
+            _standardErrorSequenrialByteStream = _standardErrorBinaryStream.AsOutputByteStream();
+            System.Console.SetIn(CreateConsoleTextReader(_standardInputBinaryStream));
+            System.Console.SetOut(CreateConsoleTextWriter(_standardOutputBinaryStream));
+            System.Console.SetError(CreateConsoleTextWriter(_standardErrorBinaryStream));
         }
 
         #region DefaultTextWriter
@@ -197,7 +195,7 @@ namespace Palmtree.IO.Console
                 if (value != _defaultTextWriter)
                 {
                     _defaultTextWriter = value;
-                    ClearRedirectionSettings();
+                    ResetOutputRedirectionsSettings();
                 }
             }
         }
@@ -214,8 +212,13 @@ namespace Palmtree.IO.Console
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => System.Console.InputEncoding;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => System.Console.InputEncoding = value;
+            set
+            {
+                var standardInputReader = System.Console.In;
+                System.Console.InputEncoding = value;
+                System.Console.SetIn(CreateConsoleTextReader(_standardInputBinaryStream));
+                standardInputReader.Dispose();
+            }
         }
 
         /// <summary>
@@ -226,55 +229,103 @@ namespace Palmtree.IO.Console
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => System.Console.OutputEncoding;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
+                var standardOutputWriter = System.Console.Out;
+                var standardErrorWriter = System.Console.Error;
+                standardOutputWriter.Flush();
+                standardErrorWriter.Flush();
                 System.Console.OutputEncoding = value;
-                ClearRedirectionSettings();
+                System.Console.SetOut(CreateConsoleTextWriter(_standardOutputBinaryStream));
+                System.Console.SetError(CreateConsoleTextWriter(_standardErrorBinaryStream));
+                ResetOutputRedirectionsSettings();
+                standardOutputWriter.Dispose();
+                standardErrorWriter.Dispose();
             }
         }
 
         #endregion
 
-        #region SetIn / SetOut / SetErr
+        #region StandatdInput / StandardOutput / StandardError
 
         /// <summary>
-        /// 指定した <see cref="TextReader"/> を <see cref="In"/> プロパティに設定します。
+        /// 標準入力ストリームである <see cref="ISequentialInputByteStream"/> オブジェクトを取得または設定します。
         /// </summary>
-        /// <param name="newIn">
-        /// 新しい標準入力であるストリームです。
-        /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetIn(TextReader newIn)
+        public static ISequentialInputByteStream StandatdInput
         {
-            System.Console.SetIn(newIn);
-            ClearRedirectionSettings();
+            get
+            {
+                lock (_lockObject)
+                {
+                    return _standardInputSequenrialByteStream;
+                }
+            }
+
+            set
+            {
+                lock (_lockObject)
+                {
+                    var originalStream = System.Console.In;
+                    _standardInputSequenrialByteStream = value;
+                    _standardInputBinaryStream = value.AsDotNetStream(true);
+                    System.Console.SetIn(CreateConsoleTextReader(_standardInputBinaryStream));
+                    originalStream.Dispose();
+                }
+            }
         }
 
         /// <summary>
-        /// 指定した <see cref="TextWriter"/> を <see cref="Out"/> プロパティに設定します。
+        /// 標準出力ストリームである <see cref="ISequentialOutputByteStream"/> オブジェクトを取得します。
         /// </summary>
-        /// <param name="newOut">
-        /// 新しい標準出力であるストリームです。
-        /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetOut(TextWriter newOut)
+        public static ISequentialOutputByteStream StandardOutput
         {
-            System.Console.SetOut(newOut);
-            ClearRedirectionSettings();
+            get
+            {
+                lock (_lockObject)
+                {
+                    return _standardOutputSequenrialByteStream;
+                }
+            }
+
+            set
+            {
+                lock (_lockObject)
+                {
+                    var originalStream = System.Console.Out;
+                    _standardOutputSequenrialByteStream = value;
+                    _standardOutputBinaryStream = value.AsDotNetStream(true);
+                    System.Console.SetOut(CreateConsoleTextWriter(_standardOutputBinaryStream));
+                    originalStream.Dispose();
+                    ResetOutputRedirectionsSettings();
+                }
+            }
         }
 
         /// <summary>
-        /// 指定した <see cref="TextWriter"/> を <see cref="Error"/> プロパティに設定します。
+        /// 標準エラー出力ストリームである <see cref="ISequentialOutputByteStream"/> オブジェクトを取得します。
         /// </summary>
-        /// <param name="newError">
-        /// 新しい標準エラー出力であるストリームです。
-        /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetError(TextWriter newError)
+        public static ISequentialOutputByteStream StandardError
         {
-            System.Console.SetError(newError);
-            ClearRedirectionSettings();
+            get
+            {
+                lock (_lockObject)
+                {
+                    return _standardErrorSequenrialByteStream;
+                }
+            }
+
+            set
+            {
+                lock (_lockObject)
+                {
+                    var originalStream = System.Console.Error;
+                    _standardErrorSequenrialByteStream = value;
+                    _standardErrorBinaryStream = value.AsDotNetStream(true);
+                    System.Console.SetError(CreateConsoleTextWriter(_standardErrorBinaryStream));
+                    originalStream.Dispose();
+                    ResetOutputRedirectionsSettings();
+                }
+            }
         }
 
         #endregion
@@ -813,17 +864,39 @@ namespace Palmtree.IO.Console
 
         #region private methods
 
-        private static void ClearRedirectionSettings()
+        private static TextReader CreateConsoleTextReader(Stream inStream)
+        {
+#if DEBUG
+            Validation.Assert(inStream.CanRead == true);
+#endif
+            return
+                inStream == Stream.Null
+                ? TextReader.Null
+                : TextReader.Synchronized(inStream.AsTextReader(System.Console.InputEncoding.WithoutPreamble(), false, 4096, true));
+        }
+
+        private static TextWriter CreateConsoleTextWriter(Stream outStream)
+        {
+#if DEBUG
+            Validation.Assert(outStream.CanWrite == true);
+#endif
+            return
+                outStream == Stream.Null
+                ? TextWriter.Null
+                : TextWriter.Synchronized(outStream.AsTextWriter(System.Console.OutputEncoding.WithoutPreamble(), 256, true, true));
+        }
+
+        private static void ResetOutputRedirectionsSettings()
         {
             lock (_lockObject)
             {
-                __initializedRedirection = false;
+                __initializedOutputRedirections = false;
             }
         }
 
         private static void RefreshRedirectionSettings()
         {
-            if (!__initializedRedirection)
+            if (!__initializedOutputRedirections)
             {
                 __consoleTextWriter?.Dispose();
                 __escapeCodeWriter?.Dispose();
@@ -837,7 +910,7 @@ namespace Palmtree.IO.Console
                         OperatingSystem.IsWindows()
                         ? -1
                         : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_OUT);
-                    __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardOutput(), System.Console.OutputEncoding);
+                    __consoleTextWriter = System.Console.Out;
                     __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
                     OutputExitAltCharsetMode();
                 }
@@ -851,7 +924,7 @@ namespace Palmtree.IO.Console
                         OperatingSystem.IsWindows()
                         ? -1
                         : InterOpUnix.GetStandardFileNo(InterOpUnix.STANDARD_FILE_ERR);
-                    __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardError(), System.Console.OutputEncoding);
+                    __consoleTextWriter = System.Console.Error;
                     __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
                     OutputExitAltCharsetMode();
                 }
@@ -862,11 +935,11 @@ namespace Palmtree.IO.Console
                     switch (_defaultTextWriter)
                     {
                         case ConsoleTextWriterType.StandardOutput:
-                            __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardOutput(), System.Console.OutputEncoding);
+                            __consoleTextWriter = System.Console.Out;
                             __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
                             break;
                         case ConsoleTextWriterType.StandardError:
-                            __consoleTextWriter = CreateTextWriter(System.Console.OpenStandardError(), System.Console.OutputEncoding);
+                            __consoleTextWriter = System.Console.Error;
                             __escapeCodeWriter = IsSupportedAnsiEscapeSequence(__consoleOutputHandle) ? __consoleTextWriter : null;
                             break;
                         default:
@@ -878,11 +951,8 @@ namespace Palmtree.IO.Console
                     OutputExitAltCharsetMode();
                 }
 
-                __initializedRedirection = true;
+                __initializedOutputRedirections = true;
             }
-
-            static TextWriter CreateTextWriter(Stream outStream, Encoding encoding)
-                => outStream.AsTextWriter(encoding.WithoutPreamble(), 256, true, true);
 
             static void OutputExitAltCharsetMode()
             {

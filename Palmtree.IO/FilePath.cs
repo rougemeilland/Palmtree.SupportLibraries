@@ -576,7 +576,7 @@ namespace Palmtree.IO
         /// <remarks>
         /// See NormalizePath method in <see hcref="https://github.com/dotnet/runtime/blob/main/src/coreclr/utilcode/longfilepathwrappers.cpp"/>
         /// </remarks>
-        public static String NormalizePath(String path)
+        private static String NormalizePath(String path)
         {
             if (OperatingSystem.IsWindows())
             {

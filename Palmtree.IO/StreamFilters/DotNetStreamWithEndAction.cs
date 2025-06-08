@@ -74,7 +74,7 @@ namespace Palmtree.IO.StreamFilters
             base.Dispose(disposing);
         }
 
-        Stream IDirectDotNetStreamWrapper.BaseStream
+        Stream IDirectDotNetStreamWrapper.RawStream
         {
             get
             {

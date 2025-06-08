@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO.StreamFilters
 {
-    internal sealed class DotNetStreamWithBranch
+    internal class DotNetStreamWithBranch
         : Stream
     {
         private readonly Stream _baseStream1;

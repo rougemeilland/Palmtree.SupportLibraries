@@ -124,7 +124,7 @@ namespace Palmtree.IO.StreamFilters
             await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
-        Stream IDirectDotNetStreamWrapper.BaseStream
+        Stream IDirectDotNetStreamWrapper.RawStream
         {
             get
             {

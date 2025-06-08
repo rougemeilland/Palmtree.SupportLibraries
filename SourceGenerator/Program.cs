@@ -22,7 +22,7 @@ namespace SourceGenerator
             GenerateArrayExtensions(Path.Combine(baseDirectoryPath.FullName, "Palmtree.Core"));
             GenerateEastAsian(Path.Combine(baseDirectoryPath.FullName, "Palmtree.IO.Console"));
 
-            Console.WriteLine();
+            Console.WriteLine("Completed.");
             Console.Beep();
             _ = Console.ReadLine();
         }
@@ -214,9 +214,9 @@ namespace SourceGenerator
                 sourceWriter.WriteLine();
                 sourceWriter.WriteLine("namespace Palmtree.IO.Console");
                 sourceWriter.WriteLine("{");
-                sourceWriter.WriteLine("    partial class EastAsianWidth");
+                sourceWriter.WriteLine("    internal partial class EastAsianWidth");
                 sourceWriter.WriteLine("    {");
-                sourceWriter.WriteLine("        private static readonly  HashSet<String> _eastAsianCultureNames;");
+                sourceWriter.WriteLine("        private static readonly HashSet<String> _eastAsianCultureNames;");
                 sourceWriter.WriteLine("        private static readonly EastAsianWidthRange[] _eastAsianWidthRanges;");
                 sourceWriter.WriteLine();
                 sourceWriter.WriteLine("        static EastAsianWidth()");
@@ -225,7 +225,7 @@ namespace SourceGenerator
                 sourceWriter.WriteLine("                CultureInfo.GetCultures(CultureTypes.AllCultures)");
                 sourceWriter.WriteLine($"                .Where(culture => {string.Join(" || ", languages.Select(language => $"culture.Name == \"{language}\" || culture.Name.StartsWith(\"{language}-\", StringComparison.OrdinalIgnoreCase)"))})");
                 sourceWriter.WriteLine("                 .Select(culture => culture.Name);");
-                sourceWriter.WriteLine("            _eastAsianCultureNames = new HashSet<String>(eastAsianCultureNames);");
+                sourceWriter.WriteLine("            _eastAsianCultureNames = [.. eastAsianCultureNames];");
                 sourceWriter.WriteLine("            _eastAsianWidthRanges = new EastAsianWidthRange[]");
                 sourceWriter.WriteLine("            {");
 

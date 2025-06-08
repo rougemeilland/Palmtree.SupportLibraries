@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
-    partial class TinyConsole
+    public partial class TinyConsole
     {
         /// <summary>
         /// 標準入力ストリームを取得します。

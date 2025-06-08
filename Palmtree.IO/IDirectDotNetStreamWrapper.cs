@@ -23,6 +23,6 @@ namespace Palmtree.IO
         /// <summary>
         /// ラッパークラスの内部の <see cref="Stream"/> オブジェクトを取得します。
         /// </summary>
-        Stream BaseStream { get; }
+        Stream RawStream { get; }
     }
 }

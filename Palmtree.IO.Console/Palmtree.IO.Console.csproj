@@ -9,7 +9,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <VersionPrefix>1.5.15</VersionPrefix>
+    <VersionPrefix>1.6.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>Palmtree Support Library ($(AssemblyName))</Product>
     <Title>$(AssemblyName)</Title>
@@ -56,11 +56,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>1701;1702;IDE0300;IDE0301;IDE0028;CA1510;IDE0290;CA1512</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
     <IsTrimmable>True</IsTrimmable>
     <IsAotCompatible>True</IsAotCompatible>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>1701;1702;IDE0300;IDE0301;IDE0028;CA1510;IDE0290;CA1512</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

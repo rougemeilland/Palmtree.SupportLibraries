@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace Palmtree.IO.Console
 {
-    partial class EastAsianWidth
+    internal partial class EastAsianWidth
     {
-        private static readonly  HashSet<String> _eastAsianCultureNames;
+        private static readonly HashSet<String> _eastAsianCultureNames;
         private static readonly EastAsianWidthRange[] _eastAsianWidthRanges;
 
         static EastAsianWidth()
@@ -16,7 +16,7 @@ namespace Palmtree.IO.Console
                 CultureInfo.GetCultures(CultureTypes.AllCultures)
                 .Where(culture => culture.Name == "ja" || culture.Name.StartsWith("ja-", StringComparison.OrdinalIgnoreCase) || culture.Name == "ko" || culture.Name.StartsWith("ko-", StringComparison.OrdinalIgnoreCase) || culture.Name == "vi" || culture.Name.StartsWith("vi-", StringComparison.OrdinalIgnoreCase) || culture.Name == "zh" || culture.Name.StartsWith("zh-", StringComparison.OrdinalIgnoreCase))
                  .Select(culture => culture.Name);
-            _eastAsianCultureNames = new HashSet<String>(eastAsianCultureNames);
+            _eastAsianCultureNames = [.. eastAsianCultureNames];
             _eastAsianWidthRanges = new EastAsianWidthRange[]
             {
                 new(0x0000, 0x20, EastAsianWidthType.N),
@@ -328,7 +328,9 @@ namespace Palmtree.IO.Console
                 new(0x261c, 0x01, EastAsianWidthType.A),
                 new(0x261d, 0x01, EastAsianWidthType.N),
                 new(0x261e, 0x01, EastAsianWidthType.A),
-                new(0x261f, 0x21, EastAsianWidthType.N),
+                new(0x261f, 0x11, EastAsianWidthType.N),
+                new(0x2630, 0x08, EastAsianWidthType.W),
+                new(0x2638, 0x08, EastAsianWidthType.N),
                 new(0x2640, 0x01, EastAsianWidthType.A),
                 new(0x2641, 0x01, EastAsianWidthType.N),
                 new(0x2642, 0x01, EastAsianWidthType.A),
@@ -346,7 +348,9 @@ namespace Palmtree.IO.Console
                 new(0x266f, 0x01, EastAsianWidthType.A),
                 new(0x2670, 0x0f, EastAsianWidthType.N),
                 new(0x267f, 0x01, EastAsianWidthType.W),
-                new(0x2680, 0x13, EastAsianWidthType.N),
+                new(0x2680, 0x0a, EastAsianWidthType.N),
+                new(0x268a, 0x06, EastAsianWidthType.W),
+                new(0x2690, 0x03, EastAsianWidthType.N),
                 new(0x2693, 0x01, EastAsianWidthType.W),
                 new(0x2694, 0x0a, EastAsianWidthType.N),
                 new(0x269e, 0x02, EastAsianWidthType.A),
@@ -432,15 +436,13 @@ namespace Palmtree.IO.Console
                 new(0x3130, 0x01, EastAsianWidthType.N),
                 new(0x3131, 0x5e, EastAsianWidthType.W),
                 new(0x318f, 0x01, EastAsianWidthType.N),
-                new(0x3190, 0x54, EastAsianWidthType.W),
-                new(0x31e4, 0x0b, EastAsianWidthType.N),
+                new(0x3190, 0x56, EastAsianWidthType.W),
+                new(0x31e6, 0x09, EastAsianWidthType.N),
                 new(0x31ef, 0x30, EastAsianWidthType.W),
                 new(0x321f, 0x01, EastAsianWidthType.N),
                 new(0x3220, 0x28, EastAsianWidthType.W),
                 new(0x3248, 0x08, EastAsianWidthType.A),
-                new(0x3250, 0x1b70, EastAsianWidthType.W),
-                new(0x4dc0, 0x40, EastAsianWidthType.N),
-                new(0x4e00, 0x568d, EastAsianWidthType.W),
+                new(0x3250, 0x723d, EastAsianWidthType.W),
                 new(0xa48d, 0x03, EastAsianWidthType.N),
                 new(0xa490, 0x37, EastAsianWidthType.W),
                 new(0xa4c7, 0x499, EastAsianWidthType.N),
@@ -484,8 +486,8 @@ namespace Palmtree.IO.Console
                 new(0x17000, 0x17f8, EastAsianWidthType.W),
                 new(0x187f8, 0x08, EastAsianWidthType.N),
                 new(0x18800, 0x4d6, EastAsianWidthType.W),
-                new(0x18cd6, 0x2a, EastAsianWidthType.N),
-                new(0x18d00, 0x09, EastAsianWidthType.W),
+                new(0x18cd6, 0x29, EastAsianWidthType.N),
+                new(0x18cff, 0x0a, EastAsianWidthType.W),
                 new(0x18d09, 0x22e7, EastAsianWidthType.N),
                 new(0x1aff0, 0x04, EastAsianWidthType.W),
                 new(0x1aff4, 0x01, EastAsianWidthType.N),
@@ -504,7 +506,11 @@ namespace Palmtree.IO.Console
                 new(0x1b164, 0x04, EastAsianWidthType.W),
                 new(0x1b168, 0x08, EastAsianWidthType.N),
                 new(0x1b170, 0x18c, EastAsianWidthType.W),
-                new(0x1b2fc, 0x3d08, EastAsianWidthType.N),
+                new(0x1b2fc, 0x2004, EastAsianWidthType.N),
+                new(0x1d300, 0x57, EastAsianWidthType.W),
+                new(0x1d357, 0x09, EastAsianWidthType.N),
+                new(0x1d360, 0x17, EastAsianWidthType.W),
+                new(0x1d377, 0x1c8d, EastAsianWidthType.N),
                 new(0x1f004, 0x01, EastAsianWidthType.W),
                 new(0x1f005, 0xca, EastAsianWidthType.N),
                 new(0x1f0cf, 0x01, EastAsianWidthType.W),
@@ -593,16 +599,14 @@ namespace Palmtree.IO.Console
                 new(0x1fa00, 0x70, EastAsianWidthType.N),
                 new(0x1fa70, 0x0d, EastAsianWidthType.W),
                 new(0x1fa7d, 0x03, EastAsianWidthType.N),
-                new(0x1fa80, 0x09, EastAsianWidthType.W),
-                new(0x1fa89, 0x07, EastAsianWidthType.N),
-                new(0x1fa90, 0x2e, EastAsianWidthType.W),
-                new(0x1fabe, 0x01, EastAsianWidthType.N),
-                new(0x1fabf, 0x07, EastAsianWidthType.W),
-                new(0x1fac6, 0x08, EastAsianWidthType.N),
-                new(0x1face, 0x0e, EastAsianWidthType.W),
-                new(0x1fadc, 0x04, EastAsianWidthType.N),
-                new(0x1fae0, 0x09, EastAsianWidthType.W),
-                new(0x1fae9, 0x07, EastAsianWidthType.N),
+                new(0x1fa80, 0x0a, EastAsianWidthType.W),
+                new(0x1fa8a, 0x05, EastAsianWidthType.N),
+                new(0x1fa8f, 0x38, EastAsianWidthType.W),
+                new(0x1fac7, 0x07, EastAsianWidthType.N),
+                new(0x1face, 0x0f, EastAsianWidthType.W),
+                new(0x1fadd, 0x02, EastAsianWidthType.N),
+                new(0x1fadf, 0x0b, EastAsianWidthType.W),
+                new(0x1faea, 0x06, EastAsianWidthType.N),
                 new(0x1faf0, 0x09, EastAsianWidthType.W),
                 new(0x1faf9, 0x507, EastAsianWidthType.N),
                 new(0x20000, 0xfffe, EastAsianWidthType.W),

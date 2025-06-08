@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
+using Palmtree.IO;
+using Palmtree.IO.Console;
 
 namespace Experiment.CSharp
 {
@@ -10,108 +10,46 @@ namespace Experiment.CSharp
         [SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
         private static void Main(string[] args)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "work.dat");
-            var originalText1 = "<<Data Block 1>>";
-            var originalText2 = "<<Data Block 2>>";
-            var originalText3 = "<<Data Block 3>>";
+            TinyConsole.WriteLine($"default input encoding: {TinyConsole.InputEncoding.GetType().FullName} ({TinyConsole.InputEncoding.CodePage})");
+            TinyConsole.WriteLine($"default output encoding: {TinyConsole.OutputEncoding.GetType().FullName} ({TinyConsole.OutputEncoding.CodePage})");
+            TinyConsole.DefaultTextWriter = ConsoleTextWriterType.StandardError;
+            TinyConsole.InputEncoding = System.Text.Encoding.UTF8;
+            TinyConsole.OutputEncoding = System.Text.Encoding.UTF8;
+            var tempFile = FilePath.CreateTemporaryFile();
+            try
+            {
+                using (var logWriter = tempFile.Create())
+                {
+                    var originalStandardOutput = TinyConsole.StandardOutput;
+                    var originalStandardError = TinyConsole.StandardError;
+                    TinyConsole.StandardOutput = originalStandardOutput.WithBranch(logWriter);
+                    TinyConsole.StandardError = originalStandardError.WithBranch(logWriter);
+                    TinyConsole.Out.WriteLine("これは標準出力に出力されています。(1)");
+                    TinyConsole.Error.WriteLine("これは標準エラー出力に出力されています。(1)");
+                    TinyConsole.WriteLine("これは既定の出力先に出力されています。(1)");
+                    TinyConsole.StandardOutput = originalStandardOutput;
+                    TinyConsole.StandardError = originalStandardError;
+                    TinyConsole.Out.WriteLine("これは標準出力に出力されています。(2)");
+                    TinyConsole.Error.WriteLine("これは標準エラー出力に出力されています。(2)");
+                    TinyConsole.WriteLine("これは既定の出力先に出力されています。(2)");
+                }
 
-            for (var count = 0; count < 1000; ++count)
-                DoTest(path, originalText1, originalText2, originalText3);
+                TinyConsole.WriteLine("---- ここから先はファイルの内容 -----");
+
+                TinyConsole.Write (tempFile.ReadAllText(TinyConsole.OutputEncoding));
+            }
+            finally
+            {
+                tempFile.Delete();
+            }
+
+            // TODO: TinyConsole.StandatdInputなどの getter setter のテスト 
+            // TODO: IDirectDotNetStreamWrapper のテスト
+            // TODO: コンソールで WithBranch のテスト
 
             Console.Beep();
             Console.WriteLine("Complete");
             _ = Console.ReadLine();
-        }
-
-        private static void DoTest(string path, string originalText1, string originalText2, string originalText3)
-        {
-            var originalData1 = Encoding.UTF8.GetBytes(originalText1);
-            var originalData2 = Encoding.UTF8.GetBytes(originalText2);
-            var originalData3 = Encoding.UTF8.GetBytes(originalText3);
-
-            Span<byte> buffer = stackalloc byte[256];
-            try
-            {
-                using (var outStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
-                using (var outStream2= new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    var tempFilePath1 = Path.GetTempFileName();
-                    try
-                    {
-                        using (var outTempStream1 = new FileStream(tempFilePath1, FileMode.Create, FileAccess.Write, FileShare.None))
-                        {
-                            var tempFilePath2 = Path.GetTempFileName();
-                            try
-                            {
-                                using (var outTempStream2 = new FileStream(tempFilePath2, FileMode.Create, FileAccess.Write, FileShare.None))
-                                {
-                                    WriteData(outTempStream2, originalData1);
-                                    outTempStream2.Flush();
-                                }
-
-                                using (var inTempStream2 = new FileStream(tempFilePath2, FileMode.Open, FileAccess.Read, FileShare.None))
-                                {
-                                    var length = ReadData(inTempStream2, buffer);
-                                    if (!string.Equals(Encoding.UTF8.GetString(buffer[..length]), originalText1, StringComparison.Ordinal))
-                                        throw new Exception();
-                                }
-                            }
-                            finally
-                            {
-                                File.Delete(tempFilePath2);
-                            }
-
-                            WriteData(outTempStream1, originalData2);
-                            outTempStream1.Flush();
-                        }
-
-                        using (var inTempStream1 = new FileStream(tempFilePath1, FileMode.Open, FileAccess.Read, FileShare.None))
-                        {
-                            var length = ReadData(inTempStream1, buffer);
-                            if (!string.Equals(Encoding.UTF8.GetString(buffer[..length]), originalText2, StringComparison.Ordinal))
-                                throw new Exception();
-                        }
-
-                        WriteData(outStream, originalData3);
-                        outStream.Flush();
-                    }
-                    finally
-                    {
-                        File.Delete(tempFilePath1);
-                    }
-                }
-
-                using (var inStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None)) // ここで共用違反例外の可能性
-                {
-                    var length = ReadData(inStream, buffer);
-                    if (!string.Equals(Encoding.UTF8.GetString(buffer[..length]), originalText3, StringComparison.Ordinal))
-                        throw new Exception();
-                }
-            }
-            finally
-            {
-                File.Delete(path);  // ここで共用違反例外の可能性
-            }
-        }
-
-        private static int ReadData(Stream inStream, Span<byte> buffer)
-        {
-            var totalLength = 0;
-            while (buffer.Length > 0)
-            {
-                var length = inStream.Read(buffer);
-                if (length <= 0)
-                    return totalLength;
-                buffer = buffer[length..];
-                totalLength += length;
-            }
-
-            throw new Exception("The length of buffer is insufficient.");
-        }
-
-        private static void WriteData(Stream outStream, ReadOnlySpan<byte> buffer)
-        {
-            outStream.Write(buffer);
         }
     }
 }
