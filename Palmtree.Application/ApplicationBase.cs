@@ -13,18 +13,9 @@ namespace Palmtree.Application
             Cancelled = -1,
         }
 
-        private const Int32 _INDENT_STEP = 2;
-
-        private readonly String _thisProgramName;
-        private readonly Boolean _isLaunchedByThisLauncher;
+        private readonly Boolean _isLaunchedByThisLauncher = ConsoleApplicationLauncher.IsLaunchedByThisLauncher;
 
         private Boolean _isPressedBreak;
-
-        protected ApplicationBase()
-        {
-            _thisProgramName = GetType().Assembly.GetAssemblyFileNameWithoutExtension();
-            _isLaunchedByThisLauncher = ConsoleApplicationLauncher.IsLaunchedByThisLauncher;
-        }
 
         public virtual Int32 Run(String[] args)
         {
@@ -60,7 +51,7 @@ namespace Palmtree.Application
 
         protected virtual Boolean DelayBreak => true;
         protected virtual Encoding? InputOutputEncoding => null;
-        protected virtual String ConsoleWindowTitle => _thisProgramName;
+        protected virtual String ConsoleWindowTitle => Validation.DefaultApplicationName ?? GetType().Assembly.GetAssemblyFileNameWithoutExtension();
         protected virtual Boolean CursorVisible => false;
 
         protected abstract ResultCode Main(String[] args);
@@ -95,7 +86,7 @@ namespace Palmtree.Application
             {
                 try
                 {
-                    InternalReportException(exception, 0);
+                    TinyConsole.WriteLog(exception);
                 }
                 finally
                 {
@@ -110,7 +101,7 @@ namespace Palmtree.Application
             {
                 try
                 {
-                    InternalReportInformationMessage(message);
+                    TinyConsole.WriteLog(LogCategory.Information, message);
                 }
                 finally
                 {
@@ -125,7 +116,7 @@ namespace Palmtree.Application
             {
                 try
                 {
-                    InternalReportWarningMessage(message);
+                    TinyConsole.WriteLog(LogCategory.Warning, message);
                 }
                 finally
                 {
@@ -140,7 +131,7 @@ namespace Palmtree.Application
             {
                 try
                 {
-                    InternalReportErrorMessage(message, 0);
+                    TinyConsole.WriteLog(LogCategory.Error, message);
                 }
                 finally
                 {
@@ -160,42 +151,6 @@ namespace Palmtree.Application
             }
 
             e.Cancel = true;
-        }
-
-        private void InternalReportException(Exception exception, Int32 indent)
-        {
-            InternalReportErrorMessage(exception.Message, indent);
-            if (exception.InnerException is not null)
-                InternalReportException(exception.InnerException, indent + _INDENT_STEP);
-            if (exception is AggregateException aggregateException)
-            {
-                foreach (var ex in aggregateException.InnerExceptions)
-                    InternalReportException(ex, indent + _INDENT_STEP);
-            }
-        }
-
-        private void InternalReportInformationMessage(String message)
-        {
-            TinyConsole.Erase(ConsoleEraseMode.FromCursorToEndOfScreen);
-            TinyConsole.ForegroundColor = ConsoleColor.White;
-            TinyConsole.BackgroundColor = ConsoleColor.Black;
-            TinyConsole.Error.WriteLine($"{ConsoleWindowTitle}:INFORMATION:{message}");
-        }
-
-        private void InternalReportWarningMessage(String message)
-        {
-            TinyConsole.Erase(ConsoleEraseMode.FromCursorToEndOfScreen);
-            TinyConsole.ForegroundColor = ConsoleColor.Yellow;
-            TinyConsole.BackgroundColor = ConsoleColor.Black;
-            TinyConsole.Error.WriteLine($"{ConsoleWindowTitle}:WARNING:{message}");
-        }
-
-        private void InternalReportErrorMessage(String message, Int32 indent)
-        {
-            TinyConsole.Erase(ConsoleEraseMode.FromCursorToEndOfScreen);
-            TinyConsole.ForegroundColor = ConsoleColor.Red;
-            TinyConsole.BackgroundColor = ConsoleColor.Black;
-            TinyConsole.Error.WriteLine($"{new String(' ', indent)}{ConsoleWindowTitle}:ERROR:{message}");
         }
     }
 }
