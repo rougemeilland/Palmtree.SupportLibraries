@@ -277,7 +277,7 @@ namespace Palmtree.IO.Console
                 13 => Color88.BrightMagenta,
                 14 => Color88.BrightCyan,
                 15 => Color88.BrightWhite,
-                _ => throw Validation.GetFailErrorException($"Unexpected {nameof(value._colorNumber)} value: {value._colorNumber}"),
+                _ => throw Validation.GetFailErrorException(),
             };
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace Palmtree.IO.Console
                 13 => Color256.BrightMagenta,
                 14 => Color256.BrightCyan,
                 15 => Color256.BrightWhite,
-                _ => throw Validation.GetFailErrorException($"Unexpected {nameof(value._colorNumber)} value: {value._colorNumber}"),
+                _ => throw Validation.GetFailErrorException(),
             };
 
         internal static IEnumerable<(Int32 colorNumber, Int32 distance2)> FindColor16CodeFromRgb(Byte r, Byte g, Byte b)
@@ -345,7 +345,7 @@ namespace Palmtree.IO.Console
                 13 => "BrightMagenta",
                 14 => "BrightCyan",
                 15 => "BrightWhite",
-                _ => throw Validation.GetFailErrorException($"Unexpected {nameof(colorNumber)} value: {colorNumber}"),
+                _ => throw Validation.GetFailErrorException(),
             };
     }
 }

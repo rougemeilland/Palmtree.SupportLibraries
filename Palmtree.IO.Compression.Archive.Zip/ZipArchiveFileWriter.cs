@@ -449,10 +449,10 @@ namespace Palmtree.IO.Compression.Archive.Zip
                             startOfCentralDirectories ??= position;
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         _writerState = WriterState.Error;
-                        throw Validation.GetFailErrorException("Failed to write to central directories.", ex);
+                        throw;
                     }
 
                     var endOfCentralDirectories = _zipOutputStream.Position;

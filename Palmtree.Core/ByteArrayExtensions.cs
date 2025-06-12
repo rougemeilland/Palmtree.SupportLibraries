@@ -1705,7 +1705,7 @@ namespace Palmtree
                     yield return '=';
                     break;
                 default:
-                    throw Validation.GetFailErrorException("index < 0 || index > 2");
+                    throw Validation.GetFailErrorException();
             }
         }
 

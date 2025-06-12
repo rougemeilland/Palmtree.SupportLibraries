@@ -63,7 +63,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     return null;
                 }
                 default:
-                    throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
+                    throw Validation.GetFailErrorException();
             }
         }
 
@@ -103,7 +103,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                         break;
                     }
                     default:
-                        throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
+                        throw Validation.GetFailErrorException();
                 }
 
                 if (!reader.IsEmpty)

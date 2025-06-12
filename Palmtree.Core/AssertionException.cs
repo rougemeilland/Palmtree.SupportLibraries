@@ -11,13 +11,11 @@ namespace Palmtree
         internal AssertionException(String message)
             : base(message)
         {
-            System.Diagnostics.Debug.Fail(message);
         }
 
         internal AssertionException(String message, Exception inner)
             : base(message, inner)
         {
-            System.Diagnostics.Debug.Fail(message);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             {
                 ZipEntryHeaderType.LocalHeader => null,
                 ZipEntryHeaderType.CentralDirectoryHeader => base.GetData(headerType, parameter),
-                _ => throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}"),
+                _ => throw Validation.GetFailErrorException(),
             };
 
         /// <inheritdoc/>
@@ -41,7 +41,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     base.SetData(headerType, data, parameter);
                     break;
                 default:
-                    throw Validation.GetFailErrorException($"Unknown header type: {nameof(headerType)}={headerType}");
+                    throw Validation.GetFailErrorException();
             }
         }
 

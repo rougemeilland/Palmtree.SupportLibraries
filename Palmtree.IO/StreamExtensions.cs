@@ -3110,7 +3110,7 @@ namespace Palmtree.IO
                         LogCategory.Warning => "WARNING:",
                         LogCategory.Error => "ERROR:",
                         LogCategory.Critical => "CRITICAL:",
-                        _ => throw Validation.GetFailErrorException($"Unexpected {nameof(LogCategory)} value.: {category}"),
+                        _ => throw Validation.GetFailErrorException(),
                     };
             }
         }
