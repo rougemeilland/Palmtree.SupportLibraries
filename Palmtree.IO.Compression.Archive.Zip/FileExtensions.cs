@@ -284,9 +284,9 @@ namespace Palmtree.IO.Compression.Archive.Zip
         {
             ArgumentNullException.ThrowIfNull(sourceZipFile);
             ArgumentNullException.ThrowIfNull(zipEntryNameEncodingProvider);
+
             var baseDirectory = sourceZipFile.Directory;
-            if (baseDirectory is null)
-                throw new ArgumentException($"The parent directory of the file specified by parameter {nameof(sourceZipFile)} does not exist.", nameof(baseDirectory));
+            Validation.Assert(baseDirectory is not null);
 
             var sourceStream = GetSourceStreamByFileNamePattern(baseDirectory, sourceZipFile);
             while (true)

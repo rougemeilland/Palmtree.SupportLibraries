@@ -41,7 +41,7 @@ namespace Palmtree.Threading
                 if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
                     throw new InvalidOperationException();
                 cancellationToken.ThrowIfCancellationRequested();
-                ELEMENT_T value = enumerator.Current;
+                var value = enumerator.Current;
                 while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                 {
                     value = func(value, enumerator.Current);
@@ -60,7 +60,7 @@ namespace Palmtree.Threading
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
             {
-                ACCUMULATE_T value = seed;
+                var value = seed;
                 cancellationToken.ThrowIfCancellationRequested();
                 while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                 {
@@ -81,7 +81,7 @@ namespace Palmtree.Threading
             var enumerator = source.GetAsyncEnumerator(cancellationToken);
             await using (enumerator.ConfigureAwait(false))
             {
-                ACCUMULATE_T value = seed;
+                var value = seed;
                 cancellationToken.ThrowIfCancellationRequested();
                 while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                 {
@@ -1520,8 +1520,7 @@ namespace Palmtree.Threading
 
                 // 条件に一致する要素が見つからなかったら既に InvalidOperationException 例外が発生しているはずなので、この時点で見つかっているはず (isFoundFirstValue == true)
 #if DEBUG
-                if (!isFoundFirstValue)
-                    throw new Exception();
+                Validation.Assert(isFoundFirstValue);
 #endif
                 // 以降のシーケンスに条件に一致する要素が見つかった場合は例外
                 cancellationToken.ThrowIfCancellationRequested();

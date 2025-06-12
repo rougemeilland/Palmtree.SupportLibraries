@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Palmtree.IO.Console
 {
-    partial class TinyConsole
+    public static partial class TinyConsole
     {
         private static partial class InterOpWindows
         {

@@ -27,7 +27,9 @@ namespace Palmtree.IO.Console
 
         private Color88(Int32 colorCode)
         {
-            if (!colorCode.InRange(0, 88))
+            if (_colorNumber < 0)
+                throw new ArgumentOutOfRangeException(nameof(colorCode));
+            if (_colorNumber >= 88)
                 throw new ArgumentOutOfRangeException(nameof(colorCode));
 
             _colorNumber = checked((Byte)colorCode);
@@ -116,7 +118,7 @@ namespace Palmtree.IO.Console
         /// <summary>
         /// 8 段階のグレースケールの配列です。要素番号が大きいほど明るくなります。
         /// </summary>
-        public static readonly ReadOnlyMemory<Color88> GrayScales = Enumerable.Repeat(80, 8).Select(code => new Color88(code)).ToArray();
+        public static readonly IReadOnlyArray<Color88> GrayScales = new ReadOnlyArray<Color88>([.. Enumerable.Repeat(80, 8).Select(code => new Color88(code))]);
 
         /// <summary>
         /// 色の RGB 成分を取得します。

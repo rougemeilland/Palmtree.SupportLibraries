@@ -31,7 +31,7 @@ namespace Palmtree.IO
         }
 
         public static DisposableTemporaryDirectory Create()
-            => new DisposableTemporaryDirectory(DirectoryPath.CreateTemporaryDirectory());
+            => new(DirectoryPath.CreateTemporaryDirectory());
 
         protected virtual void Dispose(Boolean disposing)
         {

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Palmtree
 {
@@ -9,107 +12,110 @@ namespace Palmtree
     /// </summary>
     public static class Validation
     {
-#if DEBUG
-        private sealed class DebugValidationLogger
+#if DEBUG || TRACE
+        private abstract class ValidationLogger
             : IValidationLogger
         {
-            void IValidationLogger.Indent()
+            private const Int32 _indentSize = 4;
+            private Int32 _indentLevel;
+
+            public void Indent()
+                => _ = Interlocked.Increment(ref _indentLevel);
+
+            public void Unindent()
             {
-                lock (this)
+                var result = Interlocked.Decrement(ref _indentLevel);
+                if (result < 0)
                 {
-                    System.Diagnostics.Debug.Indent();
+                    _ = Interlocked.Exchange(ref _indentLevel, 0);
+                    throw new InvalidOperationException("The UnIndent() method is called more times than the Indent() method.");
                 }
             }
 
-            void IValidationLogger.Unindent()
+            public void WriteLog() => WriteLine("");
+
+            public void WriteLog(String? prefix, String message)
             {
-                lock (this)
+                if (prefix is null)
                 {
-                    System.Diagnostics.Debug.Unindent();
+                    WriteLine(message);
+                }
+                else
+                {
+                    Write(prefix);
+                    var spaces = _indentSize * _indentLevel;
+                    while (spaces >= 4)
+                    {
+                        Write("    ");
+                        spaces -= 4;
+                    }
+
+                    while (spaces > 0)
+                    {
+                        Write(" ");
+                        --spaces;
+                    }
+
+                    WriteLine(message);
                 }
             }
 
-            void IValidationLogger.Write(String message)
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Debug.Write(message);
-                }
-            }
+            protected abstract void Write(String message);
+            protected abstract void WriteLine(String message);
+        }
+#endif
 
-            void IValidationLogger.WriteLine()
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Debug.WriteLine("");
-                }
-            }
+#if DEBUG
+        private sealed class DebugValidationLogger
+            : ValidationLogger
+        {
+            protected override void Write(String message) => System.Diagnostics.Debug.Write(message);
 
-            void IValidationLogger.WriteLine(String message)
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Debug.WriteLine(message);
-                }
-            }
+            protected override void WriteLine(String message) => System.Diagnostics.Debug.WriteLine(message);
+
         }
 #endif
 
 #if TRACE
         private sealed class TraceValidationLogger
-            : IValidationLogger
+            : ValidationLogger
         {
-            void IValidationLogger.Indent()
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Trace.Indent();
-                }
-            }
+            protected override void Write(String message) => System.Diagnostics.Trace.Write(message);
 
-            void IValidationLogger.Unindent()
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Trace.Unindent();
-                }
-            }
+            protected override void WriteLine(String message) => System.Diagnostics.Trace.WriteLine(message);
 
-            void IValidationLogger.Write(String message)
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Trace.Write(message);
-                }
-            }
-
-            void IValidationLogger.WriteLine()
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Trace.WriteLine("");
-                }
-            }
-
-            void IValidationLogger.WriteLine(String message)
-            {
-                lock (this)
-                {
-                    System.Diagnostics.Trace.WriteLine(message);
-                }
-            }
         }
 #endif
 
         static Validation()
         {
+            var processPath = GetProcessPath();
+            DefaultApplicationName =
+                processPath is null
+                ? null
+                : OperatingSystem.IsWindows()
+                ? Path.GetFileNameWithoutExtension(processPath)
+                : Path.GetFileName(processPath);
 #if DEBUG
             Debug = new DebugValidationLogger();
 #endif
 #if TRACE
             Trace = new TraceValidationLogger();
 #endif
+
+            static String? GetProcessPath()
+            {
+                if (Environment.ProcessPath is not null)
+                    return Environment.ProcessPath;
+                var startOfCommandLine = Environment.CommandLine.SplitCommandLineArguments().Take(1).ToArray();
+                return
+                    startOfCommandLine.Length == 1
+                    ? startOfCommandLine[0].element
+                    : null;
+            }
         }
+
+        public static String? DefaultApplicationName { get; }
 
 #if DEBUG
         public static IValidationLogger Debug { get; }

@@ -25,7 +25,7 @@ namespace Palmtree.Collections
         {
             ArgumentNullException.ThrowIfNull(dataSource);
 
-            _queue = new SortedDictionary<UInt64, ELEMENT_T>();
+            _queue = [];
             _indexOfStart = 0;
             _indexOfEnd = 0;
             foreach (var value in dataSource)
@@ -137,19 +137,14 @@ namespace Palmtree.Collections
         {
             if (_queue.Count > 0)
             {
-                if (_queue.Keys.First() != _indexOfStart)
-                    throw new Exception();
-                if (_queue.Keys.Last() + 1 != _indexOfEnd)
-                    throw new Exception();
-                if ((UInt32)_queue.Count != checked(_indexOfEnd - _indexOfStart))
-                    throw new Exception();
+                Validation.Assert(_queue.Keys.First() == _indexOfStart);
+                Validation.Assert(_queue.Keys.Last() + 1 == _indexOfEnd);
+                Validation.Assert((UInt32)_queue.Count == checked(_indexOfEnd - _indexOfStart));
             }
             else
             {
-                if (_indexOfStart != 0)
-                    throw new Exception();
-                if (_indexOfEnd != 0)
-                    throw new Exception();
+                Validation.Assert(_indexOfStart == 0);
+                Validation.Assert(_indexOfEnd == 0);
             }
         }
 #endif

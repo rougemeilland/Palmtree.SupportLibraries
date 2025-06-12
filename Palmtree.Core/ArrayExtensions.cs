@@ -881,14 +881,5 @@ namespace Palmtree
                 : key2 is null
                 ? 0
                 : -1;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Assert(Boolean condition)
-        {
-#if DEBUG
-            if (!condition)
-                throw new Exception();
-#endif
-        }
     }
 }

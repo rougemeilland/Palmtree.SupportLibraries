@@ -153,7 +153,7 @@ namespace Palmtree.IO.StreamFilters
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-            ReadOnlySpan<Byte> buffer = stackalloc Byte[] { value };
+            ReadOnlySpan<Byte> buffer = [value];
             _baseStream.WriteBytes(buffer);
         }
 

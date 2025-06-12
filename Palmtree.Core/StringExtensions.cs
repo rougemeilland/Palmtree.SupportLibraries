@@ -10,7 +10,7 @@ namespace Palmtree
 {
     public static partial class StringExtensions
     {
-        private static readonly Char[] _delimiterOfCommandParameters = new[] { ' ', '\t' };
+        private static readonly Char[] _delimiterOfCommandParameters = [' ', '\t'];
 
         static StringExtensions()
         {
@@ -305,7 +305,7 @@ namespace Palmtree
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to parse command line.: \"{arg}\"", ex);
+                throw new ApplicationException($"Failed to parse command line.: \"{arg}\"", ex);
             }
         }
 
@@ -389,7 +389,7 @@ namespace Palmtree
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Failed to parse command line.: \"{commandLine}\"", ex);
+                    throw new ApplicationException($"Failed to parse command line.: \"{commandLine}\"", ex);
                 }
             }
         }
@@ -556,8 +556,7 @@ namespace Palmtree
             if (s1.Length > s2.Length)
                 (s2, s1) = (s1, s2);
 #if DEBUG
-            if (s1.Length > s2.Length)
-                throw new Exception();
+            Validation.Assert(s1.Length <= s2.Length);
 #endif
             var found =
                 s1
@@ -581,8 +580,7 @@ namespace Palmtree
             if (s1.Length > s2.Length)
                 (s2, s1) = (s1, s2);
 #if DEBUG
-            if (s1.Length > s2.Length)
-                throw new Exception();
+            Validation.Assert(s1.Length <= s2.Length);
 #endif
             var found =
                 s1.Reverse()

@@ -38,7 +38,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
             _baseZipArchiveFile = zipArchiveFile;
             _baseDirectory = baseDirectory;
             _maximumVolumeSize = maximumVolumeSize;
-            _volumeDisks = new BigList<(FilePath volumeDiskFile, UInt64 volumeDiskSize)>();
+            _volumeDisks = [];
             _isDisposed = false;
             _currentBaseStream = firstVolumeStream.WithCache();
             _isLocked = false;

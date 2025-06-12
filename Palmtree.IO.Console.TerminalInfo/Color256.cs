@@ -29,10 +29,10 @@ namespace Palmtree.IO.Console
 
         private Color256(Int32 colorCode)
         {
-            if (!colorCode.InRange(0, 256))
-                throw new ArgumentOutOfRangeException(nameof(colorCode));
+            ArgumentOutOfRangeException.ThrowIfNegative(colorCode);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(colorCode, 256);
 
-            _colorNumber = checked((Byte)colorCode);
+            _colorNumber = (Byte)colorCode;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Palmtree.IO.Console
         /// <summary>
         /// 24 段階のグレースケールの配列です。要素番号が大きいほど明るくなります。
         /// </summary>
-        public static readonly ReadOnlyMemory<Color256> GrayScales = Enumerable.Repeat(232, 24).Select(code => new Color256(code)).ToArray();
+        public static readonly IReadOnlyArray<Color256> GrayScales = new ReadOnlyArray<Color256>([.. Enumerable.Repeat(232, 24).Select(code => new Color256(code))]);
 
         /// <summary>
         /// 色の RGB 成分を取得します。

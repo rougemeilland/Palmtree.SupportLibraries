@@ -96,7 +96,7 @@ namespace Palmtree.IO.Serialization
                 row.Select(column => SerializeColumn(column, option)));
 
         private static String SerializeColumn(String column, CsvSerializerOption option)
-            => column.IndexOfAny(new[] { option.ColumnDelimiterChar, _doubleQuoteChar, _carriageReturnChar, _lineFeedChar }) < 0
+            => column.IndexOfAny([option.ColumnDelimiterChar, _doubleQuoteChar, _carriageReturnChar, _lineFeedChar]) < 0
                 ? column
                 : $"{_doubleQuoteChar}{column.Replace(_doubleQuoteChar.ToString(), _twoDoubleQuotesChars)}{_doubleQuoteChar}";
 

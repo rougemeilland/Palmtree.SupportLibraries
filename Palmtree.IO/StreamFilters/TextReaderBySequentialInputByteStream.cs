@@ -12,7 +12,7 @@ namespace Palmtree.IO.StreamFilters
         private Boolean _isDisposed;
 
         public TextReaderBySequentialInputByteStream(ISequentialInputByteStream baseStream, Stream rawStream, Encoding? encoding = null, Boolean detectEncodingFromByteOrderMarks = true, Int32 bufferSize = -1, Boolean leaveOpen = false)
-            : base(rawStream, encoding, detectEncodingFromByteOrderMarks, bufferSize, leaveOpen)
+            : base(rawStream, encoding, detectEncodingFromByteOrderMarks, bufferSize, true)
         {
             ArgumentNullException.ThrowIfNull(baseStream);
 
@@ -23,6 +23,8 @@ namespace Palmtree.IO.StreamFilters
 
         protected override void Dispose(Boolean disposing)
         {
+            base.Dispose(disposing);
+
             if (!_isDisposed)
             {
                 if (disposing)
@@ -33,8 +35,6 @@ namespace Palmtree.IO.StreamFilters
 
                 _isDisposed = true;
             }
-
-            base.Dispose(disposing);
         }
     }
 }

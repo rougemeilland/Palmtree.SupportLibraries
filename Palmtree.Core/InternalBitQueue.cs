@@ -291,8 +291,7 @@ namespace Palmtree
                 ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, BIT_LENGTH_OF_UINT64);
 #if DEBUG
-                if (_lastBitArrayLength >= BIT_LENGTH_OF_UINT64)
-                    throw new Exception();
+                Validation.Assert(_lastBitArrayLength < BIT_LENGTH_OF_UINT64);
 #endif
                 if (_firstBitArrayLength <= 0 && _queue.Length > 0)
                 {
@@ -343,17 +342,11 @@ namespace Palmtree
 #if DEBUG
             private void Check()
             {
-                if (!_firstBitArrayLength.InRange(0, BIT_LENGTH_OF_UINT64))
-                    throw new Exception();
-                if (!_lastBitArrayLength.InRange(0, BIT_LENGTH_OF_UINT64))
-                    throw new Exception();
-                if ((_firstBitArray & (UInt64.MaxValue << _firstBitArrayLength)) != 0)
-                    throw new Exception();
-                if ((_lastBitArray & (UInt64.MaxValue << _lastBitArrayLength)) != 0)
-                    throw new Exception();
-                if (Length != _firstBitArrayLength + _queue.Length * BIT_LENGTH_OF_UINT64 + _lastBitArrayLength)
-                    throw new Exception();
-
+                Validation.Assert(_firstBitArrayLength.InRange(0, BIT_LENGTH_OF_UINT64));
+                Validation.Assert(_lastBitArrayLength.InRange(0, BIT_LENGTH_OF_UINT64));
+                Validation.Assert((_firstBitArray & (UInt64.MaxValue << _firstBitArrayLength)) == 0);
+                Validation.Assert((_lastBitArray & (UInt64.MaxValue << _lastBitArrayLength)) == 0);
+                Validation.Assert(Length == _firstBitArrayLength + _queue.Length * BIT_LENGTH_OF_UINT64 + _lastBitArrayLength);
             }
 #endif
         }
@@ -737,19 +730,15 @@ namespace Palmtree
 #if DEBUG
         private void CheckArray()
         {
-            if (_bitLength < 0)
-                throw new Exception();
-            if (_bitLength > BIT_LENGTH_OF_UINT64)
-                throw new Exception();
+            Validation.Assert(_bitLength >= 0);
+            Validation.Assert(_bitLength <= BIT_LENGTH_OF_UINT64);
             if (_bitLength < BIT_LENGTH_OF_UINT64)
             {
                 var mask = UInt64.MaxValue << _bitLength;
-                if ((_bitArray & mask) != 0)
-                    throw new Exception();
+                Validation.Assert((_bitArray & mask) == 0);
             }
 
-            if (_bitLength < BIT_LENGTH_OF_UINT64 && _additionalBitArray is not null && _additionalBitArray.Length > 0)
-                throw new Exception();
+            Validation.Assert(_bitLength >= BIT_LENGTH_OF_UINT64 || _additionalBitArray is null || _additionalBitArray.Length <= 0);
         }
 #endif
 

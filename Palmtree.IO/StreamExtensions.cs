@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using Palmtree;
 using Palmtree.IO.StreamFilters;
 
@@ -14,8 +15,15 @@ namespace Palmtree.IO
         private const Int32 _COPY_TO_DEFAULT_BUFFER_SIZE = 81920;
         private const Int32 _WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE = 81920;
         private const Int32 _DEFAULT_TEXT_STREAM_BUFFER_SIZE = 1024;
+        private const String _lineSeparator = "--------------------";
 
         private static readonly Encoding _defaultTextStreamEncoding;
+        private static readonly Char[] _textLineSeparator = ['\r', '\n'];
+#if NET9_0_OR_GREATER
+        private static readonly Lock _lockObject = new();
+#else
+        private static readonly Object _lockObject = new();
+#endif
 
         static StreamExtensions()
         {
@@ -533,7 +541,7 @@ namespace Palmtree.IO
 
         #endregion
 
-        public static IValidationLogger AsValidationListener(this TextWriter writer, Int32 indentSize = 4, Boolean leaveOpen = false)
+        public static IDisposableValidationLogger AsValidationLogger(this TextWriter writer, Int32 indentSize = 4, Boolean leaveOpen = false)
         {
             ArgumentNullException.ThrowIfNull(writer);
             ArgumentOutOfRangeException.ThrowIfNegative(indentSize);
@@ -1340,8 +1348,7 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(buffer);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
 #endif
 
             var length = sourceStream.Read(buffer.AsSpan(offset));
@@ -2258,8 +2265,7 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(buffer);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
 #endif
 
             var bufferSpan = buffer.AsReadOnlySpan(offset);
@@ -2284,10 +2290,8 @@ namespace Palmtree.IO
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
-            if (count > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
+            Validation.Assert(count <= Int32.MaxValue);
 #endif
 
             destinationStream.Write(buffer.AsReadOnlySpan(offset, count));
@@ -2368,8 +2372,7 @@ namespace Palmtree.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteByte(this ISequentialOutputByteStream destinationStream, Byte value)
         {
-            Span<Byte> buffer = stackalloc Byte[1];
-            buffer[0] = value;
+            Span<Byte> buffer = [value];
             var length = destinationStream.Write(buffer);
             Validation.Assert(length > 0);
         }
@@ -2408,8 +2411,7 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(buffer);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
 #endif
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset));
@@ -2449,10 +2451,8 @@ namespace Palmtree.IO
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
-            if (count > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
+            Validation.Assert(count <= Int32.MaxValue);
 #endif
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset, count));
@@ -2511,8 +2511,7 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(buffer);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
 #endif
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset));
@@ -2545,10 +2544,8 @@ namespace Palmtree.IO
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
 #if DEBUG
-            if (offset > Int32.MaxValue)
-                throw new Exception();
-            if (count > Int32.MaxValue)
-                throw new Exception();
+            Validation.Assert(offset <= Int32.MaxValue);
+            Validation.Assert(count <= Int32.MaxValue);
 #endif
 
             destinationStream.InternalWriteBytes(buffer.AsReadOnlySpan(offset, count));
@@ -3074,6 +3071,88 @@ namespace Palmtree.IO
             Span<Byte> buffer = stackalloc Byte[sizeof(Decimal)];
             buffer.SetValueBE(value);
             destinationStream.InternalWriteBytes(buffer);
+        }
+
+        #endregion
+
+        #region WriteLog
+
+        public static void WriteLog(this TextWriter writer, String message) => writer.WriteLog(null, LogCategory.None, message);
+        public static void WriteLog(this TextWriter writer, LogCategory category, String message) => writer.WriteLog(null, category, message);
+        public static void WriteLog(this TextWriter writer, String applicationName, String message) => writer.WriteLog(applicationName, LogCategory.None, message);
+
+        public static void WriteLog(this TextWriter writer, String? applicationName, LogCategory category, String message)
+        {
+            lock (_lockObject)
+            {
+                writer.WriteLine((String?)$"{GetApplicationNamePartText(applicationName)}{GetCategoryPartText(category)}{message}");
+            }
+
+            static String GetApplicationNamePartText(String? applicationName)
+            {
+                return
+                    applicationName == ""
+                    ? ""
+                    : applicationName is not null
+                    ? $"{applicationName}:"
+                    : Validation.DefaultApplicationName is not null
+                    ? $"{Validation.DefaultApplicationName}:"
+                    : "";
+            }
+
+            static String GetCategoryPartText(LogCategory category)
+            {
+                return
+                    category switch
+                    {
+                        LogCategory.None => "",
+                        LogCategory.Information => "INFORMATION:",
+                        LogCategory.Warning => "WARNING:",
+                        LogCategory.Error => "ERROR:",
+                        LogCategory.Critical => "CRITICAL:",
+                        _ => throw Validation.GetFailErrorException($"Unexpected {nameof(LogCategory)} value.: {category}"),
+                    };
+            }
+        }
+
+        public static void WriteLog(this TextWriter writer, Exception ex) => writer.WriteLog(null, ex);
+
+        public static void WriteLog(this TextWriter writer, String? applicationName, Exception ex)
+        {
+            lock (_lockObject)
+            {
+                WriteExceptionLog(writer, applicationName, ex, true, "");
+            }
+
+            static void WriteExceptionLog(TextWriter writer, String? applicationName, Exception ex, Boolean writePrefix, String indent)
+            {
+                if (writePrefix)
+                {
+                    var category = ex is AssertionException ? LogCategory.Critical : LogCategory.Error;
+                    writer.WriteLog(applicationName, category, $"{indent}{(ex is ApplicationException ? "" : $"({ex.GetType().FullName}) ")}{ex.Message}");
+                }
+                else
+                {
+                    writer.WriteLine($"{indent}{(ex is ApplicationException ? "" : $"({ex.GetType().FullName}) ")}{ex.Message}");
+                }
+
+                foreach (var stackTraceLine in (ex.StackTrace ?? "").Split(_textLineSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                    writer.WriteLine($"{indent}    {stackTraceLine}");
+                if (ex.InnerException is not null)
+                {
+                    writer.WriteLine(_lineSeparator);
+                    WriteExceptionLog(writer, null, ex.InnerException, false, $"{indent}    ");
+                }
+
+                if (ex is AggregateException aggregateException)
+                {
+                    foreach (var innerException in aggregateException.InnerExceptions)
+                    {
+                        writer.WriteLine(_lineSeparator);
+                        WriteExceptionLog(writer, null, innerException, false, $"{indent}    ");
+                    }
+                }
+            }
         }
 
         #endregion
@@ -3867,8 +3946,7 @@ namespace Palmtree.IO
                     destinationWindow = destinationWindow[partialBuffer.Length..];
                 }
 #if DEBUG
-                if (!destinationWindow.IsEmpty)
-                    throw new Exception();
+                Validation.Assert(destinationWindow.IsEmpty);
 #endif
                 return buffer;
             }

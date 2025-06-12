@@ -13,9 +13,9 @@ namespace Palmtree
     public class BigArray<ELEMENT_T>
         : IIndexer<UInt32, ELEMENT_T>, IReadOnlyIndexer<UInt32, ELEMENT_T>, IEnumerable<ELEMENT_T>
     {
-        const Int32 _SUB_ATTAY_SIZE = (Int32)((Int32.MaxValue + 1UL) / 2);
-        const Int32 _SUB_ARRAY_SIZE_BITS = 30;
-        const UInt32 _SUB_ARRAY_SIZE_MASK = (1U << 30) - 1;
+        private const Int32 _SUB_ATTAY_SIZE = (Int32)((Int32.MaxValue + 1UL) / 2);
+        private const Int32 _SUB_ARRAY_SIZE_BITS = 30;
+        private const UInt32 _SUB_ARRAY_SIZE_MASK = (1U << 30) - 1;
         private ELEMENT_T[][] _array;
 
         /// <summary>
@@ -28,10 +28,8 @@ namespace Palmtree
         {
 #if DEBUG
             const UInt32 _TEST_VALUE = 0x12345678U;
-            if (_TEST_VALUE / _SUB_ATTAY_SIZE != (_TEST_VALUE >> _SUB_ARRAY_SIZE_BITS))
-                throw new Exception();
-            if (_TEST_VALUE % _SUB_ATTAY_SIZE != (_TEST_VALUE & _SUB_ARRAY_SIZE_MASK))
-                throw new Exception();
+            Validation.Assert(_TEST_VALUE / _SUB_ATTAY_SIZE == (_TEST_VALUE >> _SUB_ARRAY_SIZE_BITS));
+            Validation.Assert(_TEST_VALUE % _SUB_ATTAY_SIZE == (_TEST_VALUE & _SUB_ARRAY_SIZE_MASK));
 #endif
             Length = length;
             _array = new ELEMENT_T[(Int32)(((UInt64)length + _SUB_ATTAY_SIZE - 1) >> _SUB_ARRAY_SIZE_BITS)][];
@@ -45,7 +43,7 @@ namespace Palmtree
 
         private BigArray(ELEMENT_T[] array)
         {
-            _array = new[] { array };
+            _array = [array];
         }
 
         /// <summary>
@@ -147,8 +145,7 @@ namespace Palmtree
                     totalLength += (UInt32)_array[index].Length;
                 }
 
-                if (totalLength != length)
-                    throw new Exception();
+                Validation.Assert(totalLength == length);
 #endif
             }
         }
@@ -176,7 +173,7 @@ namespace Palmtree
         public static implicit operator ELEMENT_T[](BigArray<ELEMENT_T> array)
         {
             if (array._array.Length < 1)
-                return Array.Empty<ELEMENT_T>();
+                return [];
             else if (array._array.Length == 1)
                 return array._array[0];
             else

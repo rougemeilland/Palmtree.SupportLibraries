@@ -16,7 +16,7 @@ namespace Test.Zip.MultiVolume
             DeflateCoderPlugin.EnablePlugin();
         }
 
-        static void Main(string[] args)
+        private static void Main(String[] args)
         {
             var baseDirectory = new DirectoryPath(args[0]);
 
@@ -43,7 +43,7 @@ namespace Test.Zip.MultiVolume
             _ = Console.ReadLine();
         }
 
-        private static string GetFileName(string text)
+        private static String GetFileName(String text)
         {
             var index = text.IndexOf('_');
             if (index < 0)
@@ -52,48 +52,48 @@ namespace Test.Zip.MultiVolume
                 return text[(index + 1)..];
         }
 
-        private static void Test1_2番目以降のローカルヘッダがボリュームの先頭にある場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test1_2番目以降のローカルヘッダがボリュームの先頭にある場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, checked((ushort)(VOLUME_SIZE - 69)), 0, false);
+            const UInt64 VOLUME_SIZE = 1024;
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, checked((UInt16)(VOLUME_SIZE - 69)), 0, false);
         }
 
-        private static void Test2_データディスクリプタがボリュームの先頭にある場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test2_データディスクリプタがボリュームの先頭にある場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, checked((ushort)(VOLUME_SIZE - 69)), 0, true);
+            const UInt64 VOLUME_SIZE = 1024;
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, checked((UInt16)(VOLUME_SIZE - 69)), 0, true);
         }
 
-        private static void Test3_最初のセントラルディレクトリヘッダがボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test3_最初のセントラルディレクトリヘッダがボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = 1024;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, 16, checked((ushort)(VOLUME_SIZE - 130)), false);
+            const UInt64 VOLUME_SIZE = 1024;
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, 16, checked((UInt16)(VOLUME_SIZE - 130)), false);
         }
 
-        private static void Test4_ZIP64_EOCDR_がボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test4_ZIP64_EOCDR_がボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = (uint.MaxValue + 100UL) * 2;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, uint.MaxValue - 97, 0, false);
+            const UInt64 VOLUME_SIZE = (UInt32.MaxValue + 100UL) * 2;
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, UInt32.MaxValue - 97, 0, false);
         }
 
-        private static void Test5_ZIP64_EOCDR_があるボリュームディスクにセントラルディレクトリヘッダが部分的に含まれている場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test5_ZIP64_EOCDR_があるボリュームディスクにセントラルディレクトリヘッダが部分的に含まれている場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = (uint.MaxValue + 100UL) * 2;
-            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 4, uint.MaxValue / 2 - 70, 0, false);
+            const UInt64 VOLUME_SIZE = (UInt32.MaxValue + 100UL) * 2;
+            DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 4, UInt32.MaxValue / 2 - 70, 0, false);
         }
-        private static void Test6_EOCDR_がボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test6_EOCDR_がボリュームディスクの先頭にある場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = 1024;
+            const UInt64 VOLUME_SIZE = 1024;
             DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 2, VOLUME_SIZE - 180, 0, false);
         }
 
-        private static void Test7_EOCDR_があるボリュームディスクにセントラルディレクトリヘッダが部分的に含まれている場合(DirectoryPath baseDirectory, string fileName)
+        private static void Test7_EOCDR_があるボリュームディスクにセントラルディレクトリヘッダが部分的に含まれている場合(DirectoryPath baseDirectory, String fileName)
         {
-            const ulong VOLUME_SIZE = 1024;
+            const UInt64 VOLUME_SIZE = 1024;
             DoTest1(baseDirectory, fileName, VOLUME_SIZE, ZipWriterFlags.None, 4, VOLUME_SIZE / 2 - 150, 0, false);
         }
 
-        private static void DoTest1(DirectoryPath baseDirectory, string fileName, ulong volumeSize, ZipWriterFlags flag, int numberOfEntries, ulong contentSize, ushort commentSize, bool useDatadescriptor)
+        private static void DoTest1(DirectoryPath baseDirectory, String fileName, UInt64 volumeSize, ZipWriterFlags flag, Int32 numberOfEntries, UInt64 contentSize, UInt16 commentSize, Boolean useDatadescriptor)
         {
             var zipArchive = baseDirectory.GetFile(fileName);
             using (var zipWriter = zipArchive.CreateAsZipFile(volumeSize))
@@ -102,7 +102,7 @@ namespace Test.Zip.MultiVolume
                 for (var count = 1; count <= numberOfEntries; ++count)
                 {
                     Console.WriteLine($"書き込み中 {count}/{numberOfEntries}... \"{zipArchive.FullName}\"");
-                    var file = zipWriter.CreateEntry($"ファイル{count}.bin", new string([.. RandomSequence.GetAsciiCharSequence().Take(commentSize)]));
+                    var file = zipWriter.CreateEntry($"ファイル{count}.bin", new String([.. RandomSequence.GetAsciiCharSequence().Take(commentSize)]));
                     file.IsFile = true;
                     file.CreationTimeUtc = DateTime.Now;
                     file.LastAccessTimeUtc = DateTime.Now;
@@ -148,27 +148,27 @@ namespace Test.Zip.MultiVolume
             }
         }
 
-        private static void WriteContentData(ZipDestinationEntry fileEntry, ulong contentLength)
+        private static void WriteContentData(ZipDestinationEntry fileEntry, UInt64 contentLength)
         {
-            const ulong BUFFER_LENGTH = 1024UL * 1024UL;
+            const UInt64 BUFFER_LENGTH = 1024UL * 1024UL;
 
-            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (ulong)(sizeof(uint) + sizeof(ulong)));
+            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (UInt64)(sizeof(UInt32) + sizeof(UInt64)));
 
-            var crcHolder = new ValueHolder<(uint crc, ulong length)>();
+            var crcHolder = new ValueHolder<(UInt32 crc, UInt64 length)>();
             using var outStream1 = fileEntry.CreateContentStream();
-            var dataLength = checked(contentLength - (sizeof(uint) + sizeof(ulong)));
+            var dataLength = checked(contentLength - (sizeof(UInt32) + sizeof(UInt64)));
             outStream1.WriteUInt64LE(dataLength);
             using (var outStream2 = outStream1.WithCrc32Calculation(crcHolder, true))
             {
-                var buffer = new byte[BUFFER_LENGTH];
+                var buffer = new Byte[BUFFER_LENGTH];
                 for (var index = 0; index < buffer.Length; ++index)
-                    buffer[index] = unchecked((byte)index);
+                    buffer[index] = unchecked((Byte)index);
                 var remain = dataLength;
                 while (remain > 0)
                 {
-                    var length = checked((int)remain.Minimum(BUFFER_LENGTH));
+                    var length = checked((Int32)remain.Minimum(BUFFER_LENGTH));
                     outStream2.WriteBytes(buffer, 0, length);
-                    remain -= checked((uint)length);
+                    remain -= checked((UInt32)length);
                 }
             }
 
@@ -181,28 +181,28 @@ namespace Test.Zip.MultiVolume
             {
                 try
                 {
-                    var crcHolder = new ValueHolder<(uint crc, ulong length)>();
+                    var crcHolder = new ValueHolder<(UInt32 crc, UInt64 length)>();
                     using var inStream1 = entry.OpenContentStream();
                     var contentLength = inStream1.ReadUInt64LE();
                     using (var inStream2 = inStream1.WithCrc32Calculation(crcHolder, true))
                     {
-                        var buffer = new byte[1024 * 1024];
+                        var buffer = new Byte[1024 * 1024];
                         var count = 0UL;
                         while (count < contentLength)
                         {
-                            var length = inStream2.ReadBytes(buffer.Slice(0, checked((int)(contentLength - count).Minimum((ulong)buffer.Length))));
+                            var length = inStream2.ReadBytes(buffer.Slice(0, checked((Int32)(contentLength - count).Minimum((UInt64)buffer.Length))));
                             if (length <= 0)
-                                throw new Exception($"データが短すぎます。: 期待された長さ=0x{contentLength + sizeof(ulong) + sizeof(uint):x16}, 実際の長さ=0x{count + sizeof(ulong):x16}, entry={entry}");
+                                throw new ApplicationException($"データが短すぎます。: 期待された長さ=0x{contentLength + sizeof(UInt64) + sizeof(UInt32):x16}, 実際の長さ=0x{count + sizeof(UInt64):x16}, entry={entry}");
                             checked
                             {
-                                count += (ulong)length;
+                                count += (UInt64)length;
                             }
                         }
                     }
 
                     var crc = inStream1.ReadUInt32LE();
                     if (crc != crcHolder.Value.crc)
-                        throw new Exception($"データの内容が一致しません。: entry={entry}");
+                        throw new ApplicationException($"データの内容が一致しません。: entry={entry}");
                 }
                 catch (Exception ex)
                 {

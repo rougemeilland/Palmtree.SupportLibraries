@@ -18,8 +18,8 @@ namespace Palmtree.Text
             }
 
             public override Object Clone() => new EncodingWithoutPreamble(_sourceEncoding);
-            public override Byte[] GetPreamble() => Array.Empty<Byte>();
-            public override ReadOnlySpan<Byte> Preamble => ReadOnlySpan<Byte>.Empty;
+            public override Byte[] GetPreamble() => [];
+            public override ReadOnlySpan<Byte> Preamble => [];
 
             public override String BodyName => _sourceEncoding.BodyName;
             public override Int32 CodePage => _sourceEncoding.CodePage;

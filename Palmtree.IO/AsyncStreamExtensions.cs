@@ -3710,8 +3710,7 @@ namespace Palmtree.IO
                 destinationWindow = destinationWindow[partialBuffer.Length..];
             }
 #if DEBUG
-            if (!destinationWindow.IsEmpty)
-                throw new Exception();
+            Validation.Assert(destinationWindow.IsEmpty);
 #endif
             return buffer;
         }

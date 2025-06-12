@@ -52,8 +52,8 @@ namespace Palmtree
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            _crcTableOfCommonCrc32 = new UInt32[]
-            {
+            _crcTableOfCommonCrc32 =
+            [
                 0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,
                 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
                 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -118,10 +118,10 @@ namespace Palmtree
                 0xbad03605, 0xcdd70693, 0x54de5729, 0x23d967bf,
                 0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94,
                 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d,
-            };
+            ];
 
-            _crcTableOfCrc24ForRadix64 = new UInt32[]
-            {
+            _crcTableOfCrc24ForRadix64 =
+            [
                 0x00000000, 0x00864cfb, 0x008ad50d, 0x000c99f6,
                 0x0093e6e1, 0x0015aa1a, 0x001933ec, 0x009f7f17,
                 0x00a18139, 0x0027cdc2, 0x002b5434, 0x00ad18cf,
@@ -186,7 +186,7 @@ namespace Palmtree
                 0x00709df7, 0x00f6d10c, 0x00fa48fa, 0x007c0401,
                 0x0042fa2f, 0x00c4b6d4, 0x00c82f22, 0x004e63d9,
                 0x00d11cce, 0x00575035, 0x005bc9c3, 0x00dd8538,
-            };
+            ];
 
             _commonCrc32 = new Crc32Calculator();
             _crc24ForRadix64 = new Crc24ForRadix64Calculator();
@@ -1444,13 +1444,13 @@ namespace Palmtree
 
             // UTF-16かどうかのチェック
             var isBinary = false;
-            for (Int32 i = 0; i < len; i++)
+            for (var index = 0; index < len; index++)
             {
-                var b1 = bytes[i];
+                var b1 = bytes[index];
                 if (b1 <= 0x06 || b1.IsAnyOf((Byte)0x7f, (Byte)0xff))
                 {
                     isBinary = true;
-                    if (b1 == 0x00 && i < len - 1 && bytes[i + 1] <= 0x7f)
+                    if (b1 == 0x00 && index < len - 1 && bytes[index + 1] <= 0x7f)
                         return Encoding.Unicode;
                 }
             }
@@ -1460,9 +1460,9 @@ namespace Palmtree
 
             // ASCIIかどうかのチェック
             var notJapanese = true;
-            for (Int32 i = 0; i < len; i++)
+            for (var index = 0; index < len; index++)
             {
-                if (bytes[i] is _BYTE_ESCAPE_CHAR or >= 0x80)
+                if (bytes[index] is _BYTE_ESCAPE_CHAR or >= 0x80)
                 {
                     notJapanese = false;
                     break;
@@ -1473,11 +1473,11 @@ namespace Palmtree
                 return Encoding.ASCII;
 
             // JISコードかどうかのチェック
-            for (Int32 i = 0; i < len - 2; i++)
+            for (var index = 0; index < len - 2; index++)
             {
-                var b1 = bytes[i];
-                var b2 = bytes[i + 1];
-                var b3 = bytes[i + 2];
+                var b1 = bytes[index];
+                var b2 = bytes[index + 1];
+                var b3 = bytes[index + 2];
 
                 if (b1 == _BYTE_ESCAPE_CHAR)
                 {
@@ -1489,9 +1489,9 @@ namespace Palmtree
                         return Encoding.GetEncoding("iso-2022-jp");//JIS_ASC
                     else if (b2 == _BYTE_OPEN_PARENTHESIS_CHAR && b3 == _BYTE_I_CHAR)
                         return Encoding.GetEncoding("iso-2022-jp");//JIS_KANA
-                    if (i < len - 3)
+                    if (index < len - 3)
                     {
-                        var b4 = bytes[i + 3];
+                        var b4 = bytes[index + 3];
                         if (b2 == _BYTE_DOLLAR_CHAR &&
                             b3 == _BYTE_OPEN_PARENTHESIS_CHAR &&
                             b4 == _BYTE_D_CHAR)
@@ -1499,12 +1499,12 @@ namespace Palmtree
                             return Encoding.GetEncoding("iso-2022-jp");//JIS_0212
                         }
 
-                        if (i < len - 5 &&
+                        if (index < len - 5 &&
                             b2 == _BYTE_AMPERSAND_CHAR &&
                             b3 == _BYTE_AT_MARK_CHAR &&
                             b4 == _BYTE_ESCAPE_CHAR &&
-                            bytes[i + 4] == _BYTE_DOLLAR_CHAR &&
-                            bytes[i + 5] == _BYTE_B_CHAR)
+                            bytes[index + 4] == _BYTE_DOLLAR_CHAR &&
+                            bytes[index + 5] == _BYTE_B_CHAR)
                         {
                             return Encoding.GetEncoding("iso-2022-jp");//JIS_0208 1990
                         }
@@ -1516,64 +1516,64 @@ namespace Palmtree
             var count_shift_jis = 0;
             var count_euc = 0;
             var count_utf8 = 0;
-            for (Int32 i = 0; i < len - 1; i++)
+            for (var index = 0; index < len - 1; index++)
             {
-                var b1 = bytes[i];
-                var b2 = bytes[i + 1];
+                var b1 = bytes[index];
+                var b2 = bytes[index + 1];
                 if ((b1.IsBetween((Byte)0x81, (Byte)0x9f) || b1.IsBetween((Byte)0xe0, (Byte)0xfc)) &&
                     (b2.IsBetween((Byte)0x40, (Byte)0x7e) || b2.IsBetween((Byte)0x80, (Byte)0xfc)))
                 {
                     //SJIS_C
                     count_shift_jis += 2;
-                    ++i;
+                    ++index;
                 }
             }
 
-            for (Int32 i = 0; i < len - 1; i++)
+            for (var index = 0; index < len - 1; index++)
             {
-                var b1 = bytes[i];
-                var b2 = bytes[i + 1];
+                var b1 = bytes[index];
+                var b2 = bytes[index + 1];
                 if (b1.IsBetween((Byte)0xa1, (Byte)0xfe) && b2.IsBetween((Byte)0xa1, (Byte)0xfe) ||
                     b1 == 0x8e && b2.IsBetween((Byte)0xa1, (Byte)0xdf))
                 {
                     //EUC_C
                     //EUC_KANA
                     count_euc += 2;
-                    ++i;
+                    ++index;
                 }
-                else if (i < len - 2)
+                else if (index < len - 2)
                 {
                     if (b1 == 0x8f &&
                         b2.IsBetween((Byte)0xa1, (Byte)0xfe) &&
-                        bytes[i + 2].IsBetween((Byte)0xa1, (Byte)0xfe))
+                        bytes[index + 2].IsBetween((Byte)0xa1, (Byte)0xfe))
                     {
                         //EUC_0212
                         count_euc += 3;
-                        i += 2;
+                        index += 2;
                     }
                 }
             }
 
-            for (Int32 i = 0; i < len - 1; i++)
+            for (var index = 0; index < len - 1; index++)
             {
-                var b1 = bytes[i];
-                var b2 = bytes[i + 1];
+                var b1 = bytes[index];
+                var b2 = bytes[index + 1];
                 if (b1.IsBetween((Byte)0xc0, (Byte)0xdf) &&
                     b2.IsBetween((Byte)0x80, (Byte)0xbf))
                 {
                     //UTF8
                     count_utf8 += 2;
-                    ++i;
+                    ++index;
                 }
-                else if (i < len - 2)
+                else if (index < len - 2)
                 {
                     if (b1.IsBetween((Byte)0xe0, (Byte)0xef) &&
                         b2.IsBetween((Byte)0x80, (Byte)0xbf) &&
-                        bytes[i + 2].IsBetween((Byte)0x80, (Byte)0xbf))
+                        bytes[index + 2].IsBetween((Byte)0x80, (Byte)0xbf))
                     {
                         //UTF8
                         count_utf8 += 3;
-                        i += 2;
+                        index += 2;
                     }
                 }
             }
@@ -1863,13 +1863,13 @@ namespace Palmtree
             }
             else
             {
-                Span<Byte> value = stackalloc[]
-                {
+                Span<Byte> value =
+                [
                     array[startIndex + 3],
                     array[startIndex + 2],
                     array[startIndex + 1],
                     array[startIndex + 0],
-                };
+                ];
                 return BitConverter.ToSingle(value);
             }
         }
@@ -1883,13 +1883,13 @@ namespace Palmtree
             }
             else
             {
-                Span<Byte> value = stackalloc[]
-                {
+                Span<Byte> value =
+                [
                     array[3],
                     array[2],
                     array[1],
                     array[0],
-                };
+                ];
                 return BitConverter.ToSingle(value);
             }
         }
@@ -1907,8 +1907,8 @@ namespace Palmtree
             }
             else
             {
-                ReadOnlySpan<Byte> value = stackalloc[]
-                {
+                ReadOnlySpan<Byte> value =
+                [
                     array[startIndex + 7],
                     array[startIndex + 6],
                     array[startIndex + 5],
@@ -1917,7 +1917,7 @@ namespace Palmtree
                     array[startIndex + 2],
                     array[startIndex + 1],
                     array[startIndex + 0],
-                };
+                ];
                 return BitConverter.ToDouble(value);
             }
         }
@@ -1931,8 +1931,8 @@ namespace Palmtree
             }
             else
             {
-                ReadOnlySpan<Byte> value = stackalloc[]
-                {
+                ReadOnlySpan<Byte> value =
+                [
                     array[7],
                     array[6],
                     array[5],
@@ -1941,7 +1941,7 @@ namespace Palmtree
                     array[2],
                     array[1],
                     array[0],
-                };
+                ];
                 return BitConverter.ToDouble(value);
             }
         }
@@ -1953,26 +1953,26 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalLE(this Byte[] array, Int32 startIndex)
         {
-            ReadOnlySpan<Int32> buffer = stackalloc Int32[]
-            {
+            ReadOnlySpan<Int32> buffer =
+            [
                 array.ToInt32LE(startIndex + sizeof(Int32) * 0),
                 array.ToInt32LE(startIndex + sizeof(Int32) * 1),
                 array.ToInt32LE(startIndex + sizeof(Int32) * 2),
                 array.ToInt32LE(startIndex + sizeof(Int32) * 3),
-            };
+            ];
             return new Decimal(buffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalLE(this ReadOnlySpan<Byte> array)
         {
-            Span<Int32> buffer = stackalloc Int32[]
-            {
+            Span<Int32> buffer =
+            [
                 array[(sizeof(Int32) * 0)..(sizeof(Int32) * 1)].ToInt32LE(),
                 array[(sizeof(Int32) * 1)..(sizeof(Int32) * 2)].ToInt32LE(),
                 array[(sizeof(Int32) * 2)..(sizeof(Int32) * 3)].ToInt32LE(),
                 array[(sizeof(Int32) * 3)..(sizeof(Int32) * 4)].ToInt32LE(),
-            };
+            ];
             return new Decimal(buffer);
         }
 
@@ -2050,13 +2050,12 @@ namespace Palmtree
             if (BitConverter.IsLittleEndian)
             {
                 ReadOnlySpan<Byte> value =
-                    stackalloc[]
-                    {
+                [
                     array[startIndex + 3],
                     array[startIndex + 2],
                     array[startIndex + 1],
                     array[startIndex + 0],
-                };
+                ];
                 return BitConverter.ToSingle(value);
             }
             else
@@ -2071,13 +2070,12 @@ namespace Palmtree
             if (BitConverter.IsLittleEndian)
             {
                 ReadOnlySpan<Byte> value =
-                    stackalloc[]
-                    {
+                [
                     array[3],
                     array[2],
                     array[1],
                     array[0],
-                };
+                ];
                 return BitConverter.ToSingle(value);
             }
             else
@@ -2096,17 +2094,16 @@ namespace Palmtree
             if (BitConverter.IsLittleEndian)
             {
                 ReadOnlySpan<Byte> value =
-                    new[]
-                    {
-                        array[startIndex + 7],
-                        array[startIndex + 6],
-                        array[startIndex + 5],
-                        array[startIndex + 4],
-                        array[startIndex + 3],
-                        array[startIndex + 2],
-                        array[startIndex + 1],
-                        array[startIndex + 0],
-                    };
+                [
+                    array[startIndex + 7],
+                    array[startIndex + 6],
+                    array[startIndex + 5],
+                    array[startIndex + 4],
+                    array[startIndex + 3],
+                    array[startIndex + 2],
+                    array[startIndex + 1],
+                    array[startIndex + 0],
+                ];
                 return BitConverter.ToDouble(value);
             }
             else
@@ -2121,17 +2118,16 @@ namespace Palmtree
             if (BitConverter.IsLittleEndian)
             {
                 ReadOnlySpan<Byte> value =
-                    new[]
-                    {
-                        array[7],
-                        array[6],
-                        array[5],
-                        array[4],
-                        array[3],
-                        array[2],
-                        array[1],
-                        array[0],
-                    };
+                [
+                    array[7],
+                    array[6],
+                    array[5],
+                    array[4],
+                    array[3],
+                    array[2],
+                    array[1],
+                    array[0],
+                ];
                 return BitConverter.ToDouble(value);
             }
             else
@@ -2147,26 +2143,26 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalBE(this Byte[] array, Int32 startIndex)
         {
-            ReadOnlySpan<Int32> buffer = stackalloc Int32[]
-            {
+            ReadOnlySpan<Int32> buffer =
+            [
                 array.ToInt32BE(startIndex + sizeof(Int32) * 3),
                 array.ToInt32BE(startIndex + sizeof(Int32) * 2),
                 array.ToInt32BE(startIndex + sizeof(Int32) * 1),
                 array.ToInt32BE(startIndex + sizeof(Int32) * 0),
-            };
+            ];
             return new Decimal(buffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Decimal InternalToDecimalBE(this ReadOnlySpan<Byte> array)
         {
-            Span<Int32> buffer = stackalloc Int32[]
-            {
+            Span<Int32> buffer =
+            [
                 array[(sizeof(Int32) * 3)..(sizeof(Int32) * 4)].ToInt32BE(),
                 array[(sizeof(Int32) * 2)..(sizeof(Int32) * 3)].ToInt32BE(),
                 array[(sizeof(Int32) * 1)..(sizeof(Int32) * 2)].ToInt32BE(),
                 array[(sizeof(Int32) * 0)..(sizeof(Int32) * 1)].ToInt32BE(),
-            };
+            ];
             return new Decimal(buffer);
         }
 

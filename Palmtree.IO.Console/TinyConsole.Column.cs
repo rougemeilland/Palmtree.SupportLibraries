@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Palmtree.IO.Console
 {
-    partial class TinyConsole
+    public static partial class TinyConsole
     {
         /// <summary>
         /// 指定したカルチャにおいて、指定した文字列をコンソールに表示した場合にコンソール上に占める最大桁数を取得します。

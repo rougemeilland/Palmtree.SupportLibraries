@@ -50,8 +50,8 @@ namespace Palmtree.IO.Compression.Archive.Zip
         protected override void SeekCore(UInt32 diskNumber, UInt64 offsetOnTheDisk)
         {
             Validation.Assert(diskNumber == 0);
-            if (offsetOnTheDisk > LengthCore || offsetOnTheDisk > Int64.MaxValue)
-                throw new ArgumentOutOfRangeException($"An attempt was made to access position outside the bounds of a single-volume ZIP file.: {nameof(offsetOnTheDisk)}=0x{offsetOnTheDisk:x16}", nameof(offsetOnTheDisk));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offsetOnTheDisk, LengthCore);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offsetOnTheDisk, checked((UInt64)Int64.MaxValue));
 
             _baseStream.Seek(offsetOnTheDisk);
         }

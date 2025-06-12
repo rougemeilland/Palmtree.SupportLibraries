@@ -53,10 +53,8 @@ namespace Palmtree.Collections
                 if (_startOfDataInInternalBuffer >= _internalBuffer.Length)
                     _startOfDataInInternalBuffer = 0;
 #if DEBUG
-                if (!_startOfDataInInternalBuffer.InRange(0, _internalBuffer.Length))
-                    throw new Exception();
-                if (!AvailableDataCount.IsBetween(0, _internalBuffer.Length - actualCount))
-                    throw new Exception();
+                Validation.Assert(_startOfDataInInternalBuffer.InRange(0, _internalBuffer.Length));
+                Validation.Assert(AvailableDataCount.IsBetween(0, _internalBuffer.Length - actualCount));
 #endif
                 return actualCount;
             }
@@ -78,10 +76,8 @@ namespace Palmtree.Collections
                 buffer[..actualCount].CopyTo(_internalBuffer.AsSpan(offsetOnInternalBuffer, actualCount));
                 AvailableDataCount += actualCount;
 #if DEBUG
-                if (!_startOfDataInInternalBuffer.InRange(0, _internalBuffer.Length))
-                    throw new Exception();
-                if (!AvailableDataCount.IsBetween(0, _internalBuffer.Length))
-                    throw new Exception();
+                Validation.Assert(_startOfDataInInternalBuffer.InRange(0, _internalBuffer.Length));
+                Validation.Assert(AvailableDataCount.IsBetween(0, _internalBuffer.Length));
 #endif
                 return actualCount;
             }

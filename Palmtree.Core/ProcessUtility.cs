@@ -13,8 +13,8 @@ namespace Palmtree
     /// </summary>
     public class ProcessUtility
     {
-        private static readonly String[] _commonExecutablePathOnLinux = new[] { "/usr/bin", "/bin" };
-        private static readonly Char[] _anyOfSemicolonOrDoubleQuote = new Char[] { ';', '"' };
+        private static readonly String[] _commonExecutablePathOnLinux = ["/usr/bin", "/bin"];
+        private static readonly Char[] _anyOfSemicolonOrDoubleQuote = [';', '"'];
 
         /// <summary>
         /// ファイルシステムから指定されたコマンドを探します。
@@ -166,7 +166,7 @@ namespace Palmtree
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8,
             };
-            var process = Process.Start(startInfo) ?? throw new Exception($"Could not start \"{whichCommandName}\" command.");
+            var process = Process.Start(startInfo) ?? throw new ApplicationException($"Could not start \"{whichCommandName}\" command.");
 
             // 標準出力を読み込むタスクの起動
             var standardOutputProcessingTask =
@@ -207,7 +207,7 @@ namespace Palmtree
                 {
                     0 => result,
                     1 => null,
-                    _ => throw new Exception($"\"{whichCommandName}\" command terminated abnormally.: exit-code={process.ExitCode}, message=\"{errorMessage}\""),
+                    _ => throw new ApplicationException($"\"{whichCommandName}\" command terminated abnormally.: exit-code={process.ExitCode}, message=\"{errorMessage}\""),
                 };
         }
     }

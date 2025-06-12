@@ -878,7 +878,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (BigInteger Quotient, Int32 Remainder) DivRem(this BigInteger dividend, Int32 divisor)
         {
-            var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+            var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
             // 少なくとも |remainder| < |diviser| であるので、remainder の Int32 へのキャスト演算によってオーバーフローが発生することはない。
             // (diviser が Int32.MinValue の場合も含む)
             return (quotient, checked((Int32)remainder));
@@ -887,7 +887,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (BigInteger Quotient, Int64 Remainder) DivRem(this BigInteger dividend, Int64 divisor)
         {
-            var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+            var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
 
             // 少なくとも |remainder| < |diviser| であるので、remainder の Int64 へのキャスト演算によってオーバーフローが発生することはない。
             // (diviser が Int64.MinValue の場合も含む)
@@ -897,7 +897,7 @@ namespace Palmtree
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (BigInteger Quotient, BigInteger Remainder) DivRem(this BigInteger dividend, BigInteger divisor)
         {
-            var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+            var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
             return (quotient, remainder);
         }
 
@@ -1056,11 +1056,11 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((Int32)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((Int32)remainder));
                 }
                 else
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder < 0)
                     {
                         --quotient;
@@ -1074,7 +1074,7 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder > 0)
                     {
                         ++quotient;
@@ -1085,7 +1085,7 @@ namespace Palmtree
                 }
                 else
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((Int32)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((Int32)remainder));
                 }
             }
             else
@@ -1100,11 +1100,11 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((UInt32)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((UInt32)remainder));
                 }
                 else
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder < 0)
                     {
                         --quotient;
@@ -1118,7 +1118,7 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder > 0)
                     {
                         ++quotient;
@@ -1129,7 +1129,7 @@ namespace Palmtree
                 }
                 else
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((UInt32)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((UInt32)remainder));
                 }
             }
             else
@@ -1144,11 +1144,11 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((Int64)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((Int64)remainder));
                 }
                 else
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder < 0)
                     {
                         --quotient;
@@ -1162,7 +1162,7 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder > 0)
                     {
                         ++quotient;
@@ -1173,7 +1173,7 @@ namespace Palmtree
                 }
                 else
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((Int64)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((Int64)remainder));
                 }
             }
             else
@@ -1188,11 +1188,11 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((UInt64)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((UInt64)remainder));
                 }
                 else
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder < 0)
                     {
                         --quotient;
@@ -1206,7 +1206,7 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder > 0)
                     {
                         ++quotient;
@@ -1217,7 +1217,7 @@ namespace Palmtree
                 }
                 else
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), checked((UInt64)remainder));
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), checked((UInt64)remainder));
                 }
             }
             else
@@ -1232,11 +1232,11 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), remainder);
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), remainder);
                 }
                 else
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder < 0)
                     {
                         --quotient;
@@ -1250,7 +1250,7 @@ namespace Palmtree
             {
                 if (dividend >= 0)
                 {
-                    var quotient = BigInteger.DivRem(dividend, divisor, out BigInteger remainder);
+                    var quotient = BigInteger.DivRem(dividend, divisor, out var remainder);
                     if (remainder > 0)
                     {
                         ++quotient;
@@ -1261,7 +1261,7 @@ namespace Palmtree
                 }
                 else
                 {
-                    return (BigInteger.DivRem(dividend, divisor, out BigInteger remainder), remainder);
+                    return (BigInteger.DivRem(dividend, divisor, out var remainder), remainder);
                 }
             }
             else

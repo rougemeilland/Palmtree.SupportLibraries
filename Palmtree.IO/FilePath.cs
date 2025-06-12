@@ -38,7 +38,7 @@ namespace Palmtree.IO
         static FilePath()
         {
             _randomNumberGeneratorForUniqueFileName = new Random(Environment.TickCount);
-            _uniqueFileNameMap = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v' };
+            _uniqueFileNameMap = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v'];
 #if DEBUG
             // _uniqueFileNameMap の要素が数字あるいは英小文字のみであることの確認
             Validation.Assert(_uniqueFileNameMap.All(c => c is >= '0' and <= '9' or >= 'a' and <= 'z'));
@@ -168,9 +168,10 @@ namespace Palmtree.IO
             if (!casePreservedPath.Exists)
                 return casePreservedPath.GetFile(Name);
             var found = casePreservedPath.EnumerateFiles(Name).Take(2).ToArray();
-            if (found.Length != 1)
-                return casePreservedPath.GetFile(Name);
-            return found[0];
+            return
+                found.Length == 1
+                ? found[0]
+                : casePreservedPath.GetFile(Name);
         }
 
         public String? GetRelativePath(DirectoryPath baseDirectory)
@@ -323,9 +324,9 @@ namespace Palmtree.IO
             catch (Exception ex)
             {
 #if DEBUG
-                Validation.Debug.WriteLine(ex);
+                Validation.Debug.WriteLog(ex);
 #elif TRACE
-                Validation.Trace.WriteLine(ex);
+                Validation.Trace.WriteLog(ex);
 #endif
                 throw;
             }
@@ -356,9 +357,9 @@ namespace Palmtree.IO
             catch (Exception ex)
             {
 #if DEBUG
-                Validation.Debug.WriteLine(ex);
+                Validation.Debug.WriteLog(ex);
 #elif TRACE
-                Validation.Trace.WriteLine(ex);
+                Validation.Trace.WriteLog(ex);
 #endif
                 throw;
             }
@@ -390,9 +391,9 @@ namespace Palmtree.IO
             catch (Exception ex)
             {
 #if DEBUG
-                Validation.Debug.WriteLine(ex);
+                Validation.Debug.WriteLog(ex);
 #elif TRACE
-                Validation.Trace.WriteLine(ex);
+                Validation.Trace.WriteLog(ex);
 #endif
                 throw;
             }
@@ -430,9 +431,9 @@ namespace Palmtree.IO
                     if (!OperatingSystem.IsWindows() || ex.HResult != _E_ERROR_SHARING_VIOLATION || count >= _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR)
                     {
 #if DEBUG
-                        Validation.Debug.WriteLine(ex);
+                        Validation.Debug.WriteLog(ex);
 #elif TRACE
-                        Validation.Trace.WriteLine(ex);
+                        Validation.Trace.WriteLog(ex);
 #endif
                         throw;
                     }
@@ -440,9 +441,9 @@ namespace Palmtree.IO
                 catch (Exception ex)
                 {
 #if DEBUG
-                    Validation.Debug.WriteLine(ex);
+                    Validation.Debug.WriteLog(ex);
 #elif TRACE
-                    Validation.Trace.WriteLine(ex);
+                    Validation.Trace.WriteLog(ex);
 #endif
                     throw;
                 }
@@ -470,9 +471,9 @@ namespace Palmtree.IO
                     if (!OperatingSystem.IsWindows() || ex.HResult != _E_ERROR_SHARING_VIOLATION || count >= _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR)
                     {
 #if DEBUG
-                        Validation.Debug.WriteLine(ex);
+                        Validation.Debug.WriteLog(ex);
 #elif TRACE
-                        Validation.Trace.WriteLine(ex);
+                        Validation.Trace.WriteLog(ex);
 #endif
                         throw;
                     }
@@ -480,9 +481,9 @@ namespace Palmtree.IO
                 catch (Exception ex)
                 {
 #if DEBUG
-                    Validation.Debug.WriteLine(ex);
+                    Validation.Debug.WriteLog(ex);
 #elif TRACE
-                    Validation.Trace.WriteLine(ex);
+                    Validation.Trace.WriteLog(ex);
 #endif
                     throw;
                 }
@@ -535,12 +536,7 @@ namespace Palmtree.IO
                 try
                 {
                     var errorCode = Marshal.GetLastWin32Error();
-                    if (handle != InterOpForWindows.INVALID_HANDLE_VALUE)
-                        return true;
-                    else if (errorCode == InterOpForWindows.ERROR_FILE_EXISTS)
-                        return false;
-                    else
-                        throw new Win32Exception(errorCode);
+                    return handle != InterOpForWindows.INVALID_HANDLE_VALUE || (errorCode != InterOpForWindows.ERROR_FILE_EXISTS ? throw new Win32Exception(errorCode) : false);
                 }
                 finally
                 {
@@ -558,12 +554,7 @@ namespace Palmtree.IO
                 try
                 {
                     var errno = Marshal.GetLastSystemError();
-                    if (handle >= 0)
-                        return true;
-                    else if (errno == InterOpForLinux.ERROR_CODE_EEXIST)
-                        return false;
-                    else
-                        throw new IOException(InterOpForLinux.StrError(errno));
+                    return handle >= 0 || (errno != InterOpForLinux.ERROR_CODE_EEXIST ? throw new IOException(InterOpForLinux.StrError(errno)) : false);
                 }
                 finally
                 {

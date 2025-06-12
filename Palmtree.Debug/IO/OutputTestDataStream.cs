@@ -38,9 +38,9 @@ namespace Palmtree.Debug.IO
                     var (actualCrc, length) = inStream.WithPartial(contentLength, true).CalculateCrc32();
                     var crc = inStream.ReadUInt32LE();
                     if (crc != actualCrc)
-                        throw new Exception("The output test data is incorrect.");
+                        throw new ApplicationException("The output test data is incorrect.");
                     if (inStream.ReadBytes(1).Length > 0)
-                        throw new Exception("The output test data is incorrect.");
+                        throw new ApplicationException("The output test data is incorrect.");
                 }
                 catch (Exception ex)
                 {

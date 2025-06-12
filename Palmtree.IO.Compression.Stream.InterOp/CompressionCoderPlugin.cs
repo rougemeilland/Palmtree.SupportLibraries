@@ -34,8 +34,8 @@ namespace Palmtree.IO.Compression.Stream
         static CompressionCoderPlugin()
         {
             PluginsUpdated = null;
-            _indexedCoders = new Dictionary<(CompressionMethodId, CoderType), ICompressionCoder>();
-            _coders = new List<ICompressionCoder>();
+            _indexedCoders = [];
+            _coders = [];
         }
 
         public static void Register(ICompressionCoder coder)

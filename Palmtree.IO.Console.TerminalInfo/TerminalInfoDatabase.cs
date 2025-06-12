@@ -453,23 +453,23 @@ namespace Palmtree.IO.Console
                 {
                     _legacyMagicNumber => false,
                     _32bitMagicNumber => true,
-                    _ => throw new Exception($"Invalid file format (Bad header value: 0x{headerValue:x4})"),
+                    _ => throw new ApplicationException($"Invalid file format (Bad header value: 0x{headerValue:x4})"),
                 };
             var terminalNameSectionBytes = inStream.ReadInt16LE();
             if (terminalNameSectionBytes < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var booleanSectionCount = inStream.ReadInt16LE();
             if (booleanSectionCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var numberSectionCount = inStream.ReadInt16LE();
             if (numberSectionCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var stringSectionOffsetCount = inStream.ReadInt16LE();
             if (stringSectionOffsetCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var stringSectionTableBytes = inStream.ReadInt16LE();
             if (stringSectionTableBytes < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
 
             // レガシーデータの読み込み
 
@@ -503,19 +503,19 @@ namespace Palmtree.IO.Console
 
             var extendedBooleanCapabilitesCount = inStream.ReadInt16LE();
             if (extendedBooleanCapabilitesCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var extendedNumberCapabilitesCount = inStream.ReadInt16LE();
             if (extendedNumberCapabilitesCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var extendedStringCapabilitesCount = inStream.ReadInt16LE();
             if (extendedStringCapabilitesCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var extendedStringOffsetCount = inStream.ReadInt16LE();
             if (extendedStringOffsetCount < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
             var extendedStringTableBytes = inStream.ReadInt16LE();
             if (extendedStringTableBytes < 0)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
 
             // 拡張データの読み込み
 
@@ -538,7 +538,7 @@ namespace Palmtree.IO.Console
 
             var extendedStringTableBuffer = new Byte[extendedStringTableBytes].AsMemory();
             if (inStream.ReadBytes(extendedStringTableBuffer.Span) != extendedStringTableBuffer.Length)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
 
             var extendedStringCapabilityValueItems =
                 ReadExtendedStringValues(
@@ -1044,7 +1044,7 @@ namespace Palmtree.IO.Console
         {
             var terminalNamesBuffer = new Byte[nameSectionBytes].AsSpan();
             if (inStream.ReadBytes(terminalNamesBuffer) != terminalNamesBuffer.Length)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
 
             var terminalNames = NullTerminatedByteArrayToAsciiString(terminalNamesBuffer, out _);
             return terminalNames.Split('|');
@@ -1059,7 +1059,7 @@ namespace Palmtree.IO.Console
                     {
                         0 => false,
                         1 => true,
-                        _ => throw new Exception("Bad file format."),
+                        _ => throw new ApplicationException("Bad file format."),
                     };
                 yield return ((TermInfoBooleanCapabilities)index, value);
             }
@@ -1073,7 +1073,7 @@ namespace Palmtree.IO.Console
                 if (value >= 0)
                     yield return ((TermInfoNumberCapabilities)index, value);
                 if (value < -1)
-                    throw new Exception("Bad file format.");
+                    throw new ApplicationException("Bad file format.");
             }
         }
 
@@ -1083,7 +1083,7 @@ namespace Palmtree.IO.Console
             {
                 var offset = inStream.ReadInt16LE();
                 if (offset < -1)
-                    throw new Exception("Bad file format.");
+                    throw new ApplicationException("Bad file format.");
 
                 yield return offset;
             }
@@ -1093,13 +1093,13 @@ namespace Palmtree.IO.Console
         {
             var stringTableBuffer = new Byte[stringSectionTableBytes];
             if (inStream.ReadBytes(stringTableBuffer) != stringTableBuffer.Length)
-                throw new Exception("Bad file format.");
+                throw new ApplicationException("Bad file format.");
 
             for (var index = 0; index < stringSectionOffsets.Length; ++index)
             {
                 var offset = stringSectionOffsets.Span[index];
                 if (offset >= stringSectionTableBytes)
-                    throw new Exception("Bad file format.");
+                    throw new ApplicationException("Bad file format.");
                 if (offset >= 0)
                     yield return ((TermInfoStringCapabilities)index, NullTerminatedByteArrayToAsciiString(stringTableBuffer.AsSpan(offset), out _));
             }
@@ -1118,7 +1118,7 @@ namespace Palmtree.IO.Console
                         yield return true;
                         break;
                     default:
-                        throw new Exception("Bad file format.");
+                        throw new ApplicationException("Bad file format.");
                 }
             }
         }
@@ -1129,7 +1129,7 @@ namespace Palmtree.IO.Console
             {
                 var value = is32bitInteger ? inStream.ReadInt32LE() : inStream.ReadInt16LE();
                 if (value < 0)
-                    throw new Exception("Bad file format.");
+                    throw new ApplicationException("Bad file format.");
 
                 yield return value;
             }
@@ -1141,7 +1141,7 @@ namespace Palmtree.IO.Console
             {
                 var offset = inStream.ReadInt16LE();
                 if (offset < 0)
-                    throw new Exception("Bad file format.");
+                    throw new ApplicationException("Bad file format.");
 
                 yield return offset;
             }
@@ -1153,7 +1153,7 @@ namespace Palmtree.IO.Console
             {
                 var offset = extendedStringOffsets.Span[index];
                 if (offset >= extendedStringTableBuffer.Length)
-                    throw new Exception("Bad file format.");
+                    throw new ApplicationException("Bad file format.");
 
                 if (offset >= 0)
                 {
@@ -1169,14 +1169,14 @@ namespace Palmtree.IO.Console
             try
             {
                 if (nullIndex < 0)
-                    throw new Exception("Not found end of string.");
+                    throw new ApplicationException("Not found end of string.");
 
                 length = nullIndex + 1;
                 return Encoding.ASCII.GetString(buffer[..nullIndex]);
             }
             catch (Exception ex)
             {
-                throw new Exception("Bad file format.", ex);
+                throw new ApplicationException("Bad file format.", ex);
             }
         }
 

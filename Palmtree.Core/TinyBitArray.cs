@@ -251,10 +251,8 @@ namespace Palmtree
         private TinyBitArray ConcatInterger(UInt64 value, Int32 bitCount, BitPackingDirection bitPackingDirection)
         {
 #if DEBUG
-            if (bitCount < 1)
-                throw new Exception();
-            if (bitCount > _BIT_LENGTH_OF_UINT64)
-                throw new Exception();
+            Validation.Assert(bitCount >= 1);
+            Validation.Assert(bitCount <= _BIT_LENGTH_OF_UINT64);
 #endif
             var bitArray = _bitArray.Clone();
             bitArray.Enqueue(value, bitCount, bitPackingDirection);

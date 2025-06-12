@@ -111,7 +111,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             where EXTRA_FIELD_T : class, IExtraField, new()
         {
             var extraField = new EXTRA_FIELD_T();
-            if (!_extraFields.TryGetValue(extraField.ExtraFieldId, out InternalExtraFieldItem? sourceData))
+            if (!_extraFields.TryGetValue(extraField.ExtraFieldId, out var sourceData))
                 return null;
             extraField.SetData(sourceData.AppliedHeaderType, sourceData.ExtraFieldBody, new DecodingParameter(stringency));
             return extraField;

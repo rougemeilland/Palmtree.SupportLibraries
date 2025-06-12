@@ -112,20 +112,17 @@ namespace Palmtree.IO.StreamFilters
         {
             FlushBytes();
 #if DEBUG
-            if (!_bitQueue.Count.IsAnyOf(0, 7))
-                throw new Exception();
+            Validation.Assert(_bitQueue.Count.IsAnyOf(0, 7));
 #endif
             if (_bitQueue.Count > 0)
             {
                 _bitQueue.Enqueue(0, 8 - _bitQueue.Count);
 #if DEBUG
-                if (_bitQueue.Count != 8)
-                    throw new Exception();
+                Validation.Assert(_bitQueue.Count == 8);
 #endif
             }
 #if DEBUG
-            if (_bitQueue.Count % 8 != 0)
-                throw new Exception();
+            Validation.Assert(_bitQueue.Count % 8 == 0);
 #endif
             FlushBytes();
             _baseStream.Flush();
@@ -135,20 +132,17 @@ namespace Palmtree.IO.StreamFilters
         {
             await FlushBytesAsync(default).ConfigureAwait(false);
 #if DEBUG
-            if (!_bitQueue.Count.InRange(0, 8))
-                throw new Exception();
+            Validation.Assert(_bitQueue.Count.InRange(0, 8));
 #endif
             if (_bitQueue.Count > 0)
             {
                 _bitQueue.Enqueue(0, 8 - _bitQueue.Count);
 #if DEBUG
-                if (_bitQueue.Count != 8)
-                    throw new Exception();
+                Validation.Assert(_bitQueue.Count == 8);
 #endif
             }
 #if DEBUG
-            if (_bitQueue.Count % 8 != 0)
-                throw new Exception();
+            Validation.Assert(_bitQueue.Count % 8 == 0);
 #endif
             await FlushBytesAsync(default).ConfigureAwait(false);
             await _baseStream.FlushAsync(default).ConfigureAwait(false);

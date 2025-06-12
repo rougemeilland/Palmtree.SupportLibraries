@@ -5,14 +5,13 @@ using System.Threading;
 namespace Palmtree.IO
 {
     internal sealed class TextWriterValidationLogger
-        : IValidationLogger, IDisposable
+        : IDisposableValidationLogger
     {
         private readonly TextWriter _writer;
         private readonly Int32 _indentSize;
         private readonly Boolean _leaveOpen;
         private Boolean _isDisposed;
         private Int32 _indentLevel;
-        private Boolean _needIndent;
 
         public TextWriterValidationLogger(TextWriter writer, Int32 indentSize, Boolean leaveOpen)
         {
@@ -23,26 +22,17 @@ namespace Palmtree.IO
             _leaveOpen = leaveOpen;
             _isDisposed = false;
             _indentLevel = 0;
-            _needIndent = true;
         }
 
         public void Indent()
-        {
-            lock (this)
-            {
-                _ = Interlocked.Increment(ref _indentLevel);
-            }
-        }
+            => _ = Interlocked.Increment(ref _indentLevel);
 
         public void Unindent()
         {
-            lock (this)
+            if (Interlocked.Decrement(ref _indentLevel) < 0)
             {
-                if (Interlocked.Decrement(ref _indentLevel) < 0)
-                {
-                    _ = Interlocked.Exchange(ref _indentLevel, 0);
-                    throw new InvalidOperationException("The UnIndent() method is called more times than the Indent() method.");
-                }
+                _ = Interlocked.Exchange(ref _indentLevel, 0);
+                throw new InvalidOperationException("The UnIndent() method is called more times than the Indent() method.");
             }
         }
 
@@ -55,22 +45,28 @@ namespace Palmtree.IO
             }
         }
 
-        public void WriteLine()
+        public void WriteLog()
         {
             lock (this)
             {
                 _writer.WriteLine();
-                _needIndent = true;
             }
         }
 
-        public void WriteLine(String message)
+        public void WriteLog(String? prefix, String message)
         {
             lock (this)
             {
-                WriteIndent();
-                _writer.WriteLine(message);
-                _needIndent = true;
+                if (prefix is null)
+                {
+                    _writer.WriteLine(message);
+                }
+                else
+                {
+                    _writer.Write(prefix);
+                    WriteIndent();
+                    _writer.WriteLine(message);
+                }
             }
         }
 
@@ -82,22 +78,17 @@ namespace Palmtree.IO
 
         private void WriteIndent()
         {
-            if (_needIndent)
+            var spaces = _indentSize * _indentLevel;
+            while (spaces >= 4)
             {
-                var spaces = _indentSize * _indentLevel;
-                while (spaces >= 4)
-                {
-                    _writer.Write("    ");
-                    spaces -= 4;
-                }
+                _writer.Write("    ");
+                spaces -= 4;
+            }
 
-                while (spaces > 0)
-                {
-                    _writer.Write(" ");
-                    --spaces;
-                }
-
-                _needIndent = false;
+            while (spaces > 0)
+            {
+                _writer.Write(" ");
+                --spaces;
             }
         }
 

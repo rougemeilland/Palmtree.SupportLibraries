@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
-    partial class TinyConsole
+    public static partial class TinyConsole
     {
         /// <summary>
         /// 現在の行終端記号をコンソールに書き込みます。
@@ -19,7 +19,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine()
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine();
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine();
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Object? value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Boolean value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Char value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Int32 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(UInt32 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Int64 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(UInt64 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Single value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Double value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Decimal value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(String? value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(value);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(value);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Char[]? buffer)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(buffer);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(buffer);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(Char[] buffer, Int32 index, Int32 count)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(buffer, index, count);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(buffer, index, count);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(String format, Object? arg0)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(format, arg0);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(format, arg0);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(String format, Object? arg0, Object? arg1)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(format, arg0, arg1);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(format, arg0, arg1);
         }
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(String format, Object? arg0, Object? arg1, Object? arg2)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(format, arg0, arg1, arg2);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(format, arg0, arg1, arg2);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace Palmtree.IO.Console
         public static void WriteLine(String format, params Object?[] arg)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.WriteLine(format, arg);
+            _consoleOutputState.Value.ConsoleTextWriter.WriteLine(format, arg);
         }
     }
 }

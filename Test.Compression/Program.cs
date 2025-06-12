@@ -17,7 +17,7 @@ namespace Test.Compression
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
-        static void Main(string[] args)
+        private static void Main(String[] args)
         {
             Console.WriteLine("**Stored**");
             DoTest1(3, 1024 * 1024, ZipEntryCompressionMethodId.Stored);
@@ -32,7 +32,7 @@ namespace Test.Compression
             _ = Console.ReadLine();
         }
 
-        private static void DoTest1(int numberOfEntries, ulong contentSize, ZipEntryCompressionMethodId compressMethodId)
+        private static void DoTest1(Int32 numberOfEntries, UInt64 contentSize, ZipEntryCompressionMethodId compressMethodId)
         {
             var zipArchive = FilePath.CreateTemporaryFile();
             try
@@ -91,25 +91,25 @@ namespace Test.Compression
             }
         }
 
-        private static void WriteContentData(ZipDestinationEntry fileEntry, ulong contentLength)
+        private static void WriteContentData(ZipDestinationEntry fileEntry, UInt64 contentLength)
         {
-            const int BUFFER_LENGTH = 1024 * 1024;
+            const Int32 BUFFER_LENGTH = 1024 * 1024;
 
-            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (ulong)sizeof(uint) + sizeof(ulong));
+            ArgumentOutOfRangeException.ThrowIfLessThan(contentLength, (UInt64)sizeof(UInt32) + sizeof(UInt64));
 
-            var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-            using var outStream1 = fileEntry.CreateContentStream(new SimpleProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
-            var dataLength = checked(contentLength - (sizeof(uint) + sizeof(ulong)));
+            var crcHolder = new ValueHolder<(UInt32 crc, UInt64 length)>();
+            using var outStream1 = fileEntry.CreateContentStream(new SimpleProgress<(UInt64 inSize, UInt64 outSize)>(value => Console.WriteLine($"[Writing] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
+            var dataLength = checked(contentLength - (sizeof(UInt32) + sizeof(UInt64)));
             outStream1.WriteUInt64LE(dataLength);
             using (var outStream2 = outStream1.WithCrc32Calculation(crcHolder, true))
             {
-                var buffer = RandomSequence.GetByteSequence().Take(BUFFER_LENGTH).Select(b => (byte)(b & 0x3f)).ToArray();
+                var buffer = RandomSequence.GetByteSequence().Take(BUFFER_LENGTH).Select(b => (Byte)(b & 0x3f)).ToArray();
                 var remain = dataLength;
                 while (remain > 0)
                 {
-                    var length = checked((int)remain.Minimum((ulong)BUFFER_LENGTH));
+                    var length = checked((Int32)remain.Minimum((UInt64)BUFFER_LENGTH));
                     outStream2.WriteBytes(buffer, 0, length);
-                    remain -= checked((uint)length);
+                    remain -= checked((UInt32)length);
                 }
             }
 
@@ -122,28 +122,28 @@ namespace Test.Compression
             {
                 try
                 {
-                    var crcHolder = new ValueHolder<(uint crc, ulong length)>();
-                    using var inStream1 = entry.OpenContentStream(new SimpleProgress<(ulong inSize, ulong outSize)>(value => Console.WriteLine($"[Reading] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
+                    var crcHolder = new ValueHolder<(UInt32 crc, UInt64 length)>();
+                    using var inStream1 = entry.OpenContentStream(new SimpleProgress<(UInt64 inSize, UInt64 outSize)>(value => Console.WriteLine($"[Reading] in: {value.inSize:N0} bytes, out: {value.outSize:N0} bytes")));
                     var contentLength = inStream1.ReadUInt64LE();
                     using (var inStream2 = inStream1.WithCrc32Calculation(crcHolder, true))
                     {
-                        var buffer = new byte[1024 * 1024];
+                        var buffer = new Byte[1024 * 1024];
                         var count = 0UL;
                         while (count < contentLength)
                         {
-                            var length = inStream2.ReadBytes(buffer.Slice(0, checked((int)(contentLength - count).Minimum((ulong)buffer.Length))));
+                            var length = inStream2.ReadBytes(buffer.Slice(0, checked((Int32)(contentLength - count).Minimum((UInt64)buffer.Length))));
                             if (length <= 0)
-                                throw new Exception($"データが短すぎます。: 期待された長さ=0x{contentLength + sizeof(ulong) + sizeof(uint):x16}, 実際の長さ=0x{count + sizeof(ulong):x16}, entry={entry}");
+                                throw new ApplicationException($"データが短すぎます。: 期待された長さ=0x{contentLength + sizeof(UInt64) + sizeof(UInt32):x16}, 実際の長さ=0x{count + sizeof(UInt64):x16}, entry={entry}");
                             checked
                             {
-                                count += (ulong)length;
+                                count += (UInt64)length;
                             }
                         }
                     }
 
                     var crc = inStream1.ReadUInt32LE();
                     if (crc != crcHolder.Value.crc)
-                        throw new Exception($"データの内容が一致しません。: entry={entry}");
+                        throw new ApplicationException($"データの内容が一致しません。: entry={entry}");
                 }
                 catch (Exception ex)
                 {

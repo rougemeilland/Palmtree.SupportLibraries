@@ -16,7 +16,7 @@ namespace Test.Zip.SingleVolume
             DeflateCoderPlugin.EnablePlugin();
         }
 
-        static void Main(string[] args)
+        private static void Main(String[] args)
         {
             var baseDirectory = new DirectoryPath(args[0]);
             Test1(baseDirectory, "test_small", 100UL, false);
@@ -28,7 +28,7 @@ namespace Test.Zip.SingleVolume
             _ = Console.ReadLine();
         }
 
-        private static void Test1(DirectoryPath baseDirectory, string fileName, ulong contentLength, bool useDatadescriptor)
+        private static void Test1(DirectoryPath baseDirectory, String fileName, UInt64 contentLength, Boolean useDatadescriptor)
         {
             var zipArchive = baseDirectory.GetFile($"{fileName}.zip");
             using (var zipWriter = zipArchive.CreateAsZipFile())
@@ -81,17 +81,17 @@ namespace Test.Zip.SingleVolume
             Console.WriteLine($"検査終了: {result.ResultId}, \"{result.Message}\"");
         }
 
-        private static void WriteContentData(ZipDestinationEntry fileEntry, ulong contentLength)
+        private static void WriteContentData(ZipDestinationEntry fileEntry, UInt64 contentLength)
         {
-            const ulong maximumLength = 1024UL * 1024UL;
+            const UInt64 maximumLength = 1024UL * 1024UL;
 
             using var outStream1 = fileEntry.CreateContentStream();
             var remain = contentLength;
             while (remain > 0)
             {
-                var length = checked((int)remain.Minimum(maximumLength));
+                var length = checked((Int32)remain.Minimum(maximumLength));
                 RandomSequence.GetByteSequence().Take(length).AsByteStream().CopyTo(outStream1);
-                remain -= checked((uint)length);
+                remain -= checked((UInt32)length);
             }
         }
     }

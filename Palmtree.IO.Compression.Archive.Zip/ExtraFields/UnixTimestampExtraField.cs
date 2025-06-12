@@ -41,8 +41,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
         protected static DateTimeOffset FromUnixTimeStamp(Int32 timestamp)
         {
 #if DEBUG // 無効な値として 0 が使用されていないか検証
-            if (timestamp == 0)
-                throw new Exception();
+            Validation.Assert(timestamp != 0);
 #endif
             return _baseTime.AddSeconds(timestamp);
         }

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Palmtree
 {
-    partial class ArrayExtensions
+    public static partial class ArrayExtensions
     {
         #region SequenceCompare
 

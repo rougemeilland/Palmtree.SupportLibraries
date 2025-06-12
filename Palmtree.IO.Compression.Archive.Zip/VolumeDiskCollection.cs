@@ -48,7 +48,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
 
             public ArrayOfVolumeDisksOnMemory()
             {
-                _volumeDisks = new List<VolumeInfo>();
+                _volumeDisks = [];
                 _isDisposed = false;
 
             }
@@ -145,8 +145,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
                 get
                 {
                     ObjectDisposedException.ThrowIf(_isDisposed, this);
-                    if (index >= _length)
-                        throw new ArgumentOutOfRangeException(nameof(index));
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _length);
 
 #if DEBUG
                     Validation.Assert(checked(_length * VolumeInfo.Size) == _baseFileStream.Length);

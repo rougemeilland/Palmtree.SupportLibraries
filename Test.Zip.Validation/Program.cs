@@ -18,7 +18,7 @@ namespace Test.Zip.Validation
             StoredCoderPlugin.EnablePlugin();
         }
 
-        static void Main(string[] args)
+        private static void Main(String[] args)
         {
             var fileList =
                 args.EnumerateFilesFromArgument(true)
@@ -33,7 +33,7 @@ namespace Test.Zip.Validation
                     var result =
                         file.ValidateAsZipFile(
                             ValidationStringency.Strict | ValidationStringency.AllowNullPayloadAfterEOCDR,
-                            new SimpleProgress<double>(value => Console.Write($"  {(completed + value * file.Length) * 100.0 / totalSize:F2}%\r")));
+                            new SimpleProgress<Double>(value => Console.Write($"  {(completed + value * file.Length) * 100.0 / totalSize:F2}%\r")));
                     if (result.ResultId != ZipArchiveValidationResultId.Ok)
                         Console.ForegroundColor = ConsoleColor.Red;
                     checked
@@ -41,7 +41,7 @@ namespace Test.Zip.Validation
                         completed += file.Length;
                     }
 
-                    Console.WriteLine($"\"{(double)completed * 100 / totalSize:F2}% {file.FullName}\": {result.ResultId}, \"{result.Message}\"");
+                    Console.WriteLine($"\"{(Double)completed * 100 / totalSize:F2}% {file.FullName}\": {result.ResultId}, \"{result.Message}\"");
                 }
                 finally
                 {

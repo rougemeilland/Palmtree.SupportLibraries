@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Palmtree.IO.Console
 {
-    partial class TinyConsole
+    public static partial class TinyConsole
     {
         /// <summary>
         /// 指定した <see cref="Object"/> のテキスト形式をコンソールに書き込みます。
@@ -20,7 +20,7 @@ namespace Palmtree.IO.Console
         public static void Write(Object? value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Palmtree.IO.Console
         public static void Write(Boolean value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Palmtree.IO.Console
         public static void Write(Char value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Palmtree.IO.Console
         public static void Write(Int32 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Palmtree.IO.Console
         public static void Write(UInt32 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Palmtree.IO.Console
         public static void Write(Int64 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Palmtree.IO.Console
         public static void Write(UInt64 value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Palmtree.IO.Console
         public static void Write(Single value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace Palmtree.IO.Console
         public static void Write(Double value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Palmtree.IO.Console
         public static void Write(Decimal value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Palmtree.IO.Console
         public static void Write(String? value)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(value);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(value);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Palmtree.IO.Console
         public static void Write(Char[]? buffer)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(buffer);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(buffer);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace Palmtree.IO.Console
         public static void Write(Char[] buffer, Int32 index, Int32 count)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(buffer, index, count);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(buffer, index, count);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace Palmtree.IO.Console
         public static void Write(String format, Object? arg0)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(format, arg0);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(format, arg0);
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Palmtree.IO.Console
         public static void Write(String format, Object? arg0, Object? arg1)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(format, arg0, arg1);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(format, arg0, arg1);
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace Palmtree.IO.Console
         public static void Write(String format, Object? arg0, Object? arg1, Object? arg2)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(format, arg0, arg1, arg2);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(format, arg0, arg1, arg2);
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace Palmtree.IO.Console
         public static void Write(String format, params Object?[] arg)
         {
             SetCharacterSet(CharacterSet.Primary);
-            _consoleTextWriter.Write(format, arg);
+            _consoleOutputState.Value.ConsoleTextWriter.Write(format, arg);
         }
 
         /// <summary>
@@ -338,23 +338,25 @@ namespace Palmtree.IO.Console
         /// </remarks>
         public static void Write(AlternativeChar altChar)
         {
-            if (_escapeCodeWriter is null)
-                throw new InvalidOperationException("Since both standard error output is redirected, the alternate characters cannot be displayed.");
+            var escapeCodeWriter =
+                _consoleOutputState.Value.EscapeCodeWriter
+                ?? throw new InvalidOperationException("Since both standard error output is redirected, the alternate characters cannot be displayed.");
 
             var key = (Char)altChar;
+            var alternativeCharacterSetMap = _alternativeCharacterSetMap.Value;
             var c =
-                key.InRange(_alternativeCharacterSetMapMinimumKey, (Char)(_alternativeCharacterSetMapMinimumKey + _alternativeCharacterSetMap.Length))
-                ? _alternativeCharacterSetMap[key - _alternativeCharacterSetMapMinimumKey]
+                key.InRange(_alternativeCharacterSetMapMinimumKey, (Char)(_alternativeCharacterSetMapMinimumKey + alternativeCharacterSetMap.Length))
+                ? alternativeCharacterSetMap[key - _alternativeCharacterSetMapMinimumKey]
                 : '\0';
             if (c == '\0')
             {
                 SetCharacterSet(CharacterSet.Primary);
-                _escapeCodeWriter.Write('?');
+                escapeCodeWriter.Write('?');
             }
             else
             {
                 SetCharacterSet(CharacterSet.Alternative);
-                _escapeCodeWriter.Write(c);
+                escapeCodeWriter.Write(c);
             }
         }
     }

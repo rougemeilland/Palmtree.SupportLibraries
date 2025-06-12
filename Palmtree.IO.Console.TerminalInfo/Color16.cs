@@ -10,8 +10,8 @@ namespace Palmtree.IO.Console
     public readonly struct Color16
         : IEquatable<Color16>
     {
-        private static readonly UInt32[] _colorCodes = new[]
-        {
+        private static readonly UInt32[] _colorCodes =
+        [
             0x000000U,
             0x800000U,
             0x008000U,
@@ -28,16 +28,16 @@ namespace Palmtree.IO.Console
             0xff00ffU,
             0x00ffffU,
             0xffffffU,
-        };
+        ];
 
         private readonly Byte _colorNumber;
 
         private Color16(Int32 colorCode)
         {
-            if (!colorCode.InRange(0, 16))
-                throw new ArgumentOutOfRangeException(nameof(colorCode));
+            ArgumentOutOfRangeException.ThrowIfNegative(colorCode);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(colorCode, 16);
 
-            _colorNumber = checked((Byte)colorCode);
+            _colorNumber = (Byte)colorCode;
         }
 
         /// <summary>

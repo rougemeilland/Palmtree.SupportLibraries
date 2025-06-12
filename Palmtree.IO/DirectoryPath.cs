@@ -70,7 +70,7 @@ namespace Palmtree.IO
             }
             catch (Exception ex)
             {
-                throw new Exception($"A unique file could not be created.: directory=\"{FullName}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
+                throw new ApplicationException($"A unique file could not be created.: directory=\"{FullName}\", {nameof(prefix)}=\"{prefix}\", {nameof(suffix)}=\"{suffix}\"", ex);
             }
         }
 

@@ -17,8 +17,8 @@ namespace Palmtree.IO.Console
                 .Where(culture => culture.Name == "ja" || culture.Name.StartsWith("ja-", StringComparison.OrdinalIgnoreCase) || culture.Name == "ko" || culture.Name.StartsWith("ko-", StringComparison.OrdinalIgnoreCase) || culture.Name == "vi" || culture.Name.StartsWith("vi-", StringComparison.OrdinalIgnoreCase) || culture.Name == "zh" || culture.Name.StartsWith("zh-", StringComparison.OrdinalIgnoreCase))
                  .Select(culture => culture.Name);
             _eastAsianCultureNames = [.. eastAsianCultureNames];
-            _eastAsianWidthRanges = new EastAsianWidthRange[]
-            {
+            _eastAsianWidthRanges =
+            [
                 new(0x0000, 0x20, EastAsianWidthType.N),
                 new(0x0020, 0x5f, EastAsianWidthType.Na),
                 new(0x007f, 0x22, EastAsianWidthType.N),
@@ -619,7 +619,7 @@ namespace Palmtree.IO.Console
                 new(0xffffe, 0x02, EastAsianWidthType.N),
                 new(0x100000, 0xfffe, EastAsianWidthType.A),
                 new(0x10fffe, 0x02, EastAsianWidthType.N),
-            };
+            ];
 #if DEBUG
             DoTest();
 #endif

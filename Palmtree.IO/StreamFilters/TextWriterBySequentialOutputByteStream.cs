@@ -13,7 +13,7 @@ namespace Palmtree.IO.StreamFilters
         private Boolean _isDisposed;
 
         public TextWriterBySequentialOutputByteStream(ISequentialOutputByteStream baseStream, Stream rawStream, Encoding? encoding = null, Int32 bufferSize = -1, Boolean autoFlush = false, Boolean leaveOpen = false)
-            : base(rawStream ?? throw new ArgumentNullException(nameof(rawStream)), encoding, bufferSize, leaveOpen)
+            : base(rawStream ?? throw new ArgumentNullException(nameof(rawStream)), encoding, bufferSize, true)
         {
             _baseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
             AutoFlush = autoFlush;
@@ -23,8 +23,12 @@ namespace Palmtree.IO.StreamFilters
 
         protected override void Dispose(Boolean disposing)
         {
+            base.Dispose(disposing);
+
             if (!_isDisposed)
             {
+                Flush();
+
                 if (disposing)
                 {
                     if (!_leaveOpen)
@@ -33,8 +37,6 @@ namespace Palmtree.IO.StreamFilters
 
                 _isDisposed = true;
             }
-
-            base.Dispose(disposing);
         }
     }
 }

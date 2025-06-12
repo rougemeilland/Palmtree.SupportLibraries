@@ -15,7 +15,7 @@ namespace Palmtree.IO.Compression.Archive.Zip
         private sealed class EncodingProvider
             : IZipEntryNameEncodingProvider
         {
-            private static readonly IDictionary<Int32, Int32> _codePagePriority;
+            private static readonly Dictionary<Int32, Int32> _codePagePriority;
             private readonly IEnumerable<Encoding> _sourceEncodings;
             private readonly String _alternativeText;
 

@@ -13,10 +13,10 @@ namespace Palmtree.IO.Console
 
         private Color8(Int32 colorCode)
         {
-            if (!colorCode.InRange(0, 8))
-                throw new ArgumentOutOfRangeException(nameof(colorCode));
+            ArgumentOutOfRangeException.ThrowIfNegative(colorCode);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(colorCode, 8);
 
-            _colorNumber = checked((Byte)colorCode);
+            _colorNumber = (Byte)colorCode;
         }
 
         /// <summary>

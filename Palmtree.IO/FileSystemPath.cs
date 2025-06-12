@@ -19,8 +19,7 @@ namespace Palmtree.IO
         {
             get => InternalCreationTimeUtc;
 
-            set
-            {
+            set =>
                 InternalCreationTimeUtc =
                     value.Kind switch
                     {
@@ -28,7 +27,6 @@ namespace Palmtree.IO
                         DateTimeKind.Local => value.ToUniversalTime(),
                         _ => throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(value)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(value)}.{nameof(DateTime.Kind)}={value.Kind}", nameof(value)),
                     };
-            }
         }
 
         public DateTimeOffset CreationTimeOffsetUtc
@@ -47,8 +45,7 @@ namespace Palmtree.IO
         {
             get => InternalLastAccessTimeUtc;
 
-            set
-            {
+            set =>
                 InternalLastAccessTimeUtc =
                     value.Kind switch
                     {
@@ -56,7 +53,6 @@ namespace Palmtree.IO
                         DateTimeKind.Local => value.ToUniversalTime(),
                         _ => throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(value)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(value)}.{nameof(DateTime.Kind)}={value.Kind}", nameof(value)),
                     };
-            }
         }
 
         public DateTimeOffset LastAccessTimeOffsetUtc
@@ -69,8 +65,7 @@ namespace Palmtree.IO
         {
             get => InternalLastWriteTimeUtc;
 
-            set
-            {
+            set =>
                 InternalLastWriteTimeUtc =
                     value.Kind switch
                     {
@@ -78,7 +73,6 @@ namespace Palmtree.IO
                         DateTimeKind.Local => value.ToUniversalTime(),
                         _ => throw new ArgumentException($"The value of the '{nameof(DateTime.Kind)}' property of the '{nameof(value)}' parameter is not '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Utc)}' or '{nameof(DateTimeKind)}.{nameof(DateTimeKind.Local)}'.: {nameof(value)}.{nameof(DateTime.Kind)}={value.Kind}", nameof(value)),
                     };
-            }
         }
 
         public DateTimeOffset LastWriteTimeOffsetUtc

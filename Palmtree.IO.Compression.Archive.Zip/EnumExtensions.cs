@@ -4,7 +4,7 @@ using Palmtree.IO.Compression.Stream;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
-    static class EnumExtensions
+    internal static class EnumExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean HasEncryptionFlag(this ZipEntryGeneralPurposeBitFlag flag)

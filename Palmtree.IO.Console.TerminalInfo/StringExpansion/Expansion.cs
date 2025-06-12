@@ -12,7 +12,7 @@ namespace Palmtree.IO.Console.StringExpansion
             {
                 var (statementState, output) = ExpandArguments(new ExpansionState(value, args));
                 if (statementState != ExpansionStatementState.FoundEndOfStresm)
-                    throw new Exception($"Syntax error. Check whether \"%t\", \"%e\", or \"%;\" is written before \"%?\".: \"{value}\"");
+                    throw new ApplicationException($"Syntax error. Check whether \"%t\", \"%e\", or \"%;\" is written before \"%?\".: \"{value}\"");
 
                 return output;
             }
@@ -63,7 +63,7 @@ namespace Palmtree.IO.Console.StringExpansion
                     {
                         var index = state.ReadChar();
                         if (!index.IsBetween('1', '9'))
-                            throw new Exception($"The index is out of range.: {index}");
+                            throw new ApplicationException($"The index is out of range.: {index}");
 
                         state.Push(state.Arguments[index]);
                         break;
@@ -78,7 +78,7 @@ namespace Palmtree.IO.Console.StringExpansion
                         else if (c.IsBetween('A', 'Z'))
                             state.StaticValues[c] = state.Pop();
                         else
-                            throw new Exception($"Invalid variable name: '{c}'");
+                            throw new ApplicationException($"Invalid variable name: '{c}'");
                         break;
                     }
 
@@ -91,7 +91,7 @@ namespace Palmtree.IO.Console.StringExpansion
                         else if (c.IsBetween('A', 'Z'))
                             state.Push(state.StaticValues[c]);
                         else
-                            throw new Exception($"Invalid variable name: '{c}'");
+                            throw new ApplicationException($"Invalid variable name: '{c}'");
                         break;
                     }
 
@@ -100,7 +100,7 @@ namespace Palmtree.IO.Console.StringExpansion
                     {
                         var c = state.ReadChar();
                         if (state.ReadChar() != '\'')
-                            throw new Exception("Missing single quote at end of immediate character.");
+                            throw new ApplicationException("Missing single quote at end of immediate character.");
                         state.Push(new ExpansionNumberParameter(c));
                         break;
                     }
@@ -113,12 +113,12 @@ namespace Palmtree.IO.Console.StringExpansion
                             if (c == '}')
                                 break;
                             if (!c.IsBetween('0', '9'))
-                                throw new Exception($"A non-numeric character was specified in an immediate numeric value.: '{c}'");
+                                throw new ApplicationException($"A non-numeric character was specified in an immediate numeric value.: '{c}'");
                             _ = valueBuffer.Append(c);
                         }
 
                         if (!valueBuffer.ToString().TryParse(out Int32 value))
-                            throw new Exception("No immediate number specified.");
+                            throw new ApplicationException("No immediate number specified.");
 
                         state.Push(new ExpansionNumberParameter(value));
                         break;
@@ -300,7 +300,7 @@ namespace Palmtree.IO.Console.StringExpansion
             }
 
             if (c.IsNoneOf('c', 'd', 'o', 's', 'u', 'x', 'X'))
-                throw new Exception("Invalid output spec.");
+                throw new ApplicationException("Invalid output spec.");
             _ = valueBuffer.Append(c);
             var formatSpec = valueBuffer.ToString();
             return formatSpec;
@@ -332,7 +332,7 @@ namespace Palmtree.IO.Console.StringExpansion
 
                     if (isFirst)
                         // ループの初回 (つまり %? (if) の後) で %; (endif) が見つかるのは構文の誤り
-                        throw new Exception("Found \"%;\" after \"%?\".");
+                        throw new ApplicationException("Found \"%;\" after \"%?\".");
 
                     // output は 最後の else 節の出力なので、最終的な出力が確定していない場合は output を最終的な出力とする
 
@@ -344,7 +344,7 @@ namespace Palmtree.IO.Console.StringExpansion
 
                 if (statementState != ExpansionStatementState.FoundThen)
                     // 最後に見つけたのが %t (then) でも %; (endif) でもない場合は構文エラー
-                    throw new Exception($"Unexpected state: '{statementState}'");
+                    throw new ApplicationException($"Unexpected state: '{statementState}'");
 
                 // 最後に見つけたのが %t (then) だった場合
 
@@ -366,7 +366,7 @@ namespace Palmtree.IO.Console.StringExpansion
 
                 if (statementState != ExpansionStatementState.FoundElse)
                     // 最後に見つけたのが %e (else) でも %; (endif) でもない場合は構文エラー
-                    throw new Exception($"Unexpected state: '{statementState}'");
+                    throw new ApplicationException($"Unexpected state: '{statementState}'");
 
                 isFirst = false;
             }

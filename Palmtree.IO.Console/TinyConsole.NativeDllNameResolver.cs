@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Palmtree.IO.Console
 {
-    partial class TinyConsole
+    public static partial class TinyConsole
     {
         private sealed class NativeDllNameResolver
         {
@@ -14,7 +14,7 @@ namespace Palmtree.IO.Console
 
             public NativeDllNameResolver()
             {
-                _loadedDllHandles = new Dictionary<String, IntPtr>();
+                _loadedDllHandles = [];
             }
 
             public IntPtr ResolveDllName(String libraryName, Assembly assembly, DllImportSearchPath? searchPath)
