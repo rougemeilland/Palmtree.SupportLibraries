@@ -3,7 +3,7 @@ using Palmtree.IO.Console;
 
 namespace Test.Console.Native
 {
-    internal sealed class Program
+    internal static class Program
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
         private static void Main(string[] args)

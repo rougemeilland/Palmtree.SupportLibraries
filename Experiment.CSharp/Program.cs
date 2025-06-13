@@ -4,7 +4,7 @@ using Palmtree.IO.Console;
 
 namespace Experiment.CSharp
 {
-    internal sealed class Program
+    internal static class Program
     {
         private static void Main(String[] args)
         {

@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace SourceGenerator
 {
-    internal sealed partial class Program
+    internal static partial class Program
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:未使用のパラメーターを削除します", Justification = "非公開の内部コマンドのMainメソッドであり、将来パラメタが使用される可能性があるため。")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:不要な抑制を削除します", Justification = "パラメタが追加された場合にIDE0060が発生してしまうため。")]

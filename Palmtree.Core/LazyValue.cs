@@ -51,11 +51,8 @@ namespace Palmtree
                 {
                     try
                     {
-                        if (!_initialized)
-                        {
-                            Validation.Assert(_value is not null);
-                            _finalizer(_value!);
-                        }
+                        if (_initialized && _value is not null)
+                            _finalizer(_value);
                     }
                     catch (Exception)
                     {

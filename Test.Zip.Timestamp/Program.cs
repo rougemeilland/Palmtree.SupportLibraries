@@ -5,7 +5,7 @@ using Palmtree.IO.Compression.Archive.Zip;
 
 namespace Test.Zip.Timestamp
 {
-    internal sealed class Program
+    internal static class Program
     {
         private static void Main(string[] args)
         {

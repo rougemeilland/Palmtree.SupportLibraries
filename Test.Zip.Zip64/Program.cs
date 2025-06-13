@@ -8,7 +8,7 @@ using Palmtree.IO.Compression.Stream.Plugin;
 
 namespace Test.Zip.Zip64
 {
-    internal sealed class Program
+    internal static class Program
     {
         static Program()
         {
