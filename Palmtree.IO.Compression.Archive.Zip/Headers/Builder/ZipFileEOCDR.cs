@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
@@ -40,17 +41,24 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
         {
             var positionOfThisHeader = outputStream.Position;
 
-            var headerBuffer = new Byte[MinimumHeaderSize];
-            headerBuffer.Slice(0, 4).SetValueLE(_signatureOfEOCDR);
-            headerBuffer.Slice(4, 2).SetValueLE(checked((UInt16)positionOfThisHeader.DiskNumber.Minimum(UInt16.MaxValue)));
-            headerBuffer.Slice(6, 2).SetValueLE(checked((UInt16)_startOfCentralDirectoryHeaders.DiskNumber.Minimum(UInt16.MaxValue)));
-            headerBuffer.Slice(8, 2).SetValueLE(checked((UInt16)(positionOfThisHeader.DiskNumber == _diskNumberOfDiskWithLastCentralDirectoryHeader ? _numberOfCentralDirectoryHeadersOnDiskWithLastCentralDirectoryHeader : 0).Minimum(UInt16.MaxValue)));
-            headerBuffer.Slice(10, 2).SetValueLE(checked((UInt16)_totalNumberOfCentralDirectoryHeaders.Minimum(UInt16.MaxValue)));
-            headerBuffer.Slice(12, 4).SetValueLE(checked((UInt32)(_endOfCentralDirectoryHeaders - _startOfCentralDirectoryHeaders).Minimum(UInt32.MaxValue)));
-            headerBuffer.Slice(16, 4).SetValueLE(checked((UInt32)_startOfCentralDirectoryHeaders.OffsetOnTheDisk.Minimum(UInt32.MaxValue)));
-            headerBuffer.Slice(20, 2).SetValueLE(checked((UInt16)_commentBytes.Length));
-            outputStream.WriteBytes(headerBuffer);
-            outputStream.WriteBytes(_commentBytes);
+            var headerBuffer = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSize);
+            try
+            {
+                headerBuffer.Slice(0, 4).SetValueLE(_signatureOfEOCDR);
+                headerBuffer.Slice(4, 2).SetValueLE(checked((UInt16)positionOfThisHeader.DiskNumber.Minimum(UInt16.MaxValue)));
+                headerBuffer.Slice(6, 2).SetValueLE(checked((UInt16)_startOfCentralDirectoryHeaders.DiskNumber.Minimum(UInt16.MaxValue)));
+                headerBuffer.Slice(8, 2).SetValueLE(checked((UInt16)(positionOfThisHeader.DiskNumber == _diskNumberOfDiskWithLastCentralDirectoryHeader ? _numberOfCentralDirectoryHeadersOnDiskWithLastCentralDirectoryHeader : 0).Minimum(UInt16.MaxValue)));
+                headerBuffer.Slice(10, 2).SetValueLE(checked((UInt16)_totalNumberOfCentralDirectoryHeaders.Minimum(UInt16.MaxValue)));
+                headerBuffer.Slice(12, 4).SetValueLE(checked((UInt32)(_endOfCentralDirectoryHeaders - _startOfCentralDirectoryHeaders).Minimum(UInt32.MaxValue)));
+                headerBuffer.Slice(16, 4).SetValueLE(checked((UInt32)_startOfCentralDirectoryHeaders.OffsetOnTheDisk.Minimum(UInt32.MaxValue)));
+                headerBuffer.Slice(20, 2).SetValueLE(checked((UInt16)_commentBytes.Length));
+                outputStream.WriteBytes(headerBuffer.Slice(0, MinimumHeaderSize));
+                outputStream.WriteBytes(_commentBytes);
+            }
+            finally
+            {
+                ArrayPool<Byte>.Shared.Return(headerBuffer);
+            }
         }
 
         public static UInt64 GetLength(ReadOnlyMemory<Byte> commentBytes) => checked((UInt64)(22 + commentBytes.Length));

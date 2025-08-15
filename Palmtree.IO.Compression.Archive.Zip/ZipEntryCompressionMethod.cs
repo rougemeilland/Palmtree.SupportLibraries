@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Stream;
 using Palmtree.IO.Compression.Stream.Plugin;
-using Palmtree.Threading;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {

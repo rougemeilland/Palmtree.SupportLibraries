@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Palmtree.Text;
 
 namespace Palmtree.IO.Console
 {
@@ -700,7 +699,7 @@ namespace Palmtree.IO.Console
                             ConsoleCursorVisiblity.Invisible => (false, 1U),
                             ConsoleCursorVisiblity.NormalMode => (true, 25U),
                             ConsoleCursorVisiblity.HighVisibilityMode => (true, 100U),
-                            _ => throw Validation.GetFailErrorException(),
+                            _ => throw Validation.GetFatalErrorException(),
                         };
                     if (!InterOpWindows.SetConsoleCursorInfo(consoleOutputState.ConsoleOutputHandle, ref cursorInfo))
                         throw new InvalidOperationException("Failed to set console cursor info.", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
@@ -714,7 +713,7 @@ namespace Palmtree.IO.Console
                             ConsoleCursorVisiblity.Invisible => _thisTerminalInfo.Value.CursorInvisible,
                             ConsoleCursorVisiblity.NormalMode => _thisTerminalInfo.Value.CursorNormal,
                             ConsoleCursorVisiblity.HighVisibilityMode => _thisTerminalInfo.Value.CursorVisible ?? _thisTerminalInfo.Value.CursorNormal,
-                            _ => throw Validation.GetFailErrorException(),
+                            _ => throw Validation.GetFatalErrorException(),
                         }
                         ?? throw new ArgumentException($"This terminal does not support {value}."),
                         () => { });
@@ -1170,7 +1169,7 @@ namespace Palmtree.IO.Console
 
                     break;
                 default:
-                    throw Validation.GetFailErrorException();
+                    throw Validation.GetFatalErrorException();
             }
         }
 

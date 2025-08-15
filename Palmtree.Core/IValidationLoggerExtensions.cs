@@ -5,58 +5,19 @@ namespace Palmtree
 {
     public static class IValidationLoggerExtensions
     {
-        private const String _lineSeparator = "--------------------";
+        private const String _lineSeparator = "----------------------------------------";
         private static readonly Char[] _textLineSeparator = ['\r', '\n'];
 #if NET9_0_OR_GREATER
         private static readonly Lock _lockObject = new();
 #else
         private static readonly Object _lockObject = new();
 #endif
-        public static void WriteLog(this IValidationLogger writer, String message) => writer.WriteLog(null, LogCategory.None, message);
 
-        public static void WriteLog(this IValidationLogger writer, LogCategory category, String message) => writer.WriteLog(null, category, message);
+        public static void WriteLog(this IValidationLogger writer, Exception ex) => writer.WriteLogCore(null, ex);
 
-        public static void WriteLog(this IValidationLogger writer, String? applicationName, LogCategory category, String message)
-        {
-            ArgumentNullException.ThrowIfNull(writer);
-            ArgumentNullException.ThrowIfNull(message);
+        public static void WriteLog(this IValidationLogger writer, String applicationName, Exception ex) => writer.WriteLogCore(applicationName, ex);
 
-            lock (_lockObject)
-            {
-                var prefix = $"{GetApplicationNamePartText(applicationName)}{GetCategoryPartText(category)}";
-                writer.WriteLog(prefix, message);
-            }
-
-            static String GetApplicationNamePartText(String? applicationName)
-            {
-                return
-                    applicationName == ""
-                    ? ""
-                    : applicationName is not null
-                    ? $"{applicationName}:"
-                    : Validation.DefaultApplicationName is not null
-                    ? $"{Validation.DefaultApplicationName}:"
-                    : "";
-            }
-
-            static String GetCategoryPartText(LogCategory category)
-            {
-                return
-                    category switch
-                    {
-                        LogCategory.None => "",
-                        LogCategory.Information => "INFORMATION:",
-                        LogCategory.Warning => "WARNING:",
-                        LogCategory.Error => "ERROR:",
-                        LogCategory.Critical => "CRITICAL:",
-                        _ => throw Validation.GetFailErrorException(),
-                    };
-            }
-        }
-
-        public static void WriteLog(this IValidationLogger writer, Exception ex) => writer.WriteLog(null, ex);
-
-        public static void WriteLog(this IValidationLogger writer, String? applicationName, Exception ex)
+        private static void WriteLogCore(this IValidationLogger writer, String? applicationName, Exception ex)
         {
             lock (_lockObject)
             {
@@ -68,18 +29,21 @@ namespace Palmtree
                 if (writePrefix)
                 {
                     var category = ex is AssertionException ? LogCategory.Critical : LogCategory.Error;
-                    writer.WriteLog(applicationName, category, ex is ApplicationException ? ex.Message : $"({ex.GetType().FullName}) {ex.Message}");
+                    if (applicationName is null)
+                        writer.WriteLog(category, ex is ApplicationException ? ex.Message : $"({ex.GetType().FullName}) {ex.Message}");
+                    else
+                        writer.WriteLog(applicationName, category, ex is ApplicationException ? ex.Message : $"({ex.GetType().FullName}) {ex.Message}");
                 }
                 else
                 {
-                    writer.WriteLog("", ex is ApplicationException ? ex.Message : $"({ex.GetType().FullName}) {ex.Message}");
+                    writer.WriteLog(ex is ApplicationException ? ex.Message : $"({ex.GetType().FullName}) {ex.Message}", true);
                 }
 
                 foreach (var stackTraceLine in (ex.StackTrace ?? "").Split(_textLineSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                    writer.WriteLog("", stackTraceLine);
+                    writer.WriteLog(stackTraceLine, true);
                 if (ex.InnerException is not null)
                 {
-                    writer.WriteLog(null, _lineSeparator);
+                    writer.WriteLog(_lineSeparator);
                     writer.Indent();
                     try
                     {
@@ -95,7 +59,7 @@ namespace Palmtree
                 {
                     foreach (var innerException in aggregateException.InnerExceptions)
                     {
-                        writer.WriteLog(null, _lineSeparator);
+                        writer.WriteLog(_lineSeparator);
                         writer.Indent();
                         try
                         {

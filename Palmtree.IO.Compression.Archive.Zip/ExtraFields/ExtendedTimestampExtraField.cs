@@ -95,7 +95,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     return builder.ToByteArray();
                 }
                 default:
-                    throw Validation.GetFailErrorException();
+                    throw Validation.GetFatalErrorException();
             }
         }
 
@@ -143,7 +143,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                         break;
                     }
                     default:
-                        throw Validation.GetFailErrorException();
+                        throw Validation.GetFatalErrorException();
                 }
 
                 if (!reader.IsEmpty)

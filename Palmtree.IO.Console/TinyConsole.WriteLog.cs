@@ -4,10 +4,92 @@ namespace Palmtree.IO.Console
 {
     public static partial class TinyConsole
     {
-        private const String _lineSeparator = "--------------------";
-        private static readonly Char[] _textLineSeparator = ['\r', '\n'];
+        private sealed class ConsoleLoggerSource
+            : ValidationLoggerSource
+        {
+            private struct ConsoleColors
+            {
+                public ConsoleColor ForegroundColorCode;
+            }
 
-        private static readonly ILazyValue<String?> _escapeCodeToSetForegroundColorOnError = LazyValue.Create(() => _thisTerminalInfo.Value.SetAForeground(Color256.FromRgb(255, 165, 0)));
+            private const ConsoleColor _logForegroundColor = ConsoleColor.White;
+            private static readonly Color256 _color256OfOrange = Color256.FromRgb(255, 165, 0);
+            private static readonly ILazyValue<Func<Color256, String?>> _escapeCodeToSetForegroundColor256 = LazyValue.Create((Color256 color) => _thisTerminalInfo.Value.SetAForeground(color));
+
+            /// <inheritdoc/>
+            public override Object? State
+            {
+                get => new ConsoleColors { ForegroundColorCode = ForegroundColor };
+
+                set
+                {
+                    ArgumentNullException.ThrowIfNull(value);
+                    Validation.Assert(value is ConsoleColors);
+
+                    if (value is ConsoleColors consoleColors)
+                        ForegroundColor = consoleColors.ForegroundColorCode;
+                }
+            }
+
+            /// <inheritdoc/>
+            public override Object? GetStateFromCategory(LogCategory category) => _logForegroundColor;
+
+            /// <inheritdoc/>
+            public override void WriteLogCategory(LogCategory category)
+            {
+                switch (category)
+                {
+                    case LogCategory.Information:
+                        ForegroundColor = ConsoleColor.Cyan;
+                        break;
+                    case LogCategory.Warning:
+                        ForegroundColor = ConsoleColor.Yellow;
+                        break;
+                    case LogCategory.Error:
+                    {
+                        var success = false;
+                        try
+                        {
+                            var escapeCode = _escapeCodeToSetForegroundColor256.Value(_color256OfOrange);
+                            if (escapeCode is not null)
+                                OutputEscapeCode(escapeCode);
+                            else
+                                ForegroundColor = ConsoleColor.Red;
+                            success = true;
+                        }
+                        finally
+                        {
+                            if (!success)
+                                ForegroundColor = ConsoleColor.Red;
+                        }
+
+                        break;
+                    }
+                    case LogCategory.Critical:
+                        ForegroundColor = ConsoleColor.Red;
+                        break;
+                    default:
+                        throw Validation.GetFatalErrorException();
+                }
+
+                base.WriteLogCategory(category);
+            }
+
+            public override void WriteLine() => TinyConsole.WriteLine();
+
+            protected override void Write(String s) => TinyConsole.Write(s);
+        }
+
+        private sealed class ConsoleLoger
+            : ValidationLogger
+        {
+            public ConsoleLoger()
+                : base(new ConsoleLoggerSource())
+            {
+            }
+        }
+
+        private static readonly ILazyValue<ConsoleLoger> _consoleLogger = LazyValue.Create(() => new ConsoleLoger());
 
         #region WriteLog
 
@@ -15,21 +97,14 @@ namespace Palmtree.IO.Console
         /// 指定したメッセージを表示して改行します。
         /// </summary>
         /// <param name="message">表示するメッセージを示す <see cref="String"/> オブジェクトです。</param>
-        public static void WriteLog(String message) => WriteLog(null, LogCategory.None, message);
+        public static void WriteLog(String message) => _consoleLogger.Value.WriteLog(message);
 
         /// <summary>
         /// 指定したメッセージをカテゴリとともに表示して改行します。
         /// </summary>
         /// <param name="category">メッセージのカテゴリを示す <see cref="LogCategory"/> 列挙体です。</param>
         /// <param name="message">表示するメッセージを示す <see cref="String"/> オブジェクトです。</param>
-        public static void WriteLog(LogCategory category, String message) => WriteLog(null, category, message);
-
-        /// <summary>
-        /// 指定したメッセージを明示的なアプリケーション名とともに表示して改行します。
-        /// </summary>
-        /// <param name="applicationName">アプリケーションの名前を示す <see cref="String"/> オブジェクトです。</param>
-        /// <param name="message">表示するメッセージを示す <see cref="String"/> オブジェクトです。</param>
-        public static void WriteLog(String? applicationName, String message) => WriteLog(applicationName, LogCategory.None, message);
+        public static void WriteLog(LogCategory category, String message) => _consoleLogger.Value.WriteLog(category, message);
 
         /// <summary>
         /// 指定したメッセージを明示的なアプリケーション名とカテゴリとともに表示して改行します。
@@ -37,134 +112,21 @@ namespace Palmtree.IO.Console
         /// <param name="applicationName">アプリケーションの名前を示す <see cref="String"/> オブジェクトです。</param>
         /// <param name="category">メッセージのカテゴリを示す <see cref="LogCategory"/> 列挙体です。</param>
         /// <param name="message">表示するメッセージを示す <see cref="String"/> オブジェクトです。</param>
-        public static void WriteLog(String? applicationName, LogCategory category, String message)
-        {
-            lock (_lockObject)
-            {
-                var currentForeGroundColor = ForegroundColor;
-                try
-                {
-                    ForegroundColor = ConsoleColor.White;
-                    Write(GetApplicationNamePartText(applicationName));
-                    switch (category)
-                    {
-                        case LogCategory.None:
-                            break;
-                        case LogCategory.Information:
-                            ForegroundColor = ConsoleColor.Cyan;
-                            Write("INFORMATION");
-                            ForegroundColor = ConsoleColor.White;
-                            Write(':');
-                            break;
-                        case LogCategory.Warning:
-                            ForegroundColor = ConsoleColor.Yellow;
-                            Write("WARNING");
-                            ForegroundColor = ConsoleColor.White;
-                            Write(':');
-                            break;
-                        case LogCategory.Error:
-                        {
-                            var foregrroundColorOnError = _escapeCodeToSetForegroundColorOnError.Value;
-                            if (foregrroundColorOnError is null)
-                            {
-                                ForegroundColor = ConsoleColor.Red;
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    OutputEscapeCode(foregrroundColorOnError);
-                                }
-                                catch (Exception)
-                                {
-                                    ForegroundColor = ConsoleColor.Red;
-                                }
-                            }
-
-                            Write("ERROR");
-                            ForegroundColor = ConsoleColor.White;
-                            Write(':');
-                            break;
-                        }
-                        case LogCategory.Critical:
-                            ForegroundColor = ConsoleColor.Red;
-                            Write("CRITICAL");
-                            ForegroundColor = ConsoleColor.White;
-                            Write(':');
-                            break;
-                        default:
-                            break;
-                    }
-
-                    WriteLine(message);
-                }
-                finally
-                {
-                    ForegroundColor = currentForeGroundColor;
-                }
-            }
-
-            static String GetApplicationNamePartText(String? applicationName)
-            {
-                return
-                    applicationName == ""
-                    ? ""
-                    : applicationName is not null
-                    ? $"{applicationName}:"
-                    : Validation.DefaultApplicationName is not null
-                    ? $"{Validation.DefaultApplicationName}:"
-                    : "";
-            }
-        }
+        public static void WriteLog(String applicationName, LogCategory category, String message)
+            => _consoleLogger.Value.WriteLog(applicationName, category, message);
 
         /// <summary>
         /// 指定した例外オブジェクトを表示します。
         /// </summary>
         /// <param name="ex">表示する例外オブジェクトを示す <see cref="Exception"/> オブジェクトです。 </param>
-        public static void WriteLog(Exception ex) => WriteLog(null, ex);
+        public static void WriteLog(Exception ex) => _consoleLogger.Value.WriteLog(ex);
 
         /// <summary>
         /// 指定した例外オブジェクトを明示的なアプリケーション名とともに表示します。
         /// </summary>
         /// <param name="applicationName"></param>
         /// <param name="ex">表示する例外オブジェクトを示す <see cref="Exception"/> オブジェクトです。 </param>
-        public static void WriteLog(String? applicationName, Exception ex)
-        {
-            lock (_lockObject)
-            {
-                WriteExceptionLog(applicationName, ex, true, "");
-            }
-
-            static void WriteExceptionLog(String? applicationName, Exception ex, Boolean writePrefix, String indent)
-            {
-                if (writePrefix)
-                {
-                    var category = ex is AssertionException ? LogCategory.Critical : LogCategory.Error;
-                    WriteLog(applicationName, category, $"{indent}{(ex is ApplicationException ? "" : $"({ex.GetType().FullName}) ")}{ex.Message}");
-                }
-                else
-                {
-                    WriteLine($"{indent}{(ex is ApplicationException ? "" : $"({ex.GetType().FullName}) ")}{ex.Message}");
-                }
-
-                foreach (var stackTraceLine in (ex.StackTrace ?? "").Split(_textLineSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                    WriteLine($"{indent}    {stackTraceLine}");
-                if (ex.InnerException is not null)
-                {
-                    WriteLine(_lineSeparator);
-                    WriteExceptionLog(null, ex.InnerException, false, $"{indent}    ");
-                }
-
-                if (ex is AggregateException aggregateException)
-                {
-                    foreach (var innerException in aggregateException.InnerExceptions)
-                    {
-                        WriteLine(_lineSeparator);
-                        WriteExceptionLog(null, innerException, false, $"{indent}    ");
-                    }
-                }
-            }
-        }
+        public static void WriteLog(String applicationName, Exception ex) => _consoleLogger.Value.WriteLog(applicationName, ex);
 
         #endregion
     }

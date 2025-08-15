@@ -11,7 +11,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static TextReader In
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.In;
         }
 
@@ -20,7 +20,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static TextWriter Out
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.Out;
         }
 
@@ -29,7 +29,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static TextWriter Error
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.Error;
         }
 
@@ -38,7 +38,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static Boolean IsInputRedirected
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.IsInputRedirected;
         }
 
@@ -47,7 +47,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static Boolean IsOutputRedirected
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.IsOutputRedirected;
         }
 
@@ -56,7 +56,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static Boolean IsErrorRedirected
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.IsErrorRedirected;
         }
 
@@ -66,7 +66,7 @@ namespace Palmtree.IO.Console
         /// <returns>
         /// 標準入力ストリームです。
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ISequentialInputByteStream OpenStandardInput() => System.Console.OpenStandardInput().AsInputByteStream();
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Palmtree.IO.Console
         /// <returns>
         /// 標準出力ストリームです。
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ISequentialOutputByteStream OpenStandardOutput() => System.Console.OpenStandardOutput().AsOutputByteStream();
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Palmtree.IO.Console
         /// <returns>
         /// 標準エラー出力ストリームです。
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ISequentialOutputByteStream OpenStandardError() => System.Console.OpenStandardError().AsOutputByteStream();
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Palmtree.IO.Console
         /// <item>ターミナルがカーソル位置の取得をサポートしていません。</item>
         /// </list>
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static (Int32 Left, Int32 Top) GetCursorPosition()
         {
             var (Left, Top) = System.Console.GetCursorPosition();
@@ -121,7 +121,7 @@ namespace Palmtree.IO.Console
         /// </summary>
         /// <param name="left">コンソールウィンドウの左端からの桁数です。</param>
         /// <param name="top">コンソールウィンドウの上端からの桁数です。</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void SetCursorPosition(Int32 left, Int32 top) => System.Console.SetCursorPosition(left + System.Console.WindowLeft, top + System.Console.WindowTop);
 
         /// <summary>
@@ -136,10 +136,10 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static Int32 CursorLeft
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.CursorLeft - System.Console.WindowLeft;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => System.Console.CursorLeft = value + System.Console.CursorLeft;
         }
 
@@ -155,10 +155,10 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static Int32 CursorTop
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.CursorTop - System.Console.WindowTop;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => System.Console.CursorTop = value + System.Console.WindowTop;
         }
 
@@ -172,7 +172,7 @@ namespace Palmtree.IO.Console
         /// </exception>
         public static Boolean KeyAvailable
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.KeyAvailable;
         }
 
@@ -189,7 +189,7 @@ namespace Palmtree.IO.Console
         /// <item>標準入力がリダイレクトされています。</item>
         /// </list>
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ConsoleKeyInfo ReadKey() => System.Console.ReadKey();
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace Palmtree.IO.Console
         /// <item>標準入力がリダイレクトされています。</item>
         /// </list>
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ConsoleKeyInfo ReadKey(Boolean intercept) => System.Console.ReadKey(intercept);
 
         /// <summary>
@@ -217,10 +217,10 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static event ConsoleCancelEventHandler? CancelKeyPress
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             add => System.Console.CancelKeyPress += value;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             remove => System.Console.CancelKeyPress -= value;
         }
 
@@ -229,10 +229,10 @@ namespace Palmtree.IO.Console
         /// </summary>
         public static Boolean TreatControlCAsInput
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get => System.Console.TreatControlCAsInput;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set => System.Console.TreatControlCAsInput = value;
         }
 
@@ -243,7 +243,7 @@ namespace Palmtree.IO.Console
         /// 入力ストリームから文字が読み込めた場合は、その文字を表す<see cref="Int32"/>値です。
         /// 次の文字がない場合は -1 です。
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int32 Read() => System.Console.Read();
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace Palmtree.IO.Console
         /// 入力ストリームから次の行が読み込めた場合は、その行を表す<see cref="String"/>値です。
         /// 次の行がない場合は null です。
         /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static String? ReadLine() => System.Console.ReadLine();
     }
 }

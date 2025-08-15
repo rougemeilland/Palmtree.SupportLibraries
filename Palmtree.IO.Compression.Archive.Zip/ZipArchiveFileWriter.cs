@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
-using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,6 +73,11 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 
             // ボリュームをロックする。これ以降、ボリュームをまたいだ読み込みが禁止される。
             zipInputStrem.LockVolumeDisk();
+
+            var buffer1 = (Byte[]?)null;
+            var buffer2 = (Byte[]?)null;
+            var buffer3 = (Byte[]?)null;
+            var buffer4 = (Byte[]?)null;
             try
             {
                 // APPNOTE (https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT) 4.3.9.2 より
@@ -85,26 +91,30 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                     // ZIP64 拡張子仕様が要求されていない場合
 
                     // 1) シグニチャなし・非 ZIP64 フォーマットでの解析を試みる。
-                    headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, MinimumHeaderSize);
+                    buffer1 = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSize);
+                    headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, buffer1.AsMemory(0, MinimumHeaderSize));
                     dataDescriptor = TryParse(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                     if (dataDescriptor is not null)
                         return dataDescriptor;
 
                     // 2) シグニチャあり・非 ZIP64 フォーマットでの解析を試みる。
-                    headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, MaximumHeaderSize);
+                    buffer2 = ArrayPool<Byte>.Shared.Rent(MaximumHeaderSize);
+                    headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, buffer2.AsMemory(0, MaximumHeaderSize));
                     dataDescriptor = TryParseWithSignature(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                     if (dataDescriptor is not null)
                         return dataDescriptor;
                 }
 
                 // 3) シグニチャなし・ZIP64 フォーマットでの解析を試みる。
-                headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, MinimumHeaderSizeForZip64);
+                buffer3 = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSizeForZip64);
+                headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, buffer3.AsMemory(0, MinimumHeaderSizeForZip64));
                 dataDescriptor = TryParseAsZip64(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                 if (dataDescriptor is not null)
                     return dataDescriptor;
 
                 // 4) シグニチャあり・ZIP64 フォーマットでの解析を試みる。
-                headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, MaximumHeaderSizeForZip64);
+                buffer4 = ArrayPool<Byte>.Shared.Rent(MaximumHeaderSizeForZip64);
+                headerBytes = ReadBuffer(zipInputStrem, dataDescriptorPosition, headerBytes, buffer4.AsMemory(0, MaximumHeaderSizeForZip64));
                 dataDescriptor = TryParseAsZip64WithSignature(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                 if (dataDescriptor is not null)
                     return dataDescriptor;
@@ -130,6 +140,15 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             }
             finally
             {
+                if (buffer1 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer1);
+                if (buffer2 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer2);
+                if (buffer3 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer3);
+                if (buffer4 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer4);
+
                 // ボリュームのロックを解除する。
                 zipInputStrem.UnlockVolumeDisk();
             }
@@ -174,6 +193,11 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 
             // ボリュームをロックする。これ以降、ボリュームをまたいだ読み込みが禁止される。
             zipInputStrem.LockVolumeDisk();
+
+            var buffer1 = (Byte[]?)null;
+            var buffer2 = (Byte[]?)null;
+            var buffer3 = (Byte[]?)null;
+            var buffer4 = (Byte[]?)null;
             try
             {
                 // APPNOTE (https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT) 4.3.9.2 より
@@ -187,26 +211,30 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
                     // ZIP64 拡張子仕様が要求されていない場合
 
                     // 1) シグニチャなし・非 ZIP64 フォーマットでの解析を試みる。
-                    headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, MinimumHeaderSize, cancellationToken).ConfigureAwait(false);
+                    buffer1 = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSize);
+                    headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, buffer1.AsMemory(0, MinimumHeaderSize), cancellationToken).ConfigureAwait(false);
                     dataDescriptor = TryParse(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                     if (dataDescriptor is not null)
                         return dataDescriptor;
 
                     // 2) シグニチャあり・非 ZIP64 フォーマットでの解析を試みる。
-                    headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, MaximumHeaderSize, cancellationToken).ConfigureAwait(false);
+                    buffer2 = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSize);
+                    headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, buffer2.AsMemory(0, MaximumHeaderSize), cancellationToken).ConfigureAwait(false);
                     dataDescriptor = TryParseWithSignature(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                     if (dataDescriptor is not null)
                         return dataDescriptor;
                 }
 
                 // 3) シグニチャなし・ZIP64 フォーマットでの解析を試みる。
-                headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, MinimumHeaderSizeForZip64, cancellationToken).ConfigureAwait(false);
+                buffer3 = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSizeForZip64);
+                headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, buffer3.AsMemory(0, MinimumHeaderSizeForZip64), cancellationToken).ConfigureAwait(false);
                 dataDescriptor = TryParseAsZip64(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                 if (dataDescriptor is not null)
                     return dataDescriptor;
 
                 // 4) シグニチャあり・ZIP64 フォーマットでの解析を試みる。
-                headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, MaximumHeaderSizeForZip64, cancellationToken).ConfigureAwait(false);
+                buffer4 = ArrayPool<Byte>.Shared.Rent(MaximumHeaderSizeForZip64);
+                headerBytes = await ReadBufferAsync(zipInputStrem, dataDescriptorPosition, headerBytes, buffer4.AsMemory(0, MaximumHeaderSizeForZip64), cancellationToken).ConfigureAwait(false);
                 dataDescriptor = TryParseAsZip64WithSignature(headerBytes.Span, dataDescriptorPosition, crcValueInCentralDirectoryHeader, packedSizeValueInCentralDirectoryHeader, sizeValueInCentralDirectoryHeader);
                 if (dataDescriptor is not null)
                     return dataDescriptor;
@@ -232,32 +260,39 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
             }
             finally
             {
+                if (buffer1 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer1);
+                if (buffer2 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer2);
+                if (buffer3 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer3);
+                if (buffer4 is not null)
+                    ArrayPool<Byte>.Shared.Return(buffer4);
+
                 // ボリュームのロックを解除する。
                 zipInputStrem.UnlockVolumeDisk();
             }
         }
 
-        private static ReadOnlyMemory<Byte> ReadBuffer(ISequentialInputByteStream inputStream, ZipStreamPosition dataDescriptorPosition, ReadOnlyMemory<Byte> currentBuffer, Int32 size)
+        private static ReadOnlyMemory<Byte> ReadBuffer(ISequentialInputByteStream inputStream, ZipStreamPosition dataDescriptorPosition, ReadOnlyMemory<Byte> currentBuffer, Memory<Byte> newBuffer)
         {
-            if (currentBuffer.Length >= size)
+            if (currentBuffer.Length >= newBuffer.Length)
                 return currentBuffer;
-            var newBuffer = new Byte[size];
-            currentBuffer.CopyTo(newBuffer.AsMemory(0, currentBuffer.Length));
+            currentBuffer.CopyTo(newBuffer[..currentBuffer.Length]);
             var lengthToRead = newBuffer.Length - currentBuffer.Length;
-            var length = inputStream.ReadBytes(newBuffer.AsMemory(currentBuffer.Length, lengthToRead));
+            var length = inputStream.ReadBytes(newBuffer.Slice(currentBuffer.Length, lengthToRead));
             if (length != newBuffer.Length - currentBuffer.Length)
                 throw new BadZipFileFormatException($"Data descriptor does not exist.: position=\"{dataDescriptorPosition}\"");
             return newBuffer;
         }
 
-        private static async Task<ReadOnlyMemory<Byte>> ReadBufferAsync(ISequentialInputByteStream inputStream, ZipStreamPosition dataDescriptorPosition, ReadOnlyMemory<Byte> currentBuffer, Int32 size, CancellationToken cancellationToken = default)
+        private static async Task<ReadOnlyMemory<Byte>> ReadBufferAsync(ISequentialInputByteStream inputStream, ZipStreamPosition dataDescriptorPosition, ReadOnlyMemory<Byte> currentBuffer, Memory<Byte> newBuffer, CancellationToken cancellationToken = default)
         {
-            if (currentBuffer.Length >= size)
+            if (currentBuffer.Length >= newBuffer.Length)
                 return currentBuffer;
-            var newBuffer = new Byte[size];
-            currentBuffer.CopyTo(newBuffer.AsMemory(0, currentBuffer.Length));
+            currentBuffer.CopyTo(newBuffer[..currentBuffer.Length]);
             var lengthToRead = newBuffer.Length - currentBuffer.Length;
-            var length = await inputStream.ReadBytesAsync(newBuffer.AsMemory(currentBuffer.Length, lengthToRead), cancellationToken).ConfigureAwait(false);
+            var length = await inputStream.ReadBytesAsync(newBuffer.Slice(currentBuffer.Length, lengthToRead), cancellationToken).ConfigureAwait(false);
             if (length != newBuffer.Length - currentBuffer.Length)
                 throw new BadZipFileFormatException($"Data descriptor does not exist.: position=\"{dataDescriptorPosition}\"");
             return newBuffer;

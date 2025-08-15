@@ -66,6 +66,11 @@ namespace Palmtree.Numerics
         }
 #endif // NET7_0_OR_GREATER
 
+        public UBigInt(Half value)
+            : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
+        {
+        }
+
         public UBigInt(Single value)
             : this(new UnsignedIntegerCapsule<BigInteger>((BigInteger)value))
         {
@@ -775,6 +780,9 @@ namespace Palmtree.Numerics
 #endif // NET7_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Half(UBigInt value) => (Half)value.Value.NativeValue;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator Single(UBigInt value) => (Single)value.Value.NativeValue;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -799,35 +807,35 @@ namespace Palmtree.Numerics
         public static implicit operator UBigInt(Char value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(SByte value) => new(value);
+        public static implicit operator UBigInt(SByte value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator UBigInt(Byte value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(Int16 value) => new(value);
+        public static implicit operator UBigInt(Int16 value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator UBigInt(UInt16 value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(Int32 value) => new(value);
+        public static implicit operator UBigInt(Int32 value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(UInt32 value) => new(value);
+        public static implicit operator UBigInt(UInt32 value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(Int64 value) => new(value);
+        public static implicit operator UBigInt(Int64 value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(UInt64 value) => new(value);
+        public static implicit operator UBigInt(UInt64 value) => new((BigInteger)value);
 
 #if NET7_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(Int128 value) => new(value);
+        public static implicit operator UBigInt(Int128 value) => new((BigInteger)value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UBigInt(UInt128 value) => new(value);
+        public static implicit operator UBigInt(UInt128 value) => new((BigInteger)value);
 #endif // NET7_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

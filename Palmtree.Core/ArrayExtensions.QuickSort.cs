@@ -9,56 +9,61 @@ namespace Palmtree
     {
         #region QuickSort (ELEMENT_T[])
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
 
-            sourceArray.AsSpan().InternalQuickSort();
+            sourceArray.AsSpan().QuickSortCore();
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            sourceArray.AsSpan().InternalQuickSort(keySelecter);
+            sourceArray.AsSpan().QuickSortCore(keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            sourceArray.AsSpan().InternalQuickSort(comparer);
+            sourceArray.AsSpan().QuickSortCore(comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            sourceArray.AsSpan().InternalQuickSort(keySelecter, keyComparer);
+            sourceArray.AsSpan().QuickSortCore(keySelecter, keyComparer);
             return sourceArray;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Range range)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range);
-            sourceArray.AsSpan(offset, count).InternalQuickSort();
+            sourceArray.AsSpan(offset, count).QuickSortCore();
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Range range, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -66,20 +71,22 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range);
-            sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter);
+            sourceArray.AsSpan(offset, count).QuickSortCore(keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Range range, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(comparer);
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range);
-            sourceArray.AsSpan(offset, count).InternalQuickSort(comparer);
+            sourceArray.AsSpan(offset, count).QuickSortCore(comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Range range, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -87,11 +94,13 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keyComparer);
 
             var (offset, count) = sourceArray.GetOffsetAndLength(range);
-            sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter, keyComparer);
+            sourceArray.AsSpan(offset, count).QuickSortCore(keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -101,10 +110,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfNegative(count);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
 
-            sourceArray.AsSpan(offset, count).InternalQuickSort();
+            sourceArray.AsSpan(offset, count).QuickSortCore();
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -115,10 +125,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter);
+            sourceArray.AsSpan(offset, count).QuickSortCore(keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -128,10 +139,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            sourceArray.AsSpan(offset, count).InternalQuickSort(comparer);
+            sourceArray.AsSpan(offset, count).QuickSortCore(comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -142,11 +154,13 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            sourceArray.AsSpan(offset, count).InternalQuickSort(keySelecter, keyComparer);
+            sourceArray.AsSpan(offset, count).QuickSortCore(keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -154,10 +168,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
 
-            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort();
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).QuickSortCore();
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -166,10 +181,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(keySelecter);
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).QuickSortCore(keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -177,10 +193,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(comparer);
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).QuickSortCore(comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ELEMENT_T[] QuickSort<ELEMENT_T, KEY_T>(this ELEMENT_T[] sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -189,45 +206,49 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).InternalQuickSort(keySelecter, keyComparer);
+            sourceArray.AsSpan(checked((Int32)offset), checked((Int32)count)).QuickSortCore(keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
         #endregion
 
         #region QuickSort (Span<ELEMENT_T>)
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T>(this Span<ELEMENT_T> sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
-            sourceArray.InternalQuickSort();
+            sourceArray.QuickSortCore();
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            sourceArray.InternalQuickSort(keySelecter);
+            sourceArray.QuickSortCore(keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T>(this Span<ELEMENT_T> sourceArray, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(comparer);
 
-            sourceArray.InternalQuickSort(comparer);
+            sourceArray.QuickSortCore(comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Span<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            sourceArray.InternalQuickSort(keySelecter, keyComparer);
+            sourceArray.QuickSortCore(keySelecter, keyComparer);
             return sourceArray;
         }
 
@@ -235,46 +256,50 @@ namespace Palmtree
 
         #region QuickSort (IList<ELEMENT_T>)
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1);
+            QuickSortCore(sourceArray, 0, sourceArray.Count - 1);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1, keySelecter);
+            QuickSortCore(sourceArray, 0, sourceArray.Count - 1, keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1, comparer);
+            QuickSortCore(sourceArray, 0, sourceArray.Count - 1, comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Count - 1, keySelecter, keyComparer);
+            QuickSortCore(sourceArray, 0, sourceArray.Count - 1, keySelecter, keyComparer);
             return sourceArray;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -284,10 +309,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfNegative(count);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1);
+            QuickSortCore(sourceArray, offset, offset + count - 1);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -298,10 +324,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter);
+            QuickSortCore(sourceArray, offset, offset + count - 1, keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -311,10 +338,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Count - offset);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1, comparer);
+            QuickSortCore(sourceArray, offset, offset + count - 1, comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -325,11 +353,13 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter, keyComparer);
+            QuickSortCore(sourceArray, offset, offset + count - 1, keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -337,10 +367,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Count);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)));
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)));
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -349,10 +380,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter);
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -360,10 +392,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Count - offset);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), comparer);
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IList<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IList<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -372,54 +405,59 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter, keyComparer);
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
         #endregion
 
         #region QuickSort (IArray<ELEMENT_T>)
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1);
+            QuickSortCore(sourceArray, 0, sourceArray.Length - 1);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1, keySelecter);
+            QuickSortCore(sourceArray, 0, sourceArray.Length - 1, keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1, comparer);
+            QuickSortCore(sourceArray, 0, sourceArray.Length - 1, comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            InternalQuickSortManaged(sourceArray, 0, sourceArray.Length - 1, keySelecter, keyComparer);
+            QuickSortCore(sourceArray, 0, sourceArray.Length - 1, keySelecter, keyComparer);
             return sourceArray;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -429,10 +467,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfNegative(count);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1);
+            QuickSortCore(sourceArray, offset, offset + count - 1);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -443,10 +482,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter);
+            QuickSortCore(sourceArray, offset, offset + count - 1, keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -456,10 +496,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1, comparer);
+            QuickSortCore(sourceArray, offset, offset + count - 1, comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, Int32 offset, Int32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -470,11 +511,13 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            InternalQuickSortManaged(sourceArray, offset, offset + count - 1, keySelecter, keyComparer);
+            QuickSortCore(sourceArray, offset, offset + count - 1, keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if false // これらのオーバーロードは拡張メソッドにして使用する場合にパラメタの順序が紛らわしいので削除する
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
@@ -482,10 +525,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)sourceArray.Length);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)));
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)));
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
@@ -494,10 +538,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter);
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -505,10 +550,11 @@ namespace Palmtree
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)sourceArray.Length - offset);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), comparer);
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), comparer);
             return sourceArray;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IArray<ELEMENT_T> QuickSort<ELEMENT_T, KEY_T>(this IArray<ELEMENT_T> sourceArray, UInt32 offset, UInt32 count, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(sourceArray);
@@ -517,30 +563,14 @@ namespace Palmtree
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            InternalQuickSortManaged(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter, keyComparer);
+            QuickSortCore(sourceArray, checked((Int32)offset), checked((Int32)(offset + count - 1)), keySelecter, keyComparer);
             return sourceArray;
         }
+#endif
 
         #endregion
 
-        #region InternalQuickSort
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void InternalQuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector)
-            where KEY_T : IComparable<KEY_T>
-            => InternalQuickSortManaged(source, keySelector);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void InternalQuickSort<ELEMENT_T>(this Span<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
-            => InternalQuickSortManaged(source, keyComparer);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void InternalQuickSort<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
-            => InternalQuickSortManaged(source, keySelector, keyComparer);
-
-        #endregion
-
-        #region InternalQuickSortManaged (Span<ELEMENT_T>)
+        #region QuickSortCore (Span<ELEMENT_T>)
 
         ///<summary>
         /// A quicksort method that allows duplicate keys.
@@ -548,7 +578,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(Span<ELEMENT_T> source)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        internal static void QuickSortCore<ELEMENT_T>(this Span<ELEMENT_T> source)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
 #if DEBUG
@@ -764,10 +795,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..startOfPivotKeys]);
+                QuickSortCore(source[..startOfPivotKeys]);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[lowerBoundary..]);
+                QuickSortCore(source[lowerBoundary..]);
 #if DEBUG
             }
             finally
@@ -787,7 +818,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        internal static void QuickSortCore<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
         {
 #if DEBUG
@@ -1003,10 +1035,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..startOfPivotKeys], keySelector);
+                QuickSortCore(source[..startOfPivotKeys], keySelector);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[lowerBoundary..], keySelector);
+                QuickSortCore(source[lowerBoundary..], keySelector);
 #if DEBUG
             }
             finally
@@ -1026,7 +1058,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(Span<ELEMENT_T> source, IComparer<ELEMENT_T> comparer)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        internal static void QuickSortCore<ELEMENT_T>(this Span<ELEMENT_T> source, IComparer<ELEMENT_T> comparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -1241,10 +1274,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..startOfPivotKeys], comparer);
+                QuickSortCore(source[..startOfPivotKeys], comparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[lowerBoundary..], comparer);
+                QuickSortCore(source[lowerBoundary..], comparer);
 #if DEBUG
             }
             finally
@@ -1264,7 +1297,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        internal static void QuickSortCore<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -1479,10 +1513,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[..startOfPivotKeys], keySelector, keyComparer);
+                QuickSortCore(source[..startOfPivotKeys], keySelector, keyComparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source[lowerBoundary..], keySelector, keyComparer);
+                QuickSortCore(source[lowerBoundary..], keySelector, keyComparer);
 #if DEBUG
             }
             finally
@@ -1610,7 +1644,7 @@ namespace Palmtree
 
         #endregion
 
-        #region InternalQuickSortManaged (IList<ELEMENT_T>)
+        #region QuickSortCore (IList<ELEMENT_T>)
 
         ///<summary>
         /// A quicksort method that allows duplicate keys.
@@ -1618,7 +1652,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
 #if DEBUG
@@ -1834,10 +1869,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex);
+                QuickSortCore(source, lowerBoundary, endIndex);
 #if DEBUG
             }
             finally
@@ -1857,7 +1892,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T, KEY_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
         {
 #if DEBUG
@@ -2073,10 +2109,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1, keySelector);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1, keySelector);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex, keySelector);
+                QuickSortCore(source, lowerBoundary, endIndex, keySelector);
 #if DEBUG
             }
             finally
@@ -2096,7 +2132,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, IComparer<ELEMENT_T> comparer)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, IComparer<ELEMENT_T> comparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -2311,10 +2348,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1, comparer);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1, comparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex, comparer);
+                QuickSortCore(source, lowerBoundary, endIndex, comparer);
 #if DEBUG
             }
             finally
@@ -2334,7 +2371,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T, KEY_T>(IList<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -2549,10 +2587,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1, keySelector, keyComparer);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1, keySelector, keyComparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex, keySelector, keyComparer);
+                QuickSortCore(source, lowerBoundary, endIndex, keySelector, keyComparer);
 #if DEBUG
             }
             finally
@@ -2638,7 +2676,7 @@ namespace Palmtree
 
         #endregion
 
-        #region InternalQuickSortManaged (IArray<ELEMENT_T>)
+        #region QuickSortCore (IArray<ELEMENT_T>)
 
         ///<summary>
         /// A quicksort method that allows duplicate keys.
@@ -2646,7 +2684,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
 #if DEBUG
@@ -2862,10 +2901,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex);
+                QuickSortCore(source, lowerBoundary, endIndex);
 #if DEBUG
             }
             finally
@@ -2885,7 +2924,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T, KEY_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector)
             where KEY_T : IComparable<KEY_T>
         {
 #if DEBUG
@@ -3101,10 +3141,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1, keySelector);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1, keySelector);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex, keySelector);
+                QuickSortCore(source, lowerBoundary, endIndex, keySelector);
 #if DEBUG
             }
             finally
@@ -3124,7 +3164,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, IComparer<ELEMENT_T> comparer)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, IComparer<ELEMENT_T> comparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -3339,10 +3380,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1, comparer);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1, comparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex, comparer);
+                QuickSortCore(source, lowerBoundary, endIndex, comparer);
 #if DEBUG
             }
             finally
@@ -3362,7 +3403,8 @@ namespace Palmtree
         /// <remarks>
         /// See also <seealso href="https://kankinkon.hatenadiary.org/entry/20120202/1328133196">kanmo's blog</seealso>. 
         /// </remarks>
-        private static void InternalQuickSortManaged<ELEMENT_T, KEY_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private static void QuickSortCore<ELEMENT_T, KEY_T>(IArray<ELEMENT_T> source, Int32 startIndex, Int32 endIndex, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
         {
 #if DEBUG
 #if DEBUG_QUICKSORT
@@ -3577,10 +3619,10 @@ namespace Palmtree
 #endif
 
                 // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, startIndex, startOfPivotKeys - 1, keySelector, keyComparer);
+                QuickSortCore(source, startIndex, startOfPivotKeys - 1, keySelector, keyComparer);
 
                 // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortManaged(source, lowerBoundary, endIndex, keySelector, keyComparer);
+                QuickSortCore(source, lowerBoundary, endIndex, keySelector, keyComparer);
 #if DEBUG
             }
             finally
@@ -3662,331 +3704,6 @@ namespace Palmtree
                 Validation.Assert(keyComparer.Compare(keySelector(source[index]), pivotKey) > 0);
         }
 
-#endif
-
-        #endregion
-        #region InternalQuickSortUnmanaged
-
-        private static unsafe void InternalQuickSortUnmanaged<ELEMENT_T>(ref ELEMENT_T source, Int32 count)
-            where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
-        {
-            // count が 1 以下の場合はソート不要。
-            // 特に、source に渡されるはずの配列のサイズが 0 の場合、source は null 参照となるので、このチェックは必要。
-            if (count <= 1)
-                return;
-
-            fixed (ELEMENT_T* startPointer = &source)
-            {
-                InternalQuickSortUnmanaged(startPointer, startPointer + count - 1);
-            }
-        }
-
-        private static unsafe void InternalQuickSortUnmanaged<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer)
-            where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
-        {
-#if DEBUG
-#if DEBUG_QUICKSORT
-            System.Diagnostics.Debug.WriteLine($"Enter QuickSort(0x{(UInt64)startPointer:x16}, 0x{(UInt64)endPointer:x16}) {endPointer - startPointer + 1} bytes.");
-            System.Diagnostics.Debug.Indent();
-#endif
-
-            try
-            {
-#endif
-                if (endPointer <= startPointer)
-                    return;
-                if (endPointer - startPointer == 1)
-                {
-                    if (startPointer->CompareTo(*endPointer) > 0)
-                    {
-#if DEBUG
-                        System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startPointer).ToUInt64():x8}, index2=0x{new UIntPtr(endPointer).ToUInt64():x8}");
-#endif
-                        (*startPointer, *endPointer) = (*endPointer, *startPointer);
-                    }
-
-                    return;
-                }
-
-                var pivotKey = startPointer[(endPointer - startPointer) / 2];
-                var lowerBoundary = startPointer;
-                var upperBoundary = endPointer;
-                var startOfPivotKeys = startPointer;
-
-                // この時点での配列のレイアウトは以下の通り
-                // region-w を如何に縮小するかがこのループの目的である
-                //
-                // region-a) [startPointer, startOfPivotKeys)  : x < pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                // region-w) [lowerBoundary, upperBoundary]    : pivotKey との大小関係が不明なキー値を持つ要素の集合
-                // region-c) (upperBoundary, endPointer]       : x > pivotKey であるキー値 x を持つ要素の集合 (初期の長さは 0)
-                while (lowerBoundary <= upperBoundary)
-                {
-                    // *lowerBoundary に pivotKey より大きいキーが見つかるまで lowerBoundary を増やし続ける。
-                    while (lowerBoundary <= upperBoundary)
-                    {
-                        var c = lowerBoundary->CompareTo(pivotKey);
-                        if (c > 0)
-                        {
-                            // *lowerBoundary > pivotKey である場合
-#if DEBUG
-                            Validation.Assert(lowerBoundary->CompareTo(pivotKey) > 0);
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-                            // pivotKey より大きいキー値を持つ要素が見つかったので、ループを終える
-                            break;
-                        }
-
-                        // *lowerBoundary <= pivotKey である場合
-#if DEBUG
-                        Validation.Assert(lowerBoundary->CompareTo(pivotKey) <= 0);
-#endif
-                        if (c < 0)
-                        {
-                            // *lowerBoundary < pivotKey である場合
-#if DEBUG
-                            Validation.Assert(lowerBoundary->CompareTo(pivotKey) < 0);
-#endif
-                            // region-a に lowerBoundary にある要素を追加する
-                            if (startOfPivotKeys < lowerBoundary)
-                            {
-                                // region-b が空ではない場合
-
-                                // region-b は空ではない、つまり *startOfPivotKeys == pivotKey であるはずなので、lowerBoundary と要素を交換する。
-#if DEBUG
-                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startOfPivotKeys).ToUInt64():x8}, index2=0x{new UIntPtr(lowerBoundary).ToUInt64():x8}");
-#endif
-                                (*startOfPivotKeys, *lowerBoundary) = (*lowerBoundary, *startOfPivotKeys);
-                            }
-                            else
-                            {
-                                // region-b が空である場合
-
-                                // endOfPivotKeys == lowerBoundary であるはずなので、要素の交換は不要。
-#if DEBUG
-                                Validation.Assert(startOfPivotKeys == lowerBoundary);
-#endif
-                            }
-
-                            // region-a の終端位置をインクリメントする
-                            ++startOfPivotKeys;
-                        }
-
-                        // region-b の終端位置をインクリメントする
-                        ++lowerBoundary;
-#if DEBUG
-                        AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-                    }
-
-#if DEBUG
-                    AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-
-                    // この時点で lowerBoundary > upperBoundary || *lowerBoundary > pivotKey
-                    Validation.Assert(lowerBoundary > upperBoundary || lowerBoundary->CompareTo(pivotKey) > 0);
-
-                    // *upperBoundary に pivotKey より小さいまたは等しいキー値を持つ要素が見つかるまで upperBoundary を減らし続ける。
-                    while (lowerBoundary <= upperBoundary)
-                    {
-                        var c = upperBoundary->CompareTo(pivotKey);
-                        if (c < 0)
-                        {
-                            // *upperBoundary < pivotKey である場合
-
-                            if (startOfPivotKeys < lowerBoundary)
-                            {
-                                // region-b が空ではない場合
-
-                                // 以下の 3 つの事実が判明しているので、3 つの要素をそれぞれ入れ替える。
-                                // 1) *upperBoundary < pivotKey
-                                // 2) *lowerBoundary > pivotKey (前の while ループの結果より)
-                                // 3) *startOfPivotKeys == pivotKey (regon-b が空ではないことより)
-#if DEBUG
-                                Validation.Assert(upperBoundary->CompareTo(pivotKey) < 0 && lowerBoundary->CompareTo(pivotKey) > 0 && startOfPivotKeys->CompareTo(pivotKey) == 0);
-                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startOfPivotKeys).ToUInt64():x8}, index2=0x{new UIntPtr(upperBoundary).ToUInt64():x8}, index3=0x{new UIntPtr(lowerBoundary).ToUInt64():x8}");
-#endif
-                                var t = *startOfPivotKeys;
-                                *startOfPivotKeys = *upperBoundary;
-                                *upperBoundary = *lowerBoundary;
-                                *lowerBoundary = t;
-                            }
-                            else
-                            {
-                                // region-b が空である場合
-
-                                // 以下の 3 つの事実が判明しているので、2 つの要素を入れ替える。
-                                // 1) *upperBoundary < pivotKey
-                                // 2) *lowerBoundary > pivotKey (前の while ループの結果より)
-                                // 3) startOfPivotKeys == lowerBoundary (regon-b が空ではあることより)
-#if DEBUG
-                                Validation.Assert(upperBoundary->CompareTo(pivotKey) < 0 && lowerBoundary->CompareTo(pivotKey) > 0 && startOfPivotKeys == lowerBoundary);
-                                System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(startOfPivotKeys).ToUInt64():x8}, index2=0x{new UIntPtr(upperBoundary).ToUInt64():x8}");
-#endif
-                                (*startOfPivotKeys, *upperBoundary) = (*upperBoundary, *startOfPivotKeys);
-                            }
-
-                            // region-a の終端位置をインクリメントする
-                            ++startOfPivotKeys;
-
-                            // region -b の終端位置をインクリメントする
-                            ++lowerBoundary;
-
-                            // region-c の先端位置をデクリメントする
-                            --upperBoundary;
-#if DEBUG
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-                            Validation.Assert(startOfPivotKeys <= lowerBoundary);
-#endif
-                            // pivotKey より小さいキー値を持つ要素が見つかったので、ループを終える。
-                            break;
-                        }
-                        else if (c == 0)
-                        {
-                            // *upperBoundary == pivotKey である場合
-
-                            // 前の while ループの結果より、region-b の末尾の要素のキー値が pivotKey より大きい (*lowerBoundary > pivotKey) ことが判明しているので、
-                            // region-b の終端と要素を入れ替える
-#if DEBUG
-                            System.Diagnostics.Debug.WriteLine($"An array element replacement has occurred.: index1=0x{new UIntPtr(upperBoundary).ToUInt64():x8}, index2=0x{new UIntPtr(lowerBoundary).ToUInt64():x8}");
-#endif
-                            (*upperBoundary, *lowerBoundary) = (*lowerBoundary, *upperBoundary);
-
-                            // region-b の終端位置をインクリメントする
-                            ++lowerBoundary;
-
-                            // region-c の先端位置をデクリメントする
-                            --upperBoundary;
-#if DEBUG
-                            Validation.Assert(startOfPivotKeys <= lowerBoundary);
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-                            // pivotKey と等しいキー値を持つ要素が見つかったので、ループを終える。
-                            break;
-                        }
-                        else
-                        {
-                            // *upperBoundary > pivotKey である場合
-
-                            // region-c の先端位置をデクリメントする
-                            --upperBoundary;
-#if DEBUG
-                            AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-                        }
-                    }
-#if DEBUG
-                    AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-                }
-
-                // この時点で region-w のサイズは 0 であり、lowerBoundary == upperBoundary + 1 のはずである。
-#if DEBUG
-                Validation.Assert(lowerBoundary == upperBoundary + 1);
-#endif
-
-                // この時点での配列のレイアウトは以下の通り。
-                //
-                // region-a) [startPointer, startOfPivotKeys)  : x < pivotKey であるキー値 x を持つ要素の集合
-                // region-b) [startOfPivotKeys, lowerBoundary) : x == pivotKey であるキー値 x を持つ要素の集合
-                // region-c) (upperBoundary, endPointer]       : x > pivotKey であるキー値 x を持つ要素の集合
-                // ※ただし lowerBoundary == upperBoundary + 1
-
-#if DEBUG
-                AssertQuickSortState(startPointer, endPointer, pivotKey, lowerBoundary, upperBoundary, startOfPivotKeys);
-#endif
-
-                // region-a の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortUnmanaged(startPointer, startOfPivotKeys);
-
-                // region-c の内部を並び替えるために、再帰的に QuickSort を呼び出す
-                InternalQuickSortUnmanaged(lowerBoundary, endPointer);
-#if DEBUG
-            }
-            finally
-            {
-                AssertSortResult(startPointer, endPointer);
-#if DEBUG_QUICKSORT
-                System.Diagnostics.Debug.Unindent();
-                System.Diagnostics.Debug.WriteLine($"Leave QuickSort(0x{(UInt64)startPointer:x16}, 0x{(UInt64)endPointer:x16}) {endPointer - startPointer + 1} bytes.");
-#endif
-            }
-#endif
-        }
-
-#if DEBUG
-        private static unsafe void AssertSortResult<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer)
-            where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
-        {
-            for (var p = startPointer; p < endPointer; ++p)
-                Validation.Assert(p->CompareTo(p[1]) <= 0);
-        }
-
-        private static unsafe void AssertSortResult<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, Func<ELEMENT_T, KEY_T> keySelector)
-            where ELEMENT_T : unmanaged
-            where KEY_T : IComparable<KEY_T>
-        {
-            for (var p = startPointer; p < endPointer; ++p)
-                Validation.Assert(keySelector(*p).CompareTo(keySelector(p[1])) <= 0);
-        }
-
-        private static unsafe void AssertSortResult<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, IComparer<ELEMENT_T> keyComparer)
-            where ELEMENT_T : unmanaged
-        {
-            for (var p = startPointer; p < endPointer; ++p)
-                Validation.Assert(keyComparer.Compare(*p, p[1]) <= 0);
-        }
-
-        private static unsafe void AssertSortResult<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
-            where ELEMENT_T : unmanaged
-        {
-            for (var p = startPointer; p < endPointer - 1; ++p)
-                Validation.Assert(keyComparer.Compare(keySelector(*p), keySelector(p[1])) <= 0);
-        }
-
-        private static unsafe void AssertQuickSortState<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, ELEMENT_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys)
-            where ELEMENT_T : unmanaged, IComparable<ELEMENT_T>
-        {
-            for (var p = startPointer; p < startOfPivotKeys; ++p)
-                Validation.Assert(p->CompareTo(pivotKey) < 0);
-            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
-                Validation.Assert(p->CompareTo(pivotKey) == 0);
-            for (var p = upperBoundary + 1; p <= endPointer; ++p)
-                Validation.Assert(p->CompareTo(pivotKey) > 0);
-        }
-
-        private static unsafe void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, KEY_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector)
-            where ELEMENT_T : unmanaged
-            where KEY_T : IComparable<KEY_T>
-        {
-            for (var p = startPointer; p < startOfPivotKeys; ++p)
-                Validation.Assert(keySelector(*p).CompareTo(pivotKey) < 0);
-            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
-                Validation.Assert(keySelector(*p).CompareTo(pivotKey) == 0);
-            for (var p = upperBoundary + 1; p <= endPointer; ++p)
-                Validation.Assert(keySelector(*p).CompareTo(pivotKey) > 0);
-        }
-
-        private static unsafe void AssertQuickSortState<ELEMENT_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, ELEMENT_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys, IComparer<ELEMENT_T> comparer)
-            where ELEMENT_T : unmanaged
-        {
-            for (var p = startPointer; p < startOfPivotKeys; ++p)
-                Validation.Assert(comparer.Compare(*p, pivotKey) < 0);
-            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
-                Validation.Assert(comparer.Compare(*p, pivotKey) == 0);
-            for (var p = upperBoundary + 1; p <= endPointer; ++p)
-                Validation.Assert(comparer.Compare(*p, pivotKey) > 0);
-        }
-        private static unsafe void AssertQuickSortState<ELEMENT_T, KEY_T>(ELEMENT_T* startPointer, ELEMENT_T* endPointer, KEY_T pivotKey, ELEMENT_T* lowerBoundary, ELEMENT_T* upperBoundary, ELEMENT_T* startOfPivotKeys, Func<ELEMENT_T, KEY_T> keySelector, IComparer<KEY_T> keyComparer)
-            where ELEMENT_T : unmanaged
-        {
-            for (var p = startPointer; p < startOfPivotKeys; ++p)
-                Validation.Assert(keyComparer.Compare(keySelector(*p), pivotKey) < 0);
-            for (var p = startOfPivotKeys; p < lowerBoundary; ++p)
-                Validation.Assert(keyComparer.Compare(keySelector(*p), pivotKey) == 0);
-            for (var p = upperBoundary + 1; p <= endPointer; ++p)
-                Validation.Assert(keyComparer.Compare(keySelector(*p), pivotKey) > 0);
-        }
 #endif
 
         #endregion

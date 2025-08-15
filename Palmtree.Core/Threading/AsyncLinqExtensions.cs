@@ -4,7 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Palmtree.Threading
+// public な拡張メソッドのクラスであるため、アセンブリの既定の名前空間に配置した。
+#pragma warning disable IDE0130 // Namespace がフォルダー構造と一致しません
+namespace Palmtree
+#pragma warning restore IDE0130 // Namespace がフォルダー構造と一致しません
 {
     public static class AsyncLinqExtensions
     {

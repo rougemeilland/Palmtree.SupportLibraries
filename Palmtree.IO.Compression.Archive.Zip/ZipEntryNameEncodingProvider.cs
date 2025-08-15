@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Palmtree.Linq;
-using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {
