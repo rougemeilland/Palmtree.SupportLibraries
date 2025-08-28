@@ -75,7 +75,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     return ReadOnlyMemory<Byte>.Empty;
                 }
                 default:
-                    throw Validation.GetFatalErrorException();
+                    throw Validation.GetFailErrorException();
             }
         }
 
@@ -112,7 +112,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                         break;
                     }
                     default:
-                        throw Validation.GetFatalErrorException();
+                        throw Validation.GetFailErrorException();
                 }
 
                 if (!reader.IsEmpty)

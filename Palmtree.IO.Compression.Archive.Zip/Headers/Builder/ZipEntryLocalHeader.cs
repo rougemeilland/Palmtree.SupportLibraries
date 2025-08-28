@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
@@ -66,35 +65,28 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
             outputStream.LockVolumeDisk();
             try
             {
-                var headerBuffer = ArrayPool<Byte>.Shared.Rent(MinimumHeaderSize);
-                try
-                {
-                    // ローカルヘッダの先頭位置を保存する
-                    var position = outputStream.Position;
+                // ローカルヘッダの先頭位置を保存する
+                var position = outputStream.Position;
 
-                    // ローカルヘッダを書き込む。
-                    headerBuffer.Slice(0, 4).SetValueLE(_localHeaderSignature);
-                    headerBuffer.Slice(4, 2).SetValueLE(VersionNeededToExtract);
-                    headerBuffer.Slice(6, 2).SetValueLE((UInt16)_generalPurposeBitFlag);
-                    headerBuffer.Slice(8, 2).SetValueLE((UInt16)_compressionMethodId);
-                    headerBuffer.Slice(10, 2).SetValueLE(_dosTime);
-                    headerBuffer.Slice(12, 2).SetValueLE(_dosDate);
-                    headerBuffer.Slice(14, 4).SetValueLE(_crc);
-                    headerBuffer.Slice(18, 4).SetValueLE(_rawPacked);
-                    headerBuffer.Slice(22, 4).SetValueLE(_rawSize);
-                    headerBuffer.Slice(26, 2).SetValueLE(checked((UInt16)_entryFullNameBytes.Length));
-                    headerBuffer.Slice(28, 2).SetValueLE(checked((UInt16)_extraFieldsBytes.Length));
-                    outputStream.WriteBytes(headerBuffer.Slice(0, MinimumHeaderSize));
-                    outputStream.WriteBytes(_entryFullNameBytes);
-                    outputStream.WriteBytes(_extraFieldsBytes);
+                // ローカルヘッダを書き込む。
+                var headerBuffer = new Byte[MinimumHeaderSize];
+                headerBuffer.Slice(0, 4).SetValueLE(_localHeaderSignature);
+                headerBuffer.Slice(4, 2).SetValueLE(VersionNeededToExtract);
+                headerBuffer.Slice(6, 2).SetValueLE((UInt16)_generalPurposeBitFlag);
+                headerBuffer.Slice(8, 2).SetValueLE((UInt16)_compressionMethodId);
+                headerBuffer.Slice(10, 2).SetValueLE(_dosTime);
+                headerBuffer.Slice(12, 2).SetValueLE(_dosDate);
+                headerBuffer.Slice(14, 4).SetValueLE(_crc);
+                headerBuffer.Slice(18, 4).SetValueLE(_rawPacked);
+                headerBuffer.Slice(22, 4).SetValueLE(_rawSize);
+                headerBuffer.Slice(26, 2).SetValueLE(checked((UInt16)_entryFullNameBytes.Length));
+                headerBuffer.Slice(28, 2).SetValueLE(checked((UInt16)_extraFieldsBytes.Length));
+                outputStream.WriteBytes(headerBuffer);
+                outputStream.WriteBytes(_entryFullNameBytes);
+                outputStream.WriteBytes(_extraFieldsBytes);
 
-                    // ローカルヘッダの先頭位置を返す。
-                    return position;
-                }
-                finally
-                {
-                    ArrayPool<Byte>.Shared.Return(headerBuffer);
-                }
+                // ローカルヘッダの先頭位置を返す。
+                return position;
             }
             finally
             {

@@ -126,7 +126,7 @@ namespace Palmtree.IO.Console
                 5 => "Magenta",
                 6 => "Yellow",
                 7 => "White",
-                _ => throw Validation.GetFatalErrorException(),
+                _ => throw Validation.GetFailErrorException(),
             };
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Palmtree.IO.Console
                 5 => Color16.BrightMagenta,
                 6 => Color16.BrightYellow,
                 7 => Color16.BrightWhite,
-                _ => throw Validation.GetFatalErrorException(),
+                _ => throw Validation.GetFailErrorException(),
             };
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace Palmtree.IO.Console
                 5 => Color88.BrightMagenta,
                 6 => Color88.BrightYellow,
                 7 => Color88.BrightWhite,
-                _ => throw Validation.GetFatalErrorException(),
+                _ => throw Validation.GetFailErrorException(),
             };
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Palmtree.IO.Console
                 5 => Color256.BrightMagenta,
                 6 => Color256.BrightYellow,
                 7 => Color256.BrightWhite,
-                _ => throw Validation.GetFatalErrorException(),
+                _ => throw Validation.GetFailErrorException(),
             };
     }
 }

@@ -61,7 +61,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                 case ZipEntryHeaderType.CentralDirectoryHeader:
                     return ReadOnlyMemory<Byte>.Empty;
                 default:
-                    throw Validation.GetFatalErrorException();
+                    throw Validation.GetFailErrorException();
             }
         }
 
@@ -85,7 +85,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                         _groupId = null;
                         break;
                     default:
-                        throw Validation.GetFatalErrorException();
+                        throw Validation.GetFailErrorException();
                 }
 
                 if (!reader.IsEmpty)

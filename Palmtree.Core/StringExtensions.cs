@@ -257,10 +257,10 @@ namespace Palmtree
         {
             ArgumentNullException.ThrowIfNull(arg);
 
-            arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
+            arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\${backslash}$&");
             if (arg.Length > 0 && arg.IndexOfAny(_delimiterOfCommandParameters) < 0)
                 return arg;
-            return $"\"{GetEndsWithBackSlashPattern().Replace(arg, "$1$1")}\"";
+            return $"\"{GetEndsWithBackSlashPattern().Replace(arg, "${backslash}${backslash}")}\"";
         }
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace Palmtree
         /// </item>
         /// </list>
         /// </remarks>
-        public static IEnumerable<(String arg, Int32 start, Int32 end)> SplitCommandLineArguments(this String commandLine)
+        public static IEnumerable<(String element, Int32 start, Int32 end)> SplitCommandLineArguments(this String commandLine)
         {
             ArgumentNullException.ThrowIfNull(commandLine);
 
@@ -427,15 +427,15 @@ namespace Palmtree
         /// </list>
         /// </remarks>
         [SupportedOSPlatform("windows")]
-        public static String CommandPromptCommandLineArgumentEncode(this String arg)
+        public static String EncodeCommandPromptCommandLineArgument(this String arg)
         {
             ArgumentNullException.ThrowIfNull(arg);
 
-            arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^$1");
-            arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\$1$&");
+            arg = GetCharacterEscapedAtCaretPattern().Replace(arg, @"^${specialCharacter}");
+            arg = GetBackSlashAndDoubleQuotePattern().Replace(arg, @"\${backslash}$&");
             if (arg.Length > 0 && arg.IndexOfAny(_delimiterOfCommandParameters) < 0)
                 return arg;
-            arg = GetEndsWithBackSlashPattern().Replace(arg, "$1$1");
+            arg = GetEndsWithBackSlashPattern().Replace(arg, "${backslash}${backslash}");
             return $"^\"{arg}^\"";
         }
 
@@ -865,13 +865,13 @@ namespace Palmtree
         [GeneratedRegex(@"([\?!]*\?[\?!]*)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetQuestionMarksAndExclamationMarksSequencePattern();
 
-        [GeneratedRegex(@"(&|<|>|\^|\|)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"(?<specialCharacter>&|<|>|\^|\|)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetCharacterEscapedAtCaretPattern();
 
-        [GeneratedRegex(@"(\\*)""", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"(?<backslash>\\*)""", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetBackSlashAndDoubleQuotePattern();
 
-        [GeneratedRegex(@"(\\+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"(?<backslash>\\+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)]
         private static partial Regex GetEndsWithBackSlashPattern();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -55,39 +54,30 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 
             // ヘッダのありそうな位置に Seek し、それ以降のデータをすべて読み込む。
             zipInputStream.Seek(possibleFirstHeaderPosition);
-            var bufferSize = checked((Int32)(zipInputStream.LastDiskSize - possibleFirstHeaderOffsetOnLastDisk));
-            var buffer = ArrayPool<Byte>.Shared.Rent(bufferSize);
-            try
-            {
-                var bufferWindow = buffer.AsMemory(0, bufferSize);
-                var length = zipInputStream.ReadBytes(bufferWindow);
-                Validation.Assert(length == bufferSize);
+            var buffer = new Byte[checked((Int32)(zipInputStream.LastDiskSize - possibleFirstHeaderOffsetOnLastDisk))];
+            var length = zipInputStream.ReadBytes(buffer);
+            Validation.Assert(length == buffer.Length);
 
-                var foundHeaders =
-                    EnumerateLastDiskHeaders(
-                        zipInputStream,
-                        bufferWindow,
-                        zipInputStream.LastDiskStartPosition + possibleFirstHeaderOffsetOnLastDisk,
-                        new DiskHeaderEnumeratorParameter(zipInputStream, stringency))
-                    .OrderBy(item => item.mayBeMultiVolume) // シングルボリュームと仮定されていて実はマルチボリュームである疑いがあるものは後回し
-                    .ThenByDescending(item => item.header.EOCDR.HeaderPosition) // オフセットが大きい (つまりディスクの終端に近い) ものを優先
-                    .Take(1) // 候補を最大 1 つまで絞り込む
-                    .ToArray();
+            var foundHeaders =
+                EnumerateLastDiskHeaders(
+                    zipInputStream,
+                    buffer,
+                    zipInputStream.LastDiskStartPosition + possibleFirstHeaderOffsetOnLastDisk,
+                    new DiskHeaderEnumeratorParameter(zipInputStream, stringency))
+                .OrderBy(item => item.mayBeMultiVolume) // シングルボリュームと仮定されていて実はマルチボリュームである疑いがあるものは後回し
+                .ThenByDescending(item => item.header.EOCDR.HeaderPosition) // オフセットが大きい (つまりディスクの終端に近い) ものを優先
+                .Take(1) // 候補を最大 1 つまで絞り込む
+                .ToArray();
 
-                if (foundHeaders.Length <= 0)
-                    // 該当するヘッダの候補が一つも見つからなかった場合
-                    throw new BadZipFileFormatException($"EOCDR (and ZIP64 EOCDL) is missing or has incorrect contents.");
+            if (foundHeaders.Length <= 0)
+                // 該当するヘッダの候補が一つも見つからなかった場合
+                throw new BadZipFileFormatException($"EOCDR (and ZIP64 EOCDL) is missing or has incorrect contents.");
 
-                if (foundHeaders[0].mayBeMultiVolume)
-                    // シングルボリュームと仮定された上で実はマルチボリュームであることが判明した場合
-                    throw new MultiVolumeDetectedException(foundHeaders[0].lastDiskNumber);
+            if (foundHeaders[0].mayBeMultiVolume)
+                // シングルボリュームと仮定された上で実はマルチボリュームであることが判明した場合
+                throw new MultiVolumeDetectedException(foundHeaders[0].lastDiskNumber);
 
-                return foundHeaders[0].header;
-            }
-            finally
-            {
-                ArrayPool<Byte>.Shared.Return(buffer);
-            }
+            return foundHeaders[0].header;
         }
 
         private static IEnumerable<(ZipFileLastDiskHeader header, Boolean mayBeMultiVolume, UInt32 lastDiskNumber)> EnumerateLastDiskHeaders(

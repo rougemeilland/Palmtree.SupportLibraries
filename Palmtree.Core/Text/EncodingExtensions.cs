@@ -1,13 +1,70 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-// public な拡張メソッドのクラスであるため、アセンブリの既定の名前空間に配置した。
-#pragma warning disable IDE0130 // Namespace がフォルダー構造と一致しません
-namespace Palmtree
-#pragma warning restore IDE0130 // Namespace がフォルダー構造と一致しません
+namespace Palmtree.Text
 {
     public static class EncodingExtensions
     {
+        private sealed class EncodingWithoutPreamble
+            : Encoding
+        {
+            private readonly Encoding _sourceEncoding;
+
+            public EncodingWithoutPreamble(Encoding sourceEncoding)
+                : base(sourceEncoding.CodePage)
+            {
+                _sourceEncoding = sourceEncoding;
+            }
+
+            public override Object Clone() => new EncodingWithoutPreamble(_sourceEncoding);
+            public override Byte[] GetPreamble() => [];
+            public override ReadOnlySpan<Byte> Preamble => [];
+
+            public override String BodyName => _sourceEncoding.BodyName;
+            public override Int32 CodePage => _sourceEncoding.CodePage;
+            public override String EncodingName => _sourceEncoding.EncodingName;
+            public override Int32 GetByteCount(Char[] chars) => _sourceEncoding.GetByteCount(chars);
+            public override Int32 GetByteCount(ReadOnlySpan<Char> chars) => _sourceEncoding.GetByteCount(chars);
+            public override Int32 GetByteCount(String s) => _sourceEncoding.GetByteCount(s);
+            public override unsafe Int32 GetByteCount(Char* chars, Int32 count) => _sourceEncoding.GetByteCount(chars, count);
+            public override Int32 GetByteCount(Char[] chars, Int32 index, Int32 count) => _sourceEncoding.GetByteCount(chars, index, count);
+            public override Byte[] GetBytes(Char[] chars) => _sourceEncoding.GetBytes(chars);
+            public override Byte[] GetBytes(String s) => _sourceEncoding.GetBytes(s);
+            public override Int32 GetBytes(ReadOnlySpan<Char> chars, Span<Byte> bytes) => _sourceEncoding.GetBytes(chars, bytes);
+            public override Byte[] GetBytes(Char[] chars, Int32 index, Int32 count) => _sourceEncoding.GetBytes(chars, index, count);
+            public override unsafe Int32 GetBytes(Char* chars, Int32 charCount, Byte* bytes, Int32 byteCount) => _sourceEncoding.GetBytes(chars, charCount, bytes, byteCount);
+            public override Int32 GetBytes(Char[] chars, Int32 charIndex, Int32 charCount, Byte[] bytes, Int32 byteIndex) => _sourceEncoding.GetBytes(chars, charIndex, charCount, bytes, byteIndex);
+            public override Int32 GetBytes(String s, Int32 charIndex, Int32 charCount, Byte[] bytes, Int32 byteIndex) => _sourceEncoding.GetBytes(s, charIndex, charCount, bytes, byteIndex);
+            public override Int32 GetCharCount(Byte[] bytes) => _sourceEncoding.GetCharCount(bytes);
+            public override Int32 GetCharCount(ReadOnlySpan<Byte> bytes) => _sourceEncoding.GetCharCount(bytes);
+            public override unsafe Int32 GetCharCount(Byte* bytes, Int32 count) => _sourceEncoding.GetCharCount(bytes, count);
+            public override Int32 GetCharCount(Byte[] bytes, Int32 index, Int32 count) => _sourceEncoding.GetCharCount(bytes, index, count);
+            public override Char[] GetChars(Byte[] bytes) => _sourceEncoding.GetChars(bytes);
+            public override Int32 GetChars(ReadOnlySpan<Byte> bytes, Span<Char> chars) => _sourceEncoding.GetChars(bytes, chars);
+            public override Char[] GetChars(Byte[] bytes, Int32 index, Int32 count) => _sourceEncoding.GetChars(bytes, index, count);
+            public override unsafe Int32 GetChars(Byte* bytes, Int32 byteCount, Char* chars, Int32 charCount) => _sourceEncoding.GetChars(bytes, byteCount, chars, charCount);
+            public override Int32 GetChars(Byte[] bytes, Int32 byteIndex, Int32 byteCount, Char[] chars, Int32 charIndex) => _sourceEncoding.GetChars(bytes, byteIndex, byteCount, chars, charIndex);
+            public override Decoder GetDecoder() => _sourceEncoding.GetDecoder();
+            public override Encoder GetEncoder() => _sourceEncoding.GetEncoder();
+            public override Int32 GetMaxByteCount(Int32 charCount) => _sourceEncoding.GetMaxByteCount(charCount);
+            public override Int32 GetMaxCharCount(Int32 byteCount) => _sourceEncoding.GetMaxCharCount(byteCount);
+            public override String GetString(Byte[] bytes) => _sourceEncoding.GetString(bytes);
+            public override String GetString(Byte[] bytes, Int32 index, Int32 count) => _sourceEncoding.GetString(bytes, index, count);
+            public override String HeaderName => _sourceEncoding.HeaderName;
+            public override Boolean IsAlwaysNormalized(NormalizationForm form) => _sourceEncoding.IsAlwaysNormalized(form);
+            public override Boolean IsBrowserDisplay => _sourceEncoding.IsBrowserDisplay;
+            public override Boolean IsBrowserSave => _sourceEncoding.IsBrowserSave;
+            public override Boolean IsMailNewsDisplay => _sourceEncoding.IsMailNewsDisplay;
+            public override Boolean IsMailNewsSave => _sourceEncoding.IsMailNewsSave;
+            public override Boolean IsSingleByte => _sourceEncoding.IsSingleByte;
+            public override String WebName => _sourceEncoding.WebName;
+            public override Int32 WindowsCodePage => _sourceEncoding.WindowsCodePage;
+            public override Boolean Equals([NotNullWhen(true)] Object? value) => _sourceEncoding.Equals(value);
+            public override Int32 GetHashCode() => _sourceEncoding.GetHashCode();
+            public override String? ToString() => _sourceEncoding.ToString();
+        }
+
         static EncodingExtensions()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -17,139 +74,23 @@ namespace Palmtree
         {
             ArgumentNullException.ThrowIfNull(encoding);
 
-            if (encoding.Preamble.Length <= 0)
-                return encoding;
-
-            switch (encoding.CodePage)
-            {
-                case 1200: // utf-16
-                {
-                    var newEncoding = new UnicodeEncoding(false, false)
-                    {
-                        EncoderFallback = encoding.EncoderFallback,
-                        DecoderFallback = encoding.DecoderFallback
-                    };
-                    return newEncoding;
-                }
-                case 1201: // utf-16BE
-                {
-                    var newEncoding = new UnicodeEncoding(true, false)
-                    {
-                        EncoderFallback = encoding.EncoderFallback,
-                        DecoderFallback = encoding.DecoderFallback
-                    };
-                    return newEncoding;
-                }
-                case 12000: // utf-32
-                {
-                    var newEncoding = new UTF32Encoding(false, false)
-                    {
-                        EncoderFallback = encoding.EncoderFallback,
-                        DecoderFallback = encoding.DecoderFallback
-                    };
-                    return newEncoding;
-                }
-                case 12001: // utf-32BE
-                {
-                    var newEncoding = new UTF32Encoding(true, false)
-                    {
-                        EncoderFallback = encoding.EncoderFallback,
-                        DecoderFallback = encoding.DecoderFallback
-                    };
-                    return newEncoding;
-                }
-                case 65001: // utf-8
-                {
-                    var newEncoding = new UTF8Encoding(false)
-                    {
-                        EncoderFallback = encoding.EncoderFallback,
-                        DecoderFallback = encoding.DecoderFallback
-                    };
-                    return newEncoding;
-                }
-                default:
-                {
-                    // UTF-XX 以外のエンコーディングは Preamble を持たないはずなので、このルートに到達することはないはず。
-                    throw Validation.GetFatalErrorException();
-                }
-            }
+            return
+                encoding.Preamble.Length > 0
+                ? new EncodingWithoutPreamble(encoding)
+                : encoding;
         }
 
         public static Encoding WithFallback(this Encoding encoding, String? encoderReplacement, String? decoderReplacement)
         {
-            ArgumentNullException.ThrowIfNull(encoding);
-
-            var newEncoderFallback = encoderReplacement is null ? (EncoderFallback)new EncoderExceptionFallback() : new EncoderReplacementFallback(encoderReplacement);
-            var newDecoderFallback = decoderReplacement is null ? (DecoderFallback)new DecoderExceptionFallback() : new DecoderReplacementFallback(decoderReplacement);
-
-            if (encoding.EncoderFallback.Equals(newEncoderFallback) && encoding.DecoderFallback.Equals(newDecoderFallback))
-                return encoding;
-
-            switch (encoding.CodePage)
-            {
-                case 1200: // utf-16
-                {
-                    var newEncoding = new UnicodeEncoding(false, encoding.Preamble.Length > 0)
-                    {
-                        EncoderFallback = newEncoderFallback,
-                        DecoderFallback = newDecoderFallback,
-                    };
-                    return newEncoding;
-                }
-                case 1201: // utf-16BE
-                {
-                    var newEncoding = new UnicodeEncoding(true, encoding.Preamble.Length > 0)
-                    {
-                        EncoderFallback = newEncoderFallback,
-                        DecoderFallback = newDecoderFallback,
-                    };
-                    return newEncoding;
-                }
-                case 12000: // utf-32
-                {
-                    var newEncoding = new UTF32Encoding(false, encoding.Preamble.Length > 0)
-                    {
-                        EncoderFallback = newEncoderFallback,
-                        DecoderFallback = newDecoderFallback,
-                    };
-                    return newEncoding;
-                }
-                case 12001: // utf-32BE
-                {
-                    var newEncoding = new UTF32Encoding(true, encoding.Preamble.Length > 0)
-                    {
-                        EncoderFallback = newEncoderFallback,
-                        DecoderFallback = newDecoderFallback,
-                    };
-                    return newEncoding;
-                }
-                case 65001: // utf-8
-                {
-                    var newEncoding = new UTF8Encoding(encoding.Preamble.Length > 0)
-                    {
-                        EncoderFallback = newEncoderFallback,
-                        DecoderFallback = newDecoderFallback,
-                    };
-                    return newEncoding;
-                }
-                default:
-                {
-                    return
-                    Encoding.GetEncoding(
-                        encoding.CodePage,
-                        newEncoderFallback,
-                        newDecoderFallback);
-                }
-            }
+            var newEncoding =
+                Encoding.GetEncoding(
+                    encoding.CodePage,
+                    encoderReplacement is null ? new EncoderExceptionFallback() : new EncoderReplacementFallback(encoderReplacement),
+                    decoderReplacement is null ? new DecoderExceptionFallback() : new DecoderReplacementFallback(decoderReplacement));
+            return
+                encoding.Preamble.Length <= 0 && newEncoding.Preamble.Length > 0
+                ? new EncodingWithoutPreamble(newEncoding)
+                : newEncoding;
         }
-
-        public static Boolean EqualsStrictly(this Encoding encoding1, Encoding encoding2)
-            => encoding1 is null
-                ? encoding2 is null
-                : encoding2 is not null
-                    && encoding1.CodePage.Equals(encoding2.CodePage)
-                    && encoding1.Preamble.SequenceEqual(encoding2.Preamble)
-                    && encoding1.EncoderFallback.Equals(encoding2.EncoderFallback)
-                    && encoding1.DecoderFallback.Equals(encoding2.DecoderFallback);
     }
 }

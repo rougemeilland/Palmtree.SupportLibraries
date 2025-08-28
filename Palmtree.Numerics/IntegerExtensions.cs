@@ -18,6 +18,7 @@ namespace Palmtree.Numerics
         /// <param name="v">2 番目の整数です。</param>
         /// <returns><paramref name="u"/>と<paramref name="v"/>の最大公約数です。この値は常に正の整数です。 </returns>
         /// <exception cref="OverflowException">計算中にオーバーフローが発生しました。</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 GreatestCommonDivisor(this Int32 u, Int32 v)
         {
             // checked / unchecked を行っている理由:
@@ -37,7 +38,6 @@ namespace Palmtree.Numerics
         /// <param name="v">2 番目の整数です。</param>
         /// <returns><paramref name="u"/>と<paramref name="v"/>の最大公約数です。この値は常に正の整数です。 </returns>
         /// <exception cref="OverflowException">計算中にオーバーフローが発生しました。</exception>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static UInt32 GreatestCommonDivisor(this UInt32 u, UInt32 v)
         {
             if (u <= 0)
@@ -52,7 +52,7 @@ namespace Palmtree.Numerics
                 return u;
 
             // この時点で u と v は共に正数
-            Validation.Assert(u > 0 && v > 0);
+            System.Diagnostics.Debug.Assert(u >= 0 && v >= 0);
 
             // 「互減法」アルゴリズムを使用して最大公約数を求める。
             // 乗算/除算/剰余算を一切使わなくて済むので互除法よりも極めて高速に計算できる。
@@ -84,7 +84,7 @@ namespace Palmtree.Numerics
 #endif
 
             // この時点で、u と v は共に正で、かつ少なくとも u と v のどちらかが奇数で、かつ、 u << k が元の u に等しく、v << k が元の v に等しい
-            Validation.Assert(u > 0 && v > 0 && ((u & 1) != 0 || (v & 1) != 0));
+            System.Diagnostics.Debug.Assert(u > 0 && v > 0 && ((u & 1) != 0 || (v & 1) != 0));
 
             // u が偶数であれば奇数になるまで右シフトする。
 
@@ -107,7 +107,7 @@ namespace Palmtree.Numerics
             while (true)
             {
                 // この時点で、u と v は共に正の奇数である。
-                Validation.Assert(u > 0 && v > 0 && (u & 1) != 0 && (v & 1) != 0);
+                System.Diagnostics.Debug.Assert(u > 0 && v > 0 && (u & 1) != 0 && (v & 1) != 0);
 
                 if (u == v)
                 {
@@ -124,12 +124,12 @@ namespace Palmtree.Numerics
                 }
 
                 // この時点で、u と v は共に正で、かつ u > v かつ 少なくとも u と v はともに奇数である。
-                Validation.Assert(u > 0 && v > 0 && u > v && (u & 1) != 0 && (v & 1) != 0);
+                System.Diagnostics.Debug.Assert(u > 0 && v > 0 && u > v && (u & 1) != 0 && (v & 1) != 0);
 
                 u -= v;
 
                 // この時点で u は正の偶数
-                Validation.Assert(u > 0 && (u & 1) == 0);
+                System.Diagnostics.Debug.Assert(u > 0 && (u & 1) == 0);
 
                 // u が奇数になるまで u を右シフトする
 #if USE_SYSTEM_BIT_OPERATION
@@ -148,6 +148,7 @@ namespace Palmtree.Numerics
         /// <param name="v">2 番目の整数です。</param>
         /// <returns><paramref name="u"/>と<paramref name="v"/>の最大公約数です。この値は常に正の整数です。 </returns>
         /// <exception cref="OverflowException">計算中にオーバーフローが発生しました。</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int64 GreatestCommonDivisor(this Int64 u, Int64 v)
         {
             // checked / unchecked を行っている理由:
@@ -166,7 +167,6 @@ namespace Palmtree.Numerics
         /// <param name="v">2 番目の整数です。</param>
         /// <returns><paramref name="u"/>と<paramref name="v"/>の最大公約数です。この値は常に正の整数です。 </returns>
         /// <exception cref="OverflowException">計算中にオーバーフローが発生しました。</exception>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static UInt64 GreatestCommonDivisor(this UInt64 u, UInt64 v)
         {
             if (u <= 0)
@@ -181,7 +181,7 @@ namespace Palmtree.Numerics
                 return u;
 
             // この時点で u と v は共に正数
-            Validation.Assert(u > 0 && v > 0);
+            System.Diagnostics.Debug.Assert(u >= 0 && v >= 0);
 
             // 「互減法」アルゴリズムを使用して最大公約数を求める。
             // 乗算/除算/剰余算を一切使わなくて済むので互除法よりも極めて高速に計算できる。
@@ -213,7 +213,7 @@ namespace Palmtree.Numerics
 #endif
 
             // この時点で、u と v は共に正で、かつ少なくとも u と v のどちらかが奇数で、かつ、 u << k が元の u に等しく、v << k が元の v に等しい
-            Validation.Assert(u > 0 && v > 0 && ((u & 1) != 0 || (v & 1) != 0));
+            System.Diagnostics.Debug.Assert(u > 0 && v > 0 && ((u & 1) != 0 || (v & 1) != 0));
 
             // u が偶数であれば奇数になるまで右シフトする。
 #if USE_SYSTEM_BIT_OPERATION
@@ -235,7 +235,7 @@ namespace Palmtree.Numerics
             while (true)
             {
                 // この時点で、u と v は共に正の奇数である。
-                Validation.Assert(u > 0 && v > 0 && (u & 1) != 0 && (v & 1) != 0);
+                System.Diagnostics.Debug.Assert(u > 0 && v > 0 && (u & 1) != 0 && (v & 1) != 0);
 
                 if (u == v)
                 {
@@ -252,12 +252,12 @@ namespace Palmtree.Numerics
                 }
 
                 // この時点で、u と v は共に正で、かつ u > v かつ 少なくとも u と v はともに奇数である。
-                Validation.Assert(u > 0 && v > 0 && u > v && (u & 1) != 0 && (v & 1) != 0);
+                System.Diagnostics.Debug.Assert(u > 0 && v > 0 && u > v && (u & 1) != 0 && (v & 1) != 0);
 
                 u -= v;
 
                 // この時点で u は正の偶数
-                Validation.Assert(u > 0 && (u & 1) == 0);
+                System.Diagnostics.Debug.Assert(u > 0 && (u & 1) == 0);
 
                 // u が奇数になるまで u を右シフトする
 #if USE_SYSTEM_BIT_OPERATION
@@ -277,6 +277,7 @@ namespace Palmtree.Numerics
         /// <param name="v">2 番目の整数です。</param>
         /// <returns><paramref name="u"/>と<paramref name="v"/>の最大公約数です。この値は常に正の整数です。 </returns>
         /// <exception cref="OverflowException">計算中にオーバーフローが発生しました。</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int128 GreatestCommonDivisor(this Int128 u, Int128 v)
         {
             // checked / unchecked を行っている理由:
@@ -295,7 +296,6 @@ namespace Palmtree.Numerics
         /// <param name="v">2 番目の整数です。</param>
         /// <returns><paramref name="u"/>と<paramref name="v"/>の最大公約数です。この値は常に正の整数です。 </returns>
         /// <exception cref="OverflowException">計算中にオーバーフローが発生しました。</exception>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static UInt128 GreatestCommonDivisor(this UInt128 u, UInt128 v)
         {
             if (u <= 0)
@@ -310,7 +310,7 @@ namespace Palmtree.Numerics
                 return u;
 
             // この時点で u と v は共に正数
-            Validation.Assert(u > 0 && v > 0);
+            System.Diagnostics.Debug.Assert(u >= 0 && v >= 0);
 
             // 「互減法」アルゴリズムを使用して最大公約数を求める。
             // 乗算/除算/剰余算を一切使わなくて済むので互除法よりも極めて高速に計算できる。
@@ -342,7 +342,7 @@ namespace Palmtree.Numerics
 #endif
 
             // この時点で、u と v は共に正で、かつ少なくとも u と v のどちらかが奇数で、かつ、 u << k が元の u に等しく、v << k が元の v に等しい
-            Validation.Assert(u > 0 && v > 0 && ((u & 1) != 0 || (v & 1) != 0));
+            System.Diagnostics.Debug.Assert(u > 0 && v > 0 && ((u & 1) != 0 || (v & 1) != 0));
 
             // u が偶数であれば奇数になるまで右シフトする。
 #if USE_SYSTEM_BIT_OPERATION
@@ -364,7 +364,7 @@ namespace Palmtree.Numerics
             while (true)
             {
                 // この時点で、u と v は共に正の奇数である。
-                Validation.Assert(u > 0 && v > 0 && (u & 1) != 0 && (v & 1) != 0);
+                System.Diagnostics.Debug.Assert(u > 0 && v > 0 && (u & 1) != 0 && (v & 1) != 0);
 
                 if (u == v)
                 {
@@ -381,12 +381,12 @@ namespace Palmtree.Numerics
                 }
 
                 // この時点で、u と v は共に正で、かつ u > v かつ 少なくとも u と v はともに奇数である。
-                Validation.Assert(u > 0 && v > 0 && u > v && (u & 1) != 0 && (v & 1) != 0);
+                System.Diagnostics.Debug.Assert(u > 0 && v > 0 && u > v && (u & 1) != 0 && (v & 1) != 0);
 
                 u -= v;
 
                 // この時点で u は正の偶数
-                Validation.Assert(u > 0 && (u & 1) == 0);
+                System.Diagnostics.Debug.Assert(u > 0 && (u & 1) == 0);
 
                 // u が奇数になるまで u を右シフトする
 #if USE_SYSTEM_BIT_OPERATION

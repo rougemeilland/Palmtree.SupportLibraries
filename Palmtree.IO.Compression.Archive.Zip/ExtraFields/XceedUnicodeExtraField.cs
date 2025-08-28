@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 {
@@ -90,7 +91,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     return builder.ToByteArray();
                 }
                 default:
-                    throw Validation.GetFatalErrorException();
+                    throw Validation.GetFailErrorException();
             }
         }
 
@@ -159,7 +160,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     }
 
                     default:
-                        throw Validation.GetFatalErrorException();
+                        throw Validation.GetFailErrorException();
                 }
 
                 if (!reader.IsEmpty)

@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
-using Palmtree.IO;
 
-namespace Palmtree.Interprocess
+namespace Palmtree
 {
     /// <summary>
     /// プロセス / 外部コマンドのヘルパークラスです。
     /// </summary>
-    public static partial class ProcessUtility
+    public class ProcessUtility
     {
         private static readonly String[] _commonExecutablePathOnLinux = ["/usr/bin", "/bin"];
         private static readonly Char[] _anyOfSemicolonOrDoubleQuote = [';', '"'];
-        private static readonly Char[] _delimiterOfDirectory = [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar];
 
         /// <summary>
-        /// 指定されたコマンドをファイルシステムから探します。
+        /// ファイルシステムから指定されたコマンドを探します。
         /// </summary>
         /// <param name="targetCommandName">
         /// 探すコマンドの名前である <see cref="String"/> オブジェクトです。
@@ -39,7 +36,7 @@ namespace Palmtree.Interprocess
         /// <term>検索対象ファイルについて</term>
         /// <description>
         /// <list type="bullet">
-        /// <item><term>Windows の場合</term><description><paramref name="targetCommandName"/> で指定された名前に拡張子 ".exe" または ".com" が付加されたファイルを検索します。</description></item>
+        /// <item><term>Windows の場合</term><description><paramref name="targetCommandName"/> で指定された名前に拡張子 ".exe" が付加されたファイルを検索します。</description></item>
         /// <item><term>Linux の場合</term><description><paramref name="targetCommandName"/> で指定された名前のファイルを探します。ただし実行可能ではないファイルを除きます。</description></item>
         /// </list>
         /// </description>
@@ -57,7 +54,7 @@ namespace Palmtree.Interprocess
         /// </item>
         /// </list>
         /// </remarks>
-        public static FilePath? WhereIs(String targetCommandName)
+        public static String? WhereIs(String targetCommandName)
         {
             if (OperatingSystem.IsWindows())
             {
@@ -71,59 +68,20 @@ namespace Palmtree.Interprocess
             }
         }
 
-        [SupportedOSPlatform("windows")]
-        private static FilePath? WhereIsForWindows(String targetCommandName)
+        private static String? WhereIsForWindows(String targetCommandName)
         {
-            var commandFileNames =
-                new[]
-                {
-                    targetCommandName,
-                    $"{targetCommandName}.exe",
-                    $"{targetCommandName}.com",
-                };
-            if (targetCommandName.IndexOfAny(_delimiterOfDirectory) < 0)
-            {
-                // targetCommandName にディレクトリ区切り文字が含まれていない場合
-
-                return
-                    EnumerateExecutableDirectoriesForWindows()
-                    .Where(dir => dir.Exists)
-                    .SelectMany(dir => commandFileNames.Select(commandFileName => dir.GetFile(commandFileName)))
-                    .FirstOrDefault(file => file.Exists);
-            }
-            else
-            {
-                // targetCommandName にディレクトリ区切り文字が含まれている場合
-
-                // PATH 環境変数などの検索は行わない
-                return
-                    commandFileNames
-                    .Select(CreateFilePathInstance)
-                    .WhereNotNull()
-                    .FirstOrDefault();
-            }
-
-            static FilePath? CreateFilePathInstance(String path)
-            {
-                try
-                {
-                    var filePath = new FilePath(path);
-                    return filePath.Exists ? filePath : null;
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
+            var dotExeCommandFileName = $"{targetCommandName}.exe";
+            var dotComCommandFileName = $"{targetCommandName}.com";
+            return
+                EnumerateExecutableDirectoriesForWindows()
+                .SelectMany(dir => new[] { Path.Combine(dir, dotExeCommandFileName), Path.Combine(dir, dotComCommandFileName) })
+                .FirstOrDefault(File.Exists);
         }
 
-        [SupportedOSPlatform("windows")]
-        private static IEnumerable<DirectoryPath> EnumerateExecutableDirectoriesForWindows()
+        private static IEnumerable<String> EnumerateExecutableDirectoriesForWindows()
         {
-            var baseDir = CreateDirectoryPathInstance(AppContext.BaseDirectory);
-            if (baseDir is not null)
-                yield return baseDir;
-            yield return DirectoryPath.CurrentDirectory;
+            yield return AppContext.BaseDirectory;
+            yield return Environment.CurrentDirectory;
             var pathEnvironment = Environment.GetEnvironmentVariable("PATH");
             if (pathEnvironment is not null)
             {
@@ -141,10 +99,7 @@ namespace Palmtree.Interprocess
                         _ = pathElement.Append(pathEnvironment[startPos..]);
 
                         // pathElement をディレクトリパス名として返し、繰り返しを終える
-
-                        var dir = CreateDirectoryPathInstance(pathElement.ToString());
-                        if (dir is not null)
-                            yield return dir;
+                        yield return pathElement.ToString();
                         yield break;
                     }
 
@@ -178,32 +133,16 @@ namespace Palmtree.Interprocess
                         startPos = endPos + 1;
 
                         // pathElement をディレクトリパス名として返す
-                        var directoryPath = CreateDirectoryPathInstance(pathElement.ToString());
-                        if (directoryPath is not null)
-                            yield return directoryPath;
+                        yield return pathElement.ToString();
 
                         // pathElement をクリアする
                         _ = pathElement.Clear();
                     }
                 }
             }
-
-            static DirectoryPath? CreateDirectoryPathInstance(String path)
-            {
-                try
-                {
-                    var directoryPath = new DirectoryPath(path);
-                    return directoryPath.Exists ? directoryPath : null;
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
         }
 
-        [UnsupportedOSPlatform("windows")]
-        private static FilePath? WhereIsForLinux(String targetCommandName)
+        private static String? WhereIsForLinux(String targetCommandName)
         {
             var whichCommandName = "which";
 
@@ -256,8 +195,8 @@ namespace Palmtree.Interprocess
             // コマンドのパス名を解決するコマンドの終了を待機する
             process.WaitForExit();
 
-            var result = String.IsNullOrEmpty(foundPath) ? null : new FilePath(foundPath);
-            Validation.Assert(result is null || result.Exists);
+            var result = String.IsNullOrEmpty(foundPath) ? null : foundPath;
+            Validation.Assert(result is null || File.Exists(result));
 
             // プロセスの終了コードを判別して復帰する
             //   0: 指定されたコマンドが見つかった場合 (Windows/Linux 共通)

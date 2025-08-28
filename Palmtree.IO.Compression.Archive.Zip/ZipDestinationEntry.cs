@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Builder;
+using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {

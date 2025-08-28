@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -591,15 +590,15 @@ namespace Palmtree.IO.Console
                 .ToDictionary(item => item.name.value, item => item.value);
 
             return new TerminalInfoDatabase(
-                        terminfoFile.FullName,
-                        includeUniqueCapabilities ? terminalNames.Where(name => name != terminfoFile.Name).Prepend(terminfoFile.Name) : terminalNames,
-                        booleanCapabilityValues,
-                        numberCapabilityValues,
-                        stringCapabilityValues,
-                        extendedBooleanCapabilities,
-                        extendedNumberCapabilities,
-                        extendedStringCapabilities,
-                        includeUniqueCapabilities);
+                terminfoFile.FullName,
+                includeUniqueCapabilities ? terminalNames.Where(name => name != terminfoFile.Name).Prepend(terminfoFile.Name) : terminalNames,
+                booleanCapabilityValues,
+                numberCapabilityValues,
+                stringCapabilityValues,
+                extendedBooleanCapabilities,
+                extendedNumberCapabilities,
+                extendedStringCapabilities,
+                includeUniqueCapabilities);
         }
 
         public static void WriteAllTerminalInfos(TextWriter writer, Int32 indent, Boolean includeUniqueCapabilities)
@@ -1043,19 +1042,12 @@ namespace Palmtree.IO.Console
 
         private static String[] ReadTerminalNames(ISequentialInputByteStream inStream, Int16 nameSectionBytes)
         {
-            var terminalNamesBuffer = ArrayPool<Byte>.Shared.Rent(nameSectionBytes);
-            try
-            {
-                if (inStream.ReadBytes(terminalNamesBuffer.AsSpan(0, nameSectionBytes)) != nameSectionBytes)
-                    throw new ApplicationException("Bad file format.");
+            var terminalNamesBuffer = new Byte[nameSectionBytes].AsSpan();
+            if (inStream.ReadBytes(terminalNamesBuffer) != terminalNamesBuffer.Length)
+                throw new ApplicationException("Bad file format.");
 
-                var terminalNames = NullTerminatedByteArrayToAsciiString(terminalNamesBuffer.AsSpan(0, nameSectionBytes), out _);
-                return terminalNames.Split('|');
-            }
-            finally
-            {
-                ArrayPool<Byte>.Shared.Return(terminalNamesBuffer);
-            }
+            var terminalNames = NullTerminatedByteArrayToAsciiString(terminalNamesBuffer, out _);
+            return terminalNames.Split('|');
         }
 
         private static IEnumerable<(TermInfoBooleanCapabilities index, Boolean value)> ReadBooleanCapabilityValues(ISequentialInputByteStream inStream, Int16 boolSectionCount)
@@ -1099,24 +1091,17 @@ namespace Palmtree.IO.Console
 
         private static IEnumerable<(TermInfoStringCapabilities index, String value)> ReadStringCapabilityValues(ISequentialInputByteStream inStream, Int16 stringSectionTableBytes, ReadOnlyMemory<Int16> stringSectionOffsets)
         {
-            var stringTableBuffer = ArrayPool<Byte>.Shared.Rent(stringSectionTableBytes);
-            try
-            {
-                if (inStream.ReadBytes(stringTableBuffer.AsSpan(0, stringSectionTableBytes)) != stringSectionTableBytes)
-                    throw new ApplicationException("Bad file format.");
+            var stringTableBuffer = new Byte[stringSectionTableBytes];
+            if (inStream.ReadBytes(stringTableBuffer) != stringTableBuffer.Length)
+                throw new ApplicationException("Bad file format.");
 
-                for (var index = 0; index < stringSectionOffsets.Length; ++index)
-                {
-                    var offset = stringSectionOffsets.Span[index];
-                    if (offset >= stringSectionTableBytes)
-                        throw new ApplicationException("Bad file format.");
-                    if (offset >= 0)
-                        yield return ((TermInfoStringCapabilities)index, NullTerminatedByteArrayToAsciiString(stringTableBuffer.AsReadOnlySpan(offset, stringSectionTableBytes - offset), out _));
-                }
-            }
-            finally
+            for (var index = 0; index < stringSectionOffsets.Length; ++index)
             {
-                ArrayPool<Byte>.Shared.Return(stringTableBuffer);
+                var offset = stringSectionOffsets.Span[index];
+                if (offset >= stringSectionTableBytes)
+                    throw new ApplicationException("Bad file format.");
+                if (offset >= 0)
+                    yield return ((TermInfoStringCapabilities)index, NullTerminatedByteArrayToAsciiString(stringTableBuffer.AsSpan(offset), out _));
             }
         }
 

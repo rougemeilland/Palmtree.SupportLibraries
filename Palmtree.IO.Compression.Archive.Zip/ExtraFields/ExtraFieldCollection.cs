@@ -128,7 +128,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                 if (bufferLength > UInt16.MaxValue)
                     throw new OverflowException();
 
-                var builder = new ByteArrayBuilder(checked((Int32)bufferLength));
+                var builder = new ByteArrayBuilder(bufferLength);
                 foreach (var extraFieldItem in _extraFields.Values)
                 {
                     builder.AppendUInt16LE(extraFieldItem.ExtraFieldId);

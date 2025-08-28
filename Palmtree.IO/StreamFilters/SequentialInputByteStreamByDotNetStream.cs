@@ -23,8 +23,6 @@ namespace Palmtree.IO.StreamFilters
 
                 _baseStream = baseStream;
                 _leaveOpen = leaveOpen;
-                while (_baseStream is IDirectDotNetStreamWrapper wrapper)
-                    _baseStream = wrapper.RawStream;
             }
             catch (Exception)
             {

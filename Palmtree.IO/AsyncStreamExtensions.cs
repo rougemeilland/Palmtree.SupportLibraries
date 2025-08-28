@@ -10,25 +10,10 @@ using System.Threading.Tasks;
 
 namespace Palmtree.IO
 {
-    public static partial class AsyncStreamExtensions
+    public static class AsyncStreamExtensions
     {
-        private const Int32 _SIZE_OF_INT128 = 16;
-        private const Int32 _SIZE_OF_UINT128 = 16;
-        private const Int32 _SIZE_OF_HALF = 2;
-        private const Int32 _COPY_TO_DEFAULT_BYTE_BUFFER_SIZE = 81920;
-        private const Int32 _COPY_TO_DEFAULT_CHAR_BUFFER_SIZE = 1024;
-
-        static AsyncStreamExtensions()
-        {
-#if DEBUG
-            unsafe
-            {
-                Validation.Assert(_SIZE_OF_INT128 == sizeof(Int128));
-                Validation.Assert(_SIZE_OF_UINT128 == sizeof(UInt128));
-                Validation.Assert(_SIZE_OF_HALF == sizeof(Half));
-            }
-#endif
-        }
+        private const Int32 _COPY_TO_DEFAULT_BUFFER_SIZE = 81920;
+        private const Int32 _WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE = 81920;
 
         #region GetAsyncByteSequence
 
@@ -40,7 +25,7 @@ namespace Palmtree.IO
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
-                return sourceStream.GetByteSequenceAsyncCore(null, null, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(null, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -58,7 +43,7 @@ namespace Palmtree.IO
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
-                return sourceStream.GetByteSequenceAsyncCore(null, progress, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(null, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -79,7 +64,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
-                return sourceStream.GetByteSequenceAsyncCore(offset, checked((UInt64)sourceStream.Length - offset), null, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(offset, checked((UInt64)sourceStream.Length - offset), null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -100,7 +85,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
-                return sourceStream.GetByteSequenceAsyncCore(offset, checked((UInt64)sourceStream.Length - offset), progress, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(offset, checked((UInt64)sourceStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -122,7 +107,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
-                return sourceStream.GetByteSequenceAsyncCore(offset, count, null, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(offset, count, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -144,7 +129,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
-                return sourceStream.GetByteSequenceAsyncCore(offset, count, progress, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(offset, count, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -160,7 +145,7 @@ namespace Palmtree.IO
             {
                 ArgumentNullException.ThrowIfNull(sourceStream);
 
-                return sourceStream.GetByteSequenceAsyncCore(null, null, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(null, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -175,7 +160,7 @@ namespace Palmtree.IO
             {
                 ArgumentNullException.ThrowIfNull(sourceStream);
 
-                return sourceStream.GetByteSequenceAsyncCore(null, progress, leaveOpen, cancellationToken);
+                return sourceStream.InternalGetByteSequenceAsync(null, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -193,7 +178,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
-                return randomAccessStream.GetByteSequenceAsyncCore(offset, checked(randomAccessStream.Length - offset), null, leaveOpen, cancellationToken);
+                return randomAccessStream.InternalGetByteSequenceAsync(offset, checked(randomAccessStream.Length - offset), null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -211,7 +196,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
-                return randomAccessStream.GetByteSequenceAsyncCore(offset, checked(randomAccessStream.Length - offset), progress, leaveOpen, cancellationToken);
+                return randomAccessStream.InternalGetByteSequenceAsync(offset, checked(randomAccessStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -230,7 +215,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
-                return randomAccessStream.GetByteSequenceAsyncCore(offset, count, null, leaveOpen, cancellationToken);
+                return randomAccessStream.InternalGetByteSequenceAsync(offset, count, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -249,7 +234,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
-                return randomAccessStream.GetByteSequenceAsyncCore<UInt64>(offset, count, progress, leaveOpen, cancellationToken);
+                return randomAccessStream.InternalGetByteSequenceAsync<UInt64>(offset, count, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -272,7 +257,7 @@ namespace Palmtree.IO
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
-                return GetReverseByteSequenceAsyncCore(sourceStream, 0, checked((UInt64)sourceStream.Length), null, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(sourceStream, 0, checked((UInt64)sourceStream.Length), null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -292,7 +277,7 @@ namespace Palmtree.IO
                 if (!sourceStream.CanRead)
                     throw new NotSupportedException();
 
-                return GetReverseByteSequenceAsyncCore(sourceStream, 0, checked((UInt64)sourceStream.Length), progress, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(sourceStream, 0, checked((UInt64)sourceStream.Length), progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -313,7 +298,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
-                return GetReverseByteSequenceAsyncCore(sourceStream, offset, checked((UInt64)sourceStream.Length - offset), null, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(sourceStream, offset, checked((UInt64)sourceStream.Length - offset), null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -334,7 +319,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
 
-                return GetReverseByteSequenceAsyncCore(sourceStream, offset, checked((UInt64)sourceStream.Length - offset), progress, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(sourceStream, offset, checked((UInt64)sourceStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -356,7 +341,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
-                return GetReverseByteSequenceAsyncCore(sourceStream, offset, count, null, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(sourceStream, offset, count, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -378,7 +363,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, checked((UInt64)sourceStream.Length));
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, checked((UInt64)sourceStream.Length) - offset);
 
-                return GetReverseByteSequenceAsyncCore(sourceStream, offset, count, progress, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(sourceStream, offset, count, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -396,7 +381,7 @@ namespace Palmtree.IO
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
 
-                return GetReverseByteSequenceAsyncCore(randomAccessStream, randomAccessStream.StartOfThisStream, randomAccessStream.Length, null, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(randomAccessStream, randomAccessStream.StartOfThisStream, randomAccessStream.Length, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -414,7 +399,7 @@ namespace Palmtree.IO
                 if (sourceStream is not IRandomInputByteStream<UInt64> randomAccessStream)
                     throw new NotSupportedException();
 
-                return GetReverseByteSequenceAsyncCore(randomAccessStream, randomAccessStream.StartOfThisStream, randomAccessStream.Length, progress, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(randomAccessStream, randomAccessStream.StartOfThisStream, randomAccessStream.Length, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -433,7 +418,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
-                return GetReverseByteSequenceAsyncCore(randomAccessStream, offset, checked(randomAccessStream.Length - offset), null, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, checked(randomAccessStream.Length - offset), null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -452,7 +437,7 @@ namespace Palmtree.IO
                     throw new NotSupportedException();
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
 
-                return GetReverseByteSequenceAsyncCore(randomAccessStream, offset, checked(randomAccessStream.Length - offset), progress, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, checked(randomAccessStream.Length - offset), progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -472,7 +457,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
-                return GetReverseByteSequenceAsyncCore(randomAccessStream, offset, count, null, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, count, null, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -492,7 +477,7 @@ namespace Palmtree.IO
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, randomAccessStream.Length);
                 ArgumentOutOfRangeException.ThrowIfGreaterThan(count, randomAccessStream.Length - offset);
 
-                return GetReverseByteSequenceAsyncCore(randomAccessStream, offset, count, progress, leaveOpen, cancellationToken);
+                return InternalGetReverseByteSequenceAsync(randomAccessStream, offset, count, progress, leaveOpen, cancellationToken);
             }
             catch (Exception)
             {
@@ -517,7 +502,7 @@ namespace Palmtree.IO
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, null, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, null, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -539,7 +524,7 @@ namespace Palmtree.IO
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, null, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, null, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -564,7 +549,7 @@ namespace Palmtree.IO
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, progress, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, progress, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -586,7 +571,7 @@ namespace Palmtree.IO
                 if (!stream2.CanRead)
                     throw new NotSupportedException();
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, progress, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, progress, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -607,7 +592,7 @@ namespace Palmtree.IO
                 ArgumentNullException.ThrowIfNull(stream1);
                 ArgumentNullException.ThrowIfNull(stream2);
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, null, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, null, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -625,7 +610,7 @@ namespace Palmtree.IO
                 ArgumentNullException.ThrowIfNull(stream1);
                 ArgumentNullException.ThrowIfNull(stream2);
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, null, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, null, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -646,7 +631,7 @@ namespace Palmtree.IO
                 ArgumentNullException.ThrowIfNull(stream1);
                 ArgumentNullException.ThrowIfNull(stream2);
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, progress, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, progress, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -664,7 +649,7 @@ namespace Palmtree.IO
                 ArgumentNullException.ThrowIfNull(stream1);
                 ArgumentNullException.ThrowIfNull(stream2);
 
-                return await stream1.StreamBytesEqualAsyncCore(stream2, progress, cancellationToken).ConfigureAwait(false);
+                return await stream1.InternalStreamBytesEqualAsync(stream2, progress, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -696,29 +681,148 @@ namespace Palmtree.IO
         }
 #endif
 
+        public static async Task CopyToAsync(this Stream source, Stream destination, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                if (!source.CanRead)
+                    throw new NotSupportedException();
+                ArgumentNullException.ThrowIfNull(destination);
+                if (!destination.CanWrite)
+                    throw new NotSupportedException();
+
+                await source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, null, leaveOpen, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (source is not null)
+                        await source.DisposeAsync().ConfigureAwait(false);
+                    if (destination is not null)
+                        await destination.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
         public static async Task CopyToAsync(this Stream source, Stream destination, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(source);
-            if (!source.CanRead)
-                throw new NotSupportedException();
-            ArgumentNullException.ThrowIfNull(destination);
-            if (!destination.CanWrite)
-                throw new NotSupportedException();
+            try
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                if (!source.CanRead)
+                    throw new NotSupportedException();
+                ArgumentNullException.ThrowIfNull(destination);
+                if (!destination.CanWrite)
+                    throw new NotSupportedException();
 
-            await source.CopyToAsyncCore(destination, _COPY_TO_DEFAULT_BYTE_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+                await source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, progress, false, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (source is not null)
+                    await source.DisposeAsync().ConfigureAwait(false);
+                if (destination is not null)
+                    await destination.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task CopyToAsync(this Stream source, Stream destination, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                if (!source.CanRead)
+                    throw new NotSupportedException();
+                ArgumentNullException.ThrowIfNull(destination);
+                if (!destination.CanWrite)
+                    throw new NotSupportedException();
+
+                await source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, progress, leaveOpen, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (source is not null)
+                        await source.DisposeAsync().ConfigureAwait(false);
+                    if (destination is not null)
+                        await destination.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task CopyToAsync(this Stream source, Stream destination, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                if (!source.CanRead)
+                    throw new NotSupportedException();
+                ArgumentNullException.ThrowIfNull(destination);
+                if (!destination.CanWrite)
+                    throw new NotSupportedException();
+
+                await source.InternalCopyToAsync(destination, bufferSize, null, leaveOpen, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (source is not null)
+                        await source.DisposeAsync().ConfigureAwait(false);
+                    if (destination is not null)
+                        await destination.DisposeAsync().ConfigureAwait(false);
+                }
+            }
         }
 
         public static async Task CopyToAsync(this Stream source, Stream destination, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(source);
-            if (!source.CanRead)
-                throw new NotSupportedException();
-            ArgumentNullException.ThrowIfNull(destination);
-            if (!destination.CanWrite)
-                throw new NotSupportedException();
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
+            try
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                if (!source.CanRead)
+                    throw new NotSupportedException();
+                ArgumentNullException.ThrowIfNull(destination);
+                if (!destination.CanWrite)
+                    throw new NotSupportedException();
 
-            await source.CopyToAsyncCore(destination, bufferSize, progress, cancellationToken).ConfigureAwait(false);
+                await source.InternalCopyToAsync(destination, bufferSize, progress, false, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (source is not null)
+                    await source.DisposeAsync().ConfigureAwait(false);
+                if (destination is not null)
+                    await destination.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task CopyToAsync(this Stream source, Stream destination, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                if (!source.CanRead)
+                    throw new NotSupportedException();
+                ArgumentNullException.ThrowIfNull(destination);
+                if (!destination.CanWrite)
+                    throw new NotSupportedException();
+
+                await source.InternalCopyToAsync(destination, bufferSize, progress, leaveOpen, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (source is not null)
+                        await source.DisposeAsync().ConfigureAwait(false);
+                    if (destination is not null)
+                        await destination.DisposeAsync().ConfigureAwait(false);
+                }
+            }
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, CancellationToken cancellationToken = default)
@@ -726,7 +830,15 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(destination);
 
-            return source.CopyToAsyncCore(destination, _COPY_TO_DEFAULT_BYTE_BUFFER_SIZE, null, cancellationToken);
+            return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, null, false, cancellationToken);
+        }
+
+        public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+
+            return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, null, leaveOpen, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
@@ -734,7 +846,15 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(destination);
 
-            return source.CopyToAsyncCore(destination, _COPY_TO_DEFAULT_BYTE_BUFFER_SIZE, progress, cancellationToken);
+            return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, progress, false, cancellationToken);
+        }
+
+        public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+
+            return source.InternalCopyToAsync(destination, _COPY_TO_DEFAULT_BUFFER_SIZE, progress, leaveOpen, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, CancellationToken cancellationToken = default)
@@ -743,7 +863,16 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(destination);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-            return source.CopyToAsyncCore(destination, bufferSize, null, cancellationToken);
+            return source.InternalCopyToAsync(destination, bufferSize, null, false, cancellationToken);
+        }
+
+        public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
+
+            return source.InternalCopyToAsync(destination, bufferSize, null, leaveOpen, cancellationToken);
         }
 
         public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
@@ -752,71 +881,2335 @@ namespace Palmtree.IO
             ArgumentNullException.ThrowIfNull(destination);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-            return source.CopyToAsyncCore(destination, bufferSize, progress, cancellationToken);
+            return source.InternalCopyToAsync(destination, bufferSize, progress, false, cancellationToken);
         }
 
-        public static Task CopyToAsync(this TextReader source, TextWriter destination, CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(destination);
-
-            return
-                source is StreamReader streamReader && destination is StreamWriter streamWriter && streamReader.CurrentEncoding.EqualsStrictly(streamWriter.Encoding)
-                ? streamReader.BaseStream.CopyToAsyncCore(streamWriter.BaseStream, _COPY_TO_DEFAULT_BYTE_BUFFER_SIZE, null, cancellationToken)
-                : source.CopyToAsyncCore(destination, _COPY_TO_DEFAULT_CHAR_BUFFER_SIZE, null, cancellationToken);
-        }
-
-        public static Task CopyToAsync(this TextReader source, TextWriter destination, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(destination);
-
-            return
-                source is StreamReader streamReader && destination is StreamWriter streamWriter && streamReader.CurrentEncoding.EqualsStrictly(streamWriter.Encoding)
-                ? streamReader.BaseStream.CopyToAsyncCore(streamWriter.BaseStream, _COPY_TO_DEFAULT_BYTE_BUFFER_SIZE, progress, cancellationToken)
-                : source.CopyToAsyncCore(destination, _COPY_TO_DEFAULT_CHAR_BUFFER_SIZE, progress, cancellationToken);
-        }
-
-        public static Task CopyToAsync(this TextReader source, TextWriter destination, Int32 bufferSize, CancellationToken cancellationToken = default)
+        public static Task CopyToAsync(this ISequentialInputByteStream source, ISequentialOutputByteStream destination, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(destination);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-            return
-                source is StreamReader streamReader && destination is StreamWriter streamWriter && streamReader.CurrentEncoding.EqualsStrictly(streamWriter.Encoding)
-                ? streamReader.BaseStream.CopyToAsyncCore(streamWriter.BaseStream, bufferSize, null, cancellationToken)
-                : source.CopyToAsyncCore(destination, bufferSize, null, cancellationToken);
-        }
-
-        public static Task CopyToAsync(this TextReader source, TextWriter destination, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(destination);
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
-
-            return
-                source is StreamReader streamReader && destination is StreamWriter streamWriter && streamReader.CurrentEncoding.EqualsStrictly(streamWriter.Encoding)
-                ? streamReader.BaseStream.CopyToAsyncCore(streamWriter.BaseStream, bufferSize, progress, cancellationToken)
-                : source.CopyToAsyncCore(destination, bufferSize, progress, cancellationToken);
+            return source.InternalCopyToAsync(destination, bufferSize, progress, leaveOpen, cancellationToken);
         }
 
         #endregion
 
-        #region GetByteSequenceAsyncCore
+        #region ReadAsync
 
-        private static async IAsyncEnumerable<Byte> GetByteSequenceAsyncCore(this Stream sourceStream, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
+#if false
+        public static Task<Int32> ReadAsync(this Stream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException(); // defined in System.IO.Stream.ReadAsync(Memory<Byte>, CancellationToken)
+        }
+#endif
+
+        public static Task<Int32> ReadAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return sourceStream.ReadAsync(buffer.AsMemory(offset), cancellationToken).AsTask();
+        }
+
+        public static async Task<UInt32> ReadAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            var length =
+                await sourceStream.ReadAsync(
+                    buffer.AsMemory(offset),
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadAsync(this Stream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            var (offset, count) = buffer.GetOffsetAndLength(range);
+            return sourceStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        }
+
+        public static async Task<UInt32> ReadAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
+
+            var length =
+                await sourceStream.ReadAsync(
+                    buffer.AsMemory(offset, count),
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return sourceStream.ReadAsync(buffer.AsMemory(offset), cancellationToken);
+        }
+
+        public static async Task<UInt32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            var length =
+                await sourceStream.ReadAsync(
+                    buffer.AsMemory(offset),
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            var (offset, count) = buffer.GetOffsetAndLength(range);
+            return sourceStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public static Task<Int32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            return sourceStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public static async Task<UInt32> ReadAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
+
+            var length =
+                await sourceStream.ReadAsync(
+                    buffer.AsMemory(offset, count),
+                    cancellationToken)
+                .ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        #endregion
+
+        #region ReadByteOrNullAsync
+
+        public static async Task<Byte?> ReadByteOrNullAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[1];
+            return
+                await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) > 0
+                ? buffer[0]
+                : null;
+        }
+
+        public static async Task<Byte?> ReadByteOrNullAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[1];
+            return
+                await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) > 0
+                ? buffer[0]
+                : null;
+        }
+
+        #endregion
+
+        #region ReadByteAsync
+
+        public static async Task<Byte> ReadByteAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[1];
+            if (await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) <= 0)
+                throw new EndOfStreamException();
+
+            return buffer[0];
+        }
+
+        public static async Task<Byte> ReadByteAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[1];
+            if (await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) <= 0)
+                throw new EndOfStreamException();
+
+            return buffer[0];
+        }
+
+        #endregion
+
+        #region ReadBytesAsync
+
+        public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this Stream sourceStream, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+            return sourceStream.InternalReadBytesAsync(count, cancellationToken);
+        }
+
+        public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this Stream sourceStream, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            return sourceStream.InternalReadBytesAsync(checked((Int32)count), cancellationToken);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken);
+        }
+
+        public static async Task<UInt32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken).ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            var (offset, count) = buffer.GetOffsetAndLength(range);
+            return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public static async Task<UInt32> ReadBytesAsync(this Stream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this Stream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+            return sourceStream.InternalReadBytesAsync(count, cancellationToken);
+        }
+
+        public static Task<ReadOnlyMemory<Byte>> ReadBytesAsync(this ISequentialInputByteStream sourceStream, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            return sourceStream.InternalReadBytesAsync(checked((Int32)count), cancellationToken);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken);
+        }
+
+        public static async Task<UInt32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset), cancellationToken).ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            var (offset, count) = buffer.GetOffsetAndLength(range);
+            return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            return sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken);
+        }
+
+        public static async Task<UInt32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            var length = await sourceStream.InternalReadBytesAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> ReadBytesAsync(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            return sourceStream.InternalReadBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region ReadAllBytesAsync
+
+        public static Task<ReadOnlyMemory<Byte>> ReadAllBytesAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            return sourceStream.InternalReadAllBytesAsync(cancellationToken);
+        }
+
+        public static Task<ReadOnlyMemory<Byte>> ReadAllBytesAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            return sourceStream.InternalReadAllBytesAsync(cancellationToken);
+        }
+
+        #endregion
+
+        #region ReadInt16LEAsync
+
+        public static async Task<Int16> ReadInt16LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt16LE();
+        }
+
+        public static async Task<Int16> ReadInt16LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Int16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt16LE();
+        }
+
+        #endregion
+
+        #region ReadUInt16LEAsync
+
+        public static async Task<UInt16> ReadUInt16LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt16LE();
+        }
+
+        public static async Task<UInt16> ReadUInt16LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(UInt16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt16LE();
+        }
+
+        #endregion
+
+        #region ReadInt32LEAsync
+
+        public static async Task<Int32> ReadInt32LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt32LE();
+        }
+
+        public static async Task<Int32> ReadInt32LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Int32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt32LE();
+        }
+
+        #endregion
+
+        #region ReadUInt32LEAsync
+
+        public static async Task<UInt32> ReadUInt32LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt32LE();
+        }
+
+        public static async Task<UInt32> ReadUInt32LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(UInt32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt32LE();
+        }
+
+        #endregion
+
+        #region ReadInt64LEAsync
+
+        public static async Task<Int64> ReadInt64LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt64LE();
+        }
+
+        public static async Task<Int64> ReadInt64LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Int64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt64LE();
+        }
+
+        #endregion
+
+        #region ReadUInt64LEAsync
+
+        public static async Task<UInt64> ReadUInt64LEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt64LE();
+        }
+
+        public static async Task<UInt64> ReadUInt64LEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(UInt64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt64LE();
+        }
+
+        #endregion
+
+        #region ReadSingleLEAsync
+
+        public static async Task<Single> ReadSingleLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Single)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToSingleLE();
+        }
+
+        public static async Task<Single> ReadSingleLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Single)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToSingleLE();
+        }
+
+        #endregion
+
+        #region ReadDoubleLEAsync
+
+        public static async Task<Double> ReadDoubleLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Double)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDoubleLE();
+        }
+
+        public static async Task<Double> ReadDoubleLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Double)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDoubleLE();
+        }
+
+        #endregion
+
+        #region ReadDecimalLEAsync
+
+        public static async Task<Decimal> ReadDecimalLEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Decimal)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDecimalLE();
+        }
+
+        public static async Task<Decimal> ReadDecimalLEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Decimal)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDecimalLE();
+        }
+
+        #endregion
+
+        #region ReadInt16BEAsync
+
+        public static async Task<Int16> ReadInt16BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt16BE();
+        }
+
+        public static async Task<Int16> ReadInt16BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Int16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt16BE();
+        }
+
+        #endregion
+
+        #region ReadUInt16BEAsync
+
+        public static async Task<UInt16> ReadUInt16BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt16BE();
+        }
+
+        public static async Task<UInt16> ReadUInt16BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(UInt16)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt16BE();
+        }
+
+        #endregion
+
+        #region ReadInt32BEAsync
+
+        public static async Task<Int32> ReadInt32BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt32BE();
+        }
+
+        public static async Task<Int32> ReadInt32BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Int32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt32BE();
+        }
+
+        #endregion
+
+        #region ReadUInt32BEAsync
+
+        public static async Task<UInt32> ReadUInt32BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt32BE();
+        }
+
+        public static async Task<UInt32> ReadUInt32BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(UInt32)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt32BE();
+        }
+
+        #endregion
+
+        #region ReadInt64BEAsync
+
+        public static async Task<Int64> ReadInt64BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt64BE();
+        }
+
+        public static async Task<Int64> ReadInt64BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Int64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToInt64BE();
+        }
+
+        #endregion
+
+        #region ReadUInt64BEAsync
+
+        public static async Task<UInt64> ReadUInt64BEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt64BE();
+        }
+
+        public static async Task<UInt64> ReadUInt64BEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(UInt64)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToUInt64BE();
+        }
+
+        #endregion
+
+        #region ReadSingleBEAsync
+
+        public static async Task<Single> ReadSingleBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Single)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToSingleBE();
+        }
+
+        public static async Task<Single> ReadSingleBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Single)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToSingleBE();
+        }
+
+        #endregion
+
+        #region ReadDoubleBEAsync
+
+        public static async Task<Double> ReadDoubleBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Double)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDoubleBE();
+        }
+
+        public static async Task<Double> ReadDoubleBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Double)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDoubleBE();
+        }
+
+        #endregion
+
+        #region ReadDecimalBEAsync
+
+        public static async Task<Decimal> ReadDecimalBEAsync(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+            if (!sourceStream.CanRead)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Decimal)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDecimalBE();
+        }
+
+        public static async Task<Decimal> ReadDecimalBEAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(sourceStream);
+
+            var buffer = new Byte[sizeof(Decimal)];
+            if (await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false) != buffer.Length)
+                throw new EndOfStreamException();
+
+            return buffer.ToDecimalBE();
+        }
+
+        #endregion
+
+        #region WriteAsync
+
+        public static async Task<Int32> WriteAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            var count = buffer.Length - offset;
+            await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
+            return count;
+        }
+
+        public static async Task<UInt32> WriteAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            var count = checked((UInt32)buffer.Length - offset);
+            await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
+            return count;
+        }
+
+        public static async Task<UInt32> WriteAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
+
+            await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
+            return count;
+        }
+
+        public static async Task<Int32> WriteAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            await destinationStream.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
+            return buffer.Length;
+        }
+
+        public static Task<Int32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
+        }
+
+        public static async Task<UInt32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            var length = await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset), cancellationToken).ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        public static Task<Int32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            return destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static async Task<UInt32> WriteAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
+
+            var length = await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken).ConfigureAwait(false);
+            return checked((UInt32)length);
+        }
+
+        #endregion
+
+        #region WriteByteAsync
+
+        public static async Task WriteByteAsync(this ISequentialOutputByteStream destinationStream, Byte value, CancellationToken cancellationToken = default)
+        {
+            var length = await destinationStream.WriteAsync(new[] { value }, cancellationToken).ConfigureAwait(false);
+            Validation.Assert(length > 0);
+        }
+
+        #endregion
+
+        #region WriteBytesAsync
+
+        public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            var (offset, count) = buffer.GetOffsetAndLength(range);
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this Stream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Range range, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var (offset, count) = buffer.GetOffsetAndLength(range);
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length - offset);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, Byte[] buffer, UInt32 offset, UInt32 count, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, (UInt32)buffer.Length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, (UInt32)buffer.Length - offset);
+
+            return destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(offset, count), cancellationToken);
+        }
+
+        public static Task WriteBytesAsync(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteByteSequenceAsync
+
+        public static async Task WriteByteSequenceAsync(this Stream destinationStream, IEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(sequence);
+
+            using var enumerator = sequence.GetEnumerator();
+            var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
+            var isEndOfSequence = false;
+            while (!isEndOfSequence)
+            {
+                var index = 0;
+                while (index < buffer.Length)
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        isEndOfSequence = true;
+                        break;
+                    }
+
+                    buffer[index++] = enumerator.Current;
+                }
+
+                if (index > 0)
+                    await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(0, index), cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task WriteByteSequenceAsync(this Stream destinationStream, IAsyncEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+            ArgumentNullException.ThrowIfNull(sequence);
+
+            var enumerator = sequence.GetAsyncEnumerator(cancellationToken);
+            await using (enumerator.ConfigureAwait(false))
+            {
+                var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
+                var isEndOfSequence = false;
+                while (!isEndOfSequence)
+                {
+                    var index = 0;
+                    while (index < buffer.Length)
+                    {
+                        if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
+                        {
+                            isEndOfSequence = true;
+                            break;
+                        }
+
+                        buffer[index++] = enumerator.Current;
+                    }
+
+                    if (index > 0)
+                        await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(0, index), cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task WriteByteSequenceAsync(this ISequentialOutputByteStream destinationStream, IEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(sequence);
+
+            using var enumerator = sequence.GetEnumerator();
+            var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
+            var isEndOfSequence = false;
+            while (!isEndOfSequence)
+            {
+                var index = 0;
+                while (index < buffer.Length)
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        isEndOfSequence = true;
+                        break;
+                    }
+
+                    buffer[index++] = enumerator.Current;
+                }
+
+                if (index > 0)
+                    await destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(0, index), cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task WriteByteSequenceAsync(this ISequentialOutputByteStream destinationStream, IAsyncEnumerable<Byte> sequence, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            ArgumentNullException.ThrowIfNull(sequence);
+
+            var enumerator = sequence.GetAsyncEnumerator(cancellationToken);
+            await using (enumerator.ConfigureAwait(false))
+            {
+                var buffer = new Byte[_WRITE_BYTE_SEQUENCE_DEFAULT_BUFFER_SIZE];
+                var isEndOfSequence = false;
+                while (!isEndOfSequence)
+                {
+                    var index = 0;
+                    while (index < buffer.Length)
+                    {
+                        if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
+                        {
+                            isEndOfSequence = true;
+                            break;
+                        }
+
+                        buffer[index++] = enumerator.Current;
+                    }
+
+                    if (index > 0)
+                        await destinationStream.InternalWriteBytesAsync(buffer.AsReadOnlyMemory(0, index), cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region WriteInt16LEAsync
+
+        public static Task WriteInt16LEAsync(this Stream destinationStream, Int16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int16)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteInt16LEAsync(this ISequentialOutputByteStream destinationStream, Int16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Int16)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteUInt16LEAsync
+
+        public static Task WriteUInt16LEAsync(this Stream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt16)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteUInt16LEAsync(this ISequentialOutputByteStream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(UInt16)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteInt32LEAsync
+
+        public static Task WriteInt32LEAsync(this Stream destinationStream, Int32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int32)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteInt32LEAsync(this ISequentialOutputByteStream destinationStream, Int32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Int32)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteUInt32LEAsync
+
+        public static Task WriteUInt32LEAsync(this Stream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt32)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteUInt32LEAsync(this ISequentialOutputByteStream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(UInt32)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteInt64LEAsync
+
+        public static Task WriteInt64LEAsync(this Stream destinationStream, Int64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int64)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteInt64LEAsync(this ISequentialOutputByteStream destinationStream, Int64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Int64)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteUInt64LEAsync
+
+        public static Task WriteUInt64LEAsync(this Stream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt64)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteUInt64LEAsync(this ISequentialOutputByteStream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(UInt64)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteSingleLEAsync
+
+        public static Task WriteSingleLEAsync(this Stream destinationStream, Single value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Single)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteSingleLEAsync(this ISequentialOutputByteStream destinationStream, Single value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Single)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteDoubleLEAsync
+
+        public static Task WriteDoubleLEAsync(this Stream destinationStream, Double value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Double)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteDoubleLEAsync(this ISequentialOutputByteStream destinationStream, Double value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Double)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteDecimalLEAsync
+
+        public static Task WriteDecimalLEAsync(this Stream destinationStream, Decimal value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Decimal)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteDecimalLEAsync(this ISequentialOutputByteStream destinationStream, Decimal value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Decimal)];
+            buffer.SetValueLE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteInt16BEAsync
+
+        public static Task WriteInt16BEAsync(this Stream destinationStream, Int16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int16)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteInt16BEAsync(this ISequentialOutputByteStream destinationStream, Int16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Int16)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteUInt16BEAsync
+
+        public static Task WriteUInt16BEAsync(this Stream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt16)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteUInt16BEAsync(this ISequentialOutputByteStream destinationStream, UInt16 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(UInt16)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteInt32BEAsync
+
+        public static Task WriteInt32BEAsync(this Stream destinationStream, Int32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int32)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteInt32BEAsync(this ISequentialOutputByteStream destinationStream, Int32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Int32)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteUInt32BEAsync
+
+        public static Task WriteUInt32BEAsync(this Stream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt32)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteUInt32BEAsync(this ISequentialOutputByteStream destinationStream, UInt32 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(UInt32)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteInt64BEAsync
+
+        public static Task WriteInt64BEAsync(this Stream destinationStream, Int64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Int64)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteInt64BEAsync(this ISequentialOutputByteStream destinationStream, Int64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Int64)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteUInt64BEAsync
+
+        public static Task WriteUInt64BEAsync(this Stream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(UInt64)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteUInt64BEAsync(this ISequentialOutputByteStream destinationStream, UInt64 value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(UInt64)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteSingleBEAsync
+
+        public static Task WriteSingleBEAsync(this Stream destinationStream, Single value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Single)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteSingleBEAsync(this ISequentialOutputByteStream destinationStream, Single value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Single)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteDoubleBEAsync
+
+        public static Task WriteDoubleBEAsync(this Stream destinationStream, Double value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Double)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteDoubleBEAsync(this ISequentialOutputByteStream destinationStream, Double value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Double)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region WriteDecimalBEAsync
+
+        public static Task WriteDecimalBEAsync(this Stream destinationStream, Decimal value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+            if (!destinationStream.CanWrite)
+                throw new NotSupportedException();
+
+            var buffer = new Byte[sizeof(Decimal)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        public static Task WriteDecimalBEAsync(this ISequentialOutputByteStream destinationStream, Decimal value, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(destinationStream);
+
+            var buffer = new Byte[sizeof(Decimal)];
+            buffer.SetValueBE(0, value);
+            return destinationStream.InternalWriteBytesAsync(buffer, cancellationToken);
+        }
+
+        #endregion
+
+        #region CalculateCrc24Async
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, Int32 bufferSize, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc24Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc24Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region CalculateCrc32Async
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, Int32 bufferSize, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+                if (!sourceStream.CanRead)
+                    throw new NotSupportedException();
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            const Int32 MAX_BUFFER_SIZE = 80 * 1024;
+
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(MAX_BUFFER_SIZE, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, null, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (sourceStream is not null)
+                    await sourceStream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<(UInt32 Crc, UInt64 Length)> CalculateCrc32Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(sourceStream);
+
+                return await sourceStream.InternalCalculateCrc32Async(bufferSize, progress, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region InternalGetByteSequenceAsync
+
+        private static async IAsyncEnumerable<Byte> InternalGetByteSequenceAsync(this Stream sourceStream, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             const Int32 BUFFER_SIZE = 8 * 1024;
 
             var processedCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
             try
             {
                 processedCounter.Report();
+                var buffer = new Byte[BUFFER_SIZE];
                 while (true)
                 {
-                    var readCount = BUFFER_SIZE;
+                    var readCount = buffer.Length;
                     if (count is not null)
                         readCount = (Int32)((UInt64)readCount).Minimum(count.Value - processedCounter.Value);
                     if (readCount <= 0)
@@ -836,22 +3229,21 @@ namespace Palmtree.IO
                 if (!leaveOpen)
                     await sourceStream.DisposeAsync().ConfigureAwait(false);
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
-        private static async IAsyncEnumerable<Byte> GetByteSequenceAsyncCore(this ISequentialInputByteStream sourceStream, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private static async IAsyncEnumerable<Byte> InternalGetByteSequenceAsync(this ISequentialInputByteStream sourceStream, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             const Int32 BUFFER_SIZE = 8 * 1024;
 
             var processedCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
             try
             {
                 processedCounter.Report();
+                var buffer = new Byte[BUFFER_SIZE];
                 while (true)
                 {
-                    var readCount = BUFFER_SIZE;
+                    var readCount = buffer.Length;
                     if (count is not null)
                         readCount = (Int32)((UInt64)readCount).Minimum(count.Value - processedCounter.Value);
                     if (readCount <= 0)
@@ -871,16 +3263,14 @@ namespace Palmtree.IO
                 if (!leaveOpen)
                     await sourceStream.DisposeAsync().ConfigureAwait(false);
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
-        private static async IAsyncEnumerable<Byte> GetByteSequenceAsyncCore(this Stream sourceStream, UInt64 offset, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private static async IAsyncEnumerable<Byte> InternalGetByteSequenceAsync(this Stream sourceStream, UInt64 offset, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             const Int32 BUFFER_SIZE = 80 * 1024;
 
             var processedCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
             try
             {
                 if (!sourceStream.CanSeek)
@@ -888,9 +3278,10 @@ namespace Palmtree.IO
 
                 _ = sourceStream.Seek(checked((Int64)offset), SeekOrigin.Begin);
                 processedCounter.Report();
+                var buffer = new Byte[BUFFER_SIZE];
                 while (true)
                 {
-                    var readCount = BUFFER_SIZE;
+                    var readCount = buffer.Length;
                     if (count is not null)
                         readCount = (Int32)((UInt64)readCount).Minimum(count.Value - processedCounter.Value);
                     if (readCount <= 0)
@@ -910,16 +3301,14 @@ namespace Palmtree.IO
                 if (!leaveOpen)
                     await sourceStream.DisposeAsync().ConfigureAwait(false);
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
-        private static async IAsyncEnumerable<Byte> GetByteSequenceAsyncCore<POSITION_T>(this ISequentialInputByteStream sourceStream, POSITION_T offset, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private static async IAsyncEnumerable<Byte> InternalGetByteSequenceAsync<POSITION_T>(this ISequentialInputByteStream sourceStream, POSITION_T offset, UInt64? count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             const Int32 BUFFER_SIZE = 80 * 1024;
 
             var processedCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
             try
             {
                 if (sourceStream is not IRandomInputByteStream<POSITION_T> randomAccessStream)
@@ -927,9 +3316,10 @@ namespace Palmtree.IO
 
                 randomAccessStream.Seek(offset);
                 processedCounter.Report();
+                var buffer = new Byte[BUFFER_SIZE];
                 while (true)
                 {
-                    var readCount = BUFFER_SIZE;
+                    var readCount = buffer.Length;
                     if (count is not null)
                         readCount = (Int32)((UInt64)readCount).Minimum(count.Value - processedCounter.Value);
                     if (readCount <= 0)
@@ -949,32 +3339,31 @@ namespace Palmtree.IO
                 if (!leaveOpen)
                     await sourceStream.DisposeAsync().ConfigureAwait(false);
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
         #endregion
 
-        #region GetReverseByteSequenceAsyncCore
+        #region InternalGetReverseByteSequenceAsync
 
-        private static async IAsyncEnumerable<Byte> GetReverseByteSequenceAsyncCore(this Stream sourceStream, UInt64 offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private static async IAsyncEnumerable<Byte> InternalGetReverseByteSequenceAsync(this Stream sourceStream, UInt64 offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             const Int32 BUFFER_SIZE = 80 * 1024;
 
             var progressCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
             try
             {
                 ArgumentNullException.ThrowIfNull(sourceStream);
 
                 progressCounter.Report();
+                var buffer = new Byte[BUFFER_SIZE];
                 var pos = checked(offset + count);
                 while (pos.CompareTo(offset + BUFFER_SIZE) > 0)
                 {
                     pos -= BUFFER_SIZE;
                     _ = sourceStream.Seek(checked((Int64)pos), SeekOrigin.Begin);
-                    var length = await sourceStream.ReadBytesAsyncCore(buffer.AsMemory(0, BUFFER_SIZE), cancellationToken).ConfigureAwait(false);
-                    Validation.Assert(length == BUFFER_SIZE);
+                    var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
+                    Validation.Assert(length == buffer.Length);
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -998,30 +3387,28 @@ namespace Palmtree.IO
             {
                 if (!leaveOpen)
                     sourceStream.Dispose();
-                progressCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
-        private static async IAsyncEnumerable<Byte> GetReverseByteSequenceAsyncCore<POSITION_T>(this IRandomInputByteStream<POSITION_T> sourceStream, POSITION_T offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private static async IAsyncEnumerable<Byte> InternalGetReverseByteSequenceAsync<POSITION_T>(this IRandomInputByteStream<POSITION_T> sourceStream, POSITION_T offset, UInt64 count, IProgress<UInt64>? progress, Boolean leaveOpen, [EnumeratorCancellation] CancellationToken cancellationToken)
             where POSITION_T : struct, IComparable<POSITION_T>, IAdditionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, UInt64, POSITION_T>, ISubtractionOperators<POSITION_T, POSITION_T, UInt64>
         {
             const Int32 BUFFER_SIZE = 80 * 1024;
 
             var progressCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
             try
             {
                 ArgumentNullException.ThrowIfNull(sourceStream);
 
                 progressCounter.Report();
+                var buffer = new Byte[BUFFER_SIZE];
                 var pos = checked(offset + count);
                 while (pos.CompareTo(offset + BUFFER_SIZE) > 0)
                 {
                     pos -= BUFFER_SIZE;
                     sourceStream.Seek(pos);
-                    var length = await sourceStream.ReadBytesAsyncCore(buffer.AsMemory(0, BUFFER_SIZE), cancellationToken).ConfigureAwait(false);
-                    Validation.Assert(length == BUFFER_SIZE);
+                    var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
+                    Validation.Assert(length == buffer.Length);
                     for (var index = BUFFER_SIZE - 1; index >= 0; --index)
                     {
                         yield return buffer[index];
@@ -1045,31 +3432,29 @@ namespace Palmtree.IO
             {
                 if (!leaveOpen)
                     sourceStream.Dispose();
-                progressCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
         #endregion
 
-        #region StreamBytesEqualAsyncCore
+        #region InternalStreamBytesEqualAsync
 
-        private static async Task<Boolean> StreamBytesEqualAsyncCore(this Stream stream1, Stream stream2, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+        private static async Task<Boolean> InternalStreamBytesEqualAsync(this Stream stream1, Stream stream2, IProgress<UInt64>? progress, CancellationToken cancellationToken)
         {
-            const Int32 BUFFER_SIZE = 81920;
+            const Int32 bufferSize = 81920;
 
-            Validation.Assert(BUFFER_SIZE % sizeof(UInt64) == 0);
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0);
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
-            var buffer1 = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
-            var buffer2 = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
+            var buffer1 = new Byte[bufferSize];
+            var buffer2 = new Byte[bufferSize];
             try
             {
                 while (true)
                 {
-                    // まず両方のストリームから BUFFER_SIZE バイトだけ読み込みを試みる
-                    var bufferCount1 = await stream1.ReadBytesAsyncCore(buffer1.AsMemory(0, BUFFER_SIZE), cancellationToken).ConfigureAwait(false);
-                    var bufferCount2 = await stream2.ReadBytesAsyncCore(buffer2.AsMemory(0, BUFFER_SIZE), cancellationToken).ConfigureAwait(false);
+                    // まず両方のストリームから bufferSize バイトだけ読み込みを試みる
+                    var bufferCount1 = await stream1.InternalReadBytesAsync(buffer1, cancellationToken).ConfigureAwait(false);
+                    var bufferCount2 = await stream2.InternalReadBytesAsync(buffer2, cancellationToken).ConfigureAwait(false);
                     processedCounter.AddValue(checked((UInt32)bufferCount1));
 
                     if (bufferCount1 != bufferCount2)
@@ -1086,7 +3471,7 @@ namespace Palmtree.IO
                         return false;
                     }
 
-                    if (bufferCount1 < BUFFER_SIZE)
+                    if (bufferCount1 < buffer1.Length)
                     {
                         // どちらのストリームも同時にEOFに達したがそれまでに読み込めたデータはすべて一致していた場合
                         // 全てのデータが一致したと判断して true を返す。
@@ -1097,27 +3482,25 @@ namespace Palmtree.IO
             finally
             {
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer1);
-                ArrayPool<Byte>.Shared.Return(buffer2);
             }
         }
 
-        private static async Task<Boolean> StreamBytesEqualAsyncCore(this ISequentialInputByteStream stream1, ISequentialInputByteStream stream2, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+        private static async Task<Boolean> InternalStreamBytesEqualAsync(this ISequentialInputByteStream stream1, ISequentialInputByteStream stream2, IProgress<UInt64>? progress, CancellationToken cancellationToken)
         {
-            const Int32 BUFFER_SIZE = 81920;
+            const Int32 bufferSize = 81920;
 
-            Validation.Assert(BUFFER_SIZE % sizeof(UInt64) == 0);
+            Validation.Assert(bufferSize % sizeof(UInt64) == 0);
             var processedCounter = new ProgressCounterUInt64(progress);
             processedCounter.Report();
-            var buffer1 = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
-            var buffer2 = ArrayPool<Byte>.Shared.Rent(BUFFER_SIZE);
+            var buffer1 = new Byte[bufferSize];
+            var buffer2 = new Byte[bufferSize];
             try
             {
                 while (true)
                 {
-                    // まず両方のストリームから BUFFER_SIZE バイトだけ読み込みを試みる
-                    var bufferCount1 = await stream1.ReadBytesAsyncCore(buffer1.AsMemory(0, BUFFER_SIZE), cancellationToken).ConfigureAwait(false);
-                    var bufferCount2 = await stream2.ReadBytesAsyncCore(buffer2.AsMemory(0, BUFFER_SIZE), cancellationToken).ConfigureAwait(false);
+                    // まず両方のストリームから bufferSize バイトだけ読み込みを試みる
+                    var bufferCount1 = await stream1.InternalReadBytesAsync(buffer1, cancellationToken).ConfigureAwait(false);
+                    var bufferCount2 = await stream2.InternalReadBytesAsync(buffer2, cancellationToken).ConfigureAwait(false);
                     processedCounter.AddValue(checked((UInt32)bufferCount1));
 
                     if (bufferCount1 != bufferCount2)
@@ -1134,7 +3517,7 @@ namespace Palmtree.IO
                         return false;
                     }
 
-                    if (bufferCount1 < BUFFER_SIZE)
+                    if (bufferCount1 < buffer1.Length)
                     {
                         // どちらのストリームも同時にEOFに達したがそれまでに読み込めたデータはすべて一致していた場合
                         // 全てのデータが一致したと判断して true を返す。
@@ -1145,53 +3528,26 @@ namespace Palmtree.IO
             finally
             {
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer1);
-                ArrayPool<Byte>.Shared.Return(buffer2);
             }
         }
 
         #endregion
 
-        #region CopyToAsyncCore
+        #region InternalCopyToAsync
 
-        private static async Task CopyToAsyncCore(this Stream sourceStream, Stream destinationStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
-        {
-            var processedCounter = progress is not null ? new ProgressCounterUInt64(progress) : null;
-            var buffer = ArrayPool<Byte>.Shared.Rent(bufferSize);
-            try
-            {
-                processedCounter?.Report();
-                while (true)
-                {
-                    var length = await sourceStream.ReadBytesAsyncCore(buffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
-                    if (length <= 0)
-                        break;
-                    await destinationStream.WriteBytesAsyncCore(buffer.AsReadOnlyMemory(0, length), cancellationToken).ConfigureAwait(false);
-                    processedCounter?.AddValue(checked((UInt32)length));
-                }
-
-                destinationStream.Flush();
-            }
-            finally
-            {
-                processedCounter?.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
-            }
-        }
-
-        private static async Task CopyToAsyncCore(this ISequentialInputByteStream sourceStream, ISequentialOutputByteStream destinationStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+        private static async Task InternalCopyToAsync(this Stream sourceStream, Stream destinationStream, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken)
         {
             var processedCounter = new ProgressCounterUInt64(progress);
-            var buffer = ArrayPool<Byte>.Shared.Rent(bufferSize);
             try
             {
                 processedCounter.Report();
+                var buffer = new Byte[bufferSize];
                 while (true)
                 {
-                    var length = await sourceStream.ReadBytesAsyncCore(buffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
+                    var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
                     if (length <= 0)
                         break;
-                    await destinationStream.WriteBytesAsyncCore(buffer.AsReadOnlyMemory(0, length), cancellationToken).ConfigureAwait(false);
+                    await destinationStream.InternalWriteBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
                     processedCounter.AddValue(checked((UInt32)length));
                 }
 
@@ -1199,33 +3555,257 @@ namespace Palmtree.IO
             }
             finally
             {
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                    if (destinationStream is not null)
+                        await destinationStream.DisposeAsync().ConfigureAwait(false);
+                }
+
                 processedCounter.Report();
-                ArrayPool<Byte>.Shared.Return(buffer);
             }
         }
 
-        private static async Task CopyToAsyncCore(this TextReader sourceStream, TextWriter destinationStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+        private static async Task InternalCopyToAsync(this ISequentialInputByteStream sourceStream, ISequentialOutputByteStream destinationStream, Int32 bufferSize, IProgress<UInt64>? progress, Boolean leaveOpen, CancellationToken cancellationToken)
         {
-            var processedCounter = progress is not null ? new ProgressCounterUInt64(progress) : null;
-            var buffer = ArrayPool<Char>.Shared.Rent(bufferSize);
+            var processedCounter = new ProgressCounterUInt64(progress);
             try
             {
-                processedCounter?.Report();
+                processedCounter.Report();
+                var buffer = new Byte[bufferSize];
                 while (true)
                 {
-                    var length = await sourceStream.ReadAsync(buffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
+                    var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
                     if (length <= 0)
                         break;
-                    await destinationStream.WriteAsync(buffer.AsReadOnlyMemory(0, length), cancellationToken).ConfigureAwait(false);
-                    processedCounter?.AddValue(checked((UInt32)length));
+                    await destinationStream.InternalWriteBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
+                    processedCounter.AddValue(checked((UInt32)length));
                 }
 
                 destinationStream.Flush();
             }
             finally
             {
-                processedCounter?.Report();
-                ArrayPool<Char>.Shared.Return(buffer);
+                if (!leaveOpen)
+                {
+                    if (sourceStream is not null)
+                        await sourceStream.DisposeAsync().ConfigureAwait(false);
+                    if (destinationStream is not null)
+                        await destinationStream.DisposeAsync().ConfigureAwait(false);
+                }
+
+                processedCounter.Report();
+            }
+        }
+
+        #endregion
+
+        #region InternalReadBytesAsync
+
+        private static async Task<ReadOnlyMemory<Byte>> InternalReadBytesAsync(this Stream sourceStream, Int32 count, CancellationToken cancellationToken)
+        {
+            var buffer = new Byte[count];
+            var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
+            if (length < buffer.Length)
+                Array.Resize(ref buffer, length);
+            return buffer;
+        }
+
+        private static async Task<ReadOnlyMemory<Byte>> InternalReadBytesAsync(this ISequentialInputByteStream sourceStream, Int32 count, CancellationToken cancellationToken)
+        {
+            var buffer = new Byte[count];
+            var length = await sourceStream.InternalReadBytesAsync(buffer, cancellationToken).ConfigureAwait(false);
+            if (length < buffer.Length)
+                Array.Resize(ref buffer, length);
+            return buffer;
+        }
+
+        private static async Task<Int32> InternalReadBytesAsync(this Stream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken)
+        {
+            var totalLength = 0;
+            while (!buffer.IsEmpty)
+            {
+                var length = await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+                if (length <= 0)
+                    break;
+                buffer = buffer[length..];
+                totalLength += totalLength;
+            }
+
+            return totalLength;
+        }
+
+        private static async Task<Int32> InternalReadBytesAsync(this ISequentialInputByteStream sourceStream, Memory<Byte> buffer, CancellationToken cancellationToken)
+        {
+            var totalLength = 0;
+            while (!buffer.IsEmpty)
+            {
+                var length = await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+                if (length <= 0)
+                    break;
+                buffer = buffer[length..];
+                totalLength += totalLength;
+            }
+
+            return totalLength;
+        }
+
+        #endregion
+
+        #region InternalReadAllBytesAsync
+
+        private static async Task<ReadOnlyMemory<Byte>> InternalReadAllBytesAsync(this Stream sourceStream, CancellationToken cancellation)
+        {
+            const Int32 BUFFER_SIZE = 80 * 1024;
+            var buffers = new Queue<Byte[]>();
+            var totalLength = 0;
+            while (true)
+            {
+                var partialBuffer = new Byte[BUFFER_SIZE];
+                var length = await sourceStream.ReadAsync(partialBuffer, cancellation).ConfigureAwait(false);
+                if (length <= 0)
+                    break;
+                if (length < partialBuffer.Length)
+                    Array.Resize(ref partialBuffer, length);
+                buffers.Enqueue(partialBuffer);
+                totalLength += length;
+            }
+
+            return ConcatBuffer(buffers, totalLength);
+        }
+
+        private static async Task<ReadOnlyMemory<Byte>> InternalReadAllBytesAsync(this ISequentialInputByteStream sourceStream, CancellationToken cancellation)
+        {
+            const Int32 BUFFER_SIZE = 80 * 1024;
+            var buffers = new Queue<Byte[]>();
+            var totalLength = 0;
+            while (true)
+            {
+                var partialBuffer = new Byte[BUFFER_SIZE];
+                var length = await sourceStream.ReadAsync(partialBuffer, cancellation).ConfigureAwait(false);
+                if (length <= 0)
+                    break;
+                if (length < partialBuffer.Length)
+                    Array.Resize(ref partialBuffer, length);
+                buffers.Enqueue(partialBuffer);
+                totalLength += length;
+            }
+
+            return ConcatBuffer(buffers, totalLength);
+        }
+
+        private static ReadOnlyMemory<Byte> ConcatBuffer(Queue<Byte[]> buffers, Int32 totalLength)
+        {
+            if (buffers.Count <= 0)
+                return ReadOnlyMemory<Byte>.Empty;
+            if (buffers.Count == 1)
+                return buffers.Dequeue();
+            var buffer = new Byte[totalLength].AsMemory();
+            var destinationWindow = buffer;
+            while (buffers.Count > 0)
+            {
+                var partialBuffer = buffers.Dequeue();
+                partialBuffer.CopyTo(destinationWindow);
+                destinationWindow = destinationWindow[partialBuffer.Length..];
+            }
+#if DEBUG
+            Validation.Assert(destinationWindow.IsEmpty);
+#endif
+            return buffer;
+        }
+
+        #endregion
+
+        #region InternalWriteBytesAsync
+
+        private static Task InternalWriteBytesAsync(this Stream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
+            => destinationStream.WriteAsync(buffer, cancellationToken).AsTask();
+
+        private static async Task InternalWriteBytesAsync(this ISequentialOutputByteStream destinationStream, ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken)
+        {
+            while (!buffer.IsEmpty)
+            {
+                var length = await destinationStream.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
+                if (length <= 0)
+                    throw new IOException("Can not write any more");
+                buffer = buffer[length..];
+            }
+        }
+
+        #endregion
+
+        #region InternalCalculateCrc24Async
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc24Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+            => InternalCalculateCrcAsync(sourceStream, bufferSize, progress, Crc24.CreateCalculationState(), cancellationToken);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc24Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+            => InternalCalculateCrcAsync(sourceStream, bufferSize, progress, Crc24.CreateCalculationState(), cancellationToken);
+
+        #endregion
+
+        #region InternalCalculateCrc32Async
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc32Async(this Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+            => InternalCalculateCrcAsync(sourceStream, bufferSize, progress, Crc32.CreateCalculationState(), cancellationToken);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrc32Async(this ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, CancellationToken cancellationToken)
+            => InternalCalculateCrcAsync(sourceStream, bufferSize, progress, Crc32.CreateCalculationState(), cancellationToken);
+
+        #endregion
+
+        #region InternalCalculateCrcAsync
+
+        private static async Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrcAsync(Stream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, ICrcCalculationState<UInt32> session, CancellationToken cancellationToken)
+        {
+            var processedCounter = new ProgressCounterUInt64(progress);
+            processedCounter.Report();
+            var buffer = new Byte[bufferSize];
+            try
+            {
+                while (true)
+                {
+                    var length = await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+                    if (length <= 0)
+                        break;
+                    session.Put(buffer, 0, length);
+                    processedCounter.AddValue(checked((UInt64)length));
+                }
+
+                return session.GetResultValue();
+            }
+            finally
+            {
+                processedCounter.Report();
+            }
+        }
+
+        private static async Task<(UInt32 Crc, UInt64 Length)> InternalCalculateCrcAsync(ISequentialInputByteStream sourceStream, Int32 bufferSize, IProgress<UInt64>? progress, ICrcCalculationState<UInt32> session, CancellationToken cancellationToken)
+        {
+            var processedCounter = new ProgressCounterUInt64(progress);
+            processedCounter.Report();
+            var buffer = new Byte[bufferSize];
+            try
+            {
+                while (true)
+                {
+                    var length = await sourceStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+                    if (length <= 0)
+                        break;
+                    session.Put(buffer, 0, length);
+                    processedCounter.AddValue(checked((UInt64)length));
+                }
+
+                return session.GetResultValue();
+            }
+            finally
+            {
+                processedCounter.Report();
             }
         }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
 using Palmtree.IO.Compression.Archive.Zip.Headers.Parser;
 using Palmtree.IO.Compression.Stream;
+using Palmtree.Linq;
 
 namespace Palmtree.IO.Compression.Archive.Zip
 {

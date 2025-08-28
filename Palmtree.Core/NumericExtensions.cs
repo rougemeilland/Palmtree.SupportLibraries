@@ -192,6 +192,675 @@ namespace Palmtree
 
         #endregion
 
+        #region GetBytesLE
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this Int16 value) => ((UInt16)value).GetBytesLE();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this UInt16 value)
+        {
+            var buffer = new Byte[sizeof(UInt16)];
+            buffer.AsSpan().InternalCopyValueLE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this Int32 value) => ((UInt32)value).GetBytesLE();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this UInt32 value)
+        {
+            var buffer = new Byte[sizeof(UInt32)];
+            buffer.AsSpan().InternalCopyValueLE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this Int64 value) => ((UInt64)value).GetBytesLE();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this UInt64 value)
+        {
+            var buffer = new Byte[sizeof(UInt64)];
+            buffer.AsSpan().InternalCopyValueLE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this Single value)
+        {
+            var buffer = new Byte[sizeof(Single)];
+            buffer.AsSpan().InternalCopyValueLE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this Double value)
+        {
+            var buffer = new Byte[sizeof(Double)];
+            buffer.AsSpan().InternalCopyValueLE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesLE(this Decimal value)
+        {
+            var buffer = new Byte[sizeof(Decimal)];
+            buffer.AsSpan().InternalCopyValueLE(value);
+            return buffer.AsReadOnly();
+        }
+
+        #endregion
+
+        #region GetBytesBE
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this Int16 value) => ((UInt16)value).GetBytesBE();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this UInt16 value)
+        {
+            var buffer = new Byte[sizeof(UInt16)];
+            buffer.AsSpan().InternalCopyValueBE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this Int32 value) => ((UInt32)value).GetBytesBE();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this UInt32 value)
+        {
+            var buffer = new Byte[sizeof(UInt32)];
+            buffer.AsSpan().InternalCopyValueBE(value);
+            return buffer.AsReadOnly();
+        }
+
+        public static ReadOnlyMemory<Byte> GetBytesBE(this Int64 value) => ((UInt64)value).GetBytesBE();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this UInt64 value)
+        {
+            var buffer = new Byte[sizeof(UInt64)];
+            buffer.AsSpan().InternalCopyValueBE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this Single value)
+        {
+            var buffer = new Byte[sizeof(Single)];
+            buffer.AsSpan().InternalCopyValueBE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this Double value)
+        {
+            var buffer = new Byte[sizeof(Double)];
+            buffer.AsSpan().InternalCopyValueBE(value);
+            return buffer.AsReadOnly();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyMemory<Byte> GetBytesBE(this Decimal value)
+        {
+            var buffer = new Byte[sizeof(Decimal)];
+            buffer.AsSpan().InternalCopyValueBE(value);
+            return buffer.AsReadOnly();
+        }
+
+        #endregion
+
+        #region SetValueLE
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int16 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Int16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int16));
+
+            buffer.InternalCopyValueLE(startIndex, (UInt16)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt16 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(UInt16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt16));
+
+            buffer.InternalCopyValueLE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int32 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Int32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int32));
+
+            buffer.InternalCopyValueLE(startIndex, (UInt32)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt32 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(UInt32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt32));
+
+            buffer.InternalCopyValueLE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Int64 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Int64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int64));
+
+            buffer.InternalCopyValueLE(startIndex, (UInt64)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, UInt64 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(UInt64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt64));
+
+            buffer.InternalCopyValueLE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Single value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Single) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Single));
+
+            buffer.InternalCopyValueLE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Double value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Double) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Double));
+
+            buffer.InternalCopyValueLE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Byte[] buffer, Int32 startIndex, Decimal value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Decimal) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Decimal));
+
+            buffer.InternalCopyValueLE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, Int16 value)
+        {
+            if (sizeof(Int16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE((UInt16)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, UInt16 value)
+        {
+            if (sizeof(UInt16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, Int32 value)
+        {
+            if (sizeof(Int32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE((UInt32)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, UInt32 value)
+        {
+            if (sizeof(UInt32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, Int64 value)
+        {
+            if (sizeof(Int64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE((UInt64)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, UInt64 value)
+        {
+            if (sizeof(UInt64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, Single value)
+        {
+            if (sizeof(Single) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, Double value)
+        {
+            if (sizeof(Double) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Memory<Byte> buffer, Decimal value)
+        {
+            if (sizeof(Decimal) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, Int16 value)
+        {
+            if (sizeof(Int16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE((UInt16)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, UInt16 value)
+        {
+            if (sizeof(UInt16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, Int32 value)
+        {
+            if (sizeof(Int32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE((UInt32)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, UInt32 value)
+        {
+            if (sizeof(UInt32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, Int64 value)
+        {
+            if (sizeof(Int64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE((UInt64)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, UInt64 value)
+        {
+            if (sizeof(UInt64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, Single value)
+        {
+            if (sizeof(Single) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, Double value)
+        {
+            if (sizeof(Double) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueLE(this Span<Byte> buffer, Decimal value)
+        {
+            if (sizeof(Decimal) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueLE(value);
+        }
+
+        #endregion
+
+        #region SetValueBE
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int16 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Int16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int16));
+
+            buffer.InternalCopyValueBE(startIndex, (UInt16)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt16 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(UInt16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt16));
+
+            buffer.InternalCopyValueBE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int32 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Int32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int32));
+
+            buffer.InternalCopyValueBE(startIndex, (UInt32)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt32 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(UInt32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt32));
+
+            buffer.InternalCopyValueBE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Int64 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Int64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Int64));
+
+            buffer.InternalCopyValueBE(startIndex, (UInt64)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, UInt64 value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(UInt64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(UInt64));
+
+            buffer.InternalCopyValueBE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Single value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Single) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Single));
+
+            buffer.InternalCopyValueBE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Double value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Double) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Double));
+
+            buffer.InternalCopyValueBE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Byte[] buffer, Int32 startIndex, Decimal value)
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            if (sizeof(Decimal) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - sizeof(Decimal));
+
+            buffer.InternalCopyValueBE(startIndex, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, Int16 value)
+        {
+            if (sizeof(Int16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE((UInt16)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, UInt16 value)
+        {
+            if (sizeof(UInt16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, Int32 value)
+        {
+            if (sizeof(Int32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE((UInt32)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, UInt32 value)
+        {
+            if (sizeof(UInt32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, Int64 value)
+        {
+            if (sizeof(Int64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE((UInt64)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, UInt64 value)
+        {
+            if (sizeof(UInt64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, Single value)
+        {
+            if (sizeof(Single) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, Double value)
+        {
+            if (sizeof(Double) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Memory<Byte> buffer, Decimal value)
+        {
+            if (sizeof(Decimal) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.Span.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, Int16 value)
+        {
+            if (sizeof(Int16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE((UInt16)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, UInt16 value)
+        {
+            if (sizeof(UInt16) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, Int32 value)
+        {
+            if (sizeof(Int32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE((UInt32)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, UInt32 value)
+        {
+            if (sizeof(UInt32) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, Int64 value)
+        {
+            if (sizeof(Int64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE((UInt64)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, UInt64 value)
+        {
+            if (sizeof(UInt64) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, Single value)
+        {
+            if (sizeof(Single) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, Double value)
+        {
+            if (sizeof(Double) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetValueBE(this Span<Byte> buffer, Decimal value)
+        {
+            if (sizeof(Decimal) > buffer.Length)
+                throw new ArgumentException("Too short array", nameof(buffer));
+
+            buffer.InternalCopyValueBE(value);
+        }
+
+        #endregion
+
         #region DivRem
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -918,6 +1587,412 @@ namespace Palmtree
             if (bitCount < _BIT_LENGTH_OF_UINT64)
                 value &= (1UL << bitCount) - 1;
             return value;
+        }
+
+        #endregion
+
+        #region InternalCopyValueLE
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt16 value)
+        {
+            Validation.Assert(sizeof(UInt16) == 2);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt32 value)
+        {
+            Validation.Assert(sizeof(UInt32) == 4);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, UInt64 value)
+        {
+            Validation.Assert(sizeof(UInt64) == 8);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                    *destinationPointer++ = (Byte)(value >> (8 * 4));
+                    *destinationPointer++ = (Byte)(value >> (8 * 5));
+                    *destinationPointer++ = (Byte)(value >> (8 * 6));
+                    *destinationPointer++ = (Byte)(value >> (8 * 7));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Single value)
+        {
+            var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true);
+            if (!BitConverter.IsLittleEndian)
+                _ = bufferSpan.ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Double value)
+        {
+            var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true);
+            if (!BitConverter.IsLittleEndian)
+                _ = bufferSpan.ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Byte[] buffer, Int32 startIndex, Decimal value)
+        {
+            Validation.Assert(sizeof(Decimal) == 16);
+            const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
+            Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
+            _ = Decimal.GetBits(value, tempBuffer);
+            unsafe
+            {
+                fixed (Int32* sourcebuffer = &tempBuffer[0])
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    Unsafe.CopyBlockUnaligned(destinationbuffer, sourcebuffer, sizeof(Int32) * DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Span<Byte> buffer, UInt16 value)
+        {
+            Validation.Assert(sizeof(UInt16) == 2);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Span<Byte> buffer, UInt32 value)
+        {
+            Validation.Assert(sizeof(UInt32) == 4);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Span<Byte> buffer, UInt64 value)
+        {
+            Validation.Assert(sizeof(UInt64) == 8);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                    *destinationPointer++ = (Byte)(value >> (8 * 4));
+                    *destinationPointer++ = (Byte)(value >> (8 * 5));
+                    *destinationPointer++ = (Byte)(value >> (8 * 6));
+                    *destinationPointer++ = (Byte)(value >> (8 * 7));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Span<Byte> buffer, Single value)
+        {
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true);
+            if (!BitConverter.IsLittleEndian)
+                _ = buffer[..sizeof(Single)].ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Span<Byte> buffer, Double value)
+        {
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true);
+            if (!BitConverter.IsLittleEndian)
+                _ = buffer[..sizeof(Double)].ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueLE(this Span<Byte> buffer, Decimal value)
+        {
+            Validation.Assert(sizeof(Decimal) == 16);
+            const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
+            Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
+            _ = Decimal.GetBits(value, tempBuffer);
+            unsafe
+            {
+                fixed (Int32* sourcebuffer = &tempBuffer[0])
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    Unsafe.CopyBlockUnaligned(destinationbuffer, sourcebuffer, sizeof(Int32) * DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE);
+                }
+            }
+        }
+
+        #endregion
+
+        #region InternalCopyValueBE
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt16 value)
+        {
+            Validation.Assert(sizeof(UInt16) == 2);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt32 value)
+        {
+            Validation.Assert(sizeof(UInt32) == 4);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, UInt64 value)
+        {
+            Validation.Assert(sizeof(UInt64) == 8);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 7));
+                    *destinationPointer++ = (Byte)(value >> (8 * 6));
+                    *destinationPointer++ = (Byte)(value >> (8 * 5));
+                    *destinationPointer++ = (Byte)(value >> (8 * 4));
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Single value)
+        {
+            var bufferSpan = buffer.AsSpan(startIndex, sizeof(Single));
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true);
+            if (BitConverter.IsLittleEndian)
+                _ = bufferSpan.ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Double value)
+        {
+            var bufferSpan = buffer.AsSpan(startIndex, sizeof(Double));
+            var success = BitConverter.TryWriteBytes(bufferSpan, value);
+            Validation.Assert(success == true);
+            if (BitConverter.IsLittleEndian)
+                _ = bufferSpan.ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Byte[] buffer, Int32 startIndex, Decimal value)
+        {
+            Validation.Assert(sizeof(Decimal) == 16);
+            const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
+            Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
+            _ = Decimal.GetBits(value, tempBuffer);
+            unsafe
+            {
+                fixed (Int32* sourcebuffer = &tempBuffer[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE - 1])
+                fixed (Byte* destinationbuffer = &buffer[startIndex])
+                {
+                    var sourcePointer = sourcebuffer;
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Span<Byte> buffer, UInt16 value)
+        {
+            Validation.Assert(sizeof(UInt16) == 2);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Span<Byte> buffer, UInt32 value)
+        {
+            Validation.Assert(sizeof(UInt32) == 4);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Span<Byte> buffer, UInt64 value)
+        {
+            Validation.Assert(sizeof(UInt64) == 8);
+            unsafe
+            {
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(value >> (8 * 7));
+                    *destinationPointer++ = (Byte)(value >> (8 * 6));
+                    *destinationPointer++ = (Byte)(value >> (8 * 5));
+                    *destinationPointer++ = (Byte)(value >> (8 * 4));
+                    *destinationPointer++ = (Byte)(value >> (8 * 3));
+                    *destinationPointer++ = (Byte)(value >> (8 * 2));
+                    *destinationPointer++ = (Byte)(value >> (8 * 1));
+                    *destinationPointer++ = (Byte)(value >> (8 * 0));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Span<Byte> buffer, Single value)
+        {
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true);
+            if (BitConverter.IsLittleEndian)
+                _ = buffer[..sizeof(Single)].ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Span<Byte> buffer, Double value)
+        {
+            var success = BitConverter.TryWriteBytes(buffer, value);
+            Validation.Assert(success == true);
+            if (BitConverter.IsLittleEndian)
+                _ = buffer[..sizeof(Double)].ReverseArray();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void InternalCopyValueBE(this Span<Byte> buffer, Decimal value)
+        {
+            Validation.Assert(sizeof(Decimal) == 16);
+            const Int32 DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE = 4;
+            Span<Int32> tempBuffer = stackalloc Int32[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE];
+            _ = Decimal.GetBits(value, tempBuffer);
+            unsafe
+            {
+                fixed (Int32* sourcebuffer = &tempBuffer[DECIMAL_BIT_IMAGE_INT32_ARRAY_SIZE - 1])
+                fixed (Byte* destinationbuffer = &buffer.GetPinnableReference())
+                {
+                    var sourcePointer = sourcebuffer;
+                    var destinationPointer = destinationbuffer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 3));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 2));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 1));
+                    *destinationPointer++ = (Byte)(*sourcebuffer >> (8 * 0));
+                    --sourcePointer;
+                }
+            }
         }
 
         #endregion
