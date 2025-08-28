@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Palmtree.IO.Compression.Archive.Zip.ExtraFields;
-using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Parser
 {

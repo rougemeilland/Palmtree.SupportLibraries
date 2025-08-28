@@ -27,7 +27,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
             {
                 ZipEntryHeaderType.LocalHeader => null,
                 ZipEntryHeaderType.CentralDirectoryHeader => base.GetData(headerType, parameter),
-                _ => throw Validation.GetFailErrorException(),
+                _ => throw Validation.GetFatalErrorException(),
             };
 
         /// <inheritdoc/>
@@ -41,7 +41,7 @@ namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
                     base.SetData(headerType, data, parameter);
                     break;
                 default:
-                    throw Validation.GetFailErrorException();
+                    throw Validation.GetFatalErrorException();
             }
         }
 

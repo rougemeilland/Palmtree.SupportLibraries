@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text;
 using Palmtree;
 using Palmtree.Collections;
-using Palmtree.Linq;
-using Palmtree.Threading;
 
 namespace Palmtree
 {

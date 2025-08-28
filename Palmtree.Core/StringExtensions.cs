@@ -352,7 +352,7 @@ namespace Palmtree
         /// </item>
         /// </list>
         /// </remarks>
-        public static IEnumerable<(String element, Int32 start, Int32 end)> SplitCommandLineArguments(this String commandLine)
+        public static IEnumerable<(String arg, Int32 start, Int32 end)> SplitCommandLineArguments(this String commandLine)
         {
             ArgumentNullException.ThrowIfNull(commandLine);
 

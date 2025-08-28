@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
@@ -12,12 +12,7 @@
     <Trimming>full</Trimming>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Palmtree.Core\Palmtree.Core.csproj" />
-    <ProjectReference Include="..\Palmtree.IO.Console\Palmtree.IO.Console.csproj" />
-    <ProjectReference Include="..\Palmtree.IO\Palmtree.IO.csproj" />
-  </ItemGroup>
 
 </Project>

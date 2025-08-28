@@ -19,6 +19,8 @@ namespace Palmtree.IO.StreamFilters
             _endAction = endAction ?? throw new ArgumentNullException(nameof(endAction));
             _leaveOpen = leaveOpen;
             _isDisposed = false;
+            while (_baseStream is IDirectDotNetStreamWrapper wrapper)
+                _baseStream = wrapper.RawStream;
         }
 
         public override Boolean CanRead => _baseStream.CanRead;

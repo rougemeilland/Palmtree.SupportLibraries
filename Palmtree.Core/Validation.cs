@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Palmtree
 {
@@ -13,78 +12,40 @@ namespace Palmtree
     /// </summary>
     public static class Validation
     {
-#if DEBUG || TRACE
-        private abstract class ValidationLogger
-            : IValidationLogger
-        {
-            private const Int32 _indentSize = 4;
-            private Int32 _indentLevel;
-
-            public void Indent()
-                => _ = Interlocked.Increment(ref _indentLevel);
-
-            public void Unindent()
-            {
-                var result = Interlocked.Decrement(ref _indentLevel);
-                if (result < 0)
-                {
-                    _ = Interlocked.Exchange(ref _indentLevel, 0);
-                    throw new InvalidOperationException("The UnIndent() method is called more times than the Indent() method.");
-                }
-            }
-
-            public void WriteLog() => WriteLine("");
-
-            public void WriteLog(String? prefix, String message)
-            {
-                if (prefix is null)
-                {
-                    WriteLine(message);
-                }
-                else
-                {
-                    Write(prefix);
-                    var spaces = _indentSize * _indentLevel;
-                    while (spaces >= 4)
-                    {
-                        Write("    ");
-                        spaces -= 4;
-                    }
-
-                    while (spaces > 0)
-                    {
-                        Write(" ");
-                        --spaces;
-                    }
-
-                    WriteLine(message);
-                }
-            }
-
-            protected abstract void Write(String message);
-            protected abstract void WriteLine(String message);
-        }
-#endif
-
 #if DEBUG
+        private sealed class DebugValidationLoggerSource
+            : ValidationLoggerSource
+        {
+            public override void WriteLine() => System.Diagnostics.Debug.WriteLine("");
+            protected override void Write(String s) => System.Diagnostics.Debug.WriteLine(s);
+        }
+
         private sealed class DebugValidationLogger
             : ValidationLogger
         {
-            protected override void Write(String message) => System.Diagnostics.Debug.Write(message);
-
-            protected override void WriteLine(String message) => System.Diagnostics.Debug.WriteLine(message);
-
+            public DebugValidationLogger()
+                : base(new DebugValidationLoggerSource())
+            {
+            }
         }
 #endif
 
 #if TRACE
+        private sealed class TraceValidationLoggerSource
+            : ValidationLoggerSource
+        {
+            public override void WriteLine() => System.Diagnostics.Debug.WriteLine("");
+            protected override void Write(String s) => System.Diagnostics.Debug.WriteLine(s);
+        }
+
         private sealed class TraceValidationLogger
             : ValidationLogger
         {
-            protected override void Write(String message) => System.Diagnostics.Trace.Write(message);
+            public TraceValidationLogger()
+                : base(new TraceValidationLoggerSource())
+            {
 
-            protected override void WriteLine(String message) => System.Diagnostics.Trace.WriteLine(message);
-
+            }
         }
 #endif
 
@@ -111,7 +72,7 @@ namespace Palmtree
                 var startOfCommandLine = Environment.CommandLine.SplitCommandLineArguments().Take(1).ToArray();
                 return
                     startOfCommandLine.Length == 1
-                    ? startOfCommandLine[0].element
+                    ? startOfCommandLine[0].arg
                     : null;
             }
         }
@@ -173,9 +134,8 @@ namespace Palmtree
         /// <exception cref="AssertionException">
         /// <paramref name="condition"/> が <see langword="false"/> です。
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [System.Diagnostics.Conditional("DEBUG")]
-        [System.Diagnostics.Conditional("TRACE")]
         public static void Assert(
             [DoesNotReturnIf(false)] Boolean condition,
             [CallerArgumentExpression(nameof(condition))] String? conditionalExpression = null,
@@ -220,7 +180,8 @@ namespace Palmtree
         /// <remarks>
         /// 通常はあってはならない状況 (内部エラーなど) が発生してプログラムの続行ができない場合に使用します。
         /// </remarks>
-        public static Exception GetFailErrorException(
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Exception GetFatalErrorException(
             [CallerFilePath] String? sourceFileName = null,
             [CallerLineNumber] Int32 lineNumber = 0,
             [CallerMemberName] String? memberName = null)
@@ -262,7 +223,8 @@ namespace Palmtree
         /// <remarks>
         /// 通常はあってはならない状況 (内部エラーなど) が発生してプログラムの続行ができない場合に使用します。
         /// </remarks>
-        public static Exception GetFailErrorException(
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Exception GetFatalErrorException(
             Exception? innerException,
             [CallerFilePath] String? sourceFileName = null,
             [CallerLineNumber] Int32 lineNumber = 0,
@@ -303,14 +265,15 @@ namespace Palmtree
         /// <item> <see cref="AssertionException"/> オブジェクトを返す。</item>
         /// </list>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static AssertionException CauseFatalError(String? conditionalExpression, String? sourceFileName, Int32 lineNumber, String? memberName, Exception? ex = null)
         {
             var message = BuildAssertionMessage(conditionalExpression, sourceFileName, lineNumber, memberName);
 #if DEBUG
             System.Diagnostics.Debug.Fail(message);
-#elif TRACE
+#endif
+#if TRACE
             System.Diagnostics.Trace.Fail(message);
-#else
 #endif
             return
                 ex is not null

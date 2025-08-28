@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using Palmtree.Text;
 
 namespace Palmtree.IO.Compression.Archive.Zip.ExtraFields
 {

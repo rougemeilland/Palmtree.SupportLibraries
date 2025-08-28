@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
@@ -42,12 +43,19 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
                 try
                 {
                     // データディスクリプタ を書き込む。
-                    var headerBuffer = new Byte[FixedHeaderSizeForZip64];
-                    headerBuffer.Slice(0, 4).SetValueLE(_dataDescriptorSignature);
-                    headerBuffer.Slice(4, 4).SetValueLE(_crc);
-                    headerBuffer.Slice(8, 8).SetValueLE(_packedSize);
-                    headerBuffer.Slice(16, 8).SetValueLE(_size);
-                    outputStream.WriteBytes(headerBuffer);
+                    var headerBuffer = ArrayPool<Byte>.Shared.Rent(FixedHeaderSizeForZip64);
+                    try
+                    {
+                        headerBuffer.Slice(0, 4).SetValueLE(_dataDescriptorSignature);
+                        headerBuffer.Slice(4, 4).SetValueLE(_crc);
+                        headerBuffer.Slice(8, 8).SetValueLE(_packedSize);
+                        headerBuffer.Slice(16, 8).SetValueLE(_size);
+                        outputStream.WriteBytes(headerBuffer.Slice(0, FixedHeaderSizeForZip64));
+                    }
+                    finally
+                    {
+                        ArrayPool<Byte>.Shared.Return(headerBuffer);
+                    }
                 }
                 finally
                 {
@@ -68,12 +76,19 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
                 try
                 {
                     // データディスクリプタ を書き込む。
-                    var headerBuffer = new Byte[FixedHeaderSize];
-                    headerBuffer.Slice(0, 4).SetValueLE(_dataDescriptorSignature);
-                    headerBuffer.Slice(4, 4).SetValueLE(_crc);
-                    headerBuffer.Slice(8, 4).SetValueLE(checked((UInt32)_packedSize));
-                    headerBuffer.Slice(12, 4).SetValueLE(checked((UInt32)_size));
-                    outputStream.WriteBytes(headerBuffer);
+                    var headerBuffer = ArrayPool<Byte>.Shared.Rent(FixedHeaderSize);
+                    try
+                    {
+                        headerBuffer.Slice(0, 4).SetValueLE(_dataDescriptorSignature);
+                        headerBuffer.Slice(4, 4).SetValueLE(_crc);
+                        headerBuffer.Slice(8, 4).SetValueLE(checked((UInt32)_packedSize));
+                        headerBuffer.Slice(12, 4).SetValueLE(checked((UInt32)_size));
+                        outputStream.WriteBytes(headerBuffer.Slice(0, FixedHeaderSize));
+                    }
+                    finally
+                    {
+                        ArrayPool<Byte>.Shared.Return(headerBuffer);
+                    }
                 }
                 finally
                 {

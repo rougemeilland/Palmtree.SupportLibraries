@@ -30,7 +30,7 @@ namespace Palmtree.IO
         private const Int32 _COUNT_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = 0;
 #endif
 #if _SLEEP_BETWEEN_RETRIES
-        private static readonly TimeSpan _INTERVAL_TIME_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = TimeSpan.FromMilliseconds(1);
+        private static readonly TimeSpan _INTERVAL_TIME_VALUE_FOR_RETRY_TO_AVOID_ACCEES_VIOLATION_ERROR = TimeSpan.FromMilliseconds(100);
 #endif
         private static readonly Random _randomNumberGeneratorForUniqueFileName;
         private static readonly Char[] _uniqueFileNameMap;

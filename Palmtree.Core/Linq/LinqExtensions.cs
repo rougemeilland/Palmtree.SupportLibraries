@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Palmtree;
 
-namespace Palmtree.Linq
+// public な拡張メソッドのクラスであるため、アセンブリの既定の名前空間に配置した。
+#pragma warning disable IDE0130 // Namespace がフォルダー構造と一致しません
+namespace Palmtree
+#pragma warning restore IDE0130 // Namespace がフォルダー構造と一致しません
 {
-    public static class LinqExtensions
+    public static partial class LinqExtensions
     {
         #region private class
 
@@ -35,15 +39,18 @@ namespace Palmtree.Linq
 
         #region AsEnumerable
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IEnumerable<ELEMENT_T> AsEnumerable<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentOutOfRangeException.ThrowIfNegative(offset);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, source.Length);
 
-            return source.AsReadOnlyMemory(offset).AsEnumerable();
+            for (var index = offset; index < source.Length; ++index)
+                yield return source[index];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static IEnumerable<ELEMENT_T> AsEnumerable<ELEMENT_T>(this ELEMENT_T[] source, Int32 offset, Int32 count)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -52,7 +59,9 @@ namespace Palmtree.Linq
             ArgumentOutOfRangeException.ThrowIfNegative(count);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, source.Length - offset);
 
-            return source.AsReadOnlyMemory(offset, count).AsEnumerable();
+            var limit = offset + count;
+            for (var index = offset; index < limit; ++index)
+                yield return source[index];
         }
 
         public static IEnumerable<ELEMENT_T> AsEnumerable<ELEMENT_T>(this Memory<ELEMENT_T> source)
@@ -69,76 +78,9 @@ namespace Palmtree.Linq
 
         #endregion
 
-        #region Max
-
-        public static Byte Max(this IEnumerable<Byte> source) => source.InternalMax();
-        public static Byte Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte> selector) => source.InternalMax(selector);
-        public static Byte? Max(this IEnumerable<Byte?> source) => source.InternalMax();
-        public static Byte? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte?> selector) => source.InternalMax(selector);
-
-        public static SByte Max(this IEnumerable<SByte> source) => source.InternalMax();
-        public static SByte Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte> selector) => source.InternalMax(selector);
-        public static SByte? Max(this IEnumerable<SByte?> source) => source.InternalMax();
-        public static SByte? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte?> selector) => source.InternalMax(selector);
-
-        public static Int16 Max(this IEnumerable<Int16> source) => source.InternalMax();
-        public static Int16 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16> selector) => source.InternalMax(selector);
-        public static Int16? Max(this IEnumerable<Int16?> source) => source.InternalMax();
-        public static Int16? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16?> selector) => source.InternalMax(selector);
-
-        public static UInt16 Max(this IEnumerable<UInt16> source) => source.InternalMax();
-        public static UInt16 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16> selector) => source.InternalMax(selector);
-        public static UInt16? Max(this IEnumerable<UInt16?> source) => source.InternalMax();
-        public static UInt16? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16?> selector) => source.InternalMax(selector);
-
-        public static UInt32 Max(this IEnumerable<UInt32> source) => source.InternalMax();
-        public static UInt32 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32> selector) => source.InternalMax(selector);
-        public static UInt32? Max(this IEnumerable<UInt32?> source) => source.InternalMax();
-        public static UInt32? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32?> selector) => source.InternalMax(selector);
-
-        public static UInt64 Max(this IEnumerable<UInt64> source) => source.InternalMax();
-        public static UInt64 Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64> selector) => source.InternalMax(selector);
-        public static UInt64? Max(this IEnumerable<UInt64?> source) => source.InternalMax();
-        public static UInt64? Max<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64?> selector) => source.InternalMax(selector);
-
-        #endregion
-
-        #region Min
-
-        public static Byte Min(this IEnumerable<Byte> source) => source.InternalMin();
-        public static Byte Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte> selector) => source.InternalMin(selector);
-        public static Byte? Min(this IEnumerable<Byte?> source) => source.InternalMin();
-        public static Byte? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte?> selector) => source.InternalMin(selector);
-
-        public static SByte Min(this IEnumerable<SByte> source) => source.InternalMin();
-        public static SByte Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte> selector) => source.InternalMin(selector);
-        public static SByte? Min(this IEnumerable<SByte?> source) => source.InternalMin();
-        public static SByte? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte?> selector) => source.InternalMin(selector);
-
-        public static Int16 Min(this IEnumerable<Int16> source) => source.InternalMin();
-        public static Int16 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16> selector) => source.InternalMin(selector);
-        public static Int16? Min(this IEnumerable<Int16?> source) => source.InternalMin();
-        public static Int16? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16?> selector) => source.InternalMin(selector);
-
-        public static UInt16 Min(this IEnumerable<UInt16> source) => source.InternalMin();
-        public static UInt16 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16> selector) => source.InternalMin(selector);
-        public static UInt16? Min(this IEnumerable<UInt16?> source) => source.InternalMin();
-        public static UInt16? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16?> selector) => source.InternalMin(selector);
-
-        public static UInt32 Min(this IEnumerable<UInt32> source) => source.InternalMin();
-        public static UInt32 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32> selector) => source.InternalMin(selector);
-        public static UInt32? Min(this IEnumerable<UInt32?> source) => source.InternalMin();
-        public static UInt32? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32?> selector) => source.InternalMin(selector);
-
-        public static UInt64 Min(this IEnumerable<UInt64> source) => source.InternalMin();
-        public static UInt64 Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64> selector) => source.InternalMin(selector);
-        public static UInt64? Min(this IEnumerable<UInt64?> source) => source.InternalMin();
-        public static UInt64? Min<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64?> selector) => source.InternalMin(selector);
-
-        #endregion
-
         #region None
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean None<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -146,6 +88,7 @@ namespace Palmtree.Linq
             return !source.Any();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean None<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -153,6 +96,11 @@ namespace Palmtree.Linq
             return !source.Any(predicate);
         }
 
+        #endregion
+
+        #region NotAll
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean NotAll<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Boolean> predicate)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -193,7 +141,7 @@ namespace Palmtree.Linq
         {
             ArgumentNullException.ThrowIfNull(source);
 
-            return QuickDistinct(source, new Dictionary<ELEMENT_T, Object?>());
+            return QuickDistinctCore(source, new Dictionary<ELEMENT_T, Object?>());
         }
 
         public static IEnumerable<ELEMENT_T> QuickDistinct<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEqualityComparer<ELEMENT_T> equalityComparer)
@@ -202,7 +150,7 @@ namespace Palmtree.Linq
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(equalityComparer);
 
-            return QuickDistinct(source, new Dictionary<ELEMENT_T, Object?>(equalityComparer));
+            return QuickDistinctCore(source, new Dictionary<ELEMENT_T, Object?>(equalityComparer));
         }
 
         #endregion
@@ -215,7 +163,7 @@ namespace Palmtree.Linq
             ArgumentNullException.ThrowIfNull(source);
 
             var sourceArray = source.ToArray();
-            sourceArray.AsSpan().InternalQuickSort();
+            sourceArray.AsSpan().QuickSortCore();
             return sourceArray;
         }
 
@@ -225,7 +173,7 @@ namespace Palmtree.Linq
             ArgumentNullException.ThrowIfNull(keyComparer);
 
             var sourceArray = source.ToArray();
-            sourceArray.AsSpan().InternalQuickSort(keyComparer);
+            sourceArray.AsSpan().QuickSortCore(keyComparer);
             return sourceArray;
         }
 
@@ -236,7 +184,7 @@ namespace Palmtree.Linq
             ArgumentNullException.ThrowIfNull(keySekecter);
 
             var sourceArray = source.ToArray();
-            sourceArray.AsSpan().InternalQuickSort(keySekecter);
+            sourceArray.AsSpan().QuickSortCore(keySekecter);
             return sourceArray;
         }
 
@@ -247,15 +195,15 @@ namespace Palmtree.Linq
             ArgumentNullException.ThrowIfNull(keyComparer);
 
             var sourceArray = source.ToArray();
-            sourceArray.AsSpan().InternalQuickSort(keySekecter, keyComparer);
+            sourceArray.AsSpan().QuickSortCore(keySekecter, keyComparer);
             return sourceArray;
         }
 
         #endregion
 
-        #region SequenceCompare
+        #region SequenceCompareTo
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -304,7 +252,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(other);
@@ -338,7 +286,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -388,7 +336,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(other);
@@ -423,7 +371,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -465,7 +413,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(other);
@@ -498,7 +446,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -541,7 +489,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ELEMENT_T[] other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(other);
@@ -575,41 +523,41 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(source);
 
-            return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other);
+            return source.SequenceCompareTo((ReadOnlySpan<ELEMENT_T>)other);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other, comparer);
+            return source.SequenceCompareTo((ReadOnlySpan<ELEMENT_T>)other, comparer);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other, keySelecter);
+            return source.SequenceCompareTo((ReadOnlySpan<ELEMENT_T>)other, keySelecter);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, Span<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            return source.SequenceCompare((ReadOnlySpan<ELEMENT_T>)other, keySelecter, keyComparer);
+            return source.SequenceCompareTo((ReadOnlySpan<ELEMENT_T>)other, keySelecter, keyComparer);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -650,7 +598,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(comparer);
@@ -682,7 +630,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -724,7 +672,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this IEnumerable<ELEMENT_T> source, ReadOnlySpan<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(keySelecter);
@@ -757,7 +705,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -806,7 +754,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(other);
@@ -839,7 +787,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -889,7 +837,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this ELEMENT_T[] source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(other);
@@ -923,41 +871,41 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(other);
 
-            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other);
+            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompareTo(other);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(other);
             ArgumentNullException.ThrowIfNull(comparer);
 
-            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other, comparer);
+            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompareTo(other, comparer);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(other);
             ArgumentNullException.ThrowIfNull(keySelecter);
 
-            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other, keySelecter);
+            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompareTo(other, keySelecter);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this Span<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(other);
             ArgumentNullException.ThrowIfNull(keySelecter);
             ArgumentNullException.ThrowIfNull(keyComparer);
 
-            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompare(other, keySelecter, keyComparer);
+            return ((ReadOnlySpan<ELEMENT_T>)source).SequenceCompareTo(other, keySelecter, keyComparer);
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other)
             where ELEMENT_T : IComparable<ELEMENT_T>
         {
             ArgumentNullException.ThrowIfNull(other);
@@ -1005,7 +953,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, IComparer<ELEMENT_T> comparer)
         {
             ArgumentNullException.ThrowIfNull(other);
             ArgumentNullException.ThrowIfNull(comparer);
@@ -1037,7 +985,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter)
             where KEY_T : IComparable<KEY_T>
         {
             ArgumentNullException.ThrowIfNull(other);
@@ -1086,7 +1034,7 @@ namespace Palmtree.Linq
             }
         }
 
-        public static Int32 SequenceCompare<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
+        public static Int32 SequenceCompareTo<ELEMENT_T, KEY_T>(this ReadOnlySpan<ELEMENT_T> source, IEnumerable<ELEMENT_T> other, Func<ELEMENT_T, KEY_T> keySelecter, IComparer<KEY_T> keyComparer)
         {
             ArgumentNullException.ThrowIfNull(other);
             ArgumentNullException.ThrowIfNull(keySelecter);
@@ -1910,39 +1858,6 @@ namespace Palmtree.Linq
 
         #endregion
 
-        #region Sum
-
-        public static Byte Sum(this IEnumerable<Byte> source) => source.InternalSum();
-        public static Byte Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte> selector) => source.InternalSum(selector);
-        public static Byte? Sum(this IEnumerable<Byte?> source) => source.InternalSum();
-        public static Byte? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Byte?> selector) => source.InternalSum(selector);
-
-        public static SByte Sum(this IEnumerable<SByte> source) => source.InternalSum();
-        public static SByte Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte> selector) => source.InternalSum(selector);
-        public static SByte? Sum(this IEnumerable<SByte?> source) => source.InternalSum();
-        public static SByte? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, SByte?> selector) => source.InternalSum(selector);
-
-        public static Int16 Sum(this IEnumerable<Int16> source) => source.InternalSum();
-        public static Int16 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16> selector) => source.InternalSum(selector);
-        public static Int16? Sum(this IEnumerable<Int16?> source) => source.InternalSum();
-        public static Int16? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, Int16?> selector) => source.InternalSum(selector);
-
-        public static UInt16 Sum(this IEnumerable<UInt16> source) => source.InternalSum();
-        public static UInt16 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16> selector) => source.InternalSum(selector);
-        public static UInt16? Sum(this IEnumerable<UInt16?> source) => source.InternalSum();
-        public static UInt16? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt16?> selector) => source.InternalSum(selector);
-
-        public static UInt32 Sum(this IEnumerable<UInt32> source) => source.InternalSum();
-        public static UInt32 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32> selector) => source.InternalSum(selector);
-        public static UInt32? Sum(this IEnumerable<UInt32?> source) => source.InternalSum();
-        public static UInt32? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt32?> selector) => source.InternalSum(selector);
-
-        public static UInt64 Sum(this IEnumerable<UInt64> source) => source.InternalSum();
-        public static UInt64 Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64> selector) => source.InternalSum(selector);
-        public static UInt64? Sum(this IEnumerable<UInt64?> source) => source.InternalSum();
-        public static UInt64? Sum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, UInt64?> selector) => source.InternalSum(selector);
-        #endregion
-
         #region WhereNotNull
 
         public static IEnumerable<ELEMENT_T> WhereNotNull<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
@@ -1967,43 +1882,30 @@ namespace Palmtree.Linq
 
         #endregion
 
-        public static IEnumerable<ELEMENT_T[]> ChunkAsArray<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Int32 count)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
-
-            return source.Chunk(count);
-        }
-
-        public static IEnumerable<ReadOnlyMemory<ELEMENT_T>> ChunkAsReadOnlyMemory<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Int32 count)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
-
-            return source.Chunk(count).Select(array => array.AsReadOnly());
-        }
-
-        public static IComparer<VALUE_T> CreateComparer<VALUE_T>(this IEnumerable<VALUE_T> source, Func<VALUE_T, VALUE_T, Int32> comparer)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(comparer);
-
-            return new CustomizableComparer<VALUE_T>(comparer);
-        }
+        #region EnumeratePermutations
 
         public static IEnumerable<IEnumerable<ELEMENT_T>> EnumeratePermutations<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
-            var sourceArray = source.ToArray().AsReadOnlyMemory();
-            return sourceArray.InternalEnumeratePermutations();
+            var sourceArray = (ReadOnlyMemory<ELEMENT_T>)source.ToArray();
+            return sourceArray.EnumeratePermutationsCore();
         }
+
+        #endregion
+
+        #region ForEach
 
         public static void ForEach<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, Action<ELEMENT_T> action)
         {
             ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(action);
 
             foreach (var element in source)
                 action(element);
         }
+
+        #endregion
+
+        #region IsSingle
 
         public static Boolean IsSingle<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
@@ -2012,13 +1914,9 @@ namespace Palmtree.Linq
             return source.Take(2).Count() == 1;
         }
 
-        public static IComparer<CAPSULE_T> MapComparer<CAPSULE_T, VALUE_T>(this IComparer<VALUE_T> comparer, Func<CAPSULE_T, VALUE_T> selecter)
-        {
-            ArgumentNullException.ThrowIfNull(comparer);
-            ArgumentNullException.ThrowIfNull(selecter);
+        #endregion
 
-            return new CustomizableComparer<CAPSULE_T>((value1, value2) => comparer.Compare(selecter(value1), selecter(value2)));
-        }
+        #region ToReadOnlyCollection
 
         public static IReadOnlyCollection<ELEMENT_T> ToReadOnlyCollection<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
@@ -2027,6 +1925,10 @@ namespace Palmtree.Linq
             return new ReadOnlyCollectionWrapper<ELEMENT_T>([.. source]);
         }
 
+        #endregion
+
+        #region ToReadOnlyMemory
+
         public static ReadOnlyMemory<ELEMENT_T> ToReadOnlyMemory<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -2034,16 +1936,11 @@ namespace Palmtree.Linq
             return (ReadOnlyMemory<ELEMENT_T>)source.ToArray();
         }
 
-        public static ReadOnlySpan<ELEMENT_T> ToReadOnlySpan<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
-        {
-            ArgumentNullException.ThrowIfNull(source);
+        #endregion
 
-            return ((ReadOnlyMemory<ELEMENT_T>)source.ToArray()).Span;
-        }
+        #region EnumeratePermutationsCore
 
-        #region private methods
-
-        private static IEnumerable<IEnumerable<ELEMENT_T>> InternalEnumeratePermutations<ELEMENT_T>(this ReadOnlyMemory<ELEMENT_T> source)
+        private static IEnumerable<IEnumerable<ELEMENT_T>> EnumeratePermutationsCore<ELEMENT_T>(this ReadOnlyMemory<ELEMENT_T> source)
         {
             if (source.Length < 2)
             {
@@ -2057,169 +1954,423 @@ namespace Palmtree.Linq
                     var otherElements = new ELEMENT_T[source.Length - 1].AsMemory();
                     source[..index].CopyTo(otherElements[..index]);
                     source[(index + 1)..].CopyTo(otherElements[index..]);
-                    foreach (var permutation in otherElements.AsReadOnly().InternalEnumeratePermutations())
+                    foreach (var permutation in otherElements.AsReadOnly().EnumeratePermutationsCore())
                         yield return permutation.Prepend(firstElement);
                 }
             }
         }
 
-        private static ELEMENT_T InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
-            where ELEMENT_T : struct, IComparable<ELEMENT_T>
-        {
-            ArgumentNullException.ThrowIfNull(source);
+        #endregion
 
-            var max = (ELEMENT_T?)null;
-            foreach (var value in source)
+        #region MaxCore
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T MaxCore<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
+            where ELEMENT_T : struct, IComparisonOperators<ELEMENT_T, ELEMENT_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = enumerator.Current;
+            while (enumerator.MoveNext())
             {
-                max =
-                    max is null
-                    ? value
-                    : max.Value.Maximum(value);
+                var value = enumerator.Current;
+                if (value > maximumValue)
+                    maximumValue = value;
             }
 
-            return max ?? throw new InvalidOperationException();
+            return maximumValue;
         }
 
-        private static VALUE_T InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
-            where VALUE_T : struct, IComparable<VALUE_T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T MaxCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
+            where VALUE_T : struct, IComparisonOperators<VALUE_T, VALUE_T, Boolean>
         {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var max = (VALUE_T?)null;
-            foreach (var element in source)
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
             {
-                var value = selector(element);
-                max =
-                    max is null
-                    ? value
-                    : max.Value.Maximum(value);
+                var value = selector(enumerator.Current);
+                if (value > maximumValue)
+                    maximumValue = value;
             }
 
-            return max ?? throw new InvalidOperationException();
+            return maximumValue;
         }
 
-        private static ELEMENT_T? InternalMax<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
-            where ELEMENT_T : struct, IComparable<ELEMENT_T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T MaxCore<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
+            where ELEMENT_T : struct
         {
-            ArgumentNullException.ThrowIfNull(source);
-
-            var max = (ELEMENT_T?)null;
-            foreach (var value in source)
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = enumerator.Current;
+            while (enumerator.MoveNext())
             {
-                if (value is not null)
+                var value = enumerator.Current;
+                if (keyComparer.Compare(value, maximumValue) > 0)
+                    maximumValue = value;
+            }
+
+            return maximumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T MaxCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector, IComparer<VALUE_T> keyComparer)
+            where VALUE_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (keyComparer.Compare(value, maximumValue) > 0)
+                    maximumValue = value;
+            }
+
+            return maximumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T? MaxCore<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
+            where ELEMENT_T : struct, IComparisonOperators<ELEMENT_T, ELEMENT_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                if (GreaterThan(value, maximumValue))
+                    maximumValue = value;
+            }
+
+            return maximumValue;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            static Boolean GreaterThan(ELEMENT_T? left, ELEMENT_T? right)
+            {
+                return left is not null && (right is null || left.Value > right.Value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T? MaxCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
+            where VALUE_T : struct, IComparisonOperators<VALUE_T, VALUE_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (GreaterThan(value, maximumValue))
+                    maximumValue = value;
+            }
+
+            return maximumValue;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            static Boolean GreaterThan(VALUE_T? left, VALUE_T? right)
+            {
+                return left is not null && (right is null || left.Value > right.Value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T? MaxCore<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source, IComparer<ELEMENT_T?> keyComparer)
+            where ELEMENT_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                if (keyComparer.Compare(value, maximumValue) > 0)
+                    maximumValue = value;
+            }
+
+            return maximumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T? MaxCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector, IComparer<VALUE_T?> keyComparer)
+            where VALUE_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var maximumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (keyComparer.Compare(value, maximumValue) > 0)
+                    maximumValue = value;
+            }
+
+            return maximumValue;
+        }
+
+        #endregion
+
+        #region MinCore
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T MinCore<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
+            where ELEMENT_T : struct, IComparisonOperators<ELEMENT_T, ELEMENT_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                if (value < minimumValue)
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T MinCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
+            where VALUE_T : struct, IComparisonOperators<VALUE_T, VALUE_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (value < minimumValue)
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T MinCore<ELEMENT_T>(this IEnumerable<ELEMENT_T> source, IComparer<ELEMENT_T> keyComparer)
+            where ELEMENT_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                if (keyComparer.Compare(value, minimumValue) < 0)
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T MinCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector, IComparer<VALUE_T> keyComparer)
+            where VALUE_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (keyComparer.Compare(value, minimumValue) < 0)
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T? MinCore<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
+            where ELEMENT_T : struct, IComparisonOperators<ELEMENT_T, ELEMENT_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                if (LesserThan(value, minimumValue))
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            static Boolean LesserThan(ELEMENT_T? left, ELEMENT_T? right)
+            {
+                return right is not null && (left is null || left.Value < right.Value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T? MinCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
+            where VALUE_T : struct, IComparisonOperators<VALUE_T, VALUE_T, Boolean>
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (LesserThan(value, minimumValue))
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            static Boolean LesserThan(VALUE_T? left, VALUE_T? right)
+            {
+                return right is not null && (left is null || left.Value < right.Value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static ELEMENT_T? MinCore<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source, IComparer<ELEMENT_T?> keyComparer)
+            where ELEMENT_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = enumerator.Current;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                if (keyComparer.Compare(value, minimumValue) < 0)
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static VALUE_T? MinCore<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector, IComparer<VALUE_T?> keyComparer)
+            where VALUE_T : struct
+        {
+            using var enumerator = source.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException();
+            var minimumValue = selector(enumerator.Current);
+            while (enumerator.MoveNext())
+            {
+                var value = selector(enumerator.Current);
+                if (keyComparer.Compare(value, minimumValue) < 0)
+                    minimumValue = value;
+            }
+
+            return minimumValue;
+        }
+
+        #endregion
+
+        #region SumCore
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static RESULT_T SumCore<ELEMENT_T, RESULT_T>(this IEnumerable<ELEMENT_T> source)
+            where ELEMENT_T : struct, INumberBase<ELEMENT_T>
+            where RESULT_T : struct, INumberBase<RESULT_T>
+        {
+            using var enumerator = source.GetEnumerator();
+            var sum = RESULT_T.Zero;
+            while (enumerator.MoveNext())
+            {
+                var value = enumerator.Current;
+                checked
                 {
-                    max =
-                        max is null
-                        ? value
-                        : max.Value.Maximum(value.Value);
+                    sum += RESULT_T.CreateChecked(value);
                 }
             }
 
-            return max;
+            return sum;
         }
 
-        private static VALUE_T? InternalMax<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
-            where VALUE_T : struct, IComparable<VALUE_T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static RESULT_T SumCore<ELEMENT_T, VALUE_T, RESULT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
+            where VALUE_T : struct, INumberBase<VALUE_T>
+            where RESULT_T : struct, INumberBase<RESULT_T>
         {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var max = (VALUE_T?)null;
-            foreach (var element in source)
+            using var enumerator = source.GetEnumerator();
+            var sum = RESULT_T.Zero;
+            while (enumerator.MoveNext())
             {
-                var value = selector(element);
-                if (value is not null)
+                var value = selector(enumerator.Current);
+                checked
                 {
-                    max =
-                        max is null
-                        ? value
-                        : max.Value.Maximum(value.Value);
+                    sum += RESULT_T.CreateChecked(value);
                 }
             }
 
-            return max;
+            return sum;
         }
 
-        private static ELEMENT_T InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
-            where ELEMENT_T : struct, IComparable<ELEMENT_T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static RESULT_T? SumCore<ELEMENT_T, RESULT_T>(this IEnumerable<ELEMENT_T?> source)
+            where ELEMENT_T : struct, INumberBase<ELEMENT_T>
+            where RESULT_T : struct, INumberBase<RESULT_T>
         {
-            ArgumentNullException.ThrowIfNull(source);
-
-            var min = (ELEMENT_T?)null;
-            foreach (var value in source)
+            using var enumerator = source.GetEnumerator();
+            var sum = RESULT_T.Zero;
+            while (enumerator.MoveNext())
             {
-                min =
-                    min is null
-                    ? value
-                    : min.Value.Minimum(value);
-            }
-
-            return min ?? throw new InvalidOperationException();
-        }
-
-        private static VALUE_T InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
-            where VALUE_T : struct, IComparable<VALUE_T>
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var min = (VALUE_T?)null;
-            foreach (var element in source)
-            {
-                var value = selector(element);
-                min =
-                    min is null
-                    ? value
-                    : min.Value.Minimum(value);
-            }
-
-            return min ?? throw new InvalidOperationException();
-        }
-
-        private static ELEMENT_T? InternalMin<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
-            where ELEMENT_T : struct, IComparable<ELEMENT_T>
-        {
-            ArgumentNullException.ThrowIfNull(source);
-
-            var min = (ELEMENT_T?)null;
-            foreach (var value in source)
-            {
+                var value = enumerator.Current;
                 if (value is not null)
                 {
-                    min =
-                        min is null
-                        ? value
-                        : min.Value.Minimum(value.Value);
+                    checked
+                    {
+                        sum += RESULT_T.CreateChecked(value.Value);
+                    }
                 }
             }
 
-            return min;
+            return sum;
         }
 
-        private static VALUE_T? InternalMin<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
-            where VALUE_T : struct, IComparable<VALUE_T>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static RESULT_T? SumCore<ELEMENT_T, VALUE_T, RESULT_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
+            where VALUE_T : struct, INumberBase<VALUE_T>
+            where RESULT_T : struct, INumberBase<RESULT_T>
         {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var min = (VALUE_T?)null;
-            foreach (var element in source)
+            using var enumerator = source.GetEnumerator();
+            var sum = RESULT_T.Zero;
+            while (enumerator.MoveNext())
             {
-                var value = selector(element);
+                var value = selector(enumerator.Current);
                 if (value is not null)
                 {
-                    min =
-                        min is null
-                        ? value
-                        : min.Value.Minimum(value.Value);
+                    checked
+                    {
+                        sum += RESULT_T.CreateChecked(value.Value);
+                    }
                 }
             }
 
-            return min;
+            return sum;
         }
 
-        private static IEnumerable<ELEMENT_T> QuickDistinct<ELEMENT_T>(IEnumerable<ELEMENT_T> source, IDictionary<ELEMENT_T, Object?> outputElements)
+        #endregion
+
+        #region QuickDistinctCore
+
+        private static IEnumerable<ELEMENT_T> QuickDistinctCore<ELEMENT_T>(IEnumerable<ELEMENT_T> source, IDictionary<ELEMENT_T, Object?> outputElements)
             => source
                 .Where(element =>
                 {
@@ -2229,82 +2380,28 @@ namespace Palmtree.Linq
                     return true;
                 });
 
-        private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T> source)
-            where ELEMENT_T : struct, INumberBase<ELEMENT_T>
+        #endregion
+
+        #region TryGetSpan
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // fast type checks that don't add a lot of overhead
+        private static Boolean TryGetSpan<TSource>(this IEnumerable<TSource> source, out ReadOnlySpan<TSource> span)
         {
-            ArgumentNullException.ThrowIfNull(source);
-
-            var sum = ELEMENT_T.Zero;
-            foreach (var value in source)
+            if (source.GetType() == typeof(TSource[]))
             {
-                checked
-                {
-                    sum += value;
-                }
+                span = Unsafe.As<TSource[]>(source);
+                return true;
             }
-
-            return sum;
-        }
-
-        private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T> selector)
-            where VALUE_T : struct, INumberBase<VALUE_T>
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var sum = VALUE_T.Zero;
-            foreach (var element in source)
+            else if (source.GetType() == typeof(List<TSource>))
             {
-                var value = selector(element);
-                checked
-                {
-                    sum += value;
-                }
+                span = CollectionsMarshal.AsSpan(Unsafe.As<List<TSource>>(source));
+                return true;
             }
-
-            return sum;
-        }
-
-        private static ELEMENT_T InternalSum<ELEMENT_T>(this IEnumerable<ELEMENT_T?> source)
-            where ELEMENT_T : struct, INumberBase<ELEMENT_T>
-        {
-            ArgumentNullException.ThrowIfNull(source);
-
-            var sum = ELEMENT_T.Zero;
-            foreach (var value in source)
+            else
             {
-                if (value is not null)
-                {
-                    checked
-                    {
-                        sum += value.Value;
-                    }
-                }
+                span = default;
+                return false;
             }
-
-            return sum;
-        }
-
-        private static VALUE_T InternalSum<ELEMENT_T, VALUE_T>(this IEnumerable<ELEMENT_T> source, Func<ELEMENT_T, VALUE_T?> selector)
-            where VALUE_T : struct, INumberBase<VALUE_T>
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            ArgumentNullException.ThrowIfNull(selector);
-
-            var sum = VALUE_T.Zero;
-            foreach (var element in source)
-            {
-                var value = selector(element);
-                if (value is not null)
-                {
-                    checked
-                    {
-                        sum += value.Value;
-                    }
-                }
-            }
-
-            return sum;
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
 {
@@ -23,12 +24,19 @@ namespace Palmtree.IO.Compression.Archive.Zip.Headers.Builder
         {
             var positionOfThisHeader = outputStream.Position;
 
-            var headerBuffer = new Byte[FixedHeaderSize];
-            headerBuffer.Slice(0, 4).SetValueLE(_signatureOfZip64EOCDL);
-            headerBuffer.Slice(4, 4).SetValueLE(_startOfZip64EOCDR.DiskNumber);
-            headerBuffer.Slice(8, 8).SetValueLE(_startOfZip64EOCDR.OffsetOnTheDisk);
-            headerBuffer.Slice(16, 4).SetValueLE(checked(positionOfThisHeader.DiskNumber + 1)); // ZIP 64 EOCDL は常に最後のボリュームディスクに存在するので、"現在のボリュームディスク番号 + 1 == 合計ボリュームディスク数" が成り立つ。
-            outputStream.WriteBytes(headerBuffer);
+            var headerBuffer = ArrayPool<Byte>.Shared.Rent(FixedHeaderSize);
+            try
+            {
+                headerBuffer.Slice(0, 4).SetValueLE(_signatureOfZip64EOCDL);
+                headerBuffer.Slice(4, 4).SetValueLE(_startOfZip64EOCDR.DiskNumber);
+                headerBuffer.Slice(8, 8).SetValueLE(_startOfZip64EOCDR.OffsetOnTheDisk);
+                headerBuffer.Slice(16, 4).SetValueLE(checked(positionOfThisHeader.DiskNumber + 1)); // ZIP 64 EOCDL は常に最後のボリュームディスクに存在するので、"現在のボリュームディスク番号 + 1 == 合計ボリュームディスク数" が成り立つ。
+                outputStream.WriteBytes(headerBuffer.Slice(0, FixedHeaderSize));
+            }
+            finally
+            {
+                ArrayPool<Byte>.Shared.Return(headerBuffer);
+            }
         }
 
         public static UInt64 GetLength() => FixedHeaderSize;
