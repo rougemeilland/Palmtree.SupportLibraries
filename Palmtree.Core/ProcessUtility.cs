@@ -77,6 +77,8 @@ namespace Palmtree
                 Process.GetCurrentProcess().PriorityClass = priority.Value;
         }
 
+        // TODO: ProcessStartInfo.Environment および起動した 子プロセスの Process.PriorityClass を両方変更しなければならないので、現行の SetChildProcessPriority メソッドの代わりに子プロセスを起動するメソッドを用意する。
+
         /// <summary>
         /// 起動する子プロセスの優先度を設定します。
         /// </summary>
