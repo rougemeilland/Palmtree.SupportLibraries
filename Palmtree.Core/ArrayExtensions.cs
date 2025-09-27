@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-//#error // TODO: Experiment.CSharp.Library プロジェクトの VectorizedCalculation クラスの実装
-//#error // TODO: Experiment.CSharp.Library プロジェクトで、Sum, SumNumber, UncheckedSum の性能評価⇒要素型毎のハードウェアアクセラレーションの是非の決定
-//#error // TODO: ArrayExtensions クラスにて Sum, SumNumber, UncheckedSum メソッドを正式実装
+#error // TODO: Experiment.CSharp.Library プロジェクトの VectorizedCalculation クラスの実装
+#error // TODO: Experiment.CSharp.Library プロジェクトで、Sum, SumNumber, UncheckedSum の性能評価⇒要素型毎のハードウェアアクセラレーションの是非の決定
+#error // TODO: ArrayExtensions クラスにて Sum, SumNumber, UncheckedSum メソッドを正式実装
 
 namespace Palmtree
 {
