@@ -11,8 +11,9 @@ namespace Palmtree
     /// <summary>
     /// プロセス / 外部コマンドのヘルパークラスです。
     /// </summary>
-    public class ProcessUtility
+    public static class ProcessUtility
     {
+        private const String _processPriorityEnvironmentName = "__PALMTREE_PROCESS_PRIORITY";
         private static readonly String[] _commonExecutablePathOnLinux = ["/usr/bin", "/bin"];
         private static readonly Char[] _anyOfSemicolonOrDoubleQuote = [';', '"'];
 
@@ -67,6 +68,37 @@ namespace Palmtree
                 return WhereIsForLinux(targetCommandName);
             }
         }
+
+        public static void SetupCurrentProcessPriority()
+        {
+            var priorityString = Environment.GetEnvironmentVariable(_processPriorityEnvironmentName);
+            var priority = GetProcessPriorityFromEnvironmentVariableValue(priorityString);
+            if (priority is not null)
+                Process.GetCurrentProcess().PriorityClass = priority.Value;
+        }
+
+        /// <summary>
+        /// 起動する子プロセスの優先度を設定します。
+        /// </summary>
+        /// <param name="processStartInfo">
+        /// 起動する子プロセスの情報のセットを示す <see cref="ProcessStartInfo"/> オブジェクトです。
+        /// </param>
+        /// <param name="processPriority">
+        /// 子プロセスの優先度を示す <see cref="ProcessPriorityClass"/> 値です。このパラメタは省略可能です。
+        /// 省略時の既定値は現在のプロセスの優先度です。
+        /// </param>
+        /// <remarks>
+        /// <list type="bullet">
+        /// <item>
+        /// このメソッドで設定された優先度が子プロセスに反映されるためには、起動された子プロセスで <see cref="SetupCurrentProcessPriority"/> メソッドが実行されなけばなりません。
+        /// </item>
+        /// <item>
+        /// このメソッドを呼び出した場合、対象となる <see cref="ProcessStartInfo"/> オブジェクトの <see cref="ProcessStartInfo.UseShellExecute"/> プロパティは <see langword="false"/> に設定されなければなりません。
+        /// </item>
+        /// </list>
+        /// </remarks>
+        public static void SetChildProcessPriority(this ProcessStartInfo processStartInfo, ProcessPriorityClass? processPriority = null)
+            => processStartInfo.Environment[_processPriorityEnvironmentName] = (processPriority?? Process.GetCurrentProcess().PriorityClass).ToString();
 
         private static String? WhereIsForWindows(String targetCommandName)
         {
@@ -210,5 +242,17 @@ namespace Palmtree
                     _ => throw new ApplicationException($"\"{whichCommandName}\" command terminated abnormally.: exit-code={process.ExitCode}, message=\"{errorMessage}\""),
                 };
         }
+
+        private static ProcessPriorityClass? GetProcessPriorityFromEnvironmentVariableValue(String? processPriorityEnvironmentVariableValue)
+            => processPriorityEnvironmentVariableValue switch
+            {
+                nameof(ProcessPriorityClass.AboveNormal) => ProcessPriorityClass.AboveNormal,
+                nameof(ProcessPriorityClass.BelowNormal) => ProcessPriorityClass.BelowNormal,
+                nameof(ProcessPriorityClass.High) => ProcessPriorityClass.High,
+                nameof(ProcessPriorityClass.Idle) => ProcessPriorityClass.Idle,
+                nameof(ProcessPriorityClass.Normal) => ProcessPriorityClass.Normal,
+                nameof(ProcessPriorityClass.RealTime) => ProcessPriorityClass.RealTime,
+                _ => null,
+            };
     }
 }

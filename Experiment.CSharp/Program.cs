@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Palmtree;
@@ -10,20 +11,22 @@ namespace Experiment.CSharp
     {
         private static void Main()
         {
-            Console.WriteLine(FormatExpression("aaaaa".EncodeCommandLineArgument()));
-            Console.WriteLine(FormatExpression("aaa aa".EncodeCommandLineArgument()));
-            Console.WriteLine(FormatExpression("aaa \"aa\"aa".EncodeCommandLineArgument()));
-            Console.WriteLine(FormatExpression("aaa \\\"aa\\\"aa".EncodeCommandLineArgument()));
-            Console.WriteLine(FormatExpression("a aaaa\\".EncodeCommandLineArgument()));
+            Console.WriteLine(FormatExpression(Environment.GetEnvironmentVariable("__PALMTREE_PROCESS_PRIORITY") ?? "(undefined)"));
+            Console.WriteLine(FormatExpression(Process.GetCurrentProcess().PriorityClass));
+            ProcessUtility.SetupCurrentProcessPriority();
+            Console.WriteLine(FormatExpression(Environment.GetEnvironmentVariable("__PALMTREE_PROCESS_PRIORITY") ?? "(undefined)"));
+            Console.WriteLine(FormatExpression(Process.GetCurrentProcess().PriorityClass));
 
-            if (OperatingSystem.IsWindows())
+            var s = new ProcessStartInfo
             {
-                Console.WriteLine(FormatExpression("aaaaa".EncodeCommandPromptCommandLineArgument()));
-                Console.WriteLine(FormatExpression("aa&aaa".EncodeCommandPromptCommandLineArgument()));
-                Console.WriteLine(FormatExpression("aa&a<a>a^a|".EncodeCommandPromptCommandLineArgument()));
-                Console.WriteLine(FormatExpression("aaa aa".EncodeCommandPromptCommandLineArgument()));
-                Console.WriteLine(FormatExpression("aaa \\\"aa\\\"aa".EncodeCommandPromptCommandLineArgument()));
-                Console.WriteLine(FormatExpression("a aaaa\\".EncodeCommandPromptCommandLineArgument()));
+                FileName = "experiment.exe",
+                UseShellExecute = false,
+                CreateNoWindow = false,
+            };
+
+            foreach (var key in s.EnvironmentVariables.Keys)
+            {
+                Console.WriteLine(FormatExpression(key));
             }
 
             Console.Beep();
